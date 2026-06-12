@@ -404,7 +404,7 @@ const chapter1Nodes: StoryNode[] = [
   n('ch1_pet14', '有些东西不会一直陪着你。', 'sad', 2000, 'ch1_photo_n7'),
   // Photo of N7
   t('ch1_photo_n7', 2500, 'ch1_n7photo'),
-  img('ch1_n7photo', '/assets/photo_n7.jpg', '这是它最后的照片。\n在控制台上睡着了。', 'ch1_n7_after'),
+  img('ch1_n7photo', '/assets/nova_n7_photo.png', '这是它最后的照片。\n在控制台上睡着了。', 'ch1_n7_after'),
   d('ch1_n7_after', 2000, 'ch1_n7_emotion'),
   n('ch1_n7_emotion', '抱歉。', 'sad', 800, 'ch1_n7_emotion2'),
   n('ch1_n7_emotion2', '气氛突然有点奇怪。', 'normal', 600, 'ch1_n7_emotion3'),
@@ -1059,7 +1059,8 @@ const chapter4Nodes: StoryNode[] = [
   ]),
   n('ch4_fold14', '不知道。', 'normal', 600, 'ch4_fold15'),
   n('ch4_fold15', '显示：', 'normal', 400, 'ch4_fold16'),
-  { id: 'ch4_fold16', speaker: 'system', type: 'file', content: '双重认证者||Nova Arlen\nNova Arlen', nextId: 'ch4_fold17' },
+  { id: 'ch4_fold16', speaker: 'system', type: 'file', content: '双重认证者||Nova Arlen\nNova Arlen', nextId: 'ch4_id_photo' },
+  img('ch4_id_photo', '/assets/nova_id_photo.png', 'Nova Arlen / Aurora Navigation 身份档案', 'ch4_fold17'),
   c('ch4_fold17', [
     { text: '【两个Nova？】', nextId: 'ch4_fold18' },
   ]),
@@ -1342,7 +1343,8 @@ const chapter5aNodes: StoryNode[] = [
   s('ch5a_offline', 'Nova 已离线', 3000, 'ch5a_msg'),
   // Late night mysterious message
   ts('ch5a_msg', '凌晨 03:09', 'ch5a_msg1'),
-  s('ch5a_msg1', '收到未知来源消息', 1500, 'ch5a_msg2'),
+  s('ch5a_msg1', '收到未知来源消息', 1500, 'ch5a_shadow_photo'),
+  img('ch5a_shadow_photo', '/assets/nova_glitch.png', '通讯残影：NOVA-06', 'ch5a_msg2'),
   g('ch5a_msg2', '发送者：Nova？', 1000, 'ch5a_msg3'),
   { id: 'ch5a_msg3', speaker: 'system', type: 'glitch', content: '不要相信她。她已经不是第一次的Nova了。', delay: 2000, nextId: 'ch5a_msg4', isGlitch: true },
   { id: 'ch5a_msg4', speaker: 'system', type: 'glitch', content: '也不要相信我。', delay: 1500, nextId: 'ch5a_msg5', isGlitch: true },
@@ -1700,7 +1702,8 @@ const finaleNodes: StoryNode[] = [
   // Student asks
   { id: 'fin_epi4', speaker: 'system', type: 'text', content: '学生："老师。为什么观测室总有一个空座位？"', delay: 3000, nextId: 'fin_epi5' },
   d('fin_epi5', 3000, 'fin_epi6'),
-  { id: 'fin_epi6', speaker: 'system', type: 'text', content: 'Nova站在窗前。已经不再年轻。', delay: 2000, nextId: 'fin_epi7' },
+  { id: 'fin_epi6', speaker: 'system', type: 'text', content: 'Nova站在窗前。已经不再年轻。', delay: 2000, nextId: 'fin_older_photo' },
+  img('fin_older_photo', '/assets/nova_older.png', '12年后的 Nova。', 'fin_epi7'),
   d('fin_epi7', 3000, 'fin_epi8'),
   { id: 'fin_epi8', speaker: 'system', type: 'text', content: '她沉默很久。', delay: 2000, nextId: 'fin_epi9' },
   d('fin_epi9', 3000, 'fin_epi10'),
@@ -1745,7 +1748,7 @@ const normalEndingNodes: StoryNode[] = [
   { id: 'normal_5', speaker: 'system', type: 'timestamp', content: '12年后', nextId: 'normal_6' },
   { id: 'normal_6', speaker: 'system', type: 'text', content: '深空航行学院', delay: 2000, nextId: 'normal_7' },
   d('normal_7', 2500, 'normal_8'),
-  img('normal_8', '/assets/nova_observatory.png', '观测室没有空座位。', 'normal_9'),
+  img('normal_8', '/assets/nova_older.png', '她活下来了。但有些陪伴，没能留下名字。', 'normal_9'),
   { id: 'normal_9', speaker: 'system', type: 'text', content: '学生："老师，你为什么总看星星？"', delay: 2500, nextId: 'normal_10' },
   { id: 'normal_10', speaker: 'system', type: 'text', content: 'Nova："不知道。可能只是习惯。"', delay: 2500, nextId: 'normal_11' },
   { id: 'normal_11', speaker: 'system', type: 'text', content: '学生："你在等什么人吗？"', delay: 2500, nextId: 'normal_12' },
