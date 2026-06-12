@@ -4,6 +4,7 @@ import { novaAvatar } from './assets';
 import {
   clearSave,
   createSaveData,
+  defaultStats,
   getPendingNodeIdAfterNode,
   getSaveTimeString,
   hasSaveFile,
@@ -11,7 +12,7 @@ import {
   resolveResumeNodeId,
   saveGame,
 } from './storage';
-import type { DisplayMessage, GameScreen, NovaEmotion } from './types';
+import type { DisplayMessage, GameScreen, GameStats, MemoryAnchor, NovaEmotion } from './types';
 import { StarBackground } from './components/StarBackground';
 import { ImageModal } from './components/ImageModal';
 import { ChatMessage } from './components/ChatMessage';
@@ -32,6 +33,9 @@ export default function GameApp() {
   const [hasSave, setHasSave] = useState(() => hasSaveFile());
   const [saveTime, setSaveTime] = useState(() => getSaveTimeString());
   const [showRestartConfirm, setShowRestartConfirm] = useState(false);
+  const [stats, setStats] = useState<GameStats>(defaultStats);
+  const [inputNode, setInputNode] = useState<{ id: string; nextId?: string; placeholder: string } | null>(null);
+  const [playerInput, setPlayerInput] = useState('');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const nodeQueueRef = useRef<string[]>([]);
@@ -39,6 +43,7 @@ export default function GameApp() {
   const shouldStopQueueRef = useRef(false);
   const messagesRef = useRef(messages);
   const emotionRef = useRef(novaEmotion);
+  const statsRef = useRef(stats);
 
   useEffect(() => {
     messagesRef.current = messages;
@@ -48,12 +53,18 @@ export default function GameApp() {
     emotionRef.current = novaEmotion;
   }, [novaEmotion]);
 
+  useEffect(() => {
+    statsRef.current = stats;
+  }, [stats]);
+
   const goToMenu = useCallback(() => {
     shouldStopQueueRef.current = true;
     setIsTyping(false);
     setIsTypewriterActive(false);
     setTypewriterText('');
     setChoices(null);
+    setInputNode(null);
+    setPlayerInput('');
     setHasSave(hasSaveFile());
     setSaveTime(getSaveTimeString());
     setScreen('menu');
@@ -68,7 +79,7 @@ export default function GameApp() {
   }, [messages, isTyping, scrollToBottom]);
 
   const persistState = useCallback((pendingNodeId: string, msgs: DisplayMessage[]) => {
-    saveGame(createSaveData(pendingNodeId, msgs, emotionRef.current));
+    saveGame(createSaveData(pendingNodeId, msgs, emotionRef.current, statsRef.current));
     setHasSave(true);
     setSaveTime('刚刚');
   }, []);
@@ -77,9 +88,34 @@ export default function GameApp() {
     setMessages(prev => [...prev, msg]);
   }, []);
 
+  const addMemoryAnchor = useCallback((anchor: MemoryAnchor) => {
+    setStats(prev => {
+      if (prev.memoryAnchors.includes(anchor)) return prev;
+      const next = { ...prev, memoryAnchors: [...prev.memoryAnchors, anchor] };
+      statsRef.current = next;
+      return next;
+    });
+  }, []);
+
+  const recordNodeMilestone = useCallback(
+    (nodeId: string) => {
+      const milestones: Partial<Record<string, MemoryAnchor>> = {
+        p13: 'firstMessage',
+        ch1_n7photo: 'n7',
+        ch2_candy8: 'candy',
+        ch2_gn3: 'goodnight',
+        ch3_flower1: 'flower',
+      };
+      const anchor = milestones[nodeId];
+      if (anchor) addMemoryAnchor(anchor);
+    },
+    [addMemoryAnchor],
+  );
+
   const processSingleNode = useCallback(
     async (nodeId: string): Promise<boolean> => {
       if (shouldStopQueueRef.current) return false;
+      recordNodeMilestone(nodeId);
 
       const node = storyNodeMap.get(nodeId);
       if (!node) return false;
@@ -113,6 +149,13 @@ export default function GameApp() {
         setIsTyping(false);
         if (node.nextId) nodeQueueRef.current.push(node.nextId);
         return true;
+      }
+
+      if (node.type === 'input') {
+        setInputNode({ id: node.id, nextId: node.nextId, placeholder: node.content || '输入你想说的话...' });
+        setIsTyping(false);
+        persistState(nodeId, messagesRef.current);
+        return false;
       }
 
       if (node.type === 'choice' && node.choices) {
@@ -214,7 +257,7 @@ export default function GameApp() {
       }
       return true;
     },
-    [addMessage, persistState],
+    [addMessage, persistState, recordNodeMilestone],
   );
 
   const processQueue = useCallback(async () => {
@@ -259,6 +302,7 @@ export default function GameApp() {
         if (save) {
           setMessages(save.messages);
           setNovaEmotion(save.novaEmotion);
+          setStats(save.stats);
           setScreen('playing');
 
           const lastMsg = save.messages[save.messages.length - 1];
@@ -273,6 +317,15 @@ export default function GameApp() {
             return;
           }
 
+          if (resumeNode?.type === 'input') {
+            setInputNode({
+              id: resumeNode.id,
+              nextId: resumeNode.nextId,
+              placeholder: resumeNode.content || '输入你想说的话...',
+            });
+            return;
+          }
+
           setTimeout(() => startSequence(resumeId), 500);
           return;
         }
@@ -281,15 +334,59 @@ export default function GameApp() {
       clearSave();
       setMessages([]);
       setNovaEmotion('normal');
+      setStats(defaultStats);
+      statsRef.current = defaultStats;
+      setInputNode(null);
+      setPlayerInput('');
       setScreen('playing');
       startSequence('p0');
     },
     [startSequence],
   );
 
+  const applyChoiceEffects = useCallback((choice: Choice) => {
+    const text = choice.text;
+
+    setStats(prev => {
+      const next: GameStats = {
+        trust: prev.trust,
+        attachment: prev.attachment,
+        memoryAnchors: [...prev.memoryAnchors],
+      };
+      const remember = (anchor: MemoryAnchor) => {
+        if (!next.memoryAnchors.includes(anchor)) next.memoryAnchors.push(anchor);
+      };
+
+      if (/没事|我在|别怕|辛苦|晚安|当然|会|记得|真漂亮|听起来不错/.test(text)) {
+        next.trust += 1;
+      }
+      if (/N7|胖猫/.test(text)) remember('n7');
+      if (/晚安/.test(text)) remember('goodnight');
+      if (/你好|真的有人收到了/.test(text)) remember('firstMessage');
+      if (choice.nextId === 'BAD_END_START' || /不想让你离开|不要离开/.test(text)) {
+        next.attachment += 2;
+      }
+
+      statsRef.current = next;
+      return next;
+    });
+  }, []);
+
+  const resolveChoiceNextId = useCallback((choice: Choice): string => {
+    if (choice.nextId === 'FINALE_DECISION_END') {
+      const currentStats = statsRef.current;
+      if (currentStats.attachment >= 2) return 'BAD_END_START';
+      if (currentStats.trust >= 4 && currentStats.memoryAnchors.length >= 4) return 'FINALE_START';
+      return 'NORMAL_END_START';
+    }
+    return choice.nextId;
+  }, []);
+
   const handleChoice = useCallback(
     (choice: Choice) => {
       setChoices(null);
+      applyChoiceEffects(choice);
+      const nextId = resolveChoiceNextId(choice);
 
       const playerMsg: DisplayMessage = {
         id: `player_${Date.now()}`,
@@ -300,14 +397,35 @@ export default function GameApp() {
       };
       const updated = [...messagesRef.current, playerMsg];
       setMessages(updated);
-      persistState(choice.nextId, updated);
+      persistState(nextId, updated);
 
       setTimeout(() => {
-        startSequence(choice.nextId);
+        startSequence(nextId);
       }, 400);
     },
-    [startSequence, persistState],
+    [applyChoiceEffects, persistState, resolveChoiceNextId, startSequence],
   );
+
+  const handlePlayerInput = useCallback(() => {
+    if (!inputNode) return;
+    const text = playerInput.trim() || '......';
+    const playerMsg: DisplayMessage = {
+      id: `player_${Date.now()}`,
+      speaker: 'player',
+      type: 'text',
+      content: text,
+      isNew: true,
+    };
+    const updated = [...messagesRef.current, playerMsg];
+    addMemoryAnchor('finalWords');
+    setMessages(updated);
+    setInputNode(null);
+    setPlayerInput('');
+    persistState(inputNode.nextId ?? inputNode.id, updated);
+    setTimeout(() => {
+      if (inputNode.nextId) startSequence(inputNode.nextId);
+    }, 400);
+  }, [addMemoryAnchor, inputNode, persistState, playerInput, startSequence]);
 
   const lastMsg = messages[messages.length - 1];
   const isLastNovaTyping =
@@ -371,6 +489,7 @@ export default function GameApp() {
             onConfirm={() => {
               clearSave();
               setHasSave(false);
+              setStats(defaultStats);
               setShowRestartConfirm(false);
               startGame('new');
             }}
@@ -461,7 +580,25 @@ export default function GameApp() {
           </div>
 
           <div className="shrink-0 px-4 py-3 bg-[#151A26]/90 border-t border-[#1A2236]">
-            {choices ? (
+            {inputNode ? (
+              <div className="flex gap-2">
+                <input
+                  value={playerInput}
+                  onChange={e => setPlayerInput(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') handlePlayerInput();
+                  }}
+                  placeholder={inputNode.placeholder}
+                  className="flex-1 rounded-lg bg-[#0B0E14] border border-[#2A3550] px-4 py-3 text-sm text-[#E2E8F0] outline-none focus:border-[#F0A030]"
+                />
+                <button
+                  onClick={handlePlayerInput}
+                  className="px-4 py-3 rounded-lg bg-[#F0A030]/20 border border-[#F0A030]/50 text-[#F0A030] text-sm hover:bg-[#F0A030]/30 transition-colors"
+                >
+                  发送
+                </button>
+              </div>
+            ) : choices ? (
               <div className="flex flex-col gap-2">
                 {choices.map((choice, i) => (
                   <button

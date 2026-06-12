@@ -1,7 +1,13 @@
 import { storyNodeMap } from './story';
-import type { DisplayMessage, NovaEmotion, SaveData } from './types';
+import type { DisplayMessage, GameStats, NovaEmotion, SaveData } from './types';
 
 export const SAVE_KEY = 'seventh_reboot_save';
+
+export const defaultStats: GameStats = {
+  trust: 0,
+  attachment: 0,
+  memoryAnchors: [],
+};
 
 export function saveGame(data: SaveData) {
   try {
@@ -17,6 +23,11 @@ export function loadGame(): SaveData | null {
     if (!raw) return null;
     const data = JSON.parse(raw) as SaveData;
     data.messages = data.messages.map(m => ({ ...m, isNew: false }));
+    data.stats = {
+      ...defaultStats,
+      ...data.stats,
+      memoryAnchors: data.stats?.memoryAnchors ?? [],
+    };
     return data;
   } catch {
     return null;
@@ -74,11 +85,13 @@ export function createSaveData(
   pendingNodeId: string,
   messages: DisplayMessage[],
   novaEmotion: NovaEmotion,
+  stats: GameStats,
 ): SaveData {
   return {
     pendingNodeId,
     messages: messages.map(m => ({ ...m, isNew: false })),
     novaEmotion,
+    stats,
     timestamp: Date.now(),
   };
 }

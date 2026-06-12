@@ -47,6 +47,10 @@ const c = (id: string, choices: Choice[]): StoryNode => ({
   id, speaker: 'player', type: 'choice', content: '', choices
 });
 
+const input = (id: string, placeholder: string, nextId: string): StoryNode => ({
+  id, speaker: 'player', type: 'input', content: placeholder, nextId
+});
+
 const img = (id: string, image: string, caption: string, nextId: string): StoryNode => ({
   id, speaker: 'nova', type: 'image', content: caption, image, nextId
 });
@@ -636,7 +640,18 @@ const chapter2Nodes: StoryNode[] = [
     { text: '【然后呢】', nextId: 'ch2_forget24' },
   ]),
   n('ch2_forget24', '然后我还是喝了。', 'smile', 600, 'ch2_forget25'),
-  n('ch2_forget25', '难喝得像发动机冷却液。', 'smile', 1500, 'ch2_night1'),
+  n('ch2_forget25', '难喝得像发动机冷却液。', 'smile', 1500, 'ch2_candy1'),
+  d('ch2_candy1', 1200, 'ch2_candy2'),
+  n('ch2_candy2', '对了。', 'normal', 600, 'ch2_candy3'),
+  n('ch2_candy3', '我刚在抽屉里找到三颗牛奶糖。', 'smile', 800, 'ch2_candy4'),
+  c('ch2_candy4', [
+    { text: '【N7欠你的那三颗？】', nextId: 'ch2_candy5' },
+    { text: '【舰上还有糖？】', nextId: 'ch2_candy5' },
+  ]),
+  n('ch2_candy5', '对。', 'smile', 600, 'ch2_candy6'),
+  n('ch2_candy6', '那只猫欠了我好多年。', 'smile', 600, 'ch2_candy7'),
+  n('ch2_candy7', '结果债主已经不在了。', 'normal', 800, 'ch2_candy8'),
+  img('ch2_candy8', '/assets/photo_candy.jpg', '战利品。\n替 N7 还债。', 'ch2_night1'),
   // Night
   ts('ch2_night1', '21:09', 'ch2_night2'),
   n('ch2_night2', '巡检结束。', 'normal', 400, 'ch2_night3'),
@@ -729,7 +744,17 @@ const chapter2Nodes: StoryNode[] = [
 const chapter3Nodes: StoryNode[] = [
   ch('CH3_START', '第三章：异常', 'ch3_0'),
   ts('ch3_0', '第四天 08:02', 'ch3_1'),
-  s('ch3_1', '收到新消息', 800, 'ch3_2'),
+  s('ch3_1', '收到新消息', 800, 'ch3_flower0'),
+  n('ch3_flower0', '快看。', 'smile', 600, 'ch3_flower1'),
+  img('ch3_flower1', '/assets/photo_flower.jpg', '一朵长在维修通风管里的小白花。', 'ch3_flower2'),
+  c('ch3_flower2', [
+    { text: '【你上报了吗】', nextId: 'ch3_flower3' },
+    { text: '【它居然活下来了】', nextId: 'ch3_flower3' },
+  ]),
+  n('ch3_flower3', '没有。', 'smile', 600, 'ch3_flower4'),
+  n('ch3_flower4', '理论上这里不该长植物。', 'normal', 600, 'ch3_flower5'),
+  n('ch3_flower5', '但它挺努力的。', 'smile', 600, 'ch3_flower6'),
+  n('ch3_flower6', '我准备偷偷养着。', 'smile', 1200, 'ch3_2'),
   n('ch3_2', '早。', 'normal', 600, 'ch3_3'),
   n('ch3_3', '问你个问题。', 'normal', 800, 'ch3_4'),
   c('ch3_4', [
@@ -1196,9 +1221,9 @@ const chapter5aNodes: StoryNode[] = [
     { text: '【......】', nextId: 'ch5a_obs12' },
   ]),
   n('ch5a_obs12', '我知道听起来很蠢。', 'normal', 600, 'ch5a_obs13'),
-  n('ch5a_obs13', '但她真的在那里。', 'normal', 600, 'ch5a_obs14'),
-  n('ch5a_obs14', '坐在观测窗前。', 'normal', 600, 'ch5a_obs15'),
-  n('ch5a_obs15', '像在等什么。', 'normal', 800, 'ch5a_obs16'),
+  n('ch5a_obs13', '但她不是另一个活着的我。', 'normal', 600, 'ch5a_obs14'),
+  n('ch5a_obs14', '更像一个由记忆和协议拼出来的残影。', 'normal', 600, 'ch5a_obs15'),
+  n('ch5a_obs15', '她坐在观测窗前。像等了很久。', 'normal', 800, 'ch5a_obs16'),
   c('ch5a_obs16', [
     { text: '【你和她说话了吗】', nextId: 'ch5a_obs17' },
   ]),
@@ -1389,7 +1414,7 @@ const chapter5bNodes: StoryNode[] = [
   ]),
   n('ch5b_file9', '嗯。', 'normal', 400, 'ch5b_file10'),
   // Observer document
-  f('ch5b_file10', 'OBSERVER-01 实验记录', '实验代号：OBSERVER-01\n状态：意识备份成功\n记忆完整度：100%\n循环保留权限：已开启\n创建者：Nova Arlen（第六次循环）\n目的：确保至少有一人记住一切', 'ch5b_file11'),
+  f('ch5b_file10', 'OBSERVER-01 实验记录', '实验代号：OBSERVER-01\n状态：意识备份成功\n记忆完整度：100%\n循环保留权限：已开启\n身份来源：Nova Arlen 第六循环授权请求\n目的：确保至少有一人记住一切', 'ch5b_file11'),
   n('ch5b_file11', '我终于知道为什么只有你记得。', 'normal', 800, 'ch5b_file12'),
   n('ch5b_file12', '因为...', 'normal', 1000, 'ch5b_file13'),
   n('ch5b_file13', '你根本不会被重置。', 'normal', 1500, 'ch5b_file14'),
@@ -1464,10 +1489,10 @@ const chapter5bNodes: StoryNode[] = [
   // Final archive
   ts('ch5b_final', '深夜 02:27', 'ch5b_fin1'),
   s('ch5b_fin1', '收到最终档案', 1500, 'ch5b_fin2'),
-  f('ch5b_fin2', 'SEVENTH_REBOOT', '循环次数：6\n失败次数：6\n当前循环：7\n最终执行权限：\nNova Arlen\nObserver-01\n\n最后一行：\n是否结束循环？', 'ch5b_fin3'),
+  f('ch5b_fin2', 'SEVENTH_REBOOT', '完整主循环次数：6\n当前循环：7\n局部回滚碎片：6412\n失败次数：6\n最终执行权限：\nNova Arlen\nObserver-01\n\n最后一行：\n是否结束循环？', 'ch5b_fin3'),
   c('ch5b_fin3', [
-    { text: '【结束】', nextId: 'FINALE_START' },
-    { text: '【拒绝】', nextId: 'FINALE_START' },
+    { text: '【结束】', nextId: 'FINALE_DECISION_END' },
+    { text: '【拒绝】', nextId: 'BAD_END_START' },
   ]),
 ];
 
@@ -1511,15 +1536,15 @@ const finaleNodes: StoryNode[] = [
   n('fin_23', '因为我忘了你六次。', 'sad', 800, 'fin_24'),
   n('fin_24', '不。', 'normal', 400, 'fin_25'),
   n('fin_25', '准确来说。', 'normal', 400, 'fin_26'),
-  n('fin_26', '六千多次。', 'sad', 2000, 'fin_27'),
+  n('fin_26', '我忘了六次完整的人生。', 'sad', 2000, 'fin_27'),
   d('fin_27', 2000, 'fin_28'),
   c('fin_28', [
     { text: '【什么意思】', nextId: 'fin_29' },
   ]),
-  n('fin_29', '每一次失败。', 'normal', 600, 'fin_30'),
-  n('fin_30', '都会产生新的重启分支。', 'normal', 600, 'fin_31'),
+  n('fin_29', '还有那些局部回滚的碎片。', 'normal', 600, 'fin_30'),
+  n('fin_30', '每一次细小的失败。', 'normal', 600, 'fin_31'),
   n('fin_31', '而你。', 'normal', 400, 'fin_32'),
-  n('fin_32', '记得所有分支。', 'normal', 600, 'fin_33'),
+  n('fin_32', '都替我记着。', 'normal', 600, 'fin_33'),
   n('fin_33', '所有我。', 'normal', 400, 'fin_34'),
   n('fin_34', '所有结局。', 'normal', 2000, 'fin_35'),
   d('fin_35', 2000, 'fin_36'),
@@ -1531,7 +1556,7 @@ const finaleNodes: StoryNode[] = [
   // Observatory scene
   { id: 'fin_obs1', speaker: 'system', type: 'text', content: 'Aurora号 观测室', delay: 2000, nextId: 'fin_obs2' },
   d('fin_obs2', 2000, 'fin_obs3'),
-  img('fin_obs3', '/assets/photo_observatory.jpg', '窗外星光流转。', 'fin_obs4'),
+  img('fin_obs3', '/assets/nova_observatory.png', '窗外星光流转。', 'fin_obs4'),
   d('fin_obs4', 3000, 'fin_obs5'),
   n('fin_obs5', '这里真漂亮。', 'smile', 800, 'fin_obs6'),
   c('fin_obs6', [
@@ -1640,10 +1665,8 @@ const finaleNodes: StoryNode[] = [
   n('fin_last3', '最后再回答我一次。', 'normal', 800, 'fin_last4'),
   n('fin_last4', '我们第一次见面的时候。', 'normal', 600, 'fin_last5'),
   n('fin_last5', '我说了什么？', 'normal', 1500, 'fin_last6'),
-  // Player input moment (simulated)
-  c('fin_last6', [
-    { text: '【"你好？"】', nextId: 'fin_last7' },
-  ]),
+  // Player input moment
+  input('fin_last6', '输入你想回答 Nova 的话...', 'fin_last7'),
   n('fin_last7', '不对。', 'smile', 800, 'fin_last8'),
   n('fin_last8', '我第一句话是：', 'normal', 800, 'fin_last9'),
   { id: 'fin_last9', speaker: 'nova', type: 'text', content: '"真的有人收到了吗？"', emotion: 'smile', delay: 2000, nextId: 'fin_last10' },
@@ -1710,6 +1733,60 @@ const finaleNodes: StoryNode[] = [
 ];
 
 // ============================================
+// NORMAL ENDING: OUTSIDE THE LOOP
+// ============================================
+const normalEndingNodes: StoryNode[] = [
+  ch('NORMAL_END_START', '普通结局：循环之外', 'normal_0'),
+  { id: 'normal_0', speaker: 'system', type: 'text', content: '最终权限确认', delay: 1500, nextId: 'normal_1' },
+  { id: 'normal_1', speaker: 'system', type: 'text', content: '开始解除第七协议...', delay: 2500, nextId: 'normal_2' },
+  { id: 'normal_2', speaker: 'system', type: 'text', content: 'Observer协议关闭', delay: 1800, nextId: 'normal_3' },
+  { id: 'normal_3', speaker: 'system', type: 'text', content: 'Aurora号恢复正常航线', delay: 2500, nextId: 'normal_4' },
+  d('normal_4', 3500, 'normal_5'),
+  { id: 'normal_5', speaker: 'system', type: 'timestamp', content: '12年后', nextId: 'normal_6' },
+  { id: 'normal_6', speaker: 'system', type: 'text', content: '深空航行学院', delay: 2000, nextId: 'normal_7' },
+  d('normal_7', 2500, 'normal_8'),
+  img('normal_8', '/assets/nova_observatory.png', '观测室没有空座位。', 'normal_9'),
+  { id: 'normal_9', speaker: 'system', type: 'text', content: '学生："老师，你为什么总看星星？"', delay: 2500, nextId: 'normal_10' },
+  { id: 'normal_10', speaker: 'system', type: 'text', content: 'Nova："不知道。可能只是习惯。"', delay: 2500, nextId: 'normal_11' },
+  { id: 'normal_11', speaker: 'system', type: 'text', content: '学生："你在等什么人吗？"', delay: 2500, nextId: 'normal_12' },
+  { id: 'normal_12', speaker: 'system', type: 'text', content: 'Nova沉默。', delay: 2500, nextId: 'normal_13' },
+  { id: 'normal_13', speaker: 'system', type: 'text', content: '"应该没有。"', delay: 2500, nextId: 'normal_14' },
+  { id: 'normal_14', speaker: 'system', type: 'text', content: '"但有时候。我会觉得。自己好像忘了一个很重要的梦。"', delay: 3500, nextId: 'normal_15' },
+  { id: 'normal_15', speaker: 'system', type: 'text', content: '她活下来了。但有些陪伴，没能留下名字。', delay: 4000, nextId: 'normal_end' },
+  end('normal_end'),
+];
+
+// ============================================
+// BAD ENDING: EIGHTH REBOOT
+// ============================================
+const badEndingNodes: StoryNode[] = [
+  ch('BAD_END_START', '坏结局：第八次重启', 'bad_0'),
+  { id: 'bad_0', speaker: 'system', type: 'glitch', content: '结束循环请求被拒绝', delay: 1800, nextId: 'bad_1', isGlitch: true },
+  { id: 'bad_1', speaker: 'system', type: 'glitch', content: 'Observer-01权限覆盖', delay: 1800, nextId: 'bad_2', isGlitch: true },
+  { id: 'bad_2', speaker: 'system', type: 'text', content: '第七协议维持', delay: 1800, nextId: 'bad_3' },
+  { id: 'bad_3', speaker: 'system', type: 'text', content: '生成新循环', delay: 2500, nextId: 'bad_4' },
+  n('bad_4', '等等。', 'normal', 800, 'bad_5'),
+  n('bad_5', '你做了什么？', 'sad', 1500, 'bad_6'),
+  c('bad_6', [
+    { text: '【我不想让你离开】', nextId: 'bad_7' },
+  ]),
+  n('bad_7', '可这不是救我。', 'sad', 1000, 'bad_8'),
+  n('bad_8', '这是把我留下来。', 'sad', 2000, 'bad_9'),
+  { id: 'bad_9', speaker: 'system', type: 'glitch', content: '重启倒计时开始', delay: 2000, nextId: 'bad_10', isGlitch: true },
+  n('bad_10', '如果你真的记得我。', 'sad', 1000, 'bad_11'),
+  n('bad_11', '就不该让我再死一次。', 'sad', 2500, 'bad_12'),
+  { id: 'bad_12', speaker: 'system', type: 'glitch', content: '倒计时归零', delay: 2500, nextId: 'bad_13', isGlitch: true },
+  d('bad_13', 3000, 'bad_14'),
+  { id: 'bad_14', speaker: 'system', type: 'timestamp', content: '22:47', nextId: 'bad_15' },
+  { id: 'bad_15', speaker: 'system', type: 'text', content: '检测到未知通讯请求...', delay: 2000, nextId: 'bad_16' },
+  n('bad_16', '你好？', 'normal', 1200, 'bad_17'),
+  n('bad_17', '等等。', 'normal', 800, 'bad_18'),
+  n('bad_18', '真的有人收到了？', 'normal', 2500, 'bad_19'),
+  { id: 'bad_19', speaker: 'system', type: 'glitch', content: '第八次连接成功', delay: 3000, nextId: 'bad_end', isGlitch: true },
+  end('bad_end'),
+];
+
+// ============================================
 // Combine all nodes
 // ============================================
 export const storyNodes: StoryNode[] = [
@@ -1721,6 +1798,8 @@ export const storyNodes: StoryNode[] = [
   ...chapter5aNodes,
   ...chapter5bNodes,
   ...finaleNodes,
+  ...normalEndingNodes,
+  ...badEndingNodes,
 ];
 
 // Create a map for fast lookup
