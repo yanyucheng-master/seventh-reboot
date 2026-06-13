@@ -17,12 +17,35 @@ export function saveGame(data: SaveData) {
   }
 }
 
+function isValidSaveData(data: unknown): data is SaveData {
+  if (!data || typeof data !== 'object') return false;
+  const save = data as Partial<SaveData>;
+  if (typeof save.pendingNodeId !== 'string') return false;
+  if (!Array.isArray(save.messages)) return false;
+  if (typeof save.novaEmotion !== 'string') return false;
+  if (!save.stats || typeof save.stats !== 'object') return false;
+  if (typeof (save.stats as Partial<GameStats>).trust !== 'number') return false;
+  if (typeof (save.stats as Partial<GameStats>).attachment !== 'number') return false;
+  if (!Array.isArray((save.stats as Partial<GameStats>).memoryAnchors)) return false;
+  if (typeof save.timestamp !== 'number') return false;
+  return true;
+}
+
 export function loadGame(): SaveData | null {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
     if (!raw) return null;
-    const data = JSON.parse(raw) as SaveData;
-    data.messages = data.messages.map(m => ({ ...m, isNew: false }));
+    const parsed = JSON.parse(raw);
+    if (!isValidSaveData(parsed)) return null;
+    const data = parsed;
+    const messageIds = new Set<string>();
+    data.messages = data.messages
+      .filter(message => {
+        if (messageIds.has(message.id)) return false;
+        messageIds.add(message.id);
+        return true;
+      })
+      .map(m => ({ ...m, isNew: false }));
     data.stats = {
       ...defaultStats,
       ...data.stats,
@@ -35,7 +58,7 @@ export function loadGame(): SaveData | null {
 }
 
 export function hasSaveFile(): boolean {
-  return !!localStorage.getItem(SAVE_KEY);
+  return loadGame() !== null;
 }
 
 export function clearSave() {

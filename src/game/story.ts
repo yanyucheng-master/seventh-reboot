@@ -1,8 +1,9 @@
 // Story data for "Seventh Reboot"
 // Each node has: id, speaker, type, content, and navigation info
 
-export type Speaker = 'nova' | 'system' | 'player';
-export type MessageType = 'text' | 'choice' | 'image' | 'typing' | 'delay' | 'status' | 'timestamp' | 'chapter' | 'draft' | 'glitch' | 'file' | 'end' | 'input';
+import type { NovaEmotion, Speaker, MessageType } from './types';
+
+export type { Speaker, MessageType };
 
 export interface Choice {
   text: string;
@@ -14,7 +15,7 @@ export interface StoryNode {
   speaker: Speaker;
   type: MessageType;
   content: string;
-  emotion?: 'normal' | 'smile' | 'sad';
+  emotion?: NovaEmotion;
   choices?: Choice[];
   image?: string;
   delay?: number;
@@ -23,7 +24,7 @@ export interface StoryNode {
 }
 
 // Helper to create nodes more easily
-const n = (id: string, content: string, emotion?: 'normal' | 'smile' | 'sad', delay?: number, nextId?: string): StoryNode => ({
+const n = (id: string, content: string, emotion?: NovaEmotion, delay?: number, nextId?: string): StoryNode => ({
   id, speaker: 'nova', type: 'text', content, emotion: emotion || 'normal', delay: delay ?? 600, nextId
 });
 

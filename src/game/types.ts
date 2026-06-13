@@ -1,6 +1,24 @@
 export type GameScreen = 'menu' | 'playing';
 
-export type NovaEmotion = 'normal' | 'smile' | 'sad';
+export type NovaEmotion = 'normal' | 'smile' | 'sad' | 'glitch';
+
+export type Speaker = 'nova' | 'system' | 'player';
+
+export type MessageType =
+  | 'text'
+  | 'choice'
+  | 'image'
+  | 'typing'
+  | 'delay'
+  | 'status'
+  | 'timestamp'
+  | 'chapter'
+  | 'draft'
+  | 'glitch'
+  | 'file'
+  | 'end'
+  | 'input'
+  | 'comm-log';
 
 export type MemoryAnchor =
   | 'n7'
@@ -18,8 +36,8 @@ export interface GameStats {
 
 export type DisplayMessage = {
   id: string;
-  speaker: 'nova' | 'system' | 'player';
-  type: string;
+  speaker: Speaker;
+  type: MessageType;
   content: string;
   emotion?: NovaEmotion;
   image?: string;

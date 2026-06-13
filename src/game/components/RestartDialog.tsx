@@ -15,13 +15,13 @@ export function RestartDialog({
         <div className="flex gap-3 mt-2">
           <button
             onClick={onCancel}
-            className="flex-1 py-2.5 rounded-lg border border-[#2A3550] text-[#94A3B8] text-sm hover:bg-[#1A2236] transition-colors"
+            className="menu-btn flex-1 py-3.5 rounded-lg border border-[#2A3550] text-[#94A3B8] text-sm hover:bg-[#1A2236] transition-colors"
           >
             取消
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 py-2.5 rounded-lg bg-[#F0A030]/20 border border-[#F0A030]/50 text-[#F0A030] text-sm hover:bg-[#F0A030]/30 transition-colors"
+            className="menu-btn flex-1 py-3.5 rounded-lg bg-[#F0A030]/20 border border-[#F0A030]/50 text-[#F0A030] text-sm hover:bg-[#F0A030]/30 transition-colors"
           >
             确认
           </button>
