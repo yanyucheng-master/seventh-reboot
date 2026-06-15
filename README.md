@@ -1,8 +1,27 @@
 # 第七次重启
 
-一个科幻文字冒险 / 聊天模拟游戏。玩家通过深空通讯与 Aurora 号导航员 Nova Arlen 对话，在七天的异常循环中逐步发现记忆、重启与 Observer 协议的真相。
+《第七次重启》是一款关于记忆、重启与陪伴的科幻聊天叙事游戏。
 
-当前剧情版本：V1.1 优化版，包含 Trust / Memory / Attachment 轻量变量、真结局、普通结局与坏结局分流。
+你将作为 Observer-01，接入一段不该存在的通讯。
+
+在七次重启之中，Nova Arlen 会一次次忘记你。而你的任务不是拯救她，而是替她记住那些被世界抹去的日子。
+
+## 核心特色
+
+- Observer-01 记忆载体视角
+- 记忆锚点系统
+- Nova 遗忘机制
+- 第七协议
+- 聊天式科幻叙事
+- 围绕记忆、陪伴、告别与执念的多结局分支
+
+## 剧情机制
+
+- `Trust`：Nova 是否信任 Observer-01。
+- `Memory`：Observer-01 对循环真相的理解程度。
+- `Attachment`：Observer-01 对 Nova 的依赖与执念程度。
+- `MemoryAnchors`：玩家替 Nova 保存的关键记忆，每个锚点只记录一次。
+- `AcceptFarewell`：玩家最终是否愿意结束循环并接受告别。
 
 ## 技术栈
 
@@ -25,28 +44,4 @@ npm run build
 npm run lint
 ```
 
-## 项目结构
-
-```text
-src/
-├── App.tsx
-├── main.tsx
-├── index.css
-└── game/
-    ├── GameApp.tsx
-    ├── story.ts
-    ├── storage.ts
-    ├── assets.ts
-    ├── types.ts
-    └── components/
-```
-
-## 素材
-
-游戏图片素材位于 `public/assets/`，包括 Nova 三种表情头像和剧情照片。
-
-## 剧情机制
-
-- `Trust`：由认真回应、安慰、记住关键细节提升。
-- `Memory`：记录 N7、牛奶糖、小白花、第一句话、晚安和最终留言等记忆锚点。
-- `Attachment`：终章拒绝结束循环或强留 Nova 会提升，可能进入坏结局《第八次重启》。
+游戏图片素材位于 `public/assets/`。

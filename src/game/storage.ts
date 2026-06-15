@@ -1,13 +1,59 @@
 import { storyNodeMap } from './story';
-import type { DisplayMessage, GameStats, NovaEmotion, SaveData } from './types';
+import type { DisplayMessage, GameStats, MemoryAnchorId, NovaEmotion, SaveData } from './types';
 
 export const SAVE_KEY = 'seventh_reboot_save';
 
 export const defaultStats: GameStats = {
   trust: 0,
+  memory: 0,
   attachment: 0,
   memoryAnchors: [],
+  acceptFarewell: false,
 };
+
+const MEMORY_ANCHOR_IDS = new Set<MemoryAnchorId>([
+  'n7',
+  'milk_candy',
+  'white_flower',
+  'first_message',
+  'goodnight',
+  'observatory',
+  'maintenance_board',
+  'steak',
+]);
+
+const LEGACY_ANCHORS: Record<string, MemoryAnchorId | undefined> = {
+  n7: 'n7',
+  candy: 'milk_candy',
+  flower: 'white_flower',
+  firstMessage: 'first_message',
+  goodnight: 'goodnight',
+};
+
+function normalizeMemoryAnchors(value: unknown): MemoryAnchorId[] {
+  if (!Array.isArray(value)) return [];
+  return [...new Set(
+    value
+      .map(anchor => {
+        if (typeof anchor !== 'string') return undefined;
+        if (MEMORY_ANCHOR_IDS.has(anchor as MemoryAnchorId)) return anchor as MemoryAnchorId;
+        return LEGACY_ANCHORS[anchor];
+      })
+      .filter((anchor): anchor is MemoryAnchorId => Boolean(anchor)),
+  )];
+}
+
+export function normalizeGameStats(value: unknown): GameStats {
+  const stats = value && typeof value === 'object' ? value as Partial<GameStats> : {};
+  const memoryAnchors = normalizeMemoryAnchors(stats.memoryAnchors);
+  return {
+    trust: typeof stats.trust === 'number' ? stats.trust : defaultStats.trust,
+    memory: typeof stats.memory === 'number' ? stats.memory : defaultStats.memory,
+    attachment: typeof stats.attachment === 'number' ? stats.attachment : defaultStats.attachment,
+    memoryAnchors,
+    acceptFarewell: typeof stats.acceptFarewell === 'boolean' ? stats.acceptFarewell : defaultStats.acceptFarewell,
+  };
+}
 
 export function saveGame(data: SaveData) {
   try {
@@ -24,9 +70,12 @@ function isValidSaveData(data: unknown): data is SaveData {
   if (!Array.isArray(save.messages)) return false;
   if (typeof save.novaEmotion !== 'string') return false;
   if (!save.stats || typeof save.stats !== 'object') return false;
-  if (typeof (save.stats as Partial<GameStats>).trust !== 'number') return false;
-  if (typeof (save.stats as Partial<GameStats>).attachment !== 'number') return false;
-  if (!Array.isArray((save.stats as Partial<GameStats>).memoryAnchors)) return false;
+  const stats = save.stats as Partial<GameStats>;
+  if (typeof stats.trust !== 'number') return false;
+  if (typeof stats.attachment !== 'number') return false;
+  if (stats.memory !== undefined && typeof stats.memory !== 'number') return false;
+  if (stats.memoryAnchors !== undefined && !Array.isArray(stats.memoryAnchors)) return false;
+  if (stats.acceptFarewell !== undefined && typeof stats.acceptFarewell !== 'boolean') return false;
   if (typeof save.timestamp !== 'number') return false;
   return true;
 }
@@ -46,11 +95,7 @@ export function loadGame(): SaveData | null {
         return true;
       })
       .map(m => ({ ...m, isNew: false }));
-    data.stats = {
-      ...defaultStats,
-      ...data.stats,
-      memoryAnchors: data.stats?.memoryAnchors ?? [],
-    };
+    data.stats = normalizeGameStats(data.stats);
     return data;
   } catch {
     return null;

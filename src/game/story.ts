@@ -1,7 +1,7 @@
 // Story data for "Seventh Reboot"
 // Each node has: id, speaker, type, content, and navigation info
 
-import type { NovaEmotion, Speaker, MessageType } from './types';
+import type { MemoryAnchorId, NovaEmotion, Speaker, MessageType } from './types';
 
 export type { Speaker, MessageType };
 
@@ -21,6 +21,8 @@ export interface StoryNode {
   delay?: number;
   nextId?: string;
   isGlitch?: boolean;
+  memoryAnchor?: MemoryAnchorId;
+  requiresAnchor?: MemoryAnchorId;
 }
 
 // Helper to create nodes more easily
@@ -81,24 +83,39 @@ const end = (id: string): StoryNode => ({
 // ============================================
 const prologueNodes: StoryNode[] = [
   // Opening system sequence
-  { id: 'p0', speaker: 'system', type: 'text', content: '检测到未知通讯请求...', delay: 2000, nextId: 'p1' },
-  { id: 'p1', speaker: 'system', type: 'text', content: '来源：无法识别', delay: 1500, nextId: 'p2' },
-  { id: 'p2', speaker: 'system', type: 'text', content: '信号强度：微弱', delay: 1200, nextId: 'p3' },
-  { id: 'p3', speaker: 'system', type: 'text', content: '是否接受连接？', delay: 1000, nextId: 'p4' },
+  {
+    id: 'p0',
+    speaker: 'system',
+    type: 'comm-log',
+    content:
+      '[OBSERVER-01]\n[记忆模块恢复]\nPROTOCOL · 检测到第七协议残留通讯\nREBOOT · 本次重启编号：07\nINTEGRITY · 记忆完整度：未知',
+    delay: 1800,
+    nextId: 'p1',
+  },
+  s('p1', 'Observer-01 核心索引：可读取', 900, 'p2'),
+  s('p2', '等待第七协议接入授权', 900, 'p3'),
+  s('p3', '是否接入通讯？', 900, 'p4'),
   c('p4', [
-    { text: '【接受】', nextId: 'p5' },
-    { text: '【拒绝】', nextId: 'p5_reject' },
+    { text: '【接入通讯】', nextId: 'p5' },
   ]),
-  { id: 'p5_reject', speaker: 'system', type: 'text', content: '警告：拒绝连接将导致信号源永久丢失', delay: 2000, nextId: 'p5' },
-  { id: 'p5', speaker: 'system', type: 'text', content: '正在建立连接...', delay: 2000, nextId: 'p6' },
-  { id: 'p6', speaker: 'system', type: 'text', content: '连接建立', delay: 800, nextId: 'p7' },
-  d('p7', 1500, 'p8'),
-  t('p8', 4000, 'p9'),
-  { id: 'p9', speaker: 'system', type: 'text', content: '消息发送失败', delay: 600, nextId: 'p10' },
-  t('p10', 3000, 'p11'),
-  n('p11', '你好？', 'normal', 800, 'p12'),
-  n('p12', '等等。', 'normal', 600, 'p13'),
-  n('p13', '真的有人收到了？', 'normal', 800, 'p14'),
+  s('p5_reject', 'Observer-01 拒绝指令已撤销', 1000, 'p5'),
+  s('p5', '正在恢复通讯链路……', 1600, 'p6'),
+  s('p6', '检测到 Nova Arlen 残留信号', 1100, 'p7'),
+  s('p7', '警告：本次连接可能触发记忆偏移', 1500, 'p8'),
+  t('p8', 2600, 'p9'),
+  s('p9', '残留信号同步完成', 700, 'p10'),
+  t('p10', 1800, 'p11'),
+  n('p11', '……', 'normal', 800, 'p12'),
+  n('p12', '如果你能看到这条消息。', 'normal', 700, 'p13'),
+  n('p13', '先别告诉我我们认识。', 'normal', 800, 'p13a'),
+  n('p13a', '因为这一次。', 'normal', 600, 'p13b'),
+  n('p13b', '我可能还不记得你。', 'sad', 1400, 'p13c'),
+  c('p13c', [
+    { text: '【我明白】', nextId: 'p13d' },
+    { text: '【为什么】', nextId: 'p13d' },
+  ]),
+  n('p13d', '抱歉。先确认一件事。', 'normal', 800, 'p13e'),
+  { ...n('p13e', '……真的有人收到了？', 'smile', 1000, 'p14'), memoryAnchor: 'first_message' },
   c('p14', [
     { text: '【你是谁？】', nextId: 'p15a' },
     { text: '【这是哪里？】', nextId: 'p15b' },
@@ -301,7 +318,7 @@ const chapter1Nodes: StoryNode[] = [
   n('ch1_send1', '等等。', 'normal', 600, 'ch1_send2'),
   n('ch1_send2', '我找找。', 'normal', 1500, 'ch1_send3'),
   t('ch1_send3', 2000, 'ch1_photo_send'),
-  img('ch1_photo_send', '/assets/photo_maintenance_board.jpg', '看。\n宇宙级威胁。', 'ch1_photo_reply'),
+  { ...img('ch1_photo_send', '/assets/photo_maintenance_board.jpg', '看。\n宇宙级威胁。', 'ch1_photo_reply'), memoryAnchor: 'maintenance_board' },
   c('ch1_photo_reply', [
     { text: '【确实可怕】', nextId: 'ch1_ph1' },
     { text: '【挺可爱的】', nextId: 'ch1_ph2' },
@@ -389,7 +406,7 @@ const chapter1Nodes: StoryNode[] = [
   c('ch1_pet4', [
     { text: '【叫什么】', nextId: 'ch1_pet5' },
   ]),
-  n('ch1_pet5', 'N7。', 'smile', 600, 'ch1_pet6'),
+  { ...n('ch1_pet5', 'N7。', 'smile', 600, 'ch1_pet6'), memoryAnchor: 'n7' },
   c('ch1_pet6', [
     { text: '【为什么是N7】', nextId: 'ch1_pet7' },
   ]),
@@ -495,7 +512,7 @@ const chapter1Nodes: StoryNode[] = [
   d('ch1_night21', 1500, 'ch1_night22'),
   n('ch1_night22', '好了。', 'normal', 600, 'ch1_night23'),
   n('ch1_night23', '我要去巡检了。', 'normal', 600, 'ch1_night24'),
-  n('ch1_night24', '晚安。', 'normal', 800, 'ch1_night25'),
+  { ...n('ch1_night24', '晚安。', 'normal', 800, 'ch1_night25'), memoryAnchor: 'goodnight' },
   c('ch1_night25', [
     { text: '【晚安】', nextId: 'ch1_night26' },
   ]),
@@ -583,7 +600,7 @@ const chapter2Nodes: StoryNode[] = [
   n('ch2_obs2', '休息时间。', 'normal', 400, 'ch2_obs3'),
   n('ch2_obs3', '给你看个东西。', 'smile', 1500, 'ch2_obs4'),
   t('ch2_obs4', 2500, 'ch2_obs5'),
-  img('ch2_obs5', '/assets/photo_observatory.jpg', '这里是我最喜欢的地方。', 'ch2_obs6'),
+  { ...img('ch2_obs5', '/assets/photo_observatory.jpg', '这里是我最喜欢的地方。', 'ch2_obs6'), memoryAnchor: 'observatory' },
   c('ch2_obs6', [
     { text: '【真漂亮】', nextId: 'ch2_obs7' },
     { text: '【每天都能看？】', nextId: 'ch2_obs7' },
@@ -644,7 +661,7 @@ const chapter2Nodes: StoryNode[] = [
   n('ch2_forget25', '难喝得像发动机冷却液。', 'smile', 1500, 'ch2_candy1'),
   d('ch2_candy1', 1200, 'ch2_candy2'),
   n('ch2_candy2', '对了。', 'normal', 600, 'ch2_candy3'),
-  n('ch2_candy3', '我刚在抽屉里找到三颗牛奶糖。', 'smile', 800, 'ch2_candy4'),
+  { ...n('ch2_candy3', '我刚在抽屉里找到三颗牛奶糖。', 'smile', 800, 'ch2_candy4'), memoryAnchor: 'milk_candy' },
   c('ch2_candy4', [
     { text: '【N7欠你的那三颗？】', nextId: 'ch2_candy5' },
     { text: '【舰上还有糖？】', nextId: 'ch2_candy5' },
@@ -747,7 +764,7 @@ const chapter3Nodes: StoryNode[] = [
   ts('ch3_0', '第四天 08:02', 'ch3_1'),
   s('ch3_1', '收到新消息', 800, 'ch3_flower0'),
   n('ch3_flower0', '快看。', 'smile', 600, 'ch3_flower1'),
-  img('ch3_flower1', '/assets/photo_flower.jpg', '一朵长在维修通风管里的小白花。', 'ch3_flower2'),
+  { ...img('ch3_flower1', '/assets/photo_flower.jpg', '一朵长在维修通风管里的小白花。', 'ch3_flower2'), memoryAnchor: 'white_flower' },
   c('ch3_flower2', [
     { text: '【你上报了吗】', nextId: 'ch3_flower3' },
     { text: '【它居然活下来了】', nextId: 'ch3_flower3' },
@@ -822,7 +839,7 @@ const chapter3Nodes: StoryNode[] = [
   d('ch3_lunch8', 1500, 'ch3_lunch9'),
   // Send steak photo
   t('ch3_lunch9', 2000, 'ch3_steak'),
-  img('ch3_steak', '/assets/photo_steak.jpg', '别问。\n问就是科研事故。', 'ch3_reflection1'),
+  { ...img('ch3_steak', '/assets/photo_steak.jpg', '别问。\n问就是科研事故。', 'ch3_reflection1'), memoryAnchor: 'steak' },
   // Reflection
   d('ch3_reflection1', 2000, 'ch3_ref1'),
   n('ch3_ref1', '诶。', 'normal', 600, 'ch3_ref2'),
@@ -1011,7 +1028,7 @@ const chapter4Nodes: StoryNode[] = [
   n('ch4_26', '像被删除了一样。', 'normal', 1200, 'ch4_27'),
   // N7 - the first knife
   c('ch4_27', [
-    { text: '【你看看N7】', nextId: 'ch4_n7_1' },
+    { text: '【调用记忆锚点：N7】', nextId: 'ch4_n7_1' },
   ]),
   n('ch4_n7_1', '？', 'normal', 600, 'ch4_n7_2'),
   { id: 'ch4_n7_2', speaker: 'nova', type: 'text', content: 'N7是谁？', emotion: 'normal', delay: 2500, nextId: 'ch4_n7_3' },
@@ -1429,8 +1446,8 @@ const chapter5bNodes: StoryNode[] = [
   n('ch5b_file17', '只有你不会。', 'normal', 600, 'ch5b_file18'),
   n('ch5b_file18', '你会保留全部记忆。', 'normal', 1500, 'ch5b_file19'),
   d('ch5b_file19', 1500, 'ch5b_file20'),
-  n('ch5b_file20', '你不是旁观者。', 'normal', 600, 'ch5b_file21'),
-  n('ch5b_file21', '你是记录者。', 'normal', 2000, 'ch5b_why'),
+  n('ch5b_file20', '你不是普通的旁观者。', 'normal', 600, 'ch5b_file21'),
+  n('ch5b_file21', '你是第六次的我留下的记忆载体。', 'normal', 2000, 'ch5b_why'),
   // Why
   ts('ch5b_why', '18:26', 'ch5b_why1'),
   n('ch5b_why1', '我问她为什么。', 'normal', 800, 'ch5b_why2'),
@@ -1494,8 +1511,8 @@ const chapter5bNodes: StoryNode[] = [
   s('ch5b_fin1', '收到最终档案', 1500, 'ch5b_fin2'),
   f('ch5b_fin2', 'SEVENTH_REBOOT', '完整主循环次数：6\n当前循环：7\n局部回滚碎片：6412\n失败次数：6\n最终执行权限：\nNova Arlen\nObserver-01\n\n最后一行：\n是否结束循环？', 'ch5b_fin3'),
   c('ch5b_fin3', [
-    { text: '【结束】', nextId: 'FINALE_DECISION_END' },
-    { text: '【拒绝】', nextId: 'BAD_END_START' },
+    { text: '【结束循环，接受告别】', nextId: 'FINALE_DECISION_END' },
+    { text: '【拒绝告别，维持循环】', nextId: 'BAD_END_START' },
   ]),
 ];
 
@@ -1519,7 +1536,40 @@ const finaleNodes: StoryNode[] = [
   c('fin_9', [
     { text: '【想起什么】', nextId: 'fin_10' },
   ]),
-  n('fin_10', '全部。', 'normal', 1000, 'fin_11'),
+  n('fin_10', '全部。', 'normal', 1000, 'fin_anchor_intro'),
+  s('fin_anchor_intro', 'Observer-01 开始返还已保存的记忆锚点', 1200, 'fin_anchor_n7'),
+  {
+    ...n('fin_anchor_n7', '我想起一只橘猫。\n它很胖。\n像一座违法建筑。', 'smile', 1200, 'fin_anchor_candy'),
+    requiresAnchor: 'n7',
+  },
+  {
+    ...n('fin_anchor_candy', '我好像曾经很喜欢牛奶糖。\n明明已经不记得味道了。\n可想到它的时候，还是会觉得温暖。', 'smile', 1400, 'fin_anchor_flower'),
+    requiresAnchor: 'milk_candy',
+  },
+  {
+    ...n('fin_anchor_flower', '还有那朵花。\n明明不该活下来。\n却还是开了。', 'smile', 1200, 'fin_anchor_first'),
+    requiresAnchor: 'white_flower',
+  },
+  {
+    ...n('fin_anchor_first', '还有第一次通讯。\n我问：真的有人收到了？\n原来你从那时起就在。', 'normal', 1200, 'fin_anchor_goodnight'),
+    requiresAnchor: 'first_message',
+  },
+  {
+    ...n('fin_anchor_goodnight', '还有一句晚安。\n我忘了那是哪一天。\n但我记得有人认真地接住了它。', 'normal', 1200, 'fin_anchor_observatory'),
+    requiresAnchor: 'goodnight',
+  },
+  {
+    ...n('fin_anchor_observatory', '我记得观测室的星空。\n也记得那天，我不是一个人在看。', 'smile', 1200, 'fin_anchor_board'),
+    requiresAnchor: 'observatory',
+  },
+  {
+    ...n('fin_anchor_board', '还有那块漂浮维修板。\n宇宙级威胁。\n现在想起来还是很蠢。', 'smile', 1000, 'fin_anchor_steak'),
+    requiresAnchor: 'maintenance_board',
+  },
+  {
+    ...n('fin_anchor_steak', '以及那份理论上算牛排的东西。\n有些失败，确实值得被记住。', 'smile', 1000, 'fin_11'),
+    requiresAnchor: 'steak',
+  },
   // Memory montage
   d('fin_11', 2000, 'fin_12'),
   n('fin_12', '第一次循环。', 'normal', 600, 'fin_13'),
@@ -1782,11 +1832,11 @@ const badEndingNodes: StoryNode[] = [
   { id: 'bad_12', speaker: 'system', type: 'glitch', content: '倒计时归零', delay: 2500, nextId: 'bad_13', isGlitch: true },
   d('bad_13', 3000, 'bad_14'),
   { id: 'bad_14', speaker: 'system', type: 'timestamp', content: '22:47', nextId: 'bad_15' },
-  { id: 'bad_15', speaker: 'system', type: 'text', content: '检测到未知通讯请求...', delay: 2000, nextId: 'bad_16' },
+  { id: 'bad_15', speaker: 'system', type: 'text', content: '【第八次重启开始】', delay: 2000, nextId: 'bad_16' },
   n('bad_16', '你好？', 'normal', 1200, 'bad_17'),
-  n('bad_17', '等等。', 'normal', 800, 'bad_18'),
-  n('bad_18', '真的有人收到了？', 'normal', 2500, 'bad_19'),
-  { id: 'bad_19', speaker: 'system', type: 'glitch', content: '第八次连接成功', delay: 3000, nextId: 'bad_end', isGlitch: true },
+  n('bad_17', '请问……', 'normal', 800, 'bad_18'),
+  n('bad_18', '我们认识吗？', 'normal', 2500, 'bad_19'),
+  { id: 'bad_19', speaker: 'system', type: 'status', content: '第八次连接成功', delay: 3000, nextId: 'bad_end' },
   end('bad_end'),
 ];
 

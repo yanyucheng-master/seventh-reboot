@@ -108,6 +108,14 @@ export function CommStatus({ content }: { content: string }) {
   );
 }
 
+export function MemoryAnchorNotice({ content }: { content: string }) {
+  return (
+    <div className="flex justify-center py-1 animate-fade-in">
+      <span className="memory-anchor-text font-mono">{content}</span>
+    </div>
+  );
+}
+
 export function FileDisplay({ content }: { content: string }) {
   const parts = content.split('||');
   const title = parts[0];

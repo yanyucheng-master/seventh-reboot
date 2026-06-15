@@ -12,7 +12,7 @@ import {
   resolveResumeNodeId,
   saveGame,
 } from './storage';
-import type { DisplayMessage, GameScreen, GameStats, MemoryAnchor, NovaEmotion } from './types';
+import type { DisplayMessage, GameScreen, GameStats, MemoryAnchorId, NovaEmotion } from './types';
 import { StarBackground } from './components/StarBackground';
 import { ImageModal } from './components/ImageModal';
 import { ChatMessage } from './components/ChatMessage';
@@ -21,8 +21,18 @@ import { RestartDialog } from './components/RestartDialog';
 import { useVisualViewport } from '../hooks/useVisualViewport';
 import { getSaveProgressLabel } from './progress';
 import { formatChoiceText, shouldShowNovaAvatar, shouldShowTypingAvatar } from './format';
+import { resolveEndingStart } from './endings';
 
-const TRUE_ENDING_MIN_TRUST = 12;
+const MEMORY_ANCHOR_LABELS: Record<MemoryAnchorId, string> = {
+  n7: 'N7',
+  milk_candy: '牛奶糖',
+  white_flower: '小白花',
+  first_message: '第一次通讯',
+  goodnight: '晚安',
+  observatory: '观测室',
+  maintenance_board: '漂浮维修板',
+  steak: '合成牛排',
+};
 
 export default function GameApp() {
   const [screen, setScreen] = useState<GameScreen>('menu');
@@ -109,38 +119,39 @@ export default function GameApp() {
     return next;
   }, []);
 
-  const addMemoryAnchor = useCallback((anchor: MemoryAnchor) => {
-    const current = statsRef.current;
-    if (current.memoryAnchors.includes(anchor)) return current;
-    const next = { ...current, memoryAnchors: [...current.memoryAnchors, anchor] };
-    statsRef.current = next;
-    setStats(next);
-    return next;
-  }, []);
+  const saveMemoryAnchor = useCallback(
+    (anchor: MemoryAnchorId, pendingNodeId: string) => {
+      const current = statsRef.current;
+      if (current.memoryAnchors.includes(anchor)) return;
 
-  const recordNodeMilestone = useCallback(
-    (nodeId: string) => {
-      const milestones: Partial<Record<string, MemoryAnchor>> = {
-        p13: 'firstMessage',
-        ch1_n7photo: 'n7',
-        ch2_candy8: 'candy',
-        ch2_gn3: 'goodnight',
-        ch3_flower1: 'flower',
-      };
-      const anchor = milestones[nodeId];
-      if (anchor) addMemoryAnchor(anchor);
+      const nextStats = { ...current, memoryAnchors: [...current.memoryAnchors, anchor] };
+      statsRef.current = nextStats;
+      setStats(nextStats);
+
+      const nextMessages = addMessage({
+        id: `memory_anchor_${anchor}_${Date.now()}`,
+        speaker: 'system',
+        type: 'memory-anchor',
+        content: `【Observer-01 已记录：${MEMORY_ANCHOR_LABELS[anchor]}】`,
+        isNew: true,
+      });
+      persistState(pendingNodeId, nextMessages);
     },
-    [addMemoryAnchor],
+    [addMessage, persistState],
   );
 
   const processSingleNode = useCallback(
     async (nodeId: string, runId: number): Promise<boolean> => {
       const isCurrentRun = () => queueRunIdRef.current === runId;
       if (!isCurrentRun()) return false;
-      recordNodeMilestone(nodeId);
 
       const node = storyNodeMap.get(nodeId);
       if (!node) return false;
+
+      if (node.requiresAnchor && !statsRef.current.memoryAnchors.includes(node.requiresAnchor)) {
+        if (node.nextId) nodeQueueRef.current.push(node.nextId);
+        return true;
+      }
 
       if (node.type === 'end') {
         addMessage({
@@ -263,12 +274,16 @@ export default function GameApp() {
         if (!isCurrentRun()) return false;
       }
 
+      if (node.memoryAnchor) {
+        saveMemoryAnchor(node.memoryAnchor, getPendingNodeIdAfterNode(nodeId));
+      }
+
       if (node.nextId) {
         nodeQueueRef.current.push(node.nextId);
       }
       return true;
     },
-    [addMessage, persistState, recordNodeMilestone],
+    [addMessage, persistState, saveMemoryAnchor],
   );
 
   const processQueue = useCallback(async (runId: number) => {
@@ -382,21 +397,24 @@ export default function GameApp() {
     const current = statsRef.current;
     const next: GameStats = {
       trust: current.trust,
+      memory: current.memory,
       attachment: current.attachment,
       memoryAnchors: [...current.memoryAnchors],
-    };
-    const remember = (anchor: MemoryAnchor) => {
-      if (!next.memoryAnchors.includes(anchor)) next.memoryAnchors.push(anchor);
+      acceptFarewell: current.acceptFarewell,
     };
 
     if (/没事|我在|别怕|辛苦|晚安|当然|会|记得|真漂亮|听起来不错/.test(text)) {
       next.trust += 1;
     }
-    if (/N7|胖猫/.test(text)) remember('n7');
-    if (/晚安/.test(text)) remember('goodnight');
-    if (/你好|真的有人收到了/.test(text)) remember('firstMessage');
-    if (choice.nextId === 'BAD_END_START' || /不想让你离开|不要离开/.test(text)) {
+    if (/第七次|循环|日志|Observer|真相|记录者|记忆载体/.test(text)) {
+      next.memory += 1;
+    }
+    if (choice.nextId === 'FINALE_DECISION_END' || /结束循环|接受告别/.test(text)) {
+      next.acceptFarewell = true;
+    }
+    if (choice.nextId === 'BAD_END_START' || /拒绝告别|维持循环|不想让你离开|不要离开/.test(text)) {
       next.attachment += 2;
+      next.acceptFarewell = false;
     }
 
     statsRef.current = next;
@@ -404,23 +422,12 @@ export default function GameApp() {
     return next;
   }, []);
 
-  const resolveChoiceNextId = useCallback((choice: Choice, currentStats: GameStats): string => {
-    if (choice.nextId === 'FINALE_DECISION_END') {
-      if (currentStats.attachment >= 2) return 'BAD_END_START';
-      if (currentStats.trust >= TRUE_ENDING_MIN_TRUST && currentStats.memoryAnchors.length >= 4) {
-        return 'FINALE_START';
-      }
-      return 'NORMAL_END_START';
-    }
-    return choice.nextId;
-  }, []);
-
   const handleChoice = useCallback(
     (choice: Choice) => {
       setChoices(null);
       setChoiceNodeId(null);
       const nextStats = applyChoiceEffects(choice);
-      const nextId = resolveChoiceNextId(choice, nextStats);
+      const nextId = resolveEndingStart(choice.nextId, nextStats);
 
       const playerMsg: DisplayMessage = {
         id: `player_${Date.now()}`,
@@ -436,7 +443,7 @@ export default function GameApp() {
       scrollToBottom();
       scheduleSequence(nextId, 550);
     },
-    [applyChoiceEffects, persistState, resolveChoiceNextId, scheduleSequence, scrollToBottom],
+    [applyChoiceEffects, persistState, scheduleSequence, scrollToBottom],
   );
 
   const handlePlayerInput = useCallback(() => {
@@ -450,14 +457,13 @@ export default function GameApp() {
       isNew: true,
     };
     const updated = [...messagesRef.current, playerMsg];
-    addMemoryAnchor('finalWords');
     messagesRef.current = updated;
     setMessages(updated);
     setInputNode(null);
     setPlayerInput('');
     persistState(inputNode.nextId ?? inputNode.id, updated);
     if (inputNode.nextId) scheduleSequence(inputNode.nextId, 400);
-  }, [addMemoryAnchor, inputNode, persistState, playerInput, scheduleSequence]);
+  }, [inputNode, persistState, playerInput, scheduleSequence]);
 
   const lastMsg = messages[messages.length - 1];
   const isLastNovaTyping =
@@ -466,7 +472,7 @@ export default function GameApp() {
   const saveSnapshot = hasSave ? loadGame() : null;
   const saveProgress = saveSnapshot
     ? getSaveProgressLabel(saveSnapshot.pendingNodeId, saveSnapshot.messages)
-    : '序章 · 未知通讯';
+    : '序章 · Observer-01 恢复';
   const menuNovaEmotion = saveSnapshot?.novaEmotion ?? 'normal';
 
   if (screen === 'menu') {
@@ -557,9 +563,9 @@ export default function GameApp() {
                 />
               )}
               <div className="flex flex-col items-center gap-1 text-center">
-                <span className="text-[#9AABB8] text-xs tracking-wide">Nova 正在等待回应</span>
+                <span className="text-[#9AABB8] text-xs tracking-wide">Observer-01 记忆模块待命</span>
                 <p className="text-[#5E6E82] text-[11px] font-light tracking-wide">
-                  来自 Aurora 的微弱信号 · 等待接入
+                  第七协议残留通讯 · 重启编号 07
                 </p>
               </div>
             </div>
@@ -656,7 +662,7 @@ export default function GameApp() {
                     </button>
                   ))}
                 </div>
-                <p className="comm-risk-hint text-right mt-2 pr-1">未知信号可能存在风险</p>
+                <p className="comm-risk-hint text-right mt-2 pr-1">接入可能触发记忆偏移</p>
               </div>
             )}
 
@@ -722,7 +728,7 @@ export default function GameApp() {
             ) : choiceNodeId === 'p4' && choices ? (
               <div className="chat-idle-bar flex items-center gap-3 px-3 py-2 rounded-lg">
                 <div className="flex-1">
-                  <span className="chat-idle-text text-xs">等待接入未知信号……</span>
+                  <span className="chat-idle-text text-xs">等待 Observer-01 接入第七协议……</span>
                 </div>
               </div>
             ) : (

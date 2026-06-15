@@ -6,6 +6,7 @@ import {
   CommStatus,
   FileDisplay,
   GlitchText,
+  MemoryAnchorNotice,
   SystemMessage,
 } from './ChatPrimitives';
 
@@ -31,6 +32,9 @@ export function ChatMessage({
     }
     if (msg.type === 'status') {
       return <CommStatus content={msg.content} />;
+    }
+    if (msg.type === 'memory-anchor') {
+      return <MemoryAnchorNotice content={msg.content} />;
     }
     if (msg.type === 'file') {
       return (

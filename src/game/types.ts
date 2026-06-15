@@ -18,20 +18,25 @@ export type MessageType =
   | 'file'
   | 'end'
   | 'input'
-  | 'comm-log';
+  | 'comm-log'
+  | 'memory-anchor';
 
-export type MemoryAnchor =
+export type MemoryAnchorId =
   | 'n7'
-  | 'candy'
-  | 'flower'
-  | 'firstMessage'
+  | 'milk_candy'
+  | 'white_flower'
+  | 'first_message'
   | 'goodnight'
-  | 'finalWords';
+  | 'observatory'
+  | 'maintenance_board'
+  | 'steak';
 
 export interface GameStats {
   trust: number;
+  memory: number;
   attachment: number;
-  memoryAnchors: MemoryAnchor[];
+  memoryAnchors: MemoryAnchorId[];
+  acceptFarewell: boolean;
 }
 
 export type DisplayMessage = {

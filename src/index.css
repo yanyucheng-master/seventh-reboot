@@ -161,6 +161,15 @@ html, body, #root {
   font-family: 'JetBrains Mono', monospace;
 }
 
+.memory-anchor-text {
+  color: #7892A8;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  opacity: 0.9;
+  text-shadow: 0 0 12px rgba(80, 145, 190, 0.18);
+}
+
 .comm-glitch-text {
   color: rgba(248, 113, 113, 0.85);
   font-weight: 500;
