@@ -6,6 +6,8 @@
 
 在七次重启之中，Nova Arlen 会一次次忘记你。而你的任务不是拯救她，而是替她记住那些被世界抹去的日子。
 
+当前剧情版本：V1.3（定稿修正版）。
+
 ## 核心特色
 
 - Observer-01 记忆载体视角
@@ -17,11 +19,18 @@
 
 ## 剧情机制
 
-- `Trust`：Nova 是否信任 Observer-01。
-- `Memory`：Observer-01 对循环真相的理解程度。
-- `Attachment`：Observer-01 对 Nova 的依赖与执念程度。
+- `Trust`：Nova 是否信任 Observer-01，范围 0-6。
+- `Memory`：Observer-01 对循环真相的理解程度，范围 0-6。
+- `Attachment`：Observer-01 对 Nova 的依赖与执念程度，范围 0-6。
 - `MemoryAnchors`：玩家替 Nova 保存的关键记忆，每个锚点只记录一次。
 - `AcceptFarewell`：玩家最终是否愿意结束循环并接受告别。
+- `ContactStage`：通讯者身份揭示阶段，按 `unknown -> named -> verified` 推进。
+
+## 结局条件
+
+- 真结局《第七次重启》：`Trust >= 4`、`Memory >= 4`、`MemoryAnchors.length >= 4`、`AcceptFarewell === true`。
+- 普通结局《循环之外》：选择结束循环，但信任、理解或锚点不足。
+- 坏结局《第八次重启》：拒绝告别，或 `Attachment >= 5` 且 `AcceptFarewell === false`。
 
 ## 技术栈
 

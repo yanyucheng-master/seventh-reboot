@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { storyNodeMap, type Choice } from './story';
-import { novaAvatar, resolveNovaAvatar } from './assets';
+import { resolveContactAvatar } from './assets';
 import {
   clearSave,
   createSaveData,
+  defaultContactStage,
   defaultStats,
   getPendingNodeIdAfterNode,
   getSaveTimeString,
@@ -12,7 +13,7 @@ import {
   resolveResumeNodeId,
   saveGame,
 } from './storage';
-import type { DisplayMessage, GameScreen, GameStats, MemoryAnchorId, NovaEmotion } from './types';
+import type { ContactStage, DisplayMessage, GameScreen, GameStats, MemoryAnchorId, NovaEmotion } from './types';
 import { StarBackground } from './components/StarBackground';
 import { ImageModal } from './components/ImageModal';
 import { ChatMessage } from './components/ChatMessage';
@@ -30,9 +31,28 @@ const MEMORY_ANCHOR_LABELS: Record<MemoryAnchorId, string> = {
   first_message: '第一次通讯',
   goodnight: '晚安',
   observatory: '观测室',
-  maintenance_board: '漂浮维修板',
+  maintenance_board: '维修板',
   steak: '合成牛排',
 };
+
+const CONTACT_META: Record<ContactStage, { name: string; subtitle: string }> = {
+  unknown: {
+    name: '？？？',
+    subtitle: '在线 · 信号微弱 · 未知通讯链路',
+  },
+  named: {
+    name: 'Nova',
+    subtitle: '在线 · 信号微弱 · Aurora 通讯链路',
+  },
+  verified: {
+    name: 'Nova',
+    subtitle: '在线 · 信号微弱 · Aurora 通讯链路',
+  },
+};
+
+function clampStat(value: number): number {
+  return Math.max(0, Math.min(6, value));
+}
 
 export default function GameApp() {
   const [screen, setScreen] = useState<GameScreen>('menu');
@@ -51,6 +71,7 @@ export default function GameApp() {
   const [showRestartConfirm, setShowRestartConfirm] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [stats, setStats] = useState<GameStats>(defaultStats);
+  const [contactStage, setContactStage] = useState<ContactStage>(defaultContactStage);
   const [inputNode, setInputNode] = useState<{ id: string; nextId?: string; placeholder: string } | null>(null);
   const [playerInput, setPlayerInput] = useState('');
 
@@ -61,6 +82,7 @@ export default function GameApp() {
   const messagesRef = useRef(messages);
   const emotionRef = useRef(novaEmotion);
   const statsRef = useRef(stats);
+  const contactStageRef = useRef(contactStage);
 
   useEffect(() => {
     messagesRef.current = messages;
@@ -73,6 +95,10 @@ export default function GameApp() {
   useEffect(() => {
     statsRef.current = stats;
   }, [stats]);
+
+  useEffect(() => {
+    contactStageRef.current = contactStage;
+  }, [contactStage]);
 
   const cancelActiveSequence = useCallback(() => {
     queueRunIdRef.current += 1;
@@ -107,7 +133,7 @@ export default function GameApp() {
   useVisualViewport(scrollToBottom);
 
   const persistState = useCallback((pendingNodeId: string, msgs: DisplayMessage[]) => {
-    saveGame(createSaveData(pendingNodeId, msgs, emotionRef.current, statsRef.current));
+    saveGame(createSaveData(pendingNodeId, msgs, emotionRef.current, contactStageRef.current, statsRef.current));
     setHasSave(true);
     setSaveTime('刚刚');
   }, []);
@@ -124,7 +150,11 @@ export default function GameApp() {
       const current = statsRef.current;
       if (current.memoryAnchors.includes(anchor)) return;
 
-      const nextStats = { ...current, memoryAnchors: [...current.memoryAnchors, anchor] };
+      const nextStats = {
+        ...current,
+        memory: clampStat(current.memory + 1),
+        memoryAnchors: [...current.memoryAnchors, anchor],
+      };
       statsRef.current = nextStats;
       setStats(nextStats);
 
@@ -133,6 +163,7 @@ export default function GameApp() {
         speaker: 'system',
         type: 'memory-anchor',
         content: `【Observer-01 已记录：${MEMORY_ANCHOR_LABELS[anchor]}】`,
+        contactStage: contactStageRef.current,
         isNew: true,
       });
       persistState(pendingNodeId, nextMessages);
@@ -156,11 +187,12 @@ export default function GameApp() {
       if (node.type === 'end') {
         addMessage({
           id: `${node.id}_${Date.now()}`,
-          speaker: 'system',
-          type: 'end',
-          content: '',
-          isNew: true,
-        });
+        speaker: 'system',
+        type: 'end',
+        content: '',
+        contactStage: contactStageRef.current,
+        isNew: true,
+      });
         persistState(nodeId, messagesRef.current);
         return false;
       }
@@ -217,6 +249,7 @@ export default function GameApp() {
         content: node.content,
         emotion: node.emotion,
         image: node.image,
+        contactStage: contactStageRef.current,
         isGlitch: node.isGlitch,
         isNew: true,
       };
@@ -276,6 +309,12 @@ export default function GameApp() {
 
       if (node.memoryAnchor) {
         saveMemoryAnchor(node.memoryAnchor, getPendingNodeIdAfterNode(nodeId));
+      }
+
+      if (node.contactStage) {
+        contactStageRef.current = node.contactStage;
+        setContactStage(node.contactStage);
+        persistState(getPendingNodeIdAfterNode(nodeId), messagesRef.current);
       }
 
       if (node.nextId) {
@@ -345,9 +384,11 @@ export default function GameApp() {
           messagesRef.current = save.messages;
           emotionRef.current = save.novaEmotion;
           statsRef.current = save.stats;
+          contactStageRef.current = save.contactStage;
           setMessages(save.messages);
           setNovaEmotion(save.novaEmotion);
           setStats(save.stats);
+          setContactStage(save.contactStage);
           setScreen('playing');
 
           const lastMsg = save.messages[save.messages.length - 1];
@@ -380,8 +421,10 @@ export default function GameApp() {
       clearSave();
       messagesRef.current = [];
       emotionRef.current = 'normal';
+      contactStageRef.current = defaultContactStage;
       setMessages([]);
       setNovaEmotion('normal');
+      setContactStage(defaultContactStage);
       setStats(defaultStats);
       statsRef.current = defaultStats;
       setInputNode(null);
@@ -404,16 +447,16 @@ export default function GameApp() {
     };
 
     if (/没事|我在|别怕|辛苦|晚安|当然|会|记得|真漂亮|听起来不错/.test(text)) {
-      next.trust += 1;
+      next.trust = clampStat(next.trust + 1);
     }
     if (/第七次|循环|日志|Observer|真相|记录者|记忆载体/.test(text)) {
-      next.memory += 1;
+      next.memory = clampStat(next.memory + 1);
     }
     if (choice.nextId === 'FINALE_DECISION_END' || /结束循环|接受告别/.test(text)) {
       next.acceptFarewell = true;
     }
     if (choice.nextId === 'BAD_END_START' || /拒绝告别|维持循环|不想让你离开|不要离开/.test(text)) {
-      next.attachment += 2;
+      next.attachment = clampStat(next.attachment + 2);
       next.acceptFarewell = false;
     }
 
@@ -432,9 +475,10 @@ export default function GameApp() {
       const playerMsg: DisplayMessage = {
         id: `player_${Date.now()}`,
         speaker: 'player',
-        type: 'text',
-        content: formatChoiceText(choice.text),
-        isNew: true,
+      type: 'text',
+      content: formatChoiceText(choice.text),
+      contactStage: contactStageRef.current,
+      isNew: true,
       };
       const updated = [...messagesRef.current, playerMsg];
       messagesRef.current = updated;
@@ -454,6 +498,7 @@ export default function GameApp() {
       speaker: 'player',
       type: 'text',
       content: text,
+      contactStage: contactStageRef.current,
       isNew: true,
     };
     const updated = [...messagesRef.current, playerMsg];
@@ -474,6 +519,9 @@ export default function GameApp() {
     ? getSaveProgressLabel(saveSnapshot.pendingNodeId, saveSnapshot.messages)
     : '序章 · Observer-01 恢复';
   const menuNovaEmotion = saveSnapshot?.novaEmotion ?? 'normal';
+  const menuContactStage = saveSnapshot?.contactStage ?? defaultContactStage;
+  const contactMeta = CONTACT_META[contactStage];
+  const contactAvatar = resolveContactAvatar(contactStage, novaEmotion);
 
   if (screen === 'menu') {
     return (
@@ -557,7 +605,7 @@ export default function GameApp() {
             <div className="flex flex-col items-center gap-2 mt-2">
               {hasSave && (
                 <img
-                  src={novaAvatar[menuNovaEmotion]}
+                  src={resolveContactAvatar(menuContactStage, menuNovaEmotion)}
                   alt=""
                   className="menu-nova-avatar w-7 h-7 rounded-full object-cover"
                 />
@@ -608,18 +656,12 @@ export default function GameApp() {
       <div className="game-layout relative z-10 flex flex-col flex-1 min-h-0 w-full max-w-[750px] mx-auto bg-[#0B0E14]/82 backdrop-blur-sm">
           <header className="game-header chat-header flex items-center gap-3 px-3 sm:px-4 py-3 bg-[#151A26]/92 border-b border-[#1A2236]/80 shrink-0">
             <div className="relative shrink-0">
-              <img
-                src={resolveNovaAvatar(novaEmotion)}
-                alt="Nova"
-                className="nova-header-avatar"
-              />
+              <img src={contactAvatar} alt={contactMeta.name} className="nova-header-avatar" />
               <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#4ADE80] border-2 border-[#151A26]" />
             </div>
             <div className="flex flex-col min-w-0 flex-1">
-              <span className="text-[#E8EEF4] text-[15px] font-medium leading-tight">Nova</span>
-              <span className="text-[#6E8498] text-[11px] leading-snug truncate">
-                在线 · 信号微弱 · Aurora 通讯链路
-              </span>
+              <span className="text-[#E8EEF4] text-[15px] font-medium leading-tight">{contactMeta.name}</span>
+              <span className="text-[#6E8498] text-[11px] leading-snug truncate">{contactMeta.subtitle}</span>
             </div>
             <div className="ml-auto flex items-center shrink-0">
               <button
@@ -640,6 +682,7 @@ export default function GameApp() {
                 isLastNovaMsg={isLastNovaTyping && index === messages.length - 1}
                 typewriterText={typewriterText}
                 showNovaAvatar={shouldShowNovaAvatar(messages, index)}
+                currentContactStage={contactStage}
                 onImageClick={(img, cap) => setModalImage({ image: img, caption: cap })}
               />
             ))}
@@ -668,7 +711,7 @@ export default function GameApp() {
 
             {isTyping && (
               <RemoteTypingRow
-                avatarSrc={resolveNovaAvatar(novaEmotion)}
+                avatarSrc={resolveContactAvatar(contactStage, novaEmotion)}
                 showAvatar={shouldShowTypingAvatar(messages)}
               />
             )}

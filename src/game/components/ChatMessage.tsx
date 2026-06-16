@@ -1,5 +1,5 @@
-import { resolveNovaAvatar } from '../assets';
-import type { DisplayMessage } from '../types';
+import { resolveContactAvatar } from '../assets';
+import type { ContactStage, DisplayMessage } from '../types';
 import {
   ChapterBanner,
   CommLog,
@@ -15,12 +15,14 @@ export function ChatMessage({
   isLastNovaMsg,
   typewriterText,
   showNovaAvatar = true,
+  currentContactStage,
   onImageClick,
 }: {
   msg: DisplayMessage;
   isLastNovaMsg: boolean;
   typewriterText: string;
   showNovaAvatar?: boolean;
+  currentContactStage: ContactStage;
   onImageClick: (img: string, cap: string) => void;
 }) {
   if (msg.speaker === 'system') {
@@ -61,7 +63,9 @@ export function ChatMessage({
   }
 
   const isPlayer = msg.speaker === 'player';
-  const avatarSrc = resolveNovaAvatar(msg.emotion, msg.isGlitch);
+  const messageContactStage = msg.contactStage ?? currentContactStage;
+  const avatarSrc = resolveContactAvatar(messageContactStage, msg.emotion, msg.isGlitch);
+  const senderName = messageContactStage === 'unknown' ? '？？？' : 'Nova';
 
   if (msg.type === 'image') {
     return (
@@ -70,6 +74,7 @@ export function ChatMessage({
       >
         {!isPlayer && showNovaAvatar && <img src={avatarSrc} alt="" className="nova-chat-avatar shrink-0" />}
         <div className={`flex flex-col gap-1 max-w-[min(82%,320px)] ${isPlayer ? 'items-end' : 'items-start'}`}>
+          {!isPlayer && showNovaAvatar && <span className="remote-sender-label">{senderName}</span>}
           <div className="cursor-pointer group" onClick={() => onImageClick(msg.image!, msg.content)}>
             <div className="relative overflow-hidden rounded-xl">
               <img
@@ -97,6 +102,7 @@ export function ChatMessage({
     >
       {!isPlayer && showNovaAvatar && <img src={avatarSrc} alt="" className="nova-chat-avatar shrink-0" />}
       <div className={`flex flex-col gap-1 max-w-[min(82%,320px)] ${isPlayer ? 'items-end' : 'items-start'}`}>
+        {!isPlayer && showNovaAvatar && <span className="remote-sender-label">{senderName}</span>}
         <div className={`px-3 py-1.5 ${isPlayer ? 'bubble-player' : 'bubble-nova'}`}>
           <p className={`leading-relaxed whitespace-pre-line ${isPlayer ? 'player-msg-text' : 'nova-msg-text'}`}>
             {displayText}

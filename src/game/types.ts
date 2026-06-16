@@ -2,6 +2,8 @@ export type GameScreen = 'menu' | 'playing';
 
 export type NovaEmotion = 'normal' | 'smile' | 'sad' | 'glitch';
 
+export type ContactStage = 'unknown' | 'named' | 'verified';
+
 export type Speaker = 'nova' | 'system' | 'player';
 
 export type MessageType =
@@ -46,6 +48,7 @@ export type DisplayMessage = {
   content: string;
   emotion?: NovaEmotion;
   image?: string;
+  contactStage?: ContactStage;
   isGlitch?: boolean;
   isNew?: boolean;
 };
@@ -54,6 +57,7 @@ export interface SaveData {
   pendingNodeId: string;
   messages: DisplayMessage[];
   novaEmotion: NovaEmotion;
+  contactStage: ContactStage;
   stats: GameStats;
   timestamp: number;
   /** @deprecated 旧版存档字段，仅用于兼容 */

@@ -1,7 +1,8 @@
 import { storyNodeMap } from './story';
-import type { DisplayMessage, GameStats, MemoryAnchorId, NovaEmotion, SaveData } from './types';
+import type { ContactStage, DisplayMessage, GameStats, MemoryAnchorId, NovaEmotion, SaveData } from './types';
 
 export const SAVE_KEY = 'seventh_reboot_save';
+export const defaultContactStage: ContactStage = 'unknown';
 
 export const defaultStats: GameStats = {
   trust: 0,
@@ -21,6 +22,8 @@ const MEMORY_ANCHOR_IDS = new Set<MemoryAnchorId>([
   'maintenance_board',
   'steak',
 ]);
+
+const CONTACT_STAGES = new Set<ContactStage>(['unknown', 'named', 'verified']);
 
 const LEGACY_ANCHORS: Record<string, MemoryAnchorId | undefined> = {
   n7: 'n7',
@@ -47,12 +50,23 @@ export function normalizeGameStats(value: unknown): GameStats {
   const stats = value && typeof value === 'object' ? value as Partial<GameStats> : {};
   const memoryAnchors = normalizeMemoryAnchors(stats.memoryAnchors);
   return {
-    trust: typeof stats.trust === 'number' ? stats.trust : defaultStats.trust,
-    memory: typeof stats.memory === 'number' ? stats.memory : defaultStats.memory,
-    attachment: typeof stats.attachment === 'number' ? stats.attachment : defaultStats.attachment,
+    trust: clampStat(typeof stats.trust === 'number' ? stats.trust : defaultStats.trust),
+    memory: clampStat(typeof stats.memory === 'number' ? stats.memory : defaultStats.memory),
+    attachment: clampStat(typeof stats.attachment === 'number' ? stats.attachment : defaultStats.attachment),
     memoryAnchors,
     acceptFarewell: typeof stats.acceptFarewell === 'boolean' ? stats.acceptFarewell : defaultStats.acceptFarewell,
   };
+}
+
+function clampStat(value: number): number {
+  return Math.max(0, Math.min(6, value));
+}
+
+export function normalizeContactStage(value: unknown): ContactStage {
+  if (typeof value === 'string' && CONTACT_STAGES.has(value as ContactStage)) {
+    return value as ContactStage;
+  }
+  return defaultContactStage;
 }
 
 export function saveGame(data: SaveData) {
@@ -70,6 +84,7 @@ function isValidSaveData(data: unknown): data is SaveData {
   if (!Array.isArray(save.messages)) return false;
   if (typeof save.novaEmotion !== 'string') return false;
   if (!save.stats || typeof save.stats !== 'object') return false;
+  if (save.contactStage !== undefined && typeof save.contactStage !== 'string') return false;
   const stats = save.stats as Partial<GameStats>;
   if (typeof stats.trust !== 'number') return false;
   if (typeof stats.attachment !== 'number') return false;
@@ -94,7 +109,8 @@ export function loadGame(): SaveData | null {
         messageIds.add(message.id);
         return true;
       })
-      .map(m => ({ ...m, isNew: false }));
+      .map(m => ({ ...m, contactStage: normalizeContactStage(m.contactStage), isNew: false }));
+    data.contactStage = normalizeContactStage(data.contactStage);
     data.stats = normalizeGameStats(data.stats);
     return data;
   } catch {
@@ -153,12 +169,14 @@ export function createSaveData(
   pendingNodeId: string,
   messages: DisplayMessage[],
   novaEmotion: NovaEmotion,
+  contactStage: ContactStage,
   stats: GameStats,
 ): SaveData {
   return {
     pendingNodeId,
     messages: messages.map(m => ({ ...m, isNew: false })),
     novaEmotion,
+    contactStage,
     stats,
     timestamp: Date.now(),
   };

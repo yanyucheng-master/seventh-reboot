@@ -1,7 +1,7 @@
 // Story data for "Seventh Reboot"
 // Each node has: id, speaker, type, content, and navigation info
 
-import type { MemoryAnchorId, NovaEmotion, Speaker, MessageType } from './types';
+import type { ContactStage, MemoryAnchorId, NovaEmotion, Speaker, MessageType } from './types';
 
 export type { Speaker, MessageType };
 
@@ -23,6 +23,7 @@ export interface StoryNode {
   isGlitch?: boolean;
   memoryAnchor?: MemoryAnchorId;
   requiresAnchor?: MemoryAnchorId;
+  contactStage?: ContactStage;
 }
 
 // Helper to create nodes more easily
@@ -100,22 +101,19 @@ const prologueNodes: StoryNode[] = [
   ]),
   s('p5_reject', 'Observer-01 拒绝指令已撤销', 1000, 'p5'),
   s('p5', '正在恢复通讯链路……', 1600, 'p6'),
-  s('p6', '检测到 Nova Arlen 残留信号', 1100, 'p7'),
-  s('p7', '警告：本次连接可能触发记忆偏移', 1500, 'p8'),
-  t('p8', 2600, 'p9'),
-  s('p9', '残留信号同步完成', 700, 'p10'),
-  t('p10', 1800, 'p11'),
-  n('p11', '……', 'normal', 800, 'p12'),
-  n('p12', '如果你能看到这条消息。', 'normal', 700, 'p13'),
-  n('p13', '先别告诉我我们认识。', 'normal', 800, 'p13a'),
-  n('p13a', '因为这一次。', 'normal', 600, 'p13b'),
-  n('p13b', '我可能还不记得你。', 'sad', 1400, 'p13c'),
-  c('p13c', [
-    { text: '【我明白】', nextId: 'p13d' },
-    { text: '【为什么】', nextId: 'p13d' },
-  ]),
-  n('p13d', '抱歉。先确认一件事。', 'normal', 800, 'p13e'),
-  { ...n('p13e', '……真的有人收到了？', 'smile', 1000, 'p14'), memoryAnchor: 'first_message' },
+  s('p6', '检测到未知残留信号', 900, 'p7'),
+  s('p7', '信号身份：加密', 900, 'p8'),
+  s('p8', '来源：第七协议', 900, 'p9'),
+  s('p9', '检测到 UNKNOWN-06 残留留言', 1200, 'p10'),
+  t('p10', 1500, 'p11'),
+  n('p11', '如果你能看到这条消息。', 'normal', 700, 'p12'),
+  n('p12', '先别告诉她我们认识。', 'normal', 800, 'p13'),
+  n('p13', '因为这一次。', 'normal', 600, 'p13a'),
+  n('p13a', '她可能还不记得你。', 'sad', 1400, 'p13b'),
+  s('p13b', '残留留言结束', 800, 'p13c'),
+  s('p13c', '正在接入当前加密信号源', 900, 'p13d'),
+  t('p13d', 1800, 'p13e'),
+  { ...n('p13e', '……\n真的有人收到了？', 'smile', 1000, 'p14'), memoryAnchor: 'first_message' },
   c('p14', [
     { text: '【你是谁？】', nextId: 'p15a' },
     { text: '【这是哪里？】', nextId: 'p15b' },
@@ -146,7 +144,7 @@ const prologueNodes: StoryNode[] = [
   n('p_no2', '那至少你比这里的大部分系统有礼貌。', 'smile', 600, 'p_no3'),
   n('p_no3', '我接受这个答案。', 'smile', 800, 'p_merge4'),
   // Merge 2
-  n('p_merge4', '我叫 Nova。', 'normal', 600, 'p_merge5'),
+  { ...n('p_merge4', '我叫 Nova。', 'normal', 600, 'p_merge5'), contactStage: 'named' },
   n('p_merge5', 'Aurora号导航员。', 'normal', 600, 'p_merge6'),
   n('p_merge6', '虽然你大概率没听过。', 'smile', 800, 'p_merge7'),
   c('p_merge7', [
@@ -764,14 +762,14 @@ const chapter3Nodes: StoryNode[] = [
   ts('ch3_0', '第四天 08:02', 'ch3_1'),
   s('ch3_1', '收到新消息', 800, 'ch3_flower0'),
   n('ch3_flower0', '快看。', 'smile', 600, 'ch3_flower1'),
-  { ...img('ch3_flower1', '/assets/photo_flower.jpg', '一朵长在维修通风管里的小白花。', 'ch3_flower2'), memoryAnchor: 'white_flower' },
+  { ...img('ch3_flower1', '/assets/photo_little_flower.jpg', '一朵长在维修通风管里的小花。', 'ch3_flower2'), memoryAnchor: 'white_flower' },
   c('ch3_flower2', [
     { text: '【你上报了吗】', nextId: 'ch3_flower3' },
-    { text: '【它居然活下来了】', nextId: 'ch3_flower3' },
+    { text: '【为什么】', nextId: 'ch3_flower3' },
   ]),
   n('ch3_flower3', '没有。', 'smile', 600, 'ch3_flower4'),
   n('ch3_flower4', '理论上这里不该长植物。', 'normal', 600, 'ch3_flower5'),
-  n('ch3_flower5', '但它挺努力的。', 'smile', 600, 'ch3_flower6'),
+  n('ch3_flower5', '因为它挺努力的。', 'smile', 600, 'ch3_flower6'),
   n('ch3_flower6', '我准备偷偷养着。', 'smile', 1200, 'ch3_2'),
   n('ch3_2', '早。', 'normal', 600, 'ch3_3'),
   n('ch3_3', '问你个问题。', 'normal', 800, 'ch3_4'),
@@ -1077,7 +1075,9 @@ const chapter4Nodes: StoryNode[] = [
   ]),
   n('ch4_fold14', '不知道。', 'normal', 600, 'ch4_fold15'),
   n('ch4_fold15', '显示：', 'normal', 400, 'ch4_fold16'),
-  { id: 'ch4_fold16', speaker: 'system', type: 'file', content: '双重认证者||Nova Arlen\nNova Arlen', nextId: 'ch4_id_photo' },
+  { id: 'ch4_fold16', speaker: 'system', type: 'file', content: '双重认证者||Nova Arlen\nNova Arlen', nextId: 'ch4_id_restore' },
+  s('ch4_id_restore', '通讯档案已恢复', 800, 'ch4_id_confirm'),
+  { ...s('ch4_id_confirm', '身份确认：NOVA ARLEN', 900, 'ch4_id_photo'), contactStage: 'verified' },
   img('ch4_id_photo', '/assets/nova_id_photo.png', 'Nova Arlen / Aurora Navigation 身份档案', 'ch4_fold17'),
   c('ch4_fold17', [
     { text: '【两个Nova？】', nextId: 'ch4_fold18' },
@@ -1364,9 +1364,13 @@ const chapter5aNodes: StoryNode[] = [
   s('ch5a_msg1', '收到未知来源消息', 1500, 'ch5a_shadow_photo'),
   img('ch5a_shadow_photo', '/assets/nova_glitch.png', '通讯残影：NOVA-06', 'ch5a_msg2'),
   g('ch5a_msg2', '发送者：Nova？', 1000, 'ch5a_msg3'),
-  { id: 'ch5a_msg3', speaker: 'system', type: 'glitch', content: '不要相信她。她已经不是第一次的Nova了。', delay: 2000, nextId: 'ch5a_msg4', isGlitch: true },
-  { id: 'ch5a_msg4', speaker: 'system', type: 'glitch', content: '也不要相信我。', delay: 1500, nextId: 'ch5a_msg5', isGlitch: true },
-  { id: 'ch5a_msg5', speaker: 'system', type: 'glitch', content: '真正的循环中心不是Nova。是你。', delay: 3000, nextId: 'CH5B_START' },
+  { id: 'ch5a_msg3', speaker: 'system', type: 'glitch', content: '不要完全相信她。', delay: 1600, nextId: 'ch5a_msg4', isGlitch: true },
+  { id: 'ch5a_msg4', speaker: 'system', type: 'glitch', content: '不是因为她会骗你。', delay: 1600, nextId: 'ch5a_msg5', isGlitch: true },
+  { id: 'ch5a_msg5', speaker: 'system', type: 'glitch', content: '是因为她真的会忘。', delay: 1800, nextId: 'ch5a_msg6', isGlitch: true },
+  { id: 'ch5a_msg6', speaker: 'system', type: 'glitch', content: '也不要完全相信我。', delay: 1600, nextId: 'ch5a_msg7', isGlitch: true },
+  { id: 'ch5a_msg7', speaker: 'system', type: 'glitch', content: '我只是第六次留下来的残影。', delay: 1800, nextId: 'ch5a_msg8', isGlitch: true },
+  { id: 'ch5a_msg8', speaker: 'system', type: 'glitch', content: '真正被困住的不是 Nova。', delay: 1800, nextId: 'ch5a_msg9', isGlitch: true },
+  { id: 'ch5a_msg9', speaker: 'system', type: 'glitch', content: '是你。', delay: 2500, nextId: 'CH5B_START', isGlitch: true },
 ];
 
 // ============================================
@@ -1434,17 +1438,17 @@ const chapter5bNodes: StoryNode[] = [
   ]),
   n('ch5b_file9', '嗯。', 'normal', 400, 'ch5b_file10'),
   // Observer document
-  f('ch5b_file10', 'OBSERVER-01 实验记录', '实验代号：OBSERVER-01\n状态：意识备份成功\n记忆完整度：100%\n循环保留权限：已开启\n身份来源：Nova Arlen 第六循环授权请求\n目的：确保至少有一人记住一切', 'ch5b_file11'),
-  n('ch5b_file11', '我终于知道为什么只有你记得。', 'normal', 800, 'ch5b_file12'),
-  n('ch5b_file12', '因为...', 'normal', 1000, 'ch5b_file13'),
-  n('ch5b_file13', '你根本不会被重置。', 'normal', 1500, 'ch5b_file14'),
+  f('ch5b_file10', 'OBSERVER-01', '记忆保留权限：已开启\n重启影响：豁免\n身份来源：NOVA-06 授权请求\n目的：保存被重启抹去的记忆', 'ch5b_file11'),
+  n('ch5b_file11', '……', 'normal', 1000, 'ch5b_file12'),
+  n('ch5b_file12', '所以你不是没有被影响。', 'normal', 900, 'ch5b_file13'),
+  n('ch5b_file13', '你是唯一被留下来的。', 'normal', 1500, 'ch5b_file14'),
   c('ch5b_file14', [
     { text: '【什么意思】', nextId: 'ch5b_file15' },
   ]),
-  n('ch5b_file15', '每次循环结束。', 'normal', 600, 'ch5b_file16'),
-  n('ch5b_file16', '所有人都会回到起点。', 'normal', 600, 'ch5b_file17'),
-  n('ch5b_file17', '只有你不会。', 'normal', 600, 'ch5b_file18'),
-  n('ch5b_file18', '你会保留全部记忆。', 'normal', 1500, 'ch5b_file19'),
+  n('ch5b_file15', '每次重启都会清空我们。', 'normal', 600, 'ch5b_file16'),
+  n('ch5b_file16', '但系统把你排除在外。', 'normal', 800, 'ch5b_file17'),
+  n('ch5b_file17', '它让你记住。', 'normal', 600, 'ch5b_file18'),
+  n('ch5b_file18', '也让你留在原地。', 'sad', 1500, 'ch5b_file19'),
   d('ch5b_file19', 1500, 'ch5b_file20'),
   n('ch5b_file20', '你不是普通的旁观者。', 'normal', 600, 'ch5b_file21'),
   n('ch5b_file21', '你是第六次的我留下的记忆载体。', 'normal', 2000, 'ch5b_why'),
@@ -1547,7 +1551,7 @@ const finaleNodes: StoryNode[] = [
     requiresAnchor: 'milk_candy',
   },
   {
-    ...n('fin_anchor_flower', '还有那朵花。\n明明不该活下来。\n却还是开了。', 'smile', 1200, 'fin_anchor_first'),
+    ...n('fin_anchor_flower', '还有那朵花。\n明明不该活下来。\n却还是开了。\n像我们一样。', 'smile', 1200, 'fin_anchor_first'),
     requiresAnchor: 'white_flower',
   },
   {
@@ -1806,7 +1810,12 @@ const normalEndingNodes: StoryNode[] = [
   { id: 'normal_12', speaker: 'system', type: 'text', content: 'Nova沉默。', delay: 2500, nextId: 'normal_13' },
   { id: 'normal_13', speaker: 'system', type: 'text', content: '"应该没有。"', delay: 2500, nextId: 'normal_14' },
   { id: 'normal_14', speaker: 'system', type: 'text', content: '"但有时候。我会觉得。自己好像忘了一个很重要的梦。"', delay: 3500, nextId: 'normal_15' },
-  { id: 'normal_15', speaker: 'system', type: 'text', content: '她活下来了。但有些陪伴，没能留下名字。', delay: 4000, nextId: 'normal_end' },
+  { id: 'normal_15', speaker: 'system', type: 'text', content: '她活下来了。但有些陪伴，没能留下名字。', delay: 3000, nextId: 'normal_16' },
+  { id: 'normal_16', speaker: 'system', type: 'text', content: '某天，Nova 路过自动贩卖机。', delay: 2500, nextId: 'normal_17' },
+  { id: 'normal_17', speaker: 'system', type: 'text', content: '她看见牛奶糖。', delay: 2200, nextId: 'normal_18' },
+  { id: 'normal_18', speaker: 'system', type: 'text', content: '停了一下。', delay: 2200, nextId: 'normal_19' },
+  { id: 'normal_19', speaker: 'system', type: 'text', content: '她不知道为什么。', delay: 2200, nextId: 'normal_20' },
+  { id: 'normal_20', speaker: 'system', type: 'text', content: '只是买了一包。', delay: 3000, nextId: 'normal_end' },
   end('normal_end'),
 ];
 

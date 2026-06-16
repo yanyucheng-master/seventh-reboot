@@ -242,6 +242,14 @@ html, body, #root {
   letter-spacing: 0.04em;
 }
 
+.remote-sender-label {
+  color: #6E8498;
+  font-size: 0.625rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  padding-left: 0.25rem;
+}
+
 .choice-reply-btn {
   min-height: 36px;
   color: #C8D8E8;
