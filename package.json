@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "extract:story": "npx tsx scripts/extract-story-text.ts"
+    "extract:story": "npx tsx scripts/extract-story-text.ts",
+    "validate:story": "npx tsx scripts/validate-story-branches.mjs"
   },
   "dependencies": {
     "react": "^19.2.0",

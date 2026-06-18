@@ -316,7 +316,7 @@ const chapter1Nodes: StoryNode[] = [
   c('ch1_7', [
     { text: '【你没事吧】', nextId: 'ch1_ok1' },
     { text: '【睡得好吗】', nextId: 'ch1_sleep1' },
-    { text: '【观测窗外是什么】', nextId: 'ch1_ok1' },
+    { text: '【观测窗外是什么】', nextId: 'ch1_ug1' },
   ]),
   // Branch: 睡得好吗
   n('ch1_sleep1', '5分。', 'smile', 400, 'ch1_sleep2'),
@@ -510,8 +510,8 @@ const chapter1Nodes: StoryNode[] = [
   n('ch1_night3', '坏消息。', 'normal', 600, 'ch1_night4'),
   n('ch1_night4', '我被舰长骂了。', 'smile', 800, 'ch1_night5'),
   c('ch1_night5', [
-    { text: '【活该】', nextId: 'ch1_night6' },
-    { text: '【今天明明被骂了，怎么还开心】', nextId: 'ch1_night6' },
+    { text: '【活该】', nextId: 'ch1_night12' },
+    { text: '【今天明明被骂了，怎么还开心】', nextId: 'ch1_night15' },
     { text: '【哈哈哈哈】', nextId: 'ch1_night6' },
   ]),
   n('ch1_night6', '你居然笑。', 'smile', 600, 'ch1_night7'),

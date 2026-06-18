@@ -13,6 +13,8 @@ import type {
 } from './types';
 
 export const SAVE_KEY = 'seventh_reboot_save';
+/** 剧情分支拓扑版本；变更选项 nextId 后递增，使旧 localStorage 存档失效 */
+export const STORY_VERSION = '1.0.1';
 export const defaultContactStage: ContactStage = 'unknown';
 
 export const defaultStats: GameStats = {
@@ -151,6 +153,7 @@ function isValidSaveData(data: unknown): data is SaveData {
   if (stats.unlockedArchives !== undefined && !Array.isArray(stats.unlockedArchives)) return false;
   if (stats.endingsUnlocked !== undefined && !Array.isArray(stats.endingsUnlocked)) return false;
   if (typeof save.timestamp !== 'number') return false;
+  if (save.storyVersion !== STORY_VERSION) return false;
   return true;
 }
 
@@ -237,6 +240,7 @@ export function createSaveData(
     novaEmotion,
     contactStage,
     stats,
+    storyVersion: STORY_VERSION,
     timestamp: Date.now(),
   };
 }

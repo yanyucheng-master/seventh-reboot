@@ -104,6 +104,8 @@ export interface SaveData {
   contactStage: ContactStage;
   stats: GameStats;
   timestamp: number;
+  /** 剧情拓扑版本；节点分支变更后递增，旧存档将失效 */
+  storyVersion?: string;
   /** @deprecated 旧版存档字段，仅用于兼容 */
   currentNodeId?: string;
 }
