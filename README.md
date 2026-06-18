@@ -6,7 +6,7 @@
 
 在七次重启之中，Nova Arlen 会一次次忘记你。而你的任务不是拯救她，而是替她记住那些被世界抹去的日子。
 
-当前剧情版本：V1.3（定稿修正版）。
+当前版本：v1.0
 
 ## 核心特色
 
@@ -28,9 +28,9 @@
 
 ## 结局条件
 
-- 真结局《第七次重启》：`Trust >= 4`、`Memory >= 4`、`MemoryAnchors.length >= 4`、`AcceptFarewell === true`。
-- 普通结局《循环之外》：选择结束循环，但信任、理解或锚点不足。
-- 坏结局《第八次重启》：拒绝告别，或 `Attachment >= 5` 且 `AcceptFarewell === false`。
+- 真结局《第七次重启》：`Trust >= 4`、`Memory >= 4`、`MemoryAnchors.length >= 5`，且必须包含 `first_message` 与 `n7` 锚点，`AcceptFarewell === true`。
+- 普通结局《循环之外》：接受告别结束循环，但未满足真结局条件。
+- 坏结局《第八次重启》：拒绝告别（`AcceptFarewell === false` 或终局选择 `refuse_farewell`）。
 
 ## 技术栈
 
