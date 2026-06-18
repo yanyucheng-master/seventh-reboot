@@ -18,6 +18,8 @@ export interface StoryNode {
   content: string;
   emotion?: NovaEmotion;
   choices?: Choice[];
+  choiceTimeoutMs?: number;
+  timeoutNextId?: string;
   image?: string;
   delay?: number;
   nextId?: string;
@@ -1823,12 +1825,16 @@ const finaleNodes: StoryNode[] = [
   n('fin_last4', '我们第一次真正建立通讯的时候。', 'normal', 800, 'fin_last5'),
   n('fin_last5', '我说的第一句话是什么？', 'normal', 1500, 'fin_last_hint'),
   { id: 'fin_last_hint', speaker: 'system', type: 'text', content: 'Observer-01 记忆保留权限正在撤销\n可用记忆索引：不稳定', delay: 1200, nextId: 'fin_last6' },
-  c('fin_last6', [
-    { text: '【真的有人收到了？】', nextId: 'fin_correct1' },
-    { text: '【我在】', nextId: 'fin_wrong_iam1' },
-    { text: '【很高兴认识你】', nextId: 'fin_wrong_nice1' },
-    { text: '【我不会忘记你】', nextId: 'fin_wrong_forever1' },
-  ]),
+  {
+    ...c('fin_last6', [
+      { text: '【真的有人收到了？】', nextId: 'fin_correct1' },
+      { text: '【我在】', nextId: 'fin_wrong_iam1' },
+      { text: '【很高兴认识你】', nextId: 'fin_wrong_nice1' },
+      { text: '【我不会忘记你】', nextId: 'fin_wrong_forever1' },
+    ]),
+    choiceTimeoutMs: 5000,
+    timeoutNextId: 'fin_wrong_common',
+  },
   n('fin_correct1', '……', 'smile', 900, 'fin_correct2'),
   n('fin_correct2', '对。', 'smile', 600, 'fin_correct3'),
   n('fin_correct3', '就是这句。', 'smile', 800, 'fin_correct4'),
@@ -1904,9 +1910,11 @@ const normalEndingNodes: StoryNode[] = [
   ch('NORMAL_END_START', '普通结局：循环之外', 'normal_0'),
   { id: 'normal_0', speaker: 'system', type: 'text', content: '最终权限确认', delay: 1500, nextId: 'normal_1' },
   { id: 'normal_1', speaker: 'system', type: 'text', content: '开始解除第七协议...', delay: 2500, nextId: 'normal_2' },
-  { id: 'normal_2', speaker: 'system', type: 'text', content: 'Observer协议关闭', delay: 1800, nextId: 'normal_3' },
-  { id: 'normal_3', speaker: 'system', type: 'text', content: 'Aurora号恢复正常航线', delay: 2500, nextId: 'normal_4' },
-  d('normal_4', 3500, 'normal_5'),
+  { id: 'normal_2', speaker: 'system', type: 'text', content: '关联记忆同步不完整', delay: 1800, nextId: 'normal_3' },
+  { id: 'normal_3', speaker: 'system', type: 'text', content: 'Observer-01 记忆保留权限撤销', delay: 1800, nextId: 'normal_4' },
+  { id: 'normal_4', speaker: 'system', type: 'text', content: '第七协议已关闭', delay: 1800, nextId: 'normal_4b' },
+  { id: 'normal_4b', speaker: 'system', type: 'text', content: 'Aurora号恢复正常航线', delay: 2500, nextId: 'normal_5_wait' },
+  d('normal_5_wait', 3500, 'normal_5'),
   ep('normal_5', '后记 / Epilogue', 2000, 'normal_6'),
   ep('normal_6', '12年后。\n深空航行学院。', 3000, 'normal_9'),
   ep('normal_9', '有人问她，为什么总看星星。', 2600, 'normal_10'),

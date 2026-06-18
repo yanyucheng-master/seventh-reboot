@@ -17,6 +17,15 @@ export type ArchiveCategory =
 
 export type EndingId = 'ending_true' | 'ending_normal' | 'ending_bad';
 
+export type EndingType = 'true' | 'normal' | 'bad';
+
+export type FinalChoice = 'accept_farewell' | 'refuse_farewell';
+
+export type FinalFarewellVariant =
+  | 'remembered_until_end'
+  | 'remembered_wrong'
+  | 'forgetting_started';
+
 export interface ArchiveEntry {
   id: string;
   category: ArchiveCategory;
@@ -68,6 +77,9 @@ export interface GameStats {
   attachment: number;
   memoryAnchors: MemoryAnchorId[];
   acceptFarewell: boolean;
+  finalChoice?: FinalChoice;
+  finalFarewellVariant?: FinalFarewellVariant;
+  ending?: EndingType;
   unlockedArchives: string[];
   endingsUnlocked: EndingId[];
 }

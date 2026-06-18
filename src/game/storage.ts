@@ -1,5 +1,16 @@
 import { storyNodeMap } from './story';
-import type { ContactStage, DisplayMessage, EndingId, GameStats, MemoryAnchorId, NovaEmotion, SaveData } from './types';
+import type {
+  ContactStage,
+  DisplayMessage,
+  EndingId,
+  EndingType,
+  FinalChoice,
+  FinalFarewellVariant,
+  GameStats,
+  MemoryAnchorId,
+  NovaEmotion,
+  SaveData,
+} from './types';
 
 export const SAVE_KEY = 'seventh_reboot_save';
 export const defaultContactStage: ContactStage = 'unknown';
@@ -27,6 +38,13 @@ const MEMORY_ANCHOR_IDS = new Set<MemoryAnchorId>([
 
 const CONTACT_STAGES = new Set<ContactStage>(['unknown', 'named', 'verified']);
 const ENDING_IDS = new Set<EndingId>(['ending_true', 'ending_normal', 'ending_bad']);
+const FINAL_CHOICES = new Set<FinalChoice>(['accept_farewell', 'refuse_farewell']);
+const FINAL_FAREWELL_VARIANTS = new Set<FinalFarewellVariant>([
+  'remembered_until_end',
+  'remembered_wrong',
+  'forgetting_started',
+]);
+const ENDING_TYPES = new Set<EndingType>(['true', 'normal', 'bad']);
 
 const LEGACY_ANCHORS: Record<string, MemoryAnchorId | undefined> = {
   n7: 'n7',
@@ -58,10 +76,24 @@ function normalizeEndings(value: unknown): EndingId[] {
   return normalizeStringList(value).filter((ending): ending is EndingId => ENDING_IDS.has(ending as EndingId));
 }
 
+function normalizeFinalChoice(value: unknown): FinalChoice | undefined {
+  return typeof value === 'string' && FINAL_CHOICES.has(value as FinalChoice) ? value as FinalChoice : undefined;
+}
+
+function normalizeFinalFarewellVariant(value: unknown): FinalFarewellVariant | undefined {
+  return typeof value === 'string' && FINAL_FAREWELL_VARIANTS.has(value as FinalFarewellVariant)
+    ? value as FinalFarewellVariant
+    : undefined;
+}
+
+function normalizeEndingType(value: unknown): EndingType | undefined {
+  return typeof value === 'string' && ENDING_TYPES.has(value as EndingType) ? value as EndingType : undefined;
+}
+
 export function normalizeGameStats(value: unknown): GameStats {
   const stats = value && typeof value === 'object' ? value as Partial<GameStats> : {};
   const memoryAnchors = normalizeMemoryAnchors(stats.memoryAnchors);
-  return {
+  const normalized: GameStats = {
     trust: clampStat(typeof stats.trust === 'number' ? stats.trust : defaultStats.trust),
     memory: clampStat(typeof stats.memory === 'number' ? stats.memory : defaultStats.memory),
     attachment: clampStat(typeof stats.attachment === 'number' ? stats.attachment : defaultStats.attachment),
@@ -70,6 +102,14 @@ export function normalizeGameStats(value: unknown): GameStats {
     unlockedArchives: normalizeStringList(stats.unlockedArchives),
     endingsUnlocked: normalizeEndings(stats.endingsUnlocked),
   };
+
+  const finalChoice = normalizeFinalChoice(stats.finalChoice);
+  const finalFarewellVariant = normalizeFinalFarewellVariant(stats.finalFarewellVariant);
+  const ending = normalizeEndingType(stats.ending);
+  if (finalChoice) normalized.finalChoice = finalChoice;
+  if (finalFarewellVariant) normalized.finalFarewellVariant = finalFarewellVariant;
+  if (ending) normalized.ending = ending;
+  return normalized;
 }
 
 function clampStat(value: number): number {
@@ -105,6 +145,9 @@ function isValidSaveData(data: unknown): data is SaveData {
   if (stats.memory !== undefined && typeof stats.memory !== 'number') return false;
   if (stats.memoryAnchors !== undefined && !Array.isArray(stats.memoryAnchors)) return false;
   if (stats.acceptFarewell !== undefined && typeof stats.acceptFarewell !== 'boolean') return false;
+  if (stats.finalChoice !== undefined && typeof stats.finalChoice !== 'string') return false;
+  if (stats.finalFarewellVariant !== undefined && typeof stats.finalFarewellVariant !== 'string') return false;
+  if (stats.ending !== undefined && typeof stats.ending !== 'string') return false;
   if (stats.unlockedArchives !== undefined && !Array.isArray(stats.unlockedArchives)) return false;
   if (stats.endingsUnlocked !== undefined && !Array.isArray(stats.endingsUnlocked)) return false;
   if (typeof save.timestamp !== 'number') return false;

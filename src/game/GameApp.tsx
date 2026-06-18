@@ -13,7 +13,7 @@ import {
   resolveResumeNodeId,
   saveGame,
 } from './storage';
-import type { ContactStage, DisplayMessage, GameScreen, GameStats, GlitchLevel, MemoryAnchorId, NovaEmotion } from './types';
+import type { ContactStage, DisplayMessage, FinalFarewellVariant, GameScreen, GameStats, GlitchLevel, MemoryAnchorId, NovaEmotion } from './types';
 import { StarBackground } from './components/StarBackground';
 import { ImageModal } from './components/ImageModal';
 import { ChatMessage } from './components/ChatMessage';
@@ -23,7 +23,7 @@ import { MemoryArchiveOverlay } from './components/MemoryArchive';
 import { useVisualViewport } from '../hooks/useVisualViewport';
 import { getSaveProgressLabel } from './progress';
 import { formatChoiceText, shouldShowNovaAvatar, shouldShowTypingAvatar } from './format';
-import { resolveEndingStart } from './endings';
+import { determineEnding, resolveEndingStart } from './endings';
 import { ANCHOR_ARCHIVE_IDS, getArchiveUnlocksForNode } from './archive';
 
 const MEMORY_ANCHOR_LABELS: Record<MemoryAnchorId, string> = {
@@ -71,6 +71,13 @@ type ActiveSignalGlitch = {
 
 function clampStat(value: number): number {
   return Math.max(0, Math.min(6, value));
+}
+
+function getFinalFarewellVariant(choice: Choice): FinalFarewellVariant | undefined {
+  if (choice.nextId === 'fin_correct1') return 'remembered_until_end';
+  if (/^fin_wrong_/.test(choice.nextId)) return 'remembered_wrong';
+  if (choice.nextId === 'fin_timeout1') return 'forgetting_started';
+  return undefined;
 }
 
 function getWaitConfig(node: StoryNode): WaitConfig | null {
@@ -166,6 +173,7 @@ export default function GameApp() {
   const activeQueueRunIdRef = useRef<number | null>(null);
   const waitTimeoutRef = useRef<number | null>(null);
   const waitResolverRef = useRef<(() => void) | null>(null);
+  const choiceTimeoutRef = useRef<number | null>(null);
   const signalGlitchTimeoutRef = useRef<number | null>(null);
   const signalGlitchPulseRef = useRef(0);
   const messagesRef = useRef(messages);
@@ -198,6 +206,10 @@ export default function GameApp() {
     }
     waitResolverRef.current = null;
     setWaitPrompt(null);
+    if (choiceTimeoutRef.current !== null) {
+      window.clearTimeout(choiceTimeoutRef.current);
+      choiceTimeoutRef.current = null;
+    }
     if (signalGlitchTimeoutRef.current !== null) {
       window.clearTimeout(signalGlitchTimeoutRef.current);
       signalGlitchTimeoutRef.current = null;
@@ -672,6 +684,9 @@ export default function GameApp() {
       attachment: current.attachment,
       memoryAnchors: [...current.memoryAnchors],
       acceptFarewell: current.acceptFarewell,
+      finalChoice: current.finalChoice,
+      finalFarewellVariant: current.finalFarewellVariant,
+      ending: current.ending,
       unlockedArchives: [...current.unlockedArchives],
       endingsUnlocked: [...current.endingsUnlocked],
     };
@@ -684,10 +699,19 @@ export default function GameApp() {
     }
     if (choice.nextId === 'FINALE_DECISION_END' || /结束循环|接受告别/.test(text)) {
       next.acceptFarewell = true;
+      next.finalChoice = 'accept_farewell';
     }
     if (choice.nextId === 'BAD_END_START' || /拒绝告别|维持循环|不想让你离开|不要离开/.test(text)) {
       next.attachment = clampStat(next.attachment + 2);
       next.acceptFarewell = false;
+      next.finalChoice = 'refuse_farewell';
+    }
+    const finalFarewellVariant = getFinalFarewellVariant(choice);
+    if (finalFarewellVariant) {
+      next.finalFarewellVariant = finalFarewellVariant;
+    }
+    if (choice.nextId === 'FINALE_DECISION_END' || choice.nextId === 'BAD_END_START') {
+      next.ending = determineEnding(next);
     }
 
     statsRef.current = next;
@@ -697,6 +721,10 @@ export default function GameApp() {
 
   const handleChoice = useCallback(
     (choice: Choice) => {
+      if (choiceTimeoutRef.current !== null) {
+        window.clearTimeout(choiceTimeoutRef.current);
+        choiceTimeoutRef.current = null;
+      }
       setChoices(null);
       setChoiceNodeId(null);
       const nextStats = applyChoiceEffects(choice);
@@ -719,6 +747,59 @@ export default function GameApp() {
     },
     [applyChoiceEffects, persistState, scheduleSequence, scrollToBottom],
   );
+
+  const handleChoiceTimeout = useCallback(
+    (node: StoryNode) => {
+      if (!node.timeoutNextId) return;
+      setChoices(null);
+      setChoiceNodeId(null);
+
+      const current = statsRef.current;
+      const nextStats: GameStats = {
+        ...current,
+        memoryAnchors: [...current.memoryAnchors],
+        unlockedArchives: [...current.unlockedArchives],
+        endingsUnlocked: [...current.endingsUnlocked],
+        finalFarewellVariant: 'forgetting_started',
+      };
+      statsRef.current = nextStats;
+      setStats(nextStats);
+
+      const updated = addMessage({
+        id: `choice_timeout_${node.id}_${Date.now()}`,
+        speaker: 'system',
+        type: 'status',
+        content: '【Observer-01 记忆索引丢失】\n【回答超时】',
+        contactStage: contactStageRef.current,
+        isNew: true,
+      });
+      persistState(node.timeoutNextId, updated);
+      scrollToBottom();
+      scheduleSequence(node.timeoutNextId, 550);
+    },
+    [addMessage, persistState, scheduleSequence, scrollToBottom],
+  );
+
+  useEffect(() => {
+    if (!choices || !choiceNodeId) return undefined;
+    const node = storyNodeMap.get(choiceNodeId);
+    if (!node?.choiceTimeoutMs || !node.timeoutNextId) return undefined;
+
+    if (choiceTimeoutRef.current !== null) {
+      window.clearTimeout(choiceTimeoutRef.current);
+    }
+    choiceTimeoutRef.current = window.setTimeout(() => {
+      choiceTimeoutRef.current = null;
+      handleChoiceTimeout(node);
+    }, node.choiceTimeoutMs);
+
+    return () => {
+      if (choiceTimeoutRef.current !== null) {
+        window.clearTimeout(choiceTimeoutRef.current);
+        choiceTimeoutRef.current = null;
+      }
+    };
+  }, [choiceNodeId, choices, handleChoiceTimeout]);
 
   const handlePlayerInput = useCallback(() => {
     if (!inputNode) return;
