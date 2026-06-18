@@ -1,7 +1,7 @@
 // Story data for "Seventh Reboot"
 // Each node has: id, speaker, type, content, and navigation info
 
-import type { ContactStage, GlitchLevel, MemoryAnchorId, NovaEmotion, Speaker, MessageType } from './types';
+import type { ContactStage, EndingId, GlitchLevel, MemoryAnchorId, NovaEmotion, Speaker, MessageType } from './types';
 import { cleanChatText } from './format';
 
 export type { Speaker, MessageType };
@@ -26,6 +26,8 @@ export interface StoryNode {
   memoryAnchor?: MemoryAnchorId;
   requiresAnchor?: MemoryAnchorId;
   contactStage?: ContactStage;
+  archiveUnlock?: string | string[];
+  endingUnlock?: EndingId;
 }
 
 // Helper to create nodes more easily
@@ -79,6 +81,10 @@ const f = (id: string, title: string, content: string, nextId: string): StoryNod
 
 const end = (id: string): StoryNode => ({
   id, speaker: 'system', type: 'end', content: '', nextId: 'MENU'
+});
+
+const ep = (id: string, content: string, delay: number, nextId: string): StoryNode => ({
+  id, speaker: 'system', type: 'epilogue', content, delay, nextId
 });
 
 // ============================================
@@ -1752,45 +1758,31 @@ const finaleNodes: StoryNode[] = [
   { id: 'fin_terminate', speaker: 'system', type: 'text', content: '连接终止', delay: 3000, nextId: 'fin_term2' },
   { id: 'fin_term2', speaker: 'system', type: 'text', content: 'Observer协议已关闭', delay: 2000, nextId: 'fin_term3' },
   { id: 'fin_term3', speaker: 'system', type: 'text', content: 'Aurora号恢复正常航线', delay: 3000, nextId: 'fin_epilogue' },
-  // Epilogue - 12 years later
+  // Epilogue - 12 years later. Observer-01 has closed; this is no longer a communication feed.
   d('fin_epilogue', 5000, 'fin_epi1'),
-  { id: 'fin_epi1', speaker: 'system', type: 'timestamp', content: '12年后', nextId: 'fin_epi2' },
-  { id: 'fin_epi2', speaker: 'system', type: 'text', content: '深空航行学院', delay: 2000, nextId: 'fin_epi3' },
-  d('fin_epi3', 3000, 'fin_epi4'),
-  // Student asks
-  { id: 'fin_epi4', speaker: 'system', type: 'text', content: '学生："老师。为什么观测室总有一个空座位？"', delay: 3000, nextId: 'fin_epi5' },
-  d('fin_epi5', 3000, 'fin_epi6'),
-  { id: 'fin_epi6', speaker: 'system', type: 'text', content: 'Nova站在窗前。已经不再年轻。', delay: 2000, nextId: 'fin_older_photo' },
-  img('fin_older_photo', '/assets/nova_older.png', '12年后的 Nova。', 'fin_epi7'),
-  d('fin_epi7', 3000, 'fin_epi8'),
-  { id: 'fin_epi8', speaker: 'system', type: 'text', content: '她沉默很久。', delay: 2000, nextId: 'fin_epi9' },
-  d('fin_epi9', 3000, 'fin_epi10'),
-  { id: 'fin_epi10', speaker: 'system', type: 'text', content: '"因为那里曾经坐着一个朋友。"', delay: 3000, nextId: 'fin_epi11' },
-  d('fin_epi11', 2000, 'fin_epi12'),
-  { id: 'fin_epi12', speaker: 'system', type: 'text', content: '学生："他叫什么名字？"', delay: 2000, nextId: 'fin_epi13' },
-  d('fin_epi13', 3000, 'fin_epi14'),
-  { id: 'fin_epi14', speaker: 'system', type: 'text', content: 'Nova愣住。许久。缓缓摇头。', delay: 3000, nextId: 'fin_epi15' },
-  d('fin_epi15', 3000, 'fin_epi16'),
-  { id: 'fin_epi16', speaker: 'system', type: 'text', content: '"我忘了。"', delay: 3000, nextId: 'fin_epi17' },
-  d('fin_epi17', 4000, 'fin_epi18'),
-  { id: 'fin_epi18', speaker: 'system', type: 'text', content: '学生离开。观测室恢复安静。', delay: 2000, nextId: 'fin_epi19' },
-  d('fin_epi19', 3000, 'fin_epi20'),
-  { id: 'fin_epi20', speaker: 'system', type: 'text', content: 'Nova独自坐下。看向那个空位。', delay: 2000, nextId: 'fin_epi21' },
-  d('fin_epi21', 4000, 'fin_epi22'),
-  { id: 'fin_epi22', speaker: 'system', type: 'text', content: '忽然。像想起什么。', delay: 2000, nextId: 'fin_epi23' },
-  d('fin_epi23', 3000, 'fin_epi24'),
-  { id: 'fin_epi24', speaker: 'system', type: 'text', content: '她轻声说：', delay: 2000, nextId: 'fin_epi25' },
-  d('fin_epi25', 3000, 'fin_epi26'),
-  { id: 'fin_epi26', speaker: 'system', type: 'text', content: '"不过......谢谢你。"', delay: 4000, nextId: 'fin_title' },
+  ep('fin_epi1', '后记 / Epilogue', 2200, 'fin_epi2'),
+  ep('fin_epi2', '12年后。\n深空航行学院。', 3000, 'fin_epi3'),
+  ep('fin_epi3', '观测室里一直保留着一个空座位。', 3200, 'fin_epi4'),
+  ep('fin_epi4', '有人问 Nova，为什么那里永远空着。', 3200, 'fin_epi5'),
+  ep('fin_epi5', '她说：\n“因为那里曾经坐着一个朋友。”', 3800, 'fin_epi6'),
+  ep('fin_epi6', '对方又问：\n“他叫什么名字？”', 3200, 'fin_epi7'),
+  ep('fin_epi7', 'Nova 沉默了很久。', 2600, 'fin_epi8'),
+  ep('fin_epi8', '她已经记不起那个名字。', 3200, 'fin_epi9'),
+  ep('fin_epi9', '但她仍然记得。', 2600, 'fin_epi10'),
+  ep('fin_epi10', '曾经有一个人陪她活下来。', 3600, 'fin_epi11'),
+  ep('fin_epi11', '后来，观测室恢复安静。', 2600, 'fin_epi12'),
+  ep('fin_epi12', 'Nova 看向那个空座位。', 3000, 'fin_epi13'),
+  ep('fin_epi13', '像想起什么，又像只是被星光照了一下。', 3600, 'fin_epi14'),
+  ep('fin_epi14', '她轻声说：\n“不过……谢谢你。”', 4200, 'fin_title'),
   // Final title
   d('fin_title', 5000, 'fin_final_text'),
-  { id: 'fin_final_text', speaker: 'system', type: 'text', content: '如果记忆终将消失。', delay: 4000, nextId: 'fin_final_text2' },
-  { id: 'fin_final_text2', speaker: 'system', type: 'text', content: '那陪伴本身，就是意义。', delay: 5000, nextId: 'fin_credits' },
+  ep('fin_final_text', '如果记忆终将消失。', 4000, 'fin_final_text2'),
+  ep('fin_final_text2', '那陪伴本身，就是意义。', 5000, 'fin_credits'),
   // Credits
   d('fin_credits', 4000, 'fin_credit_title'),
   { id: 'fin_credit_title', speaker: 'system', type: 'chapter', content: '《第七次重启》', nextId: 'fin_credit_end' },
   d('fin_credit_end', 3000, 'fin_the_end'),
-  end('fin_the_end'),
+  { ...end('fin_the_end'), endingUnlock: 'ending_true' },
 ];
 
 // ============================================
@@ -1803,23 +1795,21 @@ const normalEndingNodes: StoryNode[] = [
   { id: 'normal_2', speaker: 'system', type: 'text', content: 'Observer协议关闭', delay: 1800, nextId: 'normal_3' },
   { id: 'normal_3', speaker: 'system', type: 'text', content: 'Aurora号恢复正常航线', delay: 2500, nextId: 'normal_4' },
   d('normal_4', 3500, 'normal_5'),
-  { id: 'normal_5', speaker: 'system', type: 'timestamp', content: '12年后', nextId: 'normal_6' },
-  { id: 'normal_6', speaker: 'system', type: 'text', content: '深空航行学院', delay: 2000, nextId: 'normal_7' },
-  d('normal_7', 2500, 'normal_8'),
-  img('normal_8', '/assets/nova_older.png', '她活下来了。但有些陪伴，没能留下名字。', 'normal_9'),
-  { id: 'normal_9', speaker: 'system', type: 'text', content: '学生："老师，你为什么总看星星？"', delay: 2500, nextId: 'normal_10' },
-  { id: 'normal_10', speaker: 'system', type: 'text', content: 'Nova："不知道。可能只是习惯。"', delay: 2500, nextId: 'normal_11' },
-  { id: 'normal_11', speaker: 'system', type: 'text', content: '学生："你在等什么人吗？"', delay: 2500, nextId: 'normal_12' },
-  { id: 'normal_12', speaker: 'system', type: 'text', content: 'Nova沉默。', delay: 2500, nextId: 'normal_13' },
-  { id: 'normal_13', speaker: 'system', type: 'text', content: '"应该没有。"', delay: 2500, nextId: 'normal_14' },
-  { id: 'normal_14', speaker: 'system', type: 'text', content: '"但有时候。我会觉得。自己好像忘了一个很重要的梦。"', delay: 3500, nextId: 'normal_15' },
-  { id: 'normal_15', speaker: 'system', type: 'text', content: '她活下来了。但有些陪伴，没能留下名字。', delay: 3000, nextId: 'normal_16' },
-  { id: 'normal_16', speaker: 'system', type: 'text', content: '某天，Nova 路过自动贩卖机。', delay: 2500, nextId: 'normal_17' },
-  { id: 'normal_17', speaker: 'system', type: 'text', content: '她看见牛奶糖。', delay: 2200, nextId: 'normal_18' },
-  { id: 'normal_18', speaker: 'system', type: 'text', content: '停了一下。', delay: 2200, nextId: 'normal_19' },
-  { id: 'normal_19', speaker: 'system', type: 'text', content: '她不知道为什么。', delay: 2200, nextId: 'normal_20' },
-  { id: 'normal_20', speaker: 'system', type: 'text', content: '只是买了一包。', delay: 3000, nextId: 'normal_end' },
-  end('normal_end'),
+  ep('normal_5', '后记 / Epilogue', 2000, 'normal_6'),
+  ep('normal_6', '12年后。\n深空航行学院。', 3000, 'normal_9'),
+  ep('normal_9', '有人问她，为什么总看星星。', 2600, 'normal_10'),
+  ep('normal_10', 'Nova 说：\n“不知道。可能只是习惯。”', 3200, 'normal_11'),
+  ep('normal_11', '也有人问她，是不是在等什么人。', 2800, 'normal_12'),
+  ep('normal_12', '她沉默了一会儿。', 2400, 'normal_13'),
+  ep('normal_13', '“应该没有。”', 2600, 'normal_14'),
+  ep('normal_14', '“但有时候，我会觉得自己好像忘了一个很重要的梦。”', 3800, 'normal_15'),
+  ep('normal_15', '她活下来了。', 2600, 'normal_16'),
+  ep('normal_16', '但有些陪伴，没能留下名字。', 3200, 'normal_17'),
+  ep('normal_17', '某天，Nova 路过自动贩卖机。', 2600, 'normal_18'),
+  ep('normal_18', '她看见牛奶糖，停了一下。', 3000, 'normal_19'),
+  ep('normal_19', '她不知道为什么。', 2400, 'normal_20'),
+  ep('normal_20', '只是买了一包。', 3000, 'normal_end'),
+  { ...end('normal_end'), endingUnlock: 'ending_normal' },
 ];
 
 // ============================================
@@ -1849,7 +1839,7 @@ const badEndingNodes: StoryNode[] = [
   n('bad_17', '请问……', 'normal', 800, 'bad_18'),
   n('bad_18', '我们认识吗？', 'normal', 2500, 'bad_19'),
   { id: 'bad_19', speaker: 'system', type: 'status', content: '第八次连接成功', delay: 3000, nextId: 'bad_end' },
-  end('bad_end'),
+  { ...end('bad_end'), endingUnlock: 'ending_bad' },
 ];
 
 // ============================================

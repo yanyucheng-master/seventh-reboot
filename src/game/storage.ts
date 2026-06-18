@@ -1,5 +1,5 @@
 import { storyNodeMap } from './story';
-import type { ContactStage, DisplayMessage, GameStats, MemoryAnchorId, NovaEmotion, SaveData } from './types';
+import type { ContactStage, DisplayMessage, EndingId, GameStats, MemoryAnchorId, NovaEmotion, SaveData } from './types';
 
 export const SAVE_KEY = 'seventh_reboot_save';
 export const defaultContactStage: ContactStage = 'unknown';
@@ -10,6 +10,8 @@ export const defaultStats: GameStats = {
   attachment: 0,
   memoryAnchors: [],
   acceptFarewell: false,
+  unlockedArchives: [],
+  endingsUnlocked: [],
 };
 
 const MEMORY_ANCHOR_IDS = new Set<MemoryAnchorId>([
@@ -24,6 +26,7 @@ const MEMORY_ANCHOR_IDS = new Set<MemoryAnchorId>([
 ]);
 
 const CONTACT_STAGES = new Set<ContactStage>(['unknown', 'named', 'verified']);
+const ENDING_IDS = new Set<EndingId>(['ending_true', 'ending_normal', 'ending_bad']);
 
 const LEGACY_ANCHORS: Record<string, MemoryAnchorId | undefined> = {
   n7: 'n7',
@@ -46,6 +49,15 @@ function normalizeMemoryAnchors(value: unknown): MemoryAnchorId[] {
   )];
 }
 
+function normalizeStringList(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return [...new Set(value.filter((item): item is string => typeof item === 'string' && item.length > 0))];
+}
+
+function normalizeEndings(value: unknown): EndingId[] {
+  return normalizeStringList(value).filter((ending): ending is EndingId => ENDING_IDS.has(ending as EndingId));
+}
+
 export function normalizeGameStats(value: unknown): GameStats {
   const stats = value && typeof value === 'object' ? value as Partial<GameStats> : {};
   const memoryAnchors = normalizeMemoryAnchors(stats.memoryAnchors);
@@ -55,6 +67,8 @@ export function normalizeGameStats(value: unknown): GameStats {
     attachment: clampStat(typeof stats.attachment === 'number' ? stats.attachment : defaultStats.attachment),
     memoryAnchors,
     acceptFarewell: typeof stats.acceptFarewell === 'boolean' ? stats.acceptFarewell : defaultStats.acceptFarewell,
+    unlockedArchives: normalizeStringList(stats.unlockedArchives),
+    endingsUnlocked: normalizeEndings(stats.endingsUnlocked),
   };
 }
 
@@ -91,6 +105,8 @@ function isValidSaveData(data: unknown): data is SaveData {
   if (stats.memory !== undefined && typeof stats.memory !== 'number') return false;
   if (stats.memoryAnchors !== undefined && !Array.isArray(stats.memoryAnchors)) return false;
   if (stats.acceptFarewell !== undefined && typeof stats.acceptFarewell !== 'boolean') return false;
+  if (stats.unlockedArchives !== undefined && !Array.isArray(stats.unlockedArchives)) return false;
+  if (stats.endingsUnlocked !== undefined && !Array.isArray(stats.endingsUnlocked)) return false;
   if (typeof save.timestamp !== 'number') return false;
   return true;
 }

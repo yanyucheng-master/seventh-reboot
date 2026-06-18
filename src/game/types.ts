@@ -8,6 +8,29 @@ export type Speaker = 'nova' | 'system' | 'player';
 
 export type GlitchLevel = 1 | 2 | 3;
 
+export type ArchiveCategory =
+  | 'anchor'
+  | 'photo'
+  | 'anomaly'
+  | 'profile'
+  | 'ending';
+
+export type EndingId = 'ending_true' | 'ending_normal' | 'ending_bad';
+
+export interface ArchiveEntry {
+  id: string;
+  category: ArchiveCategory;
+  title: string;
+  subtitle?: string;
+  description?: string;
+  quote?: string;
+  image?: string;
+  unlocked: boolean;
+  unlockedAt?: string;
+  chapter?: string;
+  order: number;
+}
+
 export type MessageType =
   | 'text'
   | 'choice'
@@ -24,6 +47,7 @@ export type MessageType =
   | 'input'
   | 'comm-log'
   | 'memory-anchor'
+  | 'epilogue'
   | 'disconnect'
   | 'reconnectFailed'
   | 'signalError';
@@ -44,6 +68,8 @@ export interface GameStats {
   attachment: number;
   memoryAnchors: MemoryAnchorId[];
   acceptFarewell: boolean;
+  unlockedArchives: string[];
+  endingsUnlocked: EndingId[];
 }
 
 export type DisplayMessage = {

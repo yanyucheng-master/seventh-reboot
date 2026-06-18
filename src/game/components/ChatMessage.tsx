@@ -5,6 +5,7 @@ import {
   ChapterBanner,
   CommLog,
   CommStatus,
+  EpilogueText,
   FileDisplay,
   GlitchText,
   MemoryAnchorNotice,
@@ -60,6 +61,9 @@ export function ChatMessage({
     }
     if (msg.type === 'chapter') {
       return <ChapterBanner title={msg.content} />;
+    }
+    if (msg.type === 'epilogue') {
+      return <EpilogueText content={msg.content} />;
     }
     if (msg.type === 'draft') {
       return <AnomalyRecordCard content={msg.content} fallbackTitle="未发送草稿" tone="amber" />;

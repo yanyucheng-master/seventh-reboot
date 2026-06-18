@@ -42,6 +42,16 @@ export function ChapterBanner({ title }: { title: string }) {
   );
 }
 
+export function EpilogueText({ content }: { content: string }) {
+  return (
+    <div className="epilogue-line-wrap animate-fade-in">
+      <div className="epilogue-line-card">
+        <p className="epilogue-line-text whitespace-pre-line">{content}</p>
+      </div>
+    </div>
+  );
+}
+
 function getGlitchTextTone(content: string) {
   if (/重连成功|连接恢复|恢复正常/.test(content)) return 'success';
   if (/通讯中断|重连失败|信号衰减|倒计时|请求被拒绝/.test(content)) return 'danger';

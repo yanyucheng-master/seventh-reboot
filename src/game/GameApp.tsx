@@ -19,10 +19,12 @@ import { ImageModal } from './components/ImageModal';
 import { ChatMessage } from './components/ChatMessage';
 import { ChapterBanner, RemoteTypingRow } from './components/ChatPrimitives';
 import { RestartDialog } from './components/RestartDialog';
+import { MemoryArchiveOverlay } from './components/MemoryArchive';
 import { useVisualViewport } from '../hooks/useVisualViewport';
 import { getSaveProgressLabel } from './progress';
 import { formatChoiceText, shouldShowNovaAvatar, shouldShowTypingAvatar } from './format';
 import { resolveEndingStart } from './endings';
+import { ANCHOR_ARCHIVE_IDS, getArchiveUnlocksForNode } from './archive';
 
 const MEMORY_ANCHOR_LABELS: Record<MemoryAnchorId, string> = {
   n7: 'N7',
@@ -151,6 +153,7 @@ export default function GameApp() {
   const [saveTime, setSaveTime] = useState(() => getSaveTimeString());
   const [showRestartConfirm, setShowRestartConfirm] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showArchive, setShowArchive] = useState(false);
   const [stats, setStats] = useState<GameStats>(defaultStats);
   const [contactStage, setContactStage] = useState<ContactStage>(defaultContactStage);
   const [inputNode, setInputNode] = useState<{ id: string; nextId?: string; placeholder: string } | null>(null);
@@ -209,6 +212,7 @@ export default function GameApp() {
     setIsTypewriterActive(false);
     setTypewriterText('');
     setShowChapterBanner(null);
+    setShowArchive(false);
     setChoices(null);
     setChoiceNodeId(null);
     setInputNode(null);
@@ -294,6 +298,38 @@ export default function GameApp() {
     return next;
   }, []);
 
+  const unlockArchives = useCallback((entryIds: string | string[]) => {
+    const ids = Array.isArray(entryIds) ? entryIds : [entryIds];
+    const normalized = [...new Set(ids.filter(Boolean))];
+    if (normalized.length === 0) return false;
+
+    const current = statsRef.current;
+    const existingArchives = new Set(current.unlockedArchives);
+    const existingEndings = new Set(current.endingsUnlocked);
+    let changed = false;
+
+    normalized.forEach(id => {
+      if (!existingArchives.has(id)) {
+        existingArchives.add(id);
+        changed = true;
+      }
+      if ((id === 'ending_true' || id === 'ending_normal' || id === 'ending_bad') && !existingEndings.has(id)) {
+        existingEndings.add(id);
+        changed = true;
+      }
+    });
+
+    if (!changed) return false;
+    const nextStats: GameStats = {
+      ...current,
+      unlockedArchives: [...existingArchives],
+      endingsUnlocked: [...existingEndings],
+    };
+    statsRef.current = nextStats;
+    setStats(nextStats);
+    return true;
+  }, []);
+
   const saveMemoryAnchor = useCallback(
     (anchor: MemoryAnchorId, pendingNodeId: string) => {
       const current = statsRef.current;
@@ -303,6 +339,7 @@ export default function GameApp() {
         ...current,
         memory: clampStat(current.memory + 1),
         memoryAnchors: [...current.memoryAnchors, anchor],
+        unlockedArchives: [...new Set([...current.unlockedArchives, ANCHOR_ARCHIVE_IDS[anchor]])],
       };
       statsRef.current = nextStats;
       setStats(nextStats);
@@ -327,6 +364,7 @@ export default function GameApp() {
 
       const node = storyNodeMap.get(nodeId);
       if (!node) return false;
+      const nodeArchiveUnlocks = getArchiveUnlocksForNode(node);
 
       if (node.requiresAnchor && !statsRef.current.memoryAnchors.includes(node.requiresAnchor)) {
         if (node.nextId) nodeQueueRef.current.push(node.nextId);
@@ -334,6 +372,7 @@ export default function GameApp() {
       }
 
       if (node.type === 'end') {
+        unlockArchives(nodeArchiveUnlocks);
         addMessage({
           id: `${node.id}_${Date.now()}`,
         speaker: 'system',
@@ -435,6 +474,7 @@ export default function GameApp() {
         setIsTyping(false);
 
         const currentMsgs = addMessage(displayMsg);
+        unlockArchives(nodeArchiveUnlocks);
 
         setIsTypewriterActive(true);
         const text = node.content;
@@ -453,6 +493,7 @@ export default function GameApp() {
         persistState(getPendingNodeIdAfterNode(nodeId), currentMsgs);
       } else {
         const currentMsgs = addMessage(displayMsg);
+        unlockArchives(nodeArchiveUnlocks);
 
         setTimeout(() => {
           setMessages(prev => prev.map(m => (m.id === displayMsg.id ? { ...m, isNew: false } : m)));
@@ -463,7 +504,9 @@ export default function GameApp() {
           node.type === 'timestamp' ||
           node.type === 'image' ||
           node.type === 'file' ||
-          node.type === 'draft'
+          node.type === 'draft' ||
+          node.type === 'epilogue' ||
+          nodeArchiveUnlocks.length > 0
         ) {
           persistState(getPendingNodeIdAfterNode(nodeId), currentMsgs);
         }
@@ -504,7 +547,7 @@ export default function GameApp() {
       }
       return true;
     },
-    [addMessage, persistState, saveMemoryAnchor, triggerSignalGlitch, waitForSignal],
+    [addMessage, persistState, saveMemoryAnchor, triggerSignalGlitch, unlockArchives, waitForSignal],
   );
 
   const processQueue = useCallback(async (runId: number) => {
@@ -558,6 +601,7 @@ export default function GameApp() {
       setTypewriterText('');
       setSignalGlitch(null);
       setShowChapterBanner(null);
+      setShowArchive(false);
       setShowRestartConfirm(false);
 
       if (mode === 'continue') {
@@ -612,6 +656,7 @@ export default function GameApp() {
       setInputNode(null);
       setPlayerInput('');
       setWaitPrompt(null);
+      setShowArchive(false);
       setScreen('playing');
       startSequence('p0');
     },
@@ -627,6 +672,8 @@ export default function GameApp() {
       attachment: current.attachment,
       memoryAnchors: [...current.memoryAnchors],
       acceptFarewell: current.acceptFarewell,
+      unlockedArchives: [...current.unlockedArchives],
+      endingsUnlocked: [...current.endingsUnlocked],
     };
 
     if (/没事|我在|别怕|辛苦|晚安|当然|会|记得|真漂亮|听起来不错/.test(text)) {
@@ -705,6 +752,7 @@ export default function GameApp() {
   const menuContactStage = saveSnapshot?.contactStage ?? defaultContactStage;
   const contactMeta = CONTACT_META[contactStage];
   const contactAvatar = resolveContactAvatar(contactStage, novaEmotion);
+  const isEpilogueMode = messages.some(message => message.type === 'epilogue');
 
   if (screen === 'menu') {
     return (
@@ -847,6 +895,13 @@ export default function GameApp() {
           onClose={() => setModalImage(null)}
         />
       )}
+      {showArchive && (
+        <MemoryArchiveOverlay
+          stats={stats}
+          contactStage={contactStage}
+          onClose={() => setShowArchive(false)}
+        />
+      )}
 
       <div
         className={`game-layout relative z-10 flex flex-col flex-1 min-h-0 w-full max-w-[750px] mx-auto bg-[#0B0E14]/82 backdrop-blur-sm ${
@@ -854,25 +909,44 @@ export default function GameApp() {
         }`}
       >
           <header className="game-header chat-header flex items-center gap-3 px-3 sm:px-4 py-3 bg-[#151A26]/92 border-b border-[#1A2236]/80 shrink-0">
-            <div className="relative shrink-0">
-              <img
-                src={contactAvatar}
-                alt={contactMeta.name}
-                className={`nova-header-avatar ${signalGlitch ? `signal-glitch-avatar signal-glitch-avatar-${signalGlitch.tone}` : ''}`}
-              />
-              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#4ADE80] border-2 border-[#151A26]" />
-            </div>
-            <div className="flex flex-col min-w-0 flex-1">
-              <span className="text-[#E8EEF4] text-[15px] font-medium leading-tight">{contactMeta.name}</span>
-              <span className="text-[#6E8498] text-[11px] leading-snug truncate">{contactMeta.subtitle}</span>
-            </div>
-            <div className="ml-auto flex items-center shrink-0">
+            {isEpilogueMode ? (
+              <>
+                <div className="epilogue-header-mark" aria-hidden />
+                <div className="flex flex-col min-w-0 flex-1">
+                  <span className="text-[#E8EEF4] text-[15px] font-medium leading-tight">后记 / Epilogue</span>
+                  <span className="text-[#6E8498] text-[11px] leading-snug truncate">Observer-01 已关闭 · 非通讯记录</span>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="relative shrink-0">
+                  <img
+                    src={contactAvatar}
+                    alt={contactMeta.name}
+                    className={`nova-header-avatar ${signalGlitch ? `signal-glitch-avatar signal-glitch-avatar-${signalGlitch.tone}` : ''}`}
+                  />
+                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#4ADE80] border-2 border-[#151A26]" />
+                </div>
+                <div className="flex flex-col min-w-0 flex-1">
+                  <span className="text-[#E8EEF4] text-[15px] font-medium leading-tight">{contactMeta.name}</span>
+                  <span className="text-[#6E8498] text-[11px] leading-snug truncate">{contactMeta.subtitle}</span>
+                </div>
+              </>
+            )}
+            <div className="ml-auto flex items-center gap-1.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => setShowArchive(true)}
+                className="header-archive-btn text-[11px] px-2.5 py-1.5 rounded transition-colors"
+              >
+                档案
+              </button>
               <button
                 type="button"
                 onClick={goToMenu}
                 className="header-disconnect-btn text-[11px] px-2.5 py-1.5 rounded transition-colors"
               >
-                断开通讯
+                {isEpilogueMode ? '返回' : '断开通讯'}
               </button>
             </div>
           </header>
