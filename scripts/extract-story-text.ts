@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import { storyNodes } from '../src/game/story.ts';
 import type { StoryNode } from '../src/game/story.ts';
 
-const VERSION = 'v1.0';
+const VERSION = 'V1.0';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const outPath = path.join(__dirname, '..', '第七次重启-剧情文本.txt');
 
