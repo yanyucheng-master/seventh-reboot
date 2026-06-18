@@ -6,6 +6,8 @@ export type ContactStage = 'unknown' | 'named' | 'verified';
 
 export type Speaker = 'nova' | 'system' | 'player';
 
+export type GlitchLevel = 1 | 2 | 3;
+
 export type MessageType =
   | 'text'
   | 'choice'
@@ -21,7 +23,10 @@ export type MessageType =
   | 'end'
   | 'input'
   | 'comm-log'
-  | 'memory-anchor';
+  | 'memory-anchor'
+  | 'disconnect'
+  | 'reconnectFailed'
+  | 'signalError';
 
 export type MemoryAnchorId =
   | 'n7'
@@ -50,6 +55,7 @@ export type DisplayMessage = {
   image?: string;
   contactStage?: ContactStage;
   isGlitch?: boolean;
+  glitchLevel?: GlitchLevel;
   isNew?: boolean;
 };
 

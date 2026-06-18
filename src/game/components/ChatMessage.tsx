@@ -1,4 +1,5 @@
 import { resolveContactAvatar } from '../assets';
+import { cleanChatText } from '../format';
 import type { ContactStage, DisplayMessage } from '../types';
 import {
   ChapterBanner,
@@ -7,8 +8,20 @@ import {
   FileDisplay,
   GlitchText,
   MemoryAnchorNotice,
+  AnomalyRecordCard,
   SystemMessage,
 } from './ChatPrimitives';
+
+function isSignalSystemMessage(msg: DisplayMessage): boolean {
+  return /通讯中断|尝试重连|重连失败|重连成功/.test(msg.content);
+}
+
+function getMessageGlitchLevel(msg: DisplayMessage) {
+  if (msg.glitchLevel) return msg.glitchLevel;
+  if (/通讯中断|尝试重连|重连失败/.test(msg.content)) return 2;
+  if (/重连成功/.test(msg.content)) return 1;
+  return 1;
+}
 
 export function ChatMessage({
   msg,
@@ -26,8 +39,8 @@ export function ChatMessage({
   onImageClick: (img: string, cap: string) => void;
 }) {
   if (msg.speaker === 'system') {
-    if (msg.type === 'glitch' || msg.isGlitch) {
-      return <GlitchText content={msg.content} />;
+    if (msg.type === 'glitch' || msg.isGlitch || isSignalSystemMessage(msg)) {
+      return <GlitchText content={msg.content} glitchLevel={getMessageGlitchLevel(msg)} />;
     }
     if (msg.type === 'comm-log') {
       return <CommLog content={msg.content} />;
@@ -49,12 +62,7 @@ export function ChatMessage({
       return <ChapterBanner title={msg.content} />;
     }
     if (msg.type === 'draft') {
-      return (
-        <div className="flex flex-col items-center py-2 animate-fade-in gap-1">
-          <span className="system-msg-text">收到未发送草稿</span>
-          <span className="text-[#7A8494] text-xs italic opacity-70 whitespace-pre-line">{msg.content}</span>
-        </div>
-      );
+      return <AnomalyRecordCard content={msg.content} fallbackTitle="未发送草稿" tone="amber" />;
     }
     if (msg.type === 'end') {
       return null;
@@ -86,7 +94,7 @@ export function ChatMessage({
               />
             </div>
             {msg.content && (
-              <p className="text-xs text-[#8B9CB0] mt-1 px-1 whitespace-pre-line">{msg.content}</p>
+              <p className="text-xs text-[#8B9CB0] mt-1 px-1 whitespace-pre-line">{cleanChatText(msg.content)}</p>
             )}
           </div>
         </div>
@@ -94,7 +102,7 @@ export function ChatMessage({
     );
   }
 
-  const displayText = isLastNovaMsg ? typewriterText : msg.content;
+  const displayText = cleanChatText(isLastNovaMsg ? typewriterText : msg.content);
 
   return (
     <div

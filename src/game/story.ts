@@ -1,7 +1,8 @@
 // Story data for "Seventh Reboot"
 // Each node has: id, speaker, type, content, and navigation info
 
-import type { ContactStage, MemoryAnchorId, NovaEmotion, Speaker, MessageType } from './types';
+import type { ContactStage, GlitchLevel, MemoryAnchorId, NovaEmotion, Speaker, MessageType } from './types';
+import { cleanChatText } from './format';
 
 export type { Speaker, MessageType };
 
@@ -21,6 +22,7 @@ export interface StoryNode {
   delay?: number;
   nextId?: string;
   isGlitch?: boolean;
+  glitchLevel?: GlitchLevel;
   memoryAnchor?: MemoryAnchorId;
   requiresAnchor?: MemoryAnchorId;
   contactStage?: ContactStage;
@@ -59,16 +61,16 @@ const img = (id: string, image: string, caption: string, nextId: string): StoryN
   id, speaker: 'nova', type: 'image', content: caption, image, nextId
 });
 
-const draft = (id: string, content: string, nextId: string): StoryNode => ({
-  id, speaker: 'system', type: 'draft', content, nextId
+const draft = (id: string, content: string, nextId: string, title = '未发送草稿'): StoryNode => ({
+  id, speaker: 'system', type: 'draft', content: `${title}||${content}`, nextId
 });
 
 const ch = (id: string, content: string, nextId: string): StoryNode => ({
   id, speaker: 'system', type: 'chapter', content, nextId
 });
 
-const g = (id: string, content: string, delay?: number, nextId?: string): StoryNode => ({
-  id, speaker: 'system', type: 'glitch', content, delay: delay ?? 2000, nextId, isGlitch: true
+const g = (id: string, content: string, delay?: number, nextId?: string, glitchLevel: GlitchLevel = 2): StoryNode => ({
+  id, speaker: 'system', type: 'glitch', content, delay: delay ?? 2000, nextId, isGlitch: true, glitchLevel
 });
 
 const f = (id: string, title: string, content: string, nextId: string): StoryNode => ({
@@ -266,7 +268,7 @@ const prologueNodes: StoryNode[] = [
   n('p_window5', '别关通讯。', 'normal', 400, 'p_window6'),
   n('p_window6', '我很快回来。', 'normal', 1500, 'p_offline1'),
   s('p_offline1', 'Nova 已离线', 3000, 'p_draft1'),
-  draft('p_draft1', '如果这真的是第七次...\n那这次一定要成功。', 'p_end'),
+  draft('p_draft1', '如果这真的是第七次……\n那这次一定要成功。', 'p_end', '未发送草稿 / 22:47'),
   d('p_end', 5000, 'CH1_START'),
 ];
 
@@ -277,11 +279,11 @@ const chapter1Nodes: StoryNode[] = [
   ch('CH1_START', '第一章：连接', 'ch1_0'),
   ts('ch1_0', '第二天 08:13', 'ch1_1'),
   s('ch1_1', '收到新消息', 800, 'ch1_2'),
-  n('ch1_2', '我回来了。', 'normal', 600, 'ch1_3'),
-  n('ch1_3', '严格来说。', 'normal', 400, 'ch1_4'),
-  n('ch1_4', '我昨晚就回来了。', 'normal', 400, 'ch1_5'),
-  n('ch1_5', '但我睡着了。', 'smile', 400, 'ch1_6'),
-  n('ch1_6', '直接趴在控制台上。', 'smile', 800, 'ch1_7'),
+  n('ch1_2', '我回来了', 'normal', 600, 'ch1_3'),
+  n('ch1_3', '严格来说', 'normal', 400, 'ch1_4'),
+  n('ch1_4', '昨晚就回来了', 'normal', 400, 'ch1_5'),
+  n('ch1_5', '然后直接睡死', 'smile', 400, 'ch1_6'),
+  n('ch1_6', '脸差点和控制台融为一体', 'smile', 800, 'ch1_7'),
   c('ch1_7', [
     { text: '【你没事吧】', nextId: 'ch1_ok1' },
     { text: '【睡得好吗】', nextId: 'ch1_sleep1' },
@@ -469,13 +471,13 @@ const chapter1Nodes: StoryNode[] = [
   n('ch1_go8', '总之。', 'normal', 400, 'ch1_go9'),
   n('ch1_go9', '谢谢。', 'smile', 1200, 'ch1_go10'),
   d('ch1_go10', 1000, 'ch1_go11'),
-  n('ch1_go11', '我晚上回来。', 'normal', 400, 'ch1_go12'),
-  n('ch1_go12', '别失踪。', 'smile', 1500, 'ch1_offline'),
+  n('ch1_go11', '我晚上再回来', 'normal', 400, 'ch1_go12'),
+  n('ch1_go12', '你别突然消失啊', 'smile', 1500, 'ch1_offline'),
   s('ch1_offline', 'Nova 已离线', 3000, 'ch1_night'),
   // Night scene
   ts('ch1_night', '21:17', 'ch1_night1'),
   s('ch1_night1', '收到新消息', 800, 'ch1_night2'),
-  n('ch1_night2', '我回来了。', 'normal', 600, 'ch1_night3'),
+  n('ch1_night2', '回来了', 'normal', 600, 'ch1_night3'),
   n('ch1_night3', '坏消息。', 'normal', 600, 'ch1_night4'),
   n('ch1_night4', '我被舰长骂了。', 'smile', 800, 'ch1_night5'),
   c('ch1_night5', [
@@ -509,7 +511,7 @@ const chapter1Nodes: StoryNode[] = [
   n('ch1_night20', '别得意。', 'smile', 1500, 'ch1_night21'),
   d('ch1_night21', 1500, 'ch1_night22'),
   n('ch1_night22', '好了。', 'normal', 600, 'ch1_night23'),
-  n('ch1_night23', '我要去巡检了。', 'normal', 600, 'ch1_night24'),
+  n('ch1_night23', '我得去绕飞船一圈了', 'normal', 600, 'ch1_night24'),
   { ...n('ch1_night24', '晚安。', 'normal', 800, 'ch1_night25'), memoryAnchor: 'goodnight' },
   c('ch1_night25', [
     { text: '【晚安】', nextId: 'ch1_night26' },
@@ -525,7 +527,7 @@ const chapter1Nodes: StoryNode[] = [
   s('ch1_night33', 'Nova 已离线', 3000, 'ch1_draft'),
   // Late night draft
   ts('ch1_draft', '深夜 02:41', 'ch1_draft1'),
-  draft('ch1_draft1', '不对。\n我明明没有告诉过他 N7。', 'CH2_START'),
+  draft('ch1_draft1', '不对\n我明明没有告诉过他 N7', 'CH2_START', '未发送草稿 / 02:41'),
 ];
 
 // ============================================
@@ -595,8 +597,8 @@ const chapter2Nodes: StoryNode[] = [
   n('ch2_dream22', '可能只是普通梦。', 'normal', 2000, 'ch2_obs1'),
   // Observatory photo
   ts('ch2_obs1', '12:03', 'ch2_obs2'),
-  n('ch2_obs2', '休息时间。', 'normal', 400, 'ch2_obs3'),
-  n('ch2_obs3', '给你看个东西。', 'smile', 1500, 'ch2_obs4'),
+  n('ch2_obs2', '我摸鱼五分钟', 'normal', 400, 'ch2_obs3'),
+  n('ch2_obs3', '给你看个好东西', 'smile', 1500, 'ch2_obs4'),
   t('ch2_obs4', 2500, 'ch2_obs5'),
   { ...img('ch2_obs5', '/assets/photo_observatory.jpg', '这里是我最喜欢的地方。', 'ch2_obs6'), memoryAnchor: 'observatory' },
   c('ch2_obs6', [
@@ -670,8 +672,8 @@ const chapter2Nodes: StoryNode[] = [
   img('ch2_candy8', '/assets/photo_candy.jpg', '战利品。\n替 N7 还债。', 'ch2_night1'),
   // Night
   ts('ch2_night1', '21:09', 'ch2_night2'),
-  n('ch2_night2', '巡检结束。', 'normal', 400, 'ch2_night3'),
-  n('ch2_night3', '累死。', 'normal', 800, 'ch2_night4'),
+  n('ch2_night2', '回来了', 'normal', 400, 'ch2_night3'),
+  n('ch2_night3', '腿快废了', 'normal', 800, 'ch2_night4'),
   c('ch2_night4', [
     { text: '【早点休息】', nextId: 'ch2_night5' },
     { text: '【辛苦了】', nextId: 'ch2_night5' },
@@ -751,7 +753,7 @@ const chapter2Nodes: StoryNode[] = [
   n('ch2_gn7', '记得提醒我。', 'smile', 1500, 'ch2_offline'),
   s('ch2_offline', 'Nova 已离线', 2000, 'ch2_draft'),
   ts('ch2_draft', '深夜 02:17', 'ch2_draft1'),
-  draft('ch2_draft1', '不对。\n我明明没有告诉过他 N7。', 'CH3_START'),
+  draft('ch2_draft1', '不对\n我明明没有告诉过他 N7', 'CH3_START', '未发送草稿 / 02:17'),
 ];
 
 // ============================================
@@ -826,39 +828,39 @@ const chapter3Nodes: StoryNode[] = [
   n('ch3_creep7', '医疗舱很贵。', 'smile', 2000, 'ch3_lunch1'),
   // Lunch
   ts('ch3_lunch1', '13:11', 'ch3_lunch2'),
-  n('ch3_lunch2', '午饭时间。', 'normal', 400, 'ch3_lunch3'),
-  n('ch3_lunch3', '今天舰上供应合成牛排。', 'normal', 800, 'ch3_lunch4'),
+  n('ch3_lunch2', '我刚到食堂', 'normal', 400, 'ch3_lunch3'),
+  n('ch3_lunch3', '他们今天说有牛排', 'normal', 800, 'ch3_lunch4'),
   c('ch3_lunch4', [
-    { text: '【好吃吗】', nextId: 'ch3_lunch5' },
+    { text: '【有这么夸张吗？】', nextId: 'ch3_lunch5' },
   ]),
-  n('ch3_lunch5', '像打印机打印出来的。', 'smile', 600, 'ch3_lunch6'),
-  n('ch3_lunch6', '理论上是牛排。', 'normal', 400, 'ch3_lunch7'),
-  n('ch3_lunch7', '实际上是建筑材料。', 'smile', 1500, 'ch3_lunch8'),
+  n('ch3_lunch5', '但我现在有点怀疑', 'smile', 600, 'ch3_lunch6'),
+  n('ch3_lunch6', '这东西到底算不算食物', 'normal', 400, 'ch3_lunch7'),
+  n('ch3_lunch7', '我发你看看', 'smile', 1500, 'ch3_lunch8'),
   d('ch3_lunch8', 1500, 'ch3_lunch9'),
   // Send steak photo
   t('ch3_lunch9', 2000, 'ch3_steak'),
   { ...img('ch3_steak', '/assets/photo_steak.jpg', '别问。\n问就是科研事故。', 'ch3_reflection1'), memoryAnchor: 'steak' },
   // Reflection
   d('ch3_reflection1', 2000, 'ch3_ref1'),
-  n('ch3_ref1', '诶。', 'normal', 600, 'ch3_ref2'),
-  n('ch3_ref2', '等等。', 'normal', 400, 'ch3_ref3'),
+  n('ch3_ref1', '等一下', 'normal', 600, 'ch3_ref2'),
+  n('ch3_ref2', '有点不对', 'normal', 400, 'ch3_ref3'),
   c('ch3_ref3', [
-    { text: '【怎么了】', nextId: 'ch3_ref4' },
+    { text: '【你那边怎么了？】', nextId: 'ch3_ref4' },
   ]),
-  n('ch3_ref4', '有点奇怪。', 'normal', 600, 'ch3_ref5'),
-  n('ch3_ref5', '我刚刚看见一个人。', 'normal', 800, 'ch3_ref6'),
+  n('ch3_ref4', '我刚刚好像看见一个人', 'normal', 600, 'ch3_ref5'),
+  n('ch3_ref5', '在观测窗那边', 'normal', 800, 'ch3_ref6'),
   c('ch3_ref6', [
-    { text: '【谁】', nextId: 'ch3_ref7' },
+    { text: '【你看到谁了？】', nextId: 'ch3_ref7' },
   ]),
-  { id: 'ch3_ref7', speaker: 'nova', type: 'text', content: '我自己。', emotion: 'normal', delay: 2500, nextId: 'ch3_ref8' },
+  { id: 'ch3_ref7', speaker: 'nova', type: 'text', content: '……\n我自己', emotion: 'normal', delay: 2500, nextId: 'ch3_ref8' },
   c('ch3_ref8', [
     { text: '【？？？】', nextId: 'ch3_ref9' },
   ]),
-  n('ch3_ref9', '别紧张。', 'normal', 600, 'ch3_ref10'),
-  n('ch3_ref10', '可能是反光。', 'normal', 600, 'ch3_ref11'),
-  n('ch3_ref11', '观测窗有时候会这样。', 'normal', 800, 'ch3_ref12'),
+  n('ch3_ref9', '先别紧张', 'normal', 600, 'ch3_ref10'),
+  n('ch3_ref10', '也可能是反光', 'normal', 600, 'ch3_ref11'),
+  n('ch3_ref11', '观测窗有时候会这样', 'normal', 800, 'ch3_ref12'),
   c('ch3_ref12', [
-    { text: '【你确定】', nextId: 'ch3_ref13' },
+    { text: '【你确定不是反光吗？】', nextId: 'ch3_ref13' },
   ]),
   n('ch3_ref13', '...', 'normal', 800, 'ch3_ref14'),
   n('ch3_ref14', '不确定。', 'normal', 600, 'ch3_ref15'),
@@ -873,7 +875,7 @@ const chapter3Nodes: StoryNode[] = [
   n('ch3_ref21', '当我没说。', 'normal', 600, 'ch3_ref22'),
   n('ch3_ref22', '你别露出那种表情。', 'smile', 800, 'ch3_ref23'),
   c('ch3_ref23', [
-    { text: '【我什么表情】', nextId: 'ch3_ref24' },
+    { text: '【我哪有什么表情】', nextId: 'ch3_ref24' },
   ]),
   n('ch3_ref24', '就是那种。', 'smile', 600, 'ch3_ref25'),
   n('ch3_ref25', '"完了她要疯了"的表情。', 'smile', 800, 'ch3_ref26'),
@@ -884,12 +886,13 @@ const chapter3Nodes: StoryNode[] = [
   n('ch3_ref28', '过分。', 'smile', 2000, 'ch3_disconnect1'),
   // Disconnect event
   ts('ch3_disconnect1', '18:26', 'ch3_dc1'),
-  g('ch3_dc1', '通讯中断', 1500, 'ch3_dc2'),
-  { id: 'ch3_dc2', speaker: 'system', type: 'glitch', content: '尝试重连...', delay: 2000, nextId: 'ch3_dc3', isGlitch: true },
-  { id: 'ch3_dc3', speaker: 'system', type: 'glitch', content: '重连失败', delay: 1500, nextId: 'ch3_dc4', isGlitch: true },
-  { id: 'ch3_dc4', speaker: 'system', type: 'glitch', content: '重连失败', delay: 1500, nextId: 'ch3_dc5', isGlitch: true },
-  { id: 'ch3_dc5', speaker: 'system', type: 'text', content: '重连成功', delay: 2000, nextId: 'ch3_dc6' },
-  n('ch3_dc6', '...', 'normal', 2000, 'ch3_dc7'),
+  g('ch3_dc1', '通讯中断', 1500, 'ch3_dc2', 2),
+  { id: 'ch3_dc2', speaker: 'system', type: 'glitch', content: '尝试重连……', delay: 2000, nextId: 'ch3_dc3', isGlitch: true, glitchLevel: 2 },
+  { id: 'ch3_dc3', speaker: 'system', type: 'glitch', content: '重连失败', delay: 1500, nextId: 'ch3_dc4', isGlitch: true, glitchLevel: 2 },
+  { id: 'ch3_dc4', speaker: 'system', type: 'glitch', content: '重连失败', delay: 1500, nextId: 'ch3_dc5', isGlitch: true, glitchLevel: 2 },
+  { id: 'ch3_dc5', speaker: 'system', type: 'glitch', content: '重连成功', delay: 1000, nextId: 'ch3_dc6', glitchLevel: 1 },
+  n('ch3_dc6', '……', 'normal', 600, 'ch3_dc6b'),
+  n('ch3_dc6b', '你还在吗？', 'normal', 800, 'ch3_dc7'),
   c('ch3_dc7', [
     { text: '【在】', nextId: 'ch3_dc8' },
   ]),
@@ -957,7 +960,7 @@ const chapter3Nodes: StoryNode[] = [
   // Goodnight
   d('ch3_gn1', 1500, 'ch3_gn2'),
   n('ch3_gn2', '好了。', 'normal', 600, 'ch3_gn3'),
-  n('ch3_gn3', '今天先到这里。', 'normal', 800, 'ch3_gn4'),
+  n('ch3_gn3', '我今天先缓一缓', 'normal', 800, 'ch3_gn4'),
   c('ch3_gn4', [
     { text: '【晚安】', nextId: 'ch3_gn5' },
   ]),
@@ -976,7 +979,7 @@ const chapter3Nodes: StoryNode[] = [
   n('ch3_gn15', '哪些不是。', 'sad', 1500, 'ch3_offline'),
   s('ch3_offline', 'Nova 已离线', 2000, 'ch3_draft'),
   ts('ch3_draft', '深夜 03:07', 'ch3_draft1'),
-  draft('ch3_draft1', '我找到她了。\n她就在观测室。', 'CH4_START'),
+  draft('ch3_draft1', '我找到她了\n她就在观测室', 'CH4_START', '加密草稿 / 03:07'),
 ];
 
 // ============================================
@@ -1161,7 +1164,7 @@ const chapter4Nodes: StoryNode[] = [
   n('ch4_gn11', '谢谢你一直记得我。', 'smile', 1500, 'ch4_offline'),
   s('ch4_offline', 'Nova 已离线', 2000, 'ch4_log'),
   ts('ch4_log', '凌晨 02:41', 'ch4_log1'),
-  f('ch4_log1', 'NOVA-07 隐藏日志', '如果你正在阅读这段记录。\n说明我已经忘记他了。\n请不要尝试恢复记忆。\n不要寻找观测室中的我。\n不要打开第七协议。\n尤其不要相信我。\n\n因为我已经失败六次了。', 'CH5A_START'),
+  f('ch4_log1', '隐藏日志：NOVA-07', '如果你正在阅读这段记录。\n说明我已经忘记他了。\n请不要尝试恢复记忆。\n不要寻找观测室中的我。\n不要打开第七协议。\n尤其不要相信我。\n\n因为我已经失败六次了。', 'CH5A_START'),
 ];
 
 // ============================================
@@ -1852,7 +1855,7 @@ const badEndingNodes: StoryNode[] = [
 // ============================================
 // Combine all nodes
 // ============================================
-export const storyNodes: StoryNode[] = [
+const rawStoryNodes: StoryNode[] = [
   ...prologueNodes,
   ...chapter1Nodes,
   ...chapter2Nodes,
@@ -1864,6 +1867,17 @@ export const storyNodes: StoryNode[] = [
   ...normalEndingNodes,
   ...badEndingNodes,
 ];
+
+function normalizeStoryNode(node: StoryNode): StoryNode {
+  if (node.speaker !== 'nova') return node;
+  if (node.type !== 'text' && node.type !== 'image') return node;
+  return {
+    ...node,
+    content: cleanChatText(node.content),
+  };
+}
+
+export const storyNodes: StoryNode[] = rawStoryNodes.map(normalizeStoryNode);
 
 // Create a map for fast lookup
 export const storyNodeMap: Map<string, StoryNode> = new Map(

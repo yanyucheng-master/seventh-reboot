@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { storyNodeMap, type Choice } from './story';
+import { storyNodeMap, type Choice, type StoryNode } from './story';
 import { resolveContactAvatar } from './assets';
 import {
   clearSave,
@@ -13,7 +13,7 @@ import {
   resolveResumeNodeId,
   saveGame,
 } from './storage';
-import type { ContactStage, DisplayMessage, GameScreen, GameStats, MemoryAnchorId, NovaEmotion } from './types';
+import type { ContactStage, DisplayMessage, GameScreen, GameStats, GlitchLevel, MemoryAnchorId, NovaEmotion } from './types';
 import { StarBackground } from './components/StarBackground';
 import { ImageModal } from './components/ImageModal';
 import { ChatMessage } from './components/ChatMessage';
@@ -50,8 +50,89 @@ const CONTACT_META: Record<ContactStage, { name: string; subtitle: string }> = {
   },
 };
 
+type WaitPrompt = {
+  label: string;
+  hint: string;
+};
+
+type WaitConfig = WaitPrompt & {
+  duration: number;
+};
+
+type SignalGlitchTone = 'error' | 'success' | 'neutral';
+
+type ActiveSignalGlitch = {
+  level: GlitchLevel;
+  tone: SignalGlitchTone;
+  pulse: number;
+};
+
 function clampStat(value: number): number {
   return Math.max(0, Math.min(6, value));
+}
+
+function getWaitConfig(node: StoryNode): WaitConfig | null {
+  if (!node.nextId) return null;
+  if (/^fin_|^normal_|^bad_/.test(node.id)) return null;
+
+  if (node.type === 'status' && /Nova 已离线/.test(node.content)) {
+    return {
+      duration: 15000,
+      label: 'Nova 离线中 · 等待消息',
+      hint: '点击以推进时间',
+    };
+  }
+
+  if (node.type === 'chapter') {
+    return {
+      duration: 12000,
+      label: '章节信号同步中 · 等待消息',
+      hint: '点击以推进时间',
+    };
+  }
+
+  if (node.type === 'timestamp' && /深夜|凌晨/.test(node.content)) {
+    return {
+      duration: 10000,
+      label: '信道保持中 · 等待夜间信号',
+      hint: '点击以推进时间',
+    };
+  }
+
+  if (node.type === 'delay' && (node.delay ?? 0) >= 5000) {
+    return {
+      duration: Math.min(node.delay ?? 10000, 15000),
+      label: '信道保持中 · 等待消息',
+      hint: '点击以推进时间',
+    };
+  }
+
+  return null;
+}
+
+function getSignalGlitchLevel(node: StoryNode): GlitchLevel | null {
+  if (node.glitchLevel) return node.glitchLevel;
+  if (node.type === 'disconnect' || node.type === 'reconnectFailed' || node.type === 'signalError') return 2;
+  if (/通讯中断|尝试重连|重连失败/.test(node.content)) return 2;
+  if (/重连成功/.test(node.content)) return 1;
+  if (node.type === 'glitch' || node.isGlitch) {
+    return /^fin_|^bad_/.test(node.id) ? 3 : 1;
+  }
+  return null;
+}
+
+function getSignalGlitchTone(content: string): SignalGlitchTone {
+  if (/重连成功|连接恢复|恢复正常/.test(content)) return 'success';
+  if (/通讯中断|重连失败|信号衰减|连接即将终止|倒计时|请求被拒绝/.test(content)) return 'error';
+  return 'neutral';
+}
+
+function getSignalGlitchDuration(level: GlitchLevel, tone: SignalGlitchTone, content: string): number {
+  if (tone === 'success') return 680;
+  if (/重连失败/.test(content)) return 620;
+  if (level === 3) return 1100;
+  if (level === 2) return 760;
+  return 460;
 }
 
 export default function GameApp() {
@@ -62,7 +143,7 @@ export default function GameApp() {
   const [isTyping, setIsTyping] = useState(false);
   const [modalImage, setModalImage] = useState<{ image: string; caption: string } | null>(null);
   const [novaEmotion, setNovaEmotion] = useState<NovaEmotion>('normal');
-  const [isGlitching, setIsGlitching] = useState(false);
+  const [signalGlitch, setSignalGlitch] = useState<ActiveSignalGlitch | null>(null);
   const [showChapterBanner, setShowChapterBanner] = useState<string | null>(null);
   const [typewriterText, setTypewriterText] = useState('');
   const [isTypewriterActive, setIsTypewriterActive] = useState(false);
@@ -74,11 +155,16 @@ export default function GameApp() {
   const [contactStage, setContactStage] = useState<ContactStage>(defaultContactStage);
   const [inputNode, setInputNode] = useState<{ id: string; nextId?: string; placeholder: string } | null>(null);
   const [playerInput, setPlayerInput] = useState('');
+  const [waitPrompt, setWaitPrompt] = useState<WaitPrompt | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const nodeQueueRef = useRef<string[]>([]);
   const queueRunIdRef = useRef(0);
   const activeQueueRunIdRef = useRef<number | null>(null);
+  const waitTimeoutRef = useRef<number | null>(null);
+  const waitResolverRef = useRef<(() => void) | null>(null);
+  const signalGlitchTimeoutRef = useRef<number | null>(null);
+  const signalGlitchPulseRef = useRef(0);
   const messagesRef = useRef(messages);
   const emotionRef = useRef(novaEmotion);
   const statsRef = useRef(stats);
@@ -103,6 +189,17 @@ export default function GameApp() {
   const cancelActiveSequence = useCallback(() => {
     queueRunIdRef.current += 1;
     nodeQueueRef.current = [];
+    if (waitTimeoutRef.current !== null) {
+      window.clearTimeout(waitTimeoutRef.current);
+      waitTimeoutRef.current = null;
+    }
+    waitResolverRef.current = null;
+    setWaitPrompt(null);
+    if (signalGlitchTimeoutRef.current !== null) {
+      window.clearTimeout(signalGlitchTimeoutRef.current);
+      signalGlitchTimeoutRef.current = null;
+    }
+    setSignalGlitch(null);
     return queueRunIdRef.current;
   }, []);
 
@@ -111,12 +208,12 @@ export default function GameApp() {
     setIsTyping(false);
     setIsTypewriterActive(false);
     setTypewriterText('');
-    setIsGlitching(false);
     setShowChapterBanner(null);
     setChoices(null);
     setChoiceNodeId(null);
     setInputNode(null);
     setPlayerInput('');
+    setWaitPrompt(null);
     setHasSave(hasSaveFile());
     setSaveTime(getSaveTimeString());
     setScreen('menu');
@@ -136,6 +233,58 @@ export default function GameApp() {
     saveGame(createSaveData(pendingNodeId, msgs, emotionRef.current, contactStageRef.current, statsRef.current));
     setHasSave(true);
     setSaveTime('刚刚');
+  }, []);
+
+  const waitForSignal = useCallback((config: WaitConfig, runId: number): Promise<'elapsed' | 'skipped'> => {
+    if (waitTimeoutRef.current !== null) {
+      window.clearTimeout(waitTimeoutRef.current);
+      waitTimeoutRef.current = null;
+    }
+    waitResolverRef.current = null;
+    setWaitPrompt({ label: config.label, hint: config.hint });
+
+    return new Promise(resolve => {
+      let settled = false;
+      const finish = (result: 'elapsed' | 'skipped') => {
+        if (settled) return;
+        settled = true;
+        if (waitTimeoutRef.current !== null) {
+          window.clearTimeout(waitTimeoutRef.current);
+          waitTimeoutRef.current = null;
+        }
+        waitResolverRef.current = null;
+        if (queueRunIdRef.current === runId) {
+          setWaitPrompt(null);
+        }
+        resolve(result);
+      };
+
+      waitResolverRef.current = () => finish('skipped');
+      waitTimeoutRef.current = window.setTimeout(() => finish('elapsed'), config.duration);
+    });
+  }, []);
+
+  const skipWaiting = useCallback(() => {
+    waitResolverRef.current?.();
+  }, []);
+
+  const triggerSignalGlitch = useCallback((node: StoryNode) => {
+    const level = getSignalGlitchLevel(node);
+    if (!level) return;
+
+    if (signalGlitchTimeoutRef.current !== null) {
+      window.clearTimeout(signalGlitchTimeoutRef.current);
+      signalGlitchTimeoutRef.current = null;
+    }
+
+    const tone = getSignalGlitchTone(node.content);
+    signalGlitchPulseRef.current += 1;
+    setSignalGlitch({ level, tone, pulse: signalGlitchPulseRef.current });
+
+    signalGlitchTimeoutRef.current = window.setTimeout(() => {
+      signalGlitchTimeoutRef.current = null;
+      setSignalGlitch(null);
+    }, getSignalGlitchDuration(level, tone, node.content));
   }, []);
 
   const addMessage = useCallback((msg: DisplayMessage) => {
@@ -198,7 +347,24 @@ export default function GameApp() {
       }
 
       if (node.type === 'delay') {
-        await new Promise(r => setTimeout(r, node.delay || 1000));
+        const waitConfig = getWaitConfig(node);
+        if (waitConfig) {
+          const result = await waitForSignal(waitConfig, runId);
+          if (!isCurrentRun()) return false;
+          if (result === 'skipped') {
+            const currentMsgs = addMessage({
+              id: `time_sync_${node.id}_${Date.now()}`,
+              speaker: 'system',
+              type: 'status',
+              content: '【同步至下一条信号】',
+              contactStage: contactStageRef.current,
+              isNew: true,
+            });
+            persistState(node.nextId ?? nodeId, currentMsgs);
+          }
+        } else {
+          await new Promise(r => setTimeout(r, node.delay || 1000));
+        }
         if (!isCurrentRun()) return false;
         if (node.nextId) nodeQueueRef.current.push(node.nextId);
         return true;
@@ -228,11 +394,9 @@ export default function GameApp() {
         return false;
       }
 
-      if (node.type === 'glitch' || node.isGlitch) {
-        setIsGlitching(true);
-        await new Promise(r => setTimeout(r, node.delay || 1500));
-        if (!isCurrentRun()) return false;
-        setIsGlitching(false);
+      const signalGlitchLevel = getSignalGlitchLevel(node);
+      if (signalGlitchLevel) {
+        triggerSignalGlitch(node);
       }
 
       if (node.type === 'chapter') {
@@ -251,6 +415,7 @@ export default function GameApp() {
         image: node.image,
         contactStage: contactStageRef.current,
         isGlitch: node.isGlitch,
+        glitchLevel: node.glitchLevel ?? signalGlitchLevel ?? undefined,
         isNew: true,
       };
 
@@ -317,12 +482,29 @@ export default function GameApp() {
         persistState(getPendingNodeIdAfterNode(nodeId), messagesRef.current);
       }
 
+      const waitConfig = getWaitConfig(node);
+      if (waitConfig) {
+        const result = await waitForSignal(waitConfig, runId);
+        if (!isCurrentRun()) return false;
+        if (result === 'skipped') {
+          const currentMsgs = addMessage({
+            id: `time_sync_${node.id}_${Date.now()}`,
+            speaker: 'system',
+            type: 'status',
+            content: '【同步至下一条信号】',
+            contactStage: contactStageRef.current,
+            isNew: true,
+          });
+          persistState(getPendingNodeIdAfterNode(nodeId), currentMsgs);
+        }
+      }
+
       if (node.nextId) {
         nodeQueueRef.current.push(node.nextId);
       }
       return true;
     },
-    [addMessage, persistState, saveMemoryAnchor],
+    [addMessage, persistState, saveMemoryAnchor, triggerSignalGlitch, waitForSignal],
   );
 
   const processQueue = useCallback(async (runId: number) => {
@@ -374,7 +556,7 @@ export default function GameApp() {
       setIsTyping(false);
       setIsTypewriterActive(false);
       setTypewriterText('');
-      setIsGlitching(false);
+      setSignalGlitch(null);
       setShowChapterBanner(null);
       setShowRestartConfirm(false);
 
@@ -429,6 +611,7 @@ export default function GameApp() {
       statsRef.current = defaultStats;
       setInputNode(null);
       setPlayerInput('');
+      setWaitPrompt(null);
       setScreen('playing');
       startSequence('p0');
     },
@@ -639,7 +822,19 @@ export default function GameApp() {
     <div className="app-shell game-shell chat-screen relative overflow-hidden">
       <StarBackground />
       <div className="chat-atmosphere pointer-events-none" aria-hidden />
-      {isGlitching && <div className="fixed inset-0 z-40 pointer-events-none animate-glitch bg-[#F0A030]/5" />}
+      {signalGlitch && (
+        <div
+          key={signalGlitch.pulse}
+          className={`signal-glitch-layer signal-glitch-level-${signalGlitch.level} signal-glitch-${signalGlitch.tone}`}
+          aria-hidden
+        >
+          <div className="signal-glitch-noise" />
+          <div className="signal-glitch-scanlines" />
+          <div className="signal-glitch-line signal-glitch-line-a" />
+          <div className="signal-glitch-line signal-glitch-line-b" />
+          <div className="signal-glitch-line signal-glitch-line-c" />
+        </div>
+      )}
       {showChapterBanner && (
         <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/60">
           <ChapterBanner title={showChapterBanner} />
@@ -653,10 +848,18 @@ export default function GameApp() {
         />
       )}
 
-      <div className="game-layout relative z-10 flex flex-col flex-1 min-h-0 w-full max-w-[750px] mx-auto bg-[#0B0E14]/82 backdrop-blur-sm">
+      <div
+        className={`game-layout relative z-10 flex flex-col flex-1 min-h-0 w-full max-w-[750px] mx-auto bg-[#0B0E14]/82 backdrop-blur-sm ${
+          signalGlitch ? `signal-glitch-frame signal-glitch-frame-level-${signalGlitch.level}` : ''
+        }`}
+      >
           <header className="game-header chat-header flex items-center gap-3 px-3 sm:px-4 py-3 bg-[#151A26]/92 border-b border-[#1A2236]/80 shrink-0">
             <div className="relative shrink-0">
-              <img src={contactAvatar} alt={contactMeta.name} className="nova-header-avatar" />
+              <img
+                src={contactAvatar}
+                alt={contactMeta.name}
+                className={`nova-header-avatar ${signalGlitch ? `signal-glitch-avatar signal-glitch-avatar-${signalGlitch.tone}` : ''}`}
+              />
               <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#4ADE80] border-2 border-[#151A26]" />
             </div>
             <div className="flex flex-col min-w-0 flex-1">
@@ -674,7 +877,11 @@ export default function GameApp() {
             </div>
           </header>
 
-          <div className="game-chat chat-scroll flex-1 min-h-0 overflow-y-auto px-3 sm:px-4 py-2 space-y-0">
+          <div
+            className={`game-chat chat-scroll flex-1 min-h-0 overflow-y-auto px-3 sm:px-4 py-2 space-y-0 ${
+              signalGlitch ? `signal-glitch-chat signal-glitch-chat-level-${signalGlitch.level}` : ''
+            }`}
+          >
             {messages.map((msg, index) => (
               <ChatMessage
                 key={msg.id}
@@ -754,6 +961,17 @@ export default function GameApp() {
                   发送
                 </button>
               </div>
+            ) : waitPrompt ? (
+              <button
+                type="button"
+                onClick={skipWaiting}
+                className="chat-idle-bar chat-wait-bar w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left"
+              >
+                <div className="flex-1 flex flex-col gap-0.5">
+                  <span className="chat-idle-text text-xs">{waitPrompt.label}</span>
+                  <span className="chat-wait-hint">{waitPrompt.hint}</span>
+                </div>
+              </button>
             ) : choices && choiceNodeId !== 'p4' ? (
                 <div className="choice-panel flex flex-col gap-1.5">
                   <p className="choice-prompt">你可以回复：</p>
