@@ -16,6 +16,7 @@ const sourcePath =
 const PROTECTED_IDS = new Set([
   'ch3_ref16', 'ch4_27', 'fin_last6', 'fin_decision', 'fin_decision_choice',
   'FINALE_DECISION_END', 'FINALE_START', 'NORMAL_END_START', 'BAD_END_START',
+  'p_log5',
 ]);
 
 const source = fs.readFileSync(sourcePath, 'utf8');
@@ -165,7 +166,6 @@ function parseSource(text) {
 }
 
 function getLinearChain(startId, stopAtChoice = true) {
-  /** @type {string[]} */
   const ids = [];
   let cur = startId;
   const seen = new Set();
@@ -173,12 +173,30 @@ function getLinearChain(startId, stopAtChoice = true) {
     seen.add(cur);
     const node = storyNodeMap.get(cur);
     if (!node) break;
+    if (node.choices?.length) {
+      if (stopAtChoice) ids.push(cur);
+      break;
+    }
     ids.push(cur);
-    if (stopAtChoice && node.choices?.length) break;
-    if (['end', 'chapter'].includes(node.type) && node.id !== startId) break;
+    if (['end', 'chapter'].includes(node.type) && cur !== startId) break;
     cur = node.nextId;
   }
   return ids;
+}
+
+function getBranchEnd(startId) {
+  let cur = startId;
+  let last = startId;
+  const seen = new Set();
+  while (cur && !seen.has(cur)) {
+    seen.add(cur);
+    const node = storyNodeMap.get(cur);
+    if (!node) break;
+    if (node.choices?.length) break;
+    last = cur;
+    cur = node.nextId;
+  }
+  return last;
 }
 
 function nodeBeat(node) {
@@ -257,15 +275,18 @@ function alignChoiceBlock(sourceBlock, storyChoiceId) {
   const storyOpts = node.choices.map((c) => ({ ...c, norm: norm(c.text) }));
   const srcOpts = sourceBlock.options;
 
-  if (storyOpts.length !== srcOpts.length) return null;
+  if (storyOpts.length !== srcOpts.length) {
+    console.error('choice count mismatch at', storyChoiceId, storyOpts.length, srcOpts.length);
+  }
 
-  for (let j = 0; j < storyOpts.length; j++) {
+  const pairCount = Math.min(storyOpts.length, srcOpts.length);
+  for (let j = 0; j < pairCount; j++) {
     const src = srcOpts.find((o) => norm(o) === storyOpts[j].norm) ?? srcOpts[j];
     const wrapped = wrapChoice(src);
     if (storyOpts[j].text !== wrapped) patches.push({ id: storyChoiceId, field: 'choice', index: j, value: wrapped });
   }
 
-  for (let j = 0; j < storyOpts.length; j++) {
+  for (let j = 0; j < pairCount; j++) {
     const src = srcOpts.find((o) => norm(o) === storyOpts[j].norm) ?? srcOpts[j];
     const branchBeats = sourceBlock.branches[src] || [];
     const chain = getLinearChain(storyOpts[j].nextId);
@@ -273,10 +294,7 @@ function alignChoiceBlock(sourceBlock, storyChoiceId) {
   }
 
   if (sourceBlock.merge?.length) {
-    const branchEnds = storyOpts.map((o) => {
-      const chain = getLinearChain(o.nextId, false);
-      return chain[chain.length - 1];
-    });
+    const branchEnds = storyOpts.map((o) => getBranchEnd(o.nextId));
     const nextIds = branchEnds.map((id) => storyNodeMap.get(id)?.nextId).filter(Boolean);
     const convergeId = nextIds.length && new Set(nextIds).size === 1 ? nextIds[0] : null;
     if (convergeId) {
@@ -293,13 +311,20 @@ function alignChoiceBlock(sourceBlock, storyChoiceId) {
 // Build script index -> story choice mapping by walking story from p0
 const sourceScript = parseSource(source);
 console.error('source blocks:', sourceScript.length, 'aligning...');
+for (let bi = 0; bi < Math.min(5, sourceScript.length); bi++) {
+  const b = sourceScript[bi];
+  console.error('block', bi, b.type, b.type === 'choice' ? b.options : b.beats?.length);
+}
 let storyCursor = 'p0';
 let scriptIdx = 0;
 const visited = new Set();
 const maxSteps = sourceScript.length * 4 + storyNodes.length * 2;
 
 for (let step = 0; storyCursor && scriptIdx < sourceScript.length && step < maxSteps; step++) {
-  if (visited.has(storyCursor + ':' + scriptIdx)) break;
+  if (visited.has(storyCursor + ':' + scriptIdx)) {
+    console.error('break: visited', storyCursor, scriptIdx);
+    break;
+  }
   visited.add(storyCursor + ':' + scriptIdx);
   const block = sourceScript[scriptIdx];
   let node = storyNodeMap.get(storyCursor);
@@ -309,11 +334,10 @@ for (let step = 0; storyCursor && scriptIdx < sourceScript.length && step < maxS
     alignBeatsToChain(block.beats, chain);
     const last = chain[chain.length - 1];
     const lastNode = storyNodeMap.get(last);
-    storyCursor = lastNode?.nextId;
     if (lastNode?.choices?.length) {
-      // next block should be choice
-      scriptIdx++;
-      continue;
+      storyCursor = last;
+    } else {
+      storyCursor = lastNode?.nextId;
     }
     scriptIdx++;
     continue;
@@ -324,15 +348,25 @@ for (let step = 0; storyCursor && scriptIdx < sourceScript.length && step < maxS
       storyCursor = node.nextId;
       node = storyNodeMap.get(storyCursor);
     }
-    if (!node?.choices?.length) break;
+    if (!node?.choices?.length) {
+    if (!node) {
+      console.error('break: missing node', storyCursor, 'block', scriptIdx);
+      break;
+    }
+    if (block.type === 'choice' && node.nextId) {
+      storyCursor = node.nextId;
+      scriptIdx++;
+      continue;
+    }
+    console.error('break: no choice at', storyCursor, 'block', scriptIdx, block.type);
+    break;
+  }
     alignChoiceBlock(block, storyCursor);
     const opts = node.choices;
-    const ends = opts.map((o) => {
-      const c = getLinearChain(o.nextId, false);
-      return c[c.length - 1];
-    });
+    const ends = opts.map((o) => getBranchEnd(o.nextId));
     const nextIds = ends.map((id) => storyNodeMap.get(id)?.nextId);
-    storyCursor = nextIds.find(Boolean) ?? storyNodeMap.get(ends[0])?.nextId;
+    const uniqueNext = [...new Set(nextIds.filter(Boolean))];
+    storyCursor = uniqueNext.length === 1 ? uniqueNext[0] : nextIds.find(Boolean) ?? storyNodeMap.get(ends[0])?.nextId;
     scriptIdx++;
     continue;
   }
