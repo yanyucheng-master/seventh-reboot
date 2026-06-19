@@ -31,6 +31,7 @@ const typeLabel: Record<string, string> = {
   'comm-log': '通讯日志',
   'memory-anchor': '记忆锚点',
   epilogue: '后记',
+  'ending-action': '结局操作',
   disconnect: '断连',
   reconnectFailed: '重连失败',
   signalError: '信号错误',
@@ -129,7 +130,14 @@ function formatNode(node: StoryNode): string[] {
     const labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     node.choices.forEach((ch, i) => {
       const label = labels[i] ?? String(i + 1);
-      lines.push(`  [${label}] → ${ch.text}  →  ${ch.nextId}`);
+      const choiceMeta = [
+        ch.statEffect ? `状态影响=${ch.statEffect}` : '',
+        ch.timedResponse ? `限时演出=${ch.timedResponse}` : '',
+        ch.timedProof ? `限时证明=${ch.timedProof}` : '',
+        ch.finalFarewellTone ? `告别语气=${ch.finalFarewellTone}` : '',
+      ].filter(Boolean);
+      const metaSuffix = choiceMeta.length ? `  meta: ${choiceMeta.join(' | ')}` : '';
+      lines.push(`  [${label}] → ${ch.text}  →  ${ch.nextId}${metaSuffix}`);
     });
     if (node.choiceTimeoutMs || node.timeoutNextId) {
       lines.push(`  ※ 限时选项：${node.choiceTimeoutMs ?? '?'}ms，超时 → ${node.timeoutNextId ?? '?'}`);

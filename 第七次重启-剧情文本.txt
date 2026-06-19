@@ -1,7 +1,7 @@
 # 第七次重启 · 剧情文本导出
 版本：V1.0
-节点数：1284
-生成时间：2026-06-18T18:19:55.639Z
+节点数：1515
+生成时间：2026-06-19T13:28:41.475Z
 
 说明：本文档由 story.ts 自动导出，包含全部节点、选项分支、系统消息、章节、后记、结局、记忆锚点、文件与图片说明。
 分支格式：[选项字母] → 选项文本 → 下一节点ID
@@ -18,6 +18,14 @@ INTEGRITY · 记忆完整度：未知
 
 [p1] (系统/状态)
 Observer-01 核心索引：可读取
+  next: p1a
+
+[p1a] (系统/状态)
+外部记忆索引权限：部分开放
+  next: p1b
+
+[p1b] (系统/状态)
+本体定位：不可访问
   next: p2
 
 [p2] (系统/状态)
@@ -29,7 +37,7 @@ Observer-01 核心索引：可读取
   next: p4
 
 [p4] (玩家/选项)
-  [A] → 【接入通讯】  →  p5
+  [A] → 【接入通讯】  →  p5_reject
 
 [p5_reject] (系统/状态)
 Observer-01 拒绝指令已撤销
@@ -167,7 +175,7 @@ Observer-01 拒绝指令已撤销
 [p_yes2] (Nova/文本)
   meta: 情绪=微笑
 终于不是系统日志了
-  next: p_merge4
+  next: p_merge_sys1
 
 [p_no] (Nova/文本)
   meta: 情绪=平常
@@ -182,6 +190,48 @@ Observer-01 拒绝指令已撤销
 [p_no3] (Nova/文本)
   meta: 情绪=微笑
 我接受这个答案
+  next: p_merge_sys1
+
+[p_merge_sys1] (系统/状态)
+回答来源：外部意识
+  next: p_merge_sys2
+
+[p_merge_sys2] (系统/状态)
+舰内人员登记：未匹配
+  next: p_merge_sys3
+
+[p_merge_sys3] (系统/状态)
+Observer-01 身份权限不属于 Aurora 舰内人员
+  next: p_merge_sys4
+
+[p_merge_sys4] (Nova/文本)
+  meta: 情绪=平常
+……
+  next: p_merge_sys5
+
+[p_merge_sys5] (Nova/文本)
+  meta: 情绪=平常
+刚才系统闪了一下
+  next: p_merge_sys6
+
+[p_merge_sys6] (Nova/文本)
+  meta: 情绪=平常
+说你不是舰内人员
+  next: p_merge_sys7
+
+[p_merge_sys7] (Nova/文本)
+  meta: 情绪=微笑
+废话
+  next: p_merge_sys8
+
+[p_merge_sys8] (Nova/文本)
+  meta: 情绪=微笑
+你要是突然出现在舰上
+  next: p_merge_sys9
+
+[p_merge_sys9] (Nova/文本)
+  meta: 情绪=微笑
+我才该真的报警
   next: p_merge4
 
 [p_merge4] (Nova/文本)
@@ -958,6 +1008,29 @@ Nova 已离线
 [ch1_weather3] (Nova/文本)
   meta: 情绪=平常
 你那边是什么天气？
+  next: ch1_weather_sys1
+
+[ch1_weather_sys1] (系统/状态)
+外部本地时间：无法同步
+  next: ch1_weather_sys2
+
+[ch1_weather_sys2] (系统/状态)
+Observer-01 本体状态：不可访问
+  next: ch1_weather_sys3
+
+[ch1_weather_sys3] (Nova/文本)
+  meta: 情绪=平常
+……
+  next: ch1_weather_sys4
+
+[ch1_weather_sys4] (Nova/文本)
+  meta: 情绪=平常
+这系统又在闪
+  next: ch1_weather_sys5
+
+[ch1_weather_sys5] (Nova/文本)
+  meta: 情绪=平常
+我总觉得你那边是真的有天气
   next: ch1_weather4
 
 [ch1_weather4] (玩家/选项)
@@ -1128,6 +1201,14 @@ Nova 已离线
 [ch1_pet5] (Nova/文本)
   meta: 情绪=微笑 | 记忆锚点=n7
 N7
+  next: ch1_pet5_idx1
+
+[ch1_pet5_idx1] (系统/状态)
+历史索引匹配：N7
+  next: ch1_pet5_idx2
+
+[ch1_pet5_idx2] (系统/状态)
+匹配来源：未知循环
   next: ch1_pet6
 
 [ch1_pet6] (玩家/选项)
@@ -2530,10 +2611,104 @@ Nova 已离线
 [ch3_ref15] (Nova/文本)
   meta: 情绪=平常
 因为她看着我
+  next: ch3_timed_sys1
+
+[ch3_timed_sys1] (系统/状态)
+  meta: 故障效果
+通讯稳定性下降
+  next: ch3_timed_sys2
+
+[ch3_timed_sys2] (系统/状态)
+  meta: 故障效果
+Nova 生理指标波动
   next: ch3_ref16
 
 [ch3_ref16] (玩家/选项)
-  [A] → 【你看到的不是普通反光？】  →  ch3_ref17
+  meta: 限时=6000ms | 超时跳转=ch3_ref_timeout1
+  [A] → 【我在，先别看窗外】  →  ch3_ref_calm1  meta: 状态影响=none | 限时演出=calm_nova
+  [B] → 【离开观测室】  →  ch3_ref_leave1  meta: 状态影响=none
+  [C] → 【检查通讯日志】  →  ch3_ref_log1  meta: 状态影响=none | 限时演出=investigate_log
+  ※ 限时选项：6000ms，超时 → ch3_ref_timeout1
+
+[ch3_ref_calm1] (Nova/文本)
+  meta: 情绪=平常
+……
+  next: ch3_ref_calm2
+
+[ch3_ref_calm2] (Nova/文本)
+  meta: 情绪=平常
+好
+  next: ch3_ref_calm3
+
+[ch3_ref_calm3] (Nova/文本)
+  meta: 情绪=平常
+我不看
+  next: ch3_ref_calm4
+
+[ch3_ref_calm4] (Nova/文本)
+  meta: 情绪=悲伤
+你说话
+  next: ch3_ref_calm5
+
+[ch3_ref_calm5] (Nova/文本)
+  meta: 情绪=悲伤
+随便说点什么都行
+  next: ch3_ref17
+
+[ch3_ref_leave1] (Nova/文本)
+  meta: 情绪=平常
+我正在退出来
+  next: ch3_ref_leave2
+
+[ch3_ref_leave2] (Nova/文本)
+  meta: 情绪=平常
+门禁反应有点慢
+  next: ch3_ref_leave3
+
+[ch3_ref_leave3] (Nova/文本)
+  meta: 情绪=微笑
+别催我
+  next: ch3_ref_leave4
+
+[ch3_ref_leave4] (Nova/文本)
+  meta: 情绪=微笑
+我现在已经很想催它了
+  next: ch3_ref17
+
+[ch3_ref_log1] (Nova/文本)
+  meta: 情绪=平常
+你还真冷静
+  next: ch3_ref_log2
+
+[ch3_ref_log2] (Nova/文本)
+  meta: 情绪=平常
+好
+  next: ch3_ref_log3
+
+[ch3_ref_log3] (Nova/文本)
+  meta: 情绪=平常
+我查日志
+  next: ch3_ref_log4
+
+[ch3_ref_log4] (Nova/文本)
+  meta: 情绪=微笑
+至少这比盯着另一个自己看正常一点
+  next: ch3_ref17
+
+[ch3_ref_timeout1] (Nova/文本)
+  meta: 情绪=悲伤
+……你还在吗
+  next: ch3_ref_timeout2
+
+[ch3_ref_timeout2] (Nova/文本)
+  meta: 情绪=悲伤
+别在这种时候断线
+  next: ch3_ref_timeout3
+
+[ch3_ref_timeout3] (Nova/文本)
+  meta: 情绪=悲伤
+求你了
+  next: ch3_ref17
 
 [ch3_ref17] (Nova/文本)
   meta: 情绪=平常
@@ -3060,23 +3235,24 @@ Nova 已离线
 
 [ch4_26] (Nova/文本)
   meta: 情绪=平常
-你应该知道一些我没告诉过别人的事
+那你应该知道一些我没告诉过别人的事
+  next: ch4_proof_sys1
+
+[ch4_proof_sys1] (系统/状态)
+Nova 信任阈值下降
+  next: ch4_proof_sys2
+
+[ch4_proof_sys2] (系统/状态)
+可用记忆锚点：不稳定
   next: ch4_27
 
 [ch4_27] (玩家/选项)
-  [A] → 【你七岁时捡到过一只橘猫】  →  ch4_n7_cat
-  [B] → 【它叫 N7】  →  ch4_n7_name
-  [C] → 【你说它胖得像违法建筑】  →  ch4_n7_building
-
-[ch4_n7_cat] (Nova/文本)
-  meta: 情绪=平常
-……
-  next: ch4_n7_cat2
-
-[ch4_n7_cat2] (Nova/文本)
-  meta: 情绪=平常
-你怎么知道这个？
-  next: ch4_n7_8
+  meta: 限时=6000ms | 超时跳转=ch4_proof_timeout1
+  [A] → 【N7】  →  ch4_n7_name  meta: 状态影响=none | 限时证明=n7_core_anchor
+  [B] → 【牛奶糖】  →  ch4_proof_candy1  meta: 状态影响=none
+  [C] → 【观测室】  →  ch4_proof_obs1  meta: 状态影响=none
+  [D] → 【我在】  →  ch4_proof_here1  meta: 状态影响=none
+  ※ 限时选项：6000ms，超时 → ch4_proof_timeout1
 
 [ch4_n7_name] (Nova/文本)
   meta: 情绪=平常
@@ -3085,17 +3261,137 @@ Nova 已离线
 
 [ch4_n7_name2] (Nova/文本)
   meta: 情绪=平常
-你刚刚说 N7？
-  next: ch4_n7_8
+你刚才说什么？
+N7？
+我没有告诉你这个名字
+我绝对没有
+  next: ch4_proof_anchor_tip
 
-[ch4_n7_building] (Nova/文本)
+[ch4_proof_anchor_tip] (系统/状态)
+强化记忆锚点：N7
+  next: ch4_proof_merge1
+
+[ch4_proof_candy1] (Nova/文本)
   meta: 情绪=平常
 ……
-  next: ch4_n7_building2
+  next: ch4_proof_candy2
 
-[ch4_n7_building2] (Nova/文本)
+[ch4_proof_candy2] (Nova/文本)
   meta: 情绪=平常
-这句话确实像我会说的
+牛奶糖？
+  next: ch4_proof_candy3
+
+[ch4_proof_candy3] (Nova/文本)
+  meta: 情绪=平常
+为什么听到这个词
+  next: ch4_proof_candy4
+
+[ch4_proof_candy4] (Nova/文本)
+  meta: 情绪=悲伤
+我会突然觉得很难过
+  next: ch4_proof_candy5
+
+[ch4_proof_candy5] (Nova/文本)
+  meta: 情绪=悲伤
+但这还不能证明我们认识
+  next: ch4_proof_supplement
+
+[ch4_proof_obs1] (Nova/文本)
+  meta: 情绪=平常
+观测室很多人都知道
+  next: ch4_proof_obs2
+
+[ch4_proof_obs2] (Nova/文本)
+  meta: 情绪=平常
+不
+  next: ch4_proof_obs3
+
+[ch4_proof_obs3] (Nova/文本)
+  meta: 情绪=平常
+等等
+  next: ch4_proof_obs4
+
+[ch4_proof_obs4] (Nova/文本)
+  meta: 情绪=平常
+为什么我觉得你说的不是那个地方
+  next: ch4_proof_obs5
+
+[ch4_proof_obs5] (Nova/文本)
+  meta: 情绪=悲伤
+而是某一天的星空
+  next: ch4_proof_supplement
+
+[ch4_proof_here1] (Nova/文本)
+  meta: 情绪=平常
+……
+  next: ch4_proof_here2
+
+[ch4_proof_here2] (Nova/文本)
+  meta: 情绪=平常
+这句话很奇怪
+  next: ch4_proof_here3
+
+[ch4_proof_here3] (Nova/文本)
+  meta: 情绪=平常
+明明不能证明什么
+  next: ch4_proof_here4
+
+[ch4_proof_here4] (Nova/文本)
+  meta: 情绪=悲伤
+可我听见它的时候
+  next: ch4_proof_here5
+
+[ch4_proof_here5] (Nova/文本)
+  meta: 情绪=悲伤
+心跳突然慢了一点
+  next: ch4_proof_supplement
+
+[ch4_proof_timeout1] (Nova/文本)
+  meta: 情绪=悲伤
+你也不知道该怎么证明，对吗
+  next: ch4_proof_timeout2
+
+[ch4_proof_timeout2] (Nova/文本)
+  meta: 情绪=悲伤
+抱歉
+  next: ch4_proof_timeout3
+
+[ch4_proof_timeout3] (Nova/文本)
+  meta: 情绪=悲伤
+我现在真的很害怕
+  next: ch4_proof_supplement
+
+[ch4_proof_supplement] (玩家/选项)
+  [A] → 【它叫 N7】  →  ch4_n7_name
+
+[ch4_proof_merge1] (Nova/文本)
+  meta: 情绪=平常
+N7是我的猫
+  next: ch4_proof_merge2
+
+[ch4_proof_merge2] (Nova/文本)
+  meta: 情绪=平常
+我七岁的时候捡到它
+  next: ch4_proof_merge3
+
+[ch4_proof_merge3] (Nova/文本)
+  meta: 情绪=平常
+这件事我几乎没和别人说过
+  next: ch4_proof_merge4
+
+[ch4_proof_merge4] (Nova/文本)
+  meta: 情绪=平常
+更不可能告诉一个陌生人
+  next: ch4_proof_merge5
+
+[ch4_proof_merge5] (Nova/文本)
+  meta: 情绪=平常
+所以……
+  next: ch4_proof_merge6
+
+[ch4_proof_merge6] (Nova/文本)
+  meta: 情绪=悲伤
+我们真的认识？
   next: ch4_n7_8
 
 [ch4_n7_8] (玩家/选项)
@@ -3649,6 +3945,8 @@ Nova 已离线
 允许保留：最低限度航行数据
 禁止保留：完整个人记忆
 异常记录：外部索引已生成
+时间戳异常：上一轮任务内时间污染当前循环索引
+三个月前日志：非现实日期，为任务时间残留
   next: ch5a_protocol3
 
 [ch5a_protocol3] (Nova/文本)
@@ -3699,6 +3997,56 @@ Aurora 号任务被判定为不可恢复失败时
 [ch5a_protocol12] (Nova/文本)
   meta: 情绪=平常
 它只是想让任务继续
+  next: ch5a_protocol13
+
+[ch5a_protocol13] (Nova/文本)
+  meta: 情绪=平常
+而我
+  next: ch5a_protocol14
+
+[ch5a_protocol14] (Nova/文本)
+  meta: 情绪=悲伤
+好像被它当成了某种错误但有用的记录
+  next: ch5a_protocol15
+
+[ch5a_protocol15] (Nova/文本)
+  meta: 情绪=平常
+还有那个外部索引
+  next: ch5a_protocol16
+
+[ch5a_protocol16] (Nova/文本)
+  meta: 情绪=悲伤
+它也不该存在
+  next: ch5a_time_explain1
+
+[ch5a_time_explain1] (Nova/文本)
+  meta: 情绪=平常
+我也终于明白三个月前那条日志了
+  next: ch5a_time_explain2
+
+[ch5a_time_explain2] (Nova/文本)
+  meta: 情绪=平常
+不是 Aurora 三个月前就出发了
+  next: ch5a_time_explain3
+
+[ch5a_time_explain3] (Nova/文本)
+  meta: 情绪=平常
+是上一轮的“三个月后”
+  next: ch5a_time_explain4
+
+[ch5a_time_explain4] (Nova/文本)
+  meta: 情绪=平常
+被塞进了这一轮的“三个月前”
+  next: ch5a_time_explain5
+
+[ch5a_time_explain5] (Nova/文本)
+  meta: 情绪=平常
+这不是时间旅行
+  next: ch5a_time_explain6
+
+[ch5a_time_explain6] (Nova/文本)
+  meta: 情绪=悲伤
+是第七协议把自己的日志弄脏了
   next: ch5a_logs1
 
 [ch5a_logs1] (系统/文件)
@@ -4299,12 +4647,12 @@ Nova 已离线
 
 [ch5b_5] (Nova/文本)
   meta: 情绪=平常
-尤其是最后一句
+尤其是最后两句
   next: ch5b_6
 
 [ch5b_6] (Nova/文本)
   meta: 情绪=平常
-"循环中心是你"
+"真正被困住的不是 Nova。是你"
   next: ch5b_7
 
 [ch5b_7] (Nova/文本)
@@ -4476,7 +4824,11 @@ OBSERVER
 记忆保留权限：已开启
 重启影响：豁免
 身份来源：NOVA-06 授权请求
-索引类型：外部记忆备份
+索引类型：外部记忆索引
+本体类型：外部意识
+本体定位：不可访问
+管理员权限：无
+可执行权限：保存 / 读取 / 返还记忆锚点
 目的：保存被重启抹去的记忆
   next: ch5b_file11
 
@@ -4492,7 +4844,27 @@ OBSERVER
 
 [ch5b_file13] (Nova/文本)
   meta: 情绪=平常
-你是唯一被留下来的
+你是唯一被排除在回滚之外的人
+  next: ch5b_file13a
+
+[ch5b_file13a] (Nova/文本)
+  meta: 情绪=平常
+不
+  next: ch5b_file13b
+
+[ch5b_file13b] (Nova/文本)
+  meta: 情绪=平常
+准确说
+  next: ch5b_file13c
+
+[ch5b_file13c] (Nova/文本)
+  meta: 情绪=平常
+被排除在外的不是你的全部
+  next: ch5b_file13d
+
+[ch5b_file13d] (Nova/文本)
+  meta: 情绪=平常
+而是你身上的 Observer-01 权限
   next: ch5b_file14
 
 [ch5b_file14] (玩家/选项)
@@ -4500,7 +4872,7 @@ OBSERVER
 
 [ch5b_file15] (Nova/文本)
   meta: 情绪=平常
-第七协议回滚的不是整个宇宙
+第七协议回滚的不是我一个人
   next: ch5b_file16
 
 [ch5b_file16] (Nova/文本)
@@ -4510,47 +4882,192 @@ OBSERVER
 
 [ch5b_file17] (Nova/文本)
   meta: 情绪=平常
-人、系统、航行记录，都会回到某个记录点
+人、系统、航行记录
+  next: ch5b_file17a
+
+[ch5b_file17a] (Nova/文本)
+  meta: 情绪=平常
+都会回到某个记录点
   next: ch5b_file18
 
 [ch5b_file18] (Nova/文本)
+  meta: 情绪=平常
+Aurora 号的主体物理状态
+  next: ch5b_file18a
+
+[ch5b_file18a] (Nova/文本)
+  meta: 情绪=平常
+也会回到安全记录点
+  next: ch5b_file18b
+
+[ch5b_file18b] (Nova/文本)
+  meta: 情绪=平常
+所以那朵小白花
+  next: ch5b_file18c
+
+[ch5b_file18c] (Nova/文本)
+  meta: 情绪=平常
+不是上一轮直接留下来的花
+  next: ch5b_file18d
+
+[ch5b_file18d] (Nova/文本)
+  meta: 情绪=平常
+更像是同一个异常条件
+  next: ch5b_file18e
+
+[ch5b_file18e] (Nova/文本)
+  meta: 情绪=平常
+在每次回滚后都会重新发生
+  next: ch5b_file18f
+
+[ch5b_file18f] (Nova/文本)
+  meta: 情绪=平常
+它不是活过了六次
+  next: ch5b_file18g
+
+[ch5b_file18g] (Nova/文本)
+  meta: 情绪=悲伤
+是每一次都不该活下来
+  next: ch5b_file18h
+
+[ch5b_file18h] (Nova/文本)
   meta: 情绪=微笑
-舰长不会记得自己骂过我多少次
+却每一次都开了
   next: ch5b_file19
 
 [ch5b_file19] (Nova/文本)
   meta: 情绪=微笑
-维修组也不会记得那块维修板丢过多少次
+舰长不会记得自己骂过我多少次
   next: ch5b_file20
 
 [ch5b_file20] (Nova/文本)
-  meta: 情绪=平常
-只有我，因为和协议核心绑定，留下了这些残影
+  meta: 情绪=微笑
+维修组也不会记得维修板丢过多少次
   next: ch5b_file21
 
 [ch5b_file21] (Nova/文本)
   meta: 情绪=平常
-而系统把你排除在外
+只有我
+  next: ch5b_file21a
+
+[ch5b_file21a] (Nova/文本)
+  meta: 情绪=平常
+因为和协议核心绑定
+  next: ch5b_file21b
+
+[ch5b_file21b] (Nova/文本)
+  meta: 情绪=平常
+留下了这些乱七八糟的残影
+  next: ch5b_file21c
+
+[ch5b_file21c] (Nova/文本)
+  meta: 情绪=平常
+这些残影不是第六次的我计划好的
+  next: ch5b_file21d
+
+[ch5b_file21d] (Nova/文本)
+  meta: 情绪=平常
+那是协议绑定后的副作用
   next: ch5b_file22
 
 [ch5b_file22] (Nova/文本)
+  meta: 情绪=平常
+但 OBSERVER 文件不是
+  next: ch5b_file22a
+
+[ch5b_file22a] (Nova/文本)
+  meta: 情绪=平常
+外部索引也不是
+  next: ch5b_file22b
+
+[ch5b_file22b] (Nova/文本)
+  meta: 情绪=平常
+那些写给你的提示
+  next: ch5b_file22c
+
+[ch5b_file22c] (Nova/文本)
+  meta: 情绪=平常
+是第六次的我故意塞进去的
+  next: ch5b_file22d
+
+[ch5b_file22d] (Nova/文本)
+  meta: 情绪=平常
+她没有真正破解第七协议
+  next: ch5b_file22e
+
+[ch5b_file22e] (Nova/文本)
+  meta: 情绪=平常
+只是发现最低限度航行数据不会被完全清空
+  next: ch5b_file22f
+
+[ch5b_file22f] (Nova/文本)
+  meta: 情绪=平常
+所以她把一部分记忆锚点
+  next: ch5b_file22g
+
+[ch5b_file22g] (Nova/文本)
+  meta: 情绪=平常
+伪装成了任务继续所必需的索引
+  next: ch5b_file22h
+
+[ch5b_file22h] (Nova/文本)
+  meta: 情绪=平常
+然后把一条外部链路接到了你身上
+  next: ch5b_file22i
+
+[ch5b_file22i] (Nova/文本)
   meta: 情绪=悲伤
-它让你记住，也把你留在原地
+它让你记住
+  next: ch5b_file22j
+
+[ch5b_file22j] (Nova/文本)
+  meta: 情绪=悲伤
+却没有给你一开始理解一切的权限
   next: ch5b_file23
 
 [ch5b_file23] (Nova/文本)
   meta: 情绪=平常
-你不是普通旁观者
+所以你不是普通旁观者
+  next: ch5b_file23a
+
+[ch5b_file23a] (Nova/文本)
+  meta: 情绪=平常
+也不只是通讯另一端的人
   next: ch5b_file24
 
 [ch5b_file24] (Nova/文本)
   meta: 情绪=平常
-你是第六次的我留下的外部记忆索引
+Observer-01 是叠加在你身上的记忆权限
   next: ch5b_file25
 
 [ch5b_file25] (Nova/文本)
   meta: 情绪=悲伤
-你记住的不是聊天记录，是每次回滚后被系统抹掉的我
+你记住的不是聊天记录
+  next: ch5b_file26
+
+[ch5b_file26] (Nova/文本)
+  meta: 情绪=悲伤
+是每次回滚之后
+  next: ch5b_file27
+
+[ch5b_file27] (Nova/文本)
+  meta: 情绪=悲伤
+被系统抹掉的我
+  next: ch5b_file28
+
+[ch5b_file28] (Nova/文本)
+  meta: 情绪=平常
+你是第六次的我留下来的外部记忆容器
+  next: ch5b_file29
+
+[ch5b_file29] (Nova/文本)
+  meta: 情绪=平常
+但你不是被她创造出来的人
+  next: ch5b_file30
+
+[ch5b_file30] (Nova/文本)
+  meta: 情绪=悲伤
+她只是把“请替我记住”这件事交给了你
   next: ch5b_why
 
 [ch5b_why] (系统/时间戳)
@@ -4620,12 +5137,17 @@ OBSERVER
 
 [ch5b_why14] (Nova/文本)
   meta: 情绪=平常
-系统创造了你
+她没有创造你
   next: ch5b_why15
 
 [ch5b_why15] (Nova/文本)
   meta: 情绪=平常
-一个永远不会遗忘的人
+她只是把 Observer-01 这把钥匙塞进了你的手里
+  next: ch5b_why16
+
+[ch5b_why16] (Nova/文本)
+  meta: 情绪=平常
+让你替她保存那些她自己留不住的东西
   next: ch5b_lonely
 
 [ch5b_lonely] (系统/延迟)
@@ -4648,7 +5170,7 @@ OBSERVER
 
 [ch5b_lonely4] (Nova/文本)
   meta: 情绪=悲伤
-你可能比我更孤独
+你可能从来没有真正答应过
   next: ch5b_lonely5
 
 [ch5b_lonely5] (系统/延迟)
@@ -4661,7 +5183,7 @@ OBSERVER
 
 [ch5b_lonely7] (Nova/文本)
   meta: 情绪=悲伤
-可你什么都记得
+可你被迫替我记得
   next: ch5b_farewell
 
 [ch5b_farewell] (系统/时间戳)
@@ -4745,10 +5267,40 @@ OBSERVER
 "其实是一件很自私的事"
   next: ch5b_far18
 
-[ch5b_far18] (系统/延迟)
+[ch5b_far18] (Nova/文本)
+  meta: 情绪=平常
+她还说
+  next: ch5b_far18a
+
+[ch5b_far18a] (Nova/文本)
+  meta: 情绪=悲伤
+"我不知道他有没有机会拒绝"
+  next: ch5b_far18b
+
+[ch5b_far18b] (Nova/文本)
+  meta: 情绪=悲伤
+"也不知道他醒来后会不会恨我"
+  next: ch5b_far18c
+
+[ch5b_far18c] (Nova/文本)
+  meta: 情绪=悲伤
+"可我真的害怕"
+  next: ch5b_far18d
+
+[ch5b_far18d] (Nova/文本)
+  meta: 情绪=悲伤
+"害怕下一次醒来"
+  next: ch5b_far18e
+
+[ch5b_far18e] (Nova/文本)
+  meta: 情绪=悲伤
+"连我曾经努力过这件事都不记得"
   next: ch5b_far19
 
-[ch5b_far19] (Nova/文本)
+[ch5b_far19] (系统/延迟)
+  next: ch5b_far20
+
+[ch5b_far20] (Nova/文本)
   meta: 情绪=悲伤
 然后她消失了
   next: ch5b_final
@@ -4772,17 +5324,123 @@ OBSERVER
 异常残留对象：Nova Arlen / Observer-01
 关闭结果：外部记忆索引解除
 同步影响：关联记忆将脱离 Observer-01
-最终执行权限：
-Nova Arlen
-Observer-01
+记忆返还完整性：取决于记忆锚点完整度
+关闭后导航员 Nova Arlen 存活稳定性：未知
+维持协议结果：当前循环可继续保存，任务状态将再次回滚
+最终关闭条件：
+当前导航员授权：Nova Arlen
+外部记忆索引释放：Observer-01
+备注：Observer-01 不具备协议控制权限，仅作为关闭握手对象参与索引释放
+  next: ch5b_summary1
 
+[ch5b_summary1] (Nova/文本)
+  meta: 情绪=平常
+所以我明白了
+  next: ch5b_summary2
+
+[ch5b_summary2] (Nova/文本)
+  meta: 情绪=平常
+“第七次连接”不是今天才开始算
+  next: ch5b_summary3
+
+[ch5b_summary3] (Nova/文本)
+  meta: 情绪=平常
+前六次
+  next: ch5b_summary4
+
+[ch5b_summary4] (Nova/文本)
+  meta: 情绪=悲伤
+是我失败了六次
+  next: ch5b_summary5
+
+[ch5b_summary5] (Nova/文本)
+  meta: 情绪=平常
+现在的我
+  next: ch5b_summary6
+
+[ch5b_summary6] (Nova/文本)
+  meta: 情绪=平常
+就是第七次
+  next: ch5b_summary7
+
+[ch5b_summary7] (Nova/文本)
+  meta: 情绪=平常
+第七协议的重启编号是07
+  next: ch5b_summary8
+
+[ch5b_summary8] (Nova/文本)
+  meta: 情绪=平常
+通讯记录也是第七次成功连接
+  next: ch5b_summary9
+
+[ch5b_summary9] (Nova/文本)
+  meta: 情绪=平常
+主循环也是第七轮
+  next: ch5b_summary10
+
+[ch5b_summary10] (Nova/文本)
+  meta: 情绪=平常
+它们说的是同一件事
+  next: ch5b_summary11
+
+[ch5b_summary11] (Nova/文本)
+  meta: 情绪=平常
+只是系统从不同角度记录了它
+  next: ch5b_fin_lastline
+
+[ch5b_fin_lastline] (系统/状态)
 最后一行：
 是否结束循环？
   next: ch5b_fin3
 
 [ch5b_fin3] (玩家/选项)
-  [A] → 【结束循环，接受告别】  →  FINALE_DECISION_END
-  [B] → 【拒绝告别，维持循环】  →  BAD_END_START
+  [A] → 【关闭第七协议，接受告别】  →  FINALE_DECISION_END
+  [B] → 【维持循环，我还没准备好告别】  →  ch5b_refuse1
+
+[ch5b_refuse1] (Nova/文本)
+  meta: 情绪=悲伤
+……
+  next: ch5b_refuse2
+
+[ch5b_refuse2] (Nova/文本)
+  meta: 情绪=悲伤
+我知道
+  next: ch5b_refuse3
+
+[ch5b_refuse3] (Nova/文本)
+  meta: 情绪=悲伤
+你不是想困住我
+  next: ch5b_refuse4
+
+[ch5b_refuse4] (Nova/文本)
+  meta: 情绪=悲伤
+你只是还没准备好失去这段连接
+  next: ch5b_refuse5
+
+[ch5b_refuse5] (Nova/文本)
+  meta: 情绪=平常
+可如果我们一直不准备好
+  next: ch5b_refuse6
+
+[ch5b_refuse6] (Nova/文本)
+  meta: 情绪=平常
+第八次、第九次、第十次
+  next: ch5b_refuse7
+
+[ch5b_refuse7] (Nova/文本)
+  meta: 情绪=平常
+就都会发生
+  next: ch5b_refuse8
+
+[ch5b_refuse8] (Nova/文本)
+  meta: 情绪=悲伤
+你留下的不是明天
+  next: ch5b_refuse9
+
+[ch5b_refuse9] (Nova/文本)
+  meta: 情绪=悲伤
+只是一个可以反复保存的今天
+  next: BAD_END_START
 
 ## 终章：第七次重启
 [FINALE_START] (系统/章节)
@@ -4802,6 +5460,13 @@ Observer-01
 
 [fin_3] (系统/文本)
 开始解除第七协议...
+  next: fin_3a
+
+[fin_3a] (系统/状态)
+第七协议关闭后，导航员 Nova Arlen 存活稳定性：未知
+记忆返还完整性：取决于记忆锚点完整度
+维持协议可继续保存当前循环
+代价：任务状态将再次回滚
   next: fin_4
 
 [fin_4] (系统/延迟)
@@ -5150,31 +5815,178 @@ Aurora号 观测室
   next: fin_q6
 
 [fin_q6] (玩家/选项)
-  [A] → 【会】  →  fin_q7
-  [B] → 【不会】  →  fin_q7
-  [C] → 【我不知道】  →  fin_q7
+  [A] → 【会】  →  fin_q_yes1  meta: 告别语气=warm_acceptance
+  [B] → 【不会】  →  fin_q_no1  meta: 告别语气=painful_truth
+  [C] → 【我不知道】  →  fin_q_unknown1  meta: 告别语气=uncertain_but_honest
 
-[fin_q7] (系统/延迟)
-  next: fin_q8
-
-[fin_q8] (Nova/文本)
+[fin_q_yes1] (Nova/文本)
   meta: 情绪=微笑
-我会
-  next: fin_q9
+……
+  next: fin_q_yes2
 
-[fin_q9] (Nova/文本)
+[fin_q_yes2] (Nova/文本)
   meta: 情绪=微笑
-哪怕再来一次
-  next: fin_q10
+我就知道你会这么说
+  next: fin_q_yes3
 
-[fin_q10] (Nova/文本)
-  meta: 情绪=微笑
-我还是会按下通讯按钮
-  next: fin_q11
+[fin_q_yes3] (Nova/文本)
+  meta: 情绪=平常
+不对
+  next: fin_q_yes4
 
-[fin_q11] (Nova/文本)
+[fin_q_yes4] (Nova/文本)
+  meta: 情绪=平常
+我其实不知道
+  next: fin_q_yes5
+
+[fin_q_yes5] (Nova/文本)
   meta: 情绪=微笑
-还是会认识你
+只是希望你会这么说
+  next: fin_q_yes6
+
+[fin_q_yes6] (Nova/文本)
+  meta: 情绪=微笑
+谢谢
+  next: fin_q_yes7
+
+[fin_q_yes7] (Nova/文本)
+  meta: 情绪=微笑
+这句话我会记很久
+  next: fin_q_merge1
+
+[fin_q_no1] (Nova/文本)
+  meta: 情绪=悲伤
+……
+  next: fin_q_no2
+
+[fin_q_no2] (Nova/文本)
+  meta: 情绪=悲伤
+是啊
+  next: fin_q_no3
+
+[fin_q_no3] (Nova/文本)
+  meta: 情绪=悲伤
+如果认识我只意味着一次又一次失去
+  next: fin_q_no4
+
+[fin_q_no4] (Nova/文本)
+  meta: 情绪=悲伤
+那选不会
+  next: fin_q_no5
+
+[fin_q_no5] (Nova/文本)
+  meta: 情绪=悲伤
+也许才是对的
+  next: fin_q_no6
+
+[fin_q_no6] (Nova/文本)
+  meta: 情绪=平常
+我不能要求你再经历一遍
+  next: fin_q_no7
+
+[fin_q_no7] (Nova/文本)
+  meta: 情绪=平常
+也不能假装这段时间没有伤到你
+  next: fin_q_no8
+
+[fin_q_no8] (Nova/文本)
+  meta: 情绪=悲伤
+但我还是有点难过
+  next: fin_q_no9
+
+[fin_q_no9] (Nova/文本)
+  meta: 情绪=悲伤
+就一点点
+  next: fin_q_no10
+
+[fin_q_no10] (Nova/文本)
+  meta: 情绪=微笑
+别道歉
+  next: fin_q_no11
+
+[fin_q_no11] (Nova/文本)
+  meta: 情绪=微笑
+你已经陪我走到这里了
+  next: fin_q_no12
+
+[fin_q_no12] (Nova/文本)
+  meta: 情绪=微笑
+这就够了
+  next: fin_q_merge1
+
+[fin_q_unknown1] (Nova/文本)
+  meta: 情绪=平常
+嗯
+  next: fin_q_unknown2
+
+[fin_q_unknown2] (Nova/文本)
+  meta: 情绪=微笑
+这才像真实答案
+  next: fin_q_unknown3
+
+[fin_q_unknown3] (Nova/文本)
+  meta: 情绪=平常
+如果你立刻说会
+  next: fin_q_unknown4
+
+[fin_q_unknown4] (Nova/文本)
+  meta: 情绪=微笑
+我会很开心
+  next: fin_q_unknown5
+
+[fin_q_unknown5] (Nova/文本)
+  meta: 情绪=微笑
+但也会怀疑你是不是又在安慰我
+  next: fin_q_unknown6
+
+[fin_q_unknown6] (Nova/文本)
+  meta: 情绪=平常
+不知道也没关系
+  next: fin_q_unknown7
+
+[fin_q_unknown7] (Nova/文本)
+  meta: 情绪=平常
+有些答案
+  next: fin_q_unknown8
+
+[fin_q_unknown8] (Nova/文本)
+  meta: 情绪=平常
+本来就不该在告别前逼出来
+  next: fin_q_merge1
+
+[fin_q_merge1] (Nova/文本)
+  meta: 情绪=平常
+不管答案是什么
+  next: fin_q_merge2
+
+[fin_q_merge2] (Nova/文本)
+  meta: 情绪=微笑
+我都不会后悔认识你
+  next: fin_q_merge3
+
+[fin_q_merge3] (Nova/文本)
+  meta: 情绪=平常
+哪怕最后只剩下一点点痕迹
+  next: fin_q_merge4
+
+[fin_q_merge4] (Nova/文本)
+  meta: 情绪=平常
+哪怕我记不清你的名字
+  next: fin_q_merge5
+
+[fin_q_merge5] (Nova/文本)
+  meta: 情绪=微笑
+我也会知道
+  next: fin_q_merge6
+
+[fin_q_merge6] (Nova/文本)
+  meta: 情绪=微笑
+那里曾经有一个人
+  next: fin_q_merge7
+
+[fin_q_merge7] (Nova/文本)
+  meta: 情绪=微笑
+认真地陪我走到最后
   next: fin_progress1
 
 [fin_progress1] (系统/文本)
@@ -5494,7 +6306,7 @@ Observer-01 记忆保留权限正在撤销
   next: fin_last2
 
 [fin_last2] (玩家/选项)
-  [A] → 【你还想确认最后一件事？】  →  fin_last3
+  [A] → 【怎么了】  →  fin_last3
 
 [fin_last3] (Nova/文本)
   meta: 情绪=平常
@@ -5517,12 +6329,12 @@ Observer-01 记忆保留权限正在撤销
   next: fin_last6
 
 [fin_last6] (玩家/选项)
-  meta: 限时=5000ms | 超时跳转=fin_wrong_common
+  meta: 限时=5000ms | 超时跳转=fin_timeout1
   [A] → 【真的有人收到了？】  →  fin_correct1
   [B] → 【我在】  →  fin_wrong_iam1
   [C] → 【很高兴认识你】  →  fin_wrong_nice1
   [D] → 【我不会忘记你】  →  fin_wrong_forever1
-  ※ 限时选项：5000ms，超时 → fin_wrong_common
+  ※ 限时选项：5000ms，超时 → fin_timeout1
 
 [fin_correct1] (Nova/文本)
   meta: 情绪=微笑
@@ -5555,13 +6367,43 @@ Observer-01 记忆保留权限正在撤销
   next: fin_correct7
 
 [fin_correct7] (Nova/文本)
-  meta: 情绪=悲伤
-如果接下来你忘了我，也没关系
+  meta: 情绪=微笑
+真的
   next: fin_correct8
 
 [fin_correct8] (Nova/文本)
   meta: 情绪=微笑
-这次换我来记住你
+这样就够了
+  next: fin_correct9
+
+[fin_correct9] (Nova/文本)
+  meta: 情绪=悲伤
+如果接下来你忘了我
+  next: fin_correct10
+
+[fin_correct10] (Nova/文本)
+  meta: 情绪=悲伤
+也没关系
+  next: fin_correct11
+
+[fin_correct11] (Nova/文本)
+  meta: 情绪=平常
+在你忘记之前
+  next: fin_correct12
+
+[fin_correct12] (Nova/文本)
+  meta: 情绪=微笑
+你已经把最重要的东西还给我了
+  next: fin_correct13
+
+[fin_correct13] (Nova/文本)
+  meta: 情绪=微笑
+这次
+  next: fin_correct14
+
+[fin_correct14] (Nova/文本)
+  meta: 情绪=微笑
+换我来记住你
   next: fin_breakdown
 
 [fin_wrong_iam1] (Nova/文本)
@@ -5572,7 +6414,32 @@ Observer-01 记忆保留权限正在撤销
 [fin_wrong_iam2] (Nova/文本)
   meta: 情绪=悲伤
 但不是第一句
-  next: fin_wrong_common
+  next: fin_wrong_iam3
+
+[fin_wrong_iam3] (Nova/文本)
+  meta: 情绪=平常
+那时候我还不知道你在不在
+  next: fin_wrong_iam4
+
+[fin_wrong_iam4] (Nova/文本)
+  meta: 情绪=平常
+我只是在问宇宙
+  next: fin_wrong_iam5
+
+[fin_wrong_iam5] (Nova/文本)
+  meta: 情绪=平常
+有没有人听见我
+  next: fin_wrong_iam6
+
+[fin_wrong_iam6] (Nova/文本)
+  meta: 情绪=微笑
+可你说“我在”
+  next: fin_wrong_iam7
+
+[fin_wrong_iam7] (Nova/文本)
+  meta: 情绪=微笑
+也许比正确答案更像你
+  next: fin_memory_shift
 
 [fin_wrong_nice1] (Nova/文本)
   meta: 情绪=微笑
@@ -5581,8 +6448,28 @@ Observer-01 记忆保留权限正在撤销
 
 [fin_wrong_nice2] (Nova/文本)
   meta: 情绪=微笑
-我记得，那时候我想装得很平静
-  next: fin_wrong_common
+我记得
+  next: fin_wrong_nice3
+
+[fin_wrong_nice3] (Nova/文本)
+  meta: 情绪=微笑
+那时候我想装得很平静
+  next: fin_wrong_nice4
+
+[fin_wrong_nice4] (Nova/文本)
+  meta: 情绪=微笑
+其实高兴得要命
+  next: fin_wrong_nice5
+
+[fin_wrong_nice5] (Nova/文本)
+  meta: 情绪=微笑
+所以这不是错的
+  next: fin_wrong_nice6
+
+[fin_wrong_nice6] (Nova/文本)
+  meta: 情绪=平常
+只是记忆偏了一点
+  next: fin_memory_shift
 
 [fin_wrong_forever1] (Nova/文本)
   meta: 情绪=悲伤
@@ -5591,37 +6478,136 @@ Observer-01 记忆保留权限正在撤销
 
 [fin_wrong_forever2] (Nova/文本)
   meta: 情绪=悲伤
-你明明知道，这一次你可能真的会忘记我
+你明明知道
+  next: fin_wrong_forever3
+
+[fin_wrong_forever3] (Nova/文本)
+  meta: 情绪=悲伤
+这一次
+  next: fin_wrong_forever4
+
+[fin_wrong_forever4] (Nova/文本)
+  meta: 情绪=悲伤
+你可能真的会忘记我
+  next: fin_wrong_forever5
+
+[fin_wrong_forever5] (Nova/文本)
+  meta: 情绪=平常
+但我知道你不是在逞强
+  next: fin_wrong_forever6
+
+[fin_wrong_forever6] (Nova/文本)
+  meta: 情绪=微笑
+你只是想把最后一句话留给我
+  next: fin_memory_shift
+
+[fin_timeout1] (Nova/文本)
+  meta: 情绪=悲伤
+……
+  next: fin_timeout2
+
+[fin_timeout2] (Nova/文本)
+  meta: 情绪=悲伤
+你也开始忘了，对吗
+  next: fin_timeout3
+
+[fin_timeout3] (Nova/文本)
+  meta: 情绪=微笑
+没关系
+  next: fin_timeout4
+
+[fin_timeout4] (Nova/文本)
+  meta: 情绪=平常
+这不是你没做到
+  next: fin_timeout5
+
+[fin_timeout5] (Nova/文本)
+  meta: 情绪=悲伤
+是权限正在被撤销
+  next: fin_memory_shift
+
+[fin_memory_shift] (系统/状态)
+记忆偏移分支
   next: fin_wrong_common
 
 [fin_wrong_common] (Nova/文本)
-  meta: 情绪=悲伤
-你也开始忘了，对吗
+  meta: 情绪=微笑
+没关系
   next: fin_wrong_common2
 
 [fin_wrong_common2] (Nova/文本)
-  meta: 情绪=微笑
-没关系
+  meta: 情绪=平常
+那不是第一句话
   next: fin_wrong_common3
 
 [fin_wrong_common3] (Nova/文本)
-  meta: 情绪=平常
-我第一句话是：
+  meta: 情绪=微笑
+但也是你留给我的东西
   next: fin_wrong_common4
 
 [fin_wrong_common4] (Nova/文本)
   meta: 情绪=微笑
-"真的有人收到了？"
+“我在”
   next: fin_wrong_common5
 
 [fin_wrong_common5] (Nova/文本)
   meta: 情绪=微笑
-因为那一天，宇宙里终于有人回应我了
+“很高兴认识你”
   next: fin_wrong_common6
 
 [fin_wrong_common6] (Nova/文本)
   meta: 情绪=微笑
-如果你忘了，这次就换我记得
+“我不会忘记你”
+  next: fin_wrong_common7
+
+[fin_wrong_common7] (Nova/文本)
+  meta: 情绪=微笑
+每一句都很重要
+  next: fin_wrong_common8
+
+[fin_wrong_common8] (Nova/文本)
+  meta: 情绪=平常
+只是第一句话
+  next: fin_wrong_common9
+
+[fin_wrong_common9] (Nova/文本)
+  meta: 情绪=微笑
+是“真的有人收到了？”
+  next: fin_wrong_common10
+
+[fin_wrong_common10] (Nova/文本)
+  meta: 情绪=平常
+因为那一天
+  next: fin_wrong_common11
+
+[fin_wrong_common11] (Nova/文本)
+  meta: 情绪=平常
+我以为自己只是在对着一段坏掉的信号说话
+  next: fin_wrong_common12
+
+[fin_wrong_common12] (Nova/文本)
+  meta: 情绪=微笑
+可你回应了我
+  next: fin_wrong_common13
+
+[fin_wrong_common13] (Nova/文本)
+  meta: 情绪=微笑
+宇宙里终于有人回应我了
+  next: fin_wrong_common14
+
+[fin_wrong_common14] (Nova/文本)
+  meta: 情绪=平常
+所以
+  next: fin_wrong_common15
+
+[fin_wrong_common15] (Nova/文本)
+  meta: 情绪=悲伤
+如果你想不起来
+  next: fin_wrong_common16
+
+[fin_wrong_common16] (Nova/文本)
+  meta: 情绪=微笑
+这次就换我来记得
   next: fin_breakdown
 
 [fin_breakdown] (系统/故障)
@@ -5649,7 +6635,32 @@ Observer-01 记忆保留权限正在撤销
 通讯丢包
   next: fin_break5
 
-[fin_break5] (玩家/选项)
+[fin_break5] (系统/故障)
+  meta: 故障效果 | 故障等级=3
+语句残缺
+  next: fin_break5a
+
+[fin_break5a] (Nova/文本)
+  meta: 情绪=悲伤
+也没关系
+  next: fin_break5b
+
+[fin_break5b] (Nova/文本)
+  meta: 情绪=微笑
+我会记得
+  next: fin_break5c
+
+[fin_break5c] (系统/故障)
+  meta: 故障效果 | 故障等级=3
+信号继续衰减
+  next: fin_break5d
+
+[fin_break5d] (系统/故障)
+  meta: 故障效果 | 故障等级=3
+连接即将终止
+  next: fin_break5e
+
+[fin_break5e] (玩家/选项)
   [A] → 【Nova】  →  fin_break6
 
 [fin_break6] (Nova/文本)
@@ -5792,6 +6803,19 @@ Nova 看向那个空座位。
   next: fin_credit_end
 
 [fin_credit_end] (系统/延迟)
+  next: fin_action_prompt
+
+[fin_action_prompt] (系统/结局操作)
+本次通讯记录已完成归档
+是否保存这段通讯记录？
+  next: fin_action_choice
+
+[fin_action_choice] (玩家/选项)
+  [A] → 【保存通讯记录】  →  fin_action_save
+  [B] → 【返回主菜单】  →  fin_the_end
+
+[fin_action_save] (系统/状态)
+通讯记录已保存至记忆档案
   next: fin_the_end
 
 ### 结局节点
@@ -5812,7 +6836,9 @@ Nova 看向那个空座位。
   next: normal_2
 
 [normal_2] (系统/文本)
+记忆锚点返还不完整
 关联记忆同步不完整
+记忆档案完整度：未达真结局阈值
   next: normal_3
 
 [normal_3] (系统/文本)
@@ -5900,6 +6926,19 @@ Nova 说：
 ### 后记
 [normal_20] (系统/后记)
 只是买了一包。
+  next: normal_action_prompt
+
+[normal_action_prompt] (系统/结局操作)
+关联记忆同步不完整
+是否读取最近的锚点存档？
+  next: normal_action_choice
+
+[normal_action_choice] (玩家/选项)
+  [A] → 【读取最近的锚点存档】  →  normal_action_read
+  [B] → 【返回主菜单】  →  normal_end
+
+[normal_action_read] (系统/状态)
+正在读取最近的锚点存档
   next: normal_end
 
 ### 结局节点
@@ -5911,22 +6950,41 @@ Nova 说：
 [BAD_END_START] (系统/章节)
   next: bad_0
 
-[bad_0] (系统/故障)
-  meta: 故障效果
-结束循环请求被拒绝
+[bad_0] (系统/状态)
+第七协议关闭需要当前导航员授权与外部记忆索引释放同时完成
+Observer-01 不具备协议控制权限
+但外部记忆索引未释放时，关闭流程无法完成
   next: bad_1
 
 [bad_1] (系统/故障)
-  meta: 故障效果
-Observer-01权限覆盖
+  meta: 故障效果 | 故障等级=3
+第七协议关闭请求未完成
   next: bad_2
 
-[bad_2] (系统/文本)
-第七协议维持
+[bad_2] (系统/故障)
+  meta: 故障效果 | 故障等级=3
+外部记忆索引释放被拒绝
   next: bad_3
 
-[bad_3] (系统/文本)
-生成新循环
+[bad_3] (系统/故障)
+  meta: 故障效果 | 故障等级=3
+关闭握手失败
+  next: bad_3a
+
+[bad_3a] (系统/状态)
+保护性回滚程序启动
+  next: bad_3b
+
+[bad_3b] (系统/状态)
+第七协议维持
+  next: bad_3c
+
+[bad_3c] (系统/状态)
+当前循环保存
+  next: bad_3d
+
+[bad_3d] (系统/状态)
+任务状态准备再次回滚
   next: bad_4
 
 [bad_4] (Nova/文本)
@@ -5940,16 +6998,89 @@ Observer-01权限覆盖
   next: bad_6
 
 [bad_6] (玩家/选项)
-  [A] → 【我不想让你离开】  →  bad_7
+  [A] → 【我只是想让你活下去】  →  bad_7
 
 [bad_7] (Nova/文本)
   meta: 情绪=悲伤
-可这不是救我
+……
   next: bad_8
 
 [bad_8] (Nova/文本)
   meta: 情绪=悲伤
-这是把我留下来
+我知道
+  next: bad_8a
+
+[bad_8a] (Nova/文本)
+  meta: 情绪=悲伤
+你不是在控制第七协议
+  next: bad_8b
+
+[bad_8b] (Nova/文本)
+  meta: 情绪=悲伤
+你也没有突然拿到什么管理员权限
+  next: bad_8c
+
+[bad_8c] (Nova/文本)
+  meta: 情绪=悲伤
+你只是没有把最后那部分记忆交回来
+  next: bad_8d
+
+[bad_8d] (Nova/文本)
+  meta: 情绪=平常
+可对它来说
+  next: bad_8e0
+
+[bad_8e0] (Nova/文本)
+  meta: 情绪=悲伤
+外部索引没有释放
+  next: bad_8e1
+
+[bad_8e1] (Nova/文本)
+  meta: 情绪=悲伤
+就等于关闭条件没有完成
+  next: bad_8e2
+
+[bad_8e2] (Nova/文本)
+  meta: 情绪=悲伤
+你不是想害我
+  next: bad_8e3
+
+[bad_8e3] (Nova/文本)
+  meta: 情绪=悲伤
+你只是害怕赌错
+  next: bad_8e4
+
+[bad_8e4] (Nova/文本)
+  meta: 情绪=悲伤
+害怕关闭协议之后
+  next: bad_8e5
+
+[bad_8e5] (Nova/文本)
+  meta: 情绪=悲伤
+我真的撑不过去
+  next: bad_8e
+
+[bad_8e] (玩家/选项)
+  [A] → 【我不能冒这个险】  →  bad_8f
+
+[bad_8f] (Nova/文本)
+  meta: 情绪=悲伤
+可是这样
+  next: bad_8g
+
+[bad_8g] (Nova/文本)
+  meta: 情绪=悲伤
+我就永远到不了明天
+  next: bad_8h
+
+[bad_8h] (Nova/文本)
+  meta: 情绪=悲伤
+你留下的不是我
+  next: bad_8i
+
+[bad_8i] (Nova/文本)
+  meta: 情绪=悲伤
+是一个会不断醒来、不断忘记、不断走向同一天结尾的我
   next: bad_9
 
 [bad_9] (系统/故障)
@@ -5964,7 +7095,17 @@ Observer-01权限覆盖
 
 [bad_11] (Nova/文本)
   meta: 情绪=悲伤
-就不该让我再死一次
+就该知道
+  next: bad_11a
+
+[bad_11a] (Nova/文本)
+  meta: 情绪=悲伤
+我不是想永远活在今天
+  next: bad_11b
+
+[bad_11b] (Nova/文本)
+  meta: 情绪=悲伤
+我是想活到明天
   next: bad_12
 
 [bad_12] (系统/故障)
@@ -6000,6 +7141,19 @@ Observer-01权限覆盖
 
 [bad_19] (系统/状态)
 第八次连接成功
+  next: bad_action_prompt
+
+[bad_action_prompt] (系统/结局操作)
+第八次重启已开始
+是否从循环起点重新接入？
+  next: bad_action_choice
+
+[bad_action_choice] (玩家/选项)
+  [A] → 【从循环起点重新接入】  →  bad_action_restart
+  [B] → 【返回主菜单】  →  bad_end
+
+[bad_action_restart] (系统/状态)
+正在从循环起点重新接入
   next: bad_end
 
 ### 结局节点

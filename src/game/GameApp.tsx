@@ -76,7 +76,6 @@ function clampStat(value: number): number {
 function getFinalFarewellVariant(choice: Choice): FinalFarewellVariant | undefined {
   if (choice.nextId === 'fin_correct1') return 'remembered_until_end';
   if (/^fin_wrong_/.test(choice.nextId)) return 'remembered_wrong';
-  if (choice.nextId === 'fin_timeout1') return 'forgetting_started';
   return undefined;
 }
 
@@ -518,6 +517,7 @@ export default function GameApp() {
           node.type === 'file' ||
           node.type === 'draft' ||
           node.type === 'epilogue' ||
+          node.type === 'ending-action' ||
           nodeArchiveUnlocks.length > 0
         ) {
           persistState(getPendingNodeIdAfterNode(nodeId), currentMsgs);
@@ -686,15 +686,19 @@ export default function GameApp() {
       acceptFarewell: current.acceptFarewell,
       finalChoice: current.finalChoice,
       finalFarewellVariant: current.finalFarewellVariant,
+      finalFarewellTone: current.finalFarewellTone,
+      timedResponse: current.timedResponse,
+      timedProof: current.timedProof,
       ending: current.ending,
       unlockedArchives: [...current.unlockedArchives],
       endingsUnlocked: [...current.endingsUnlocked],
     };
 
-    if (/没事|我在|别怕|辛苦|晚安|当然|会|记得|真漂亮|听起来不错/.test(text)) {
+    const shouldApplyStatEffects = choice.statEffect !== 'none';
+    if (shouldApplyStatEffects && /没事|我在|别怕|辛苦|晚安|当然|会|记得|真漂亮|听起来不错/.test(text)) {
       next.trust = clampStat(next.trust + 1);
     }
-    if (/第七次|循环|日志|Observer|真相|记录者|记忆载体/.test(text)) {
+    if (shouldApplyStatEffects && /第七次|循环|日志|Observer|真相|记录者|记忆载体/.test(text)) {
       next.memory = clampStat(next.memory + 1);
     }
     if (choice.nextId === 'FINALE_DECISION_END' || /结束循环|接受告别/.test(text)) {
@@ -710,7 +714,21 @@ export default function GameApp() {
     if (finalFarewellVariant) {
       next.finalFarewellVariant = finalFarewellVariant;
     }
-    if (choice.nextId === 'FINALE_DECISION_END' || choice.nextId === 'BAD_END_START') {
+    if (choice.finalFarewellTone) {
+      next.finalFarewellTone = choice.finalFarewellTone;
+    }
+    if (choice.timedResponse) {
+      next.timedResponse = choice.timedResponse;
+    }
+    if (choice.timedProof) {
+      next.timedProof = choice.timedProof;
+    }
+
+    const isFinalDecision =
+      choice.nextId === 'FINALE_DECISION_END' ||
+      choice.nextId === 'BAD_END_START' ||
+      /关闭第七协议|结束循环|接受告别|拒绝告别|维持循环/.test(text);
+    if (isFinalDecision) {
       next.ending = determineEnding(next);
     }
 
@@ -760,19 +778,23 @@ export default function GameApp() {
         memoryAnchors: [...current.memoryAnchors],
         unlockedArchives: [...current.unlockedArchives],
         endingsUnlocked: [...current.endingsUnlocked],
-        finalFarewellVariant: 'forgetting_started',
       };
+      if (node.id === 'fin_last6') {
+        nextStats.finalFarewellVariant = 'forgetting_started';
+      }
       statsRef.current = nextStats;
       setStats(nextStats);
 
-      const updated = addMessage({
-        id: `choice_timeout_${node.id}_${Date.now()}`,
-        speaker: 'system',
-        type: 'status',
-        content: '【Observer-01 记忆索引丢失】\n【回答超时】',
-        contactStage: contactStageRef.current,
-        isNew: true,
-      });
+      const updated = node.id === 'fin_last6'
+        ? addMessage({
+          id: `choice_timeout_${node.id}_${Date.now()}`,
+          speaker: 'system',
+          type: 'status',
+          content: '【Observer-01 记忆索引正在脱离】\n【回答超时】',
+          contactStage: contactStageRef.current,
+          isNew: true,
+        })
+        : messagesRef.current;
       persistState(node.timeoutNextId, updated);
       scrollToBottom();
       scheduleSequence(node.timeoutNextId, 550);

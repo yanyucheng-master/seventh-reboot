@@ -5,16 +5,20 @@ import type {
   EndingId,
   EndingType,
   FinalChoice,
+  FinalFarewellTone,
   FinalFarewellVariant,
   GameStats,
   MemoryAnchorId,
   NovaEmotion,
   SaveData,
+  TimedProof,
+  TimedResponse,
 } from './types';
 
 export const SAVE_KEY = 'seventh_reboot_save';
 /** 剧情分支拓扑版本；变更选项 nextId 后递增，使旧 localStorage 存档失效 */
 export const STORY_VERSION = 'V1.0';
+export const STORY_CONTENT_VERSION = 'v1.0-final-logic-complete';
 export const defaultContactStage: ContactStage = 'unknown';
 
 export const defaultStats: GameStats = {
@@ -46,6 +50,13 @@ const FINAL_FAREWELL_VARIANTS = new Set<FinalFarewellVariant>([
   'remembered_wrong',
   'forgetting_started',
 ]);
+const FINAL_FAREWELL_TONES = new Set<FinalFarewellTone>([
+  'warm_acceptance',
+  'painful_truth',
+  'uncertain_but_honest',
+]);
+const TIMED_RESPONSES = new Set<TimedResponse>(['calm_nova', 'investigate_log']);
+const TIMED_PROOFS = new Set<TimedProof>(['n7_core_anchor']);
 const ENDING_TYPES = new Set<EndingType>(['true', 'normal', 'bad']);
 
 const LEGACY_ANCHORS: Record<string, MemoryAnchorId | undefined> = {
@@ -88,6 +99,24 @@ function normalizeFinalFarewellVariant(value: unknown): FinalFarewellVariant | u
     : undefined;
 }
 
+function normalizeFinalFarewellTone(value: unknown): FinalFarewellTone | undefined {
+  return typeof value === 'string' && FINAL_FAREWELL_TONES.has(value as FinalFarewellTone)
+    ? value as FinalFarewellTone
+    : undefined;
+}
+
+function normalizeTimedResponse(value: unknown): TimedResponse | undefined {
+  return typeof value === 'string' && TIMED_RESPONSES.has(value as TimedResponse)
+    ? value as TimedResponse
+    : undefined;
+}
+
+function normalizeTimedProof(value: unknown): TimedProof | undefined {
+  return typeof value === 'string' && TIMED_PROOFS.has(value as TimedProof)
+    ? value as TimedProof
+    : undefined;
+}
+
 function normalizeEndingType(value: unknown): EndingType | undefined {
   return typeof value === 'string' && ENDING_TYPES.has(value as EndingType) ? value as EndingType : undefined;
 }
@@ -107,9 +136,15 @@ export function normalizeGameStats(value: unknown): GameStats {
 
   const finalChoice = normalizeFinalChoice(stats.finalChoice);
   const finalFarewellVariant = normalizeFinalFarewellVariant(stats.finalFarewellVariant);
+  const finalFarewellTone = normalizeFinalFarewellTone(stats.finalFarewellTone);
+  const timedResponse = normalizeTimedResponse(stats.timedResponse);
+  const timedProof = normalizeTimedProof(stats.timedProof);
   const ending = normalizeEndingType(stats.ending);
   if (finalChoice) normalized.finalChoice = finalChoice;
   if (finalFarewellVariant) normalized.finalFarewellVariant = finalFarewellVariant;
+  if (finalFarewellTone) normalized.finalFarewellTone = finalFarewellTone;
+  if (timedResponse) normalized.timedResponse = timedResponse;
+  if (timedProof) normalized.timedProof = timedProof;
   if (ending) normalized.ending = ending;
   return normalized;
 }
@@ -149,11 +184,15 @@ function isValidSaveData(data: unknown): data is SaveData {
   if (stats.acceptFarewell !== undefined && typeof stats.acceptFarewell !== 'boolean') return false;
   if (stats.finalChoice !== undefined && typeof stats.finalChoice !== 'string') return false;
   if (stats.finalFarewellVariant !== undefined && typeof stats.finalFarewellVariant !== 'string') return false;
+  if (stats.finalFarewellTone !== undefined && typeof stats.finalFarewellTone !== 'string') return false;
+  if (stats.timedResponse !== undefined && typeof stats.timedResponse !== 'string') return false;
+  if (stats.timedProof !== undefined && typeof stats.timedProof !== 'string') return false;
   if (stats.ending !== undefined && typeof stats.ending !== 'string') return false;
   if (stats.unlockedArchives !== undefined && !Array.isArray(stats.unlockedArchives)) return false;
   if (stats.endingsUnlocked !== undefined && !Array.isArray(stats.endingsUnlocked)) return false;
   if (typeof save.timestamp !== 'number') return false;
   if (save.storyVersion !== STORY_VERSION) return false;
+  if (save.storyContentVersion !== STORY_CONTENT_VERSION) return false;
   return true;
 }
 
@@ -241,6 +280,7 @@ export function createSaveData(
     contactStage,
     stats,
     storyVersion: STORY_VERSION,
+    storyContentVersion: STORY_CONTENT_VERSION,
     timestamp: Date.now(),
   };
 }

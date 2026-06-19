@@ -26,6 +26,15 @@ export type FinalFarewellVariant =
   | 'remembered_wrong'
   | 'forgetting_started';
 
+export type FinalFarewellTone =
+  | 'warm_acceptance'
+  | 'painful_truth'
+  | 'uncertain_but_honest';
+
+export type TimedResponse = 'calm_nova' | 'investigate_log';
+
+export type TimedProof = 'n7_core_anchor';
+
 export interface ArchiveEntry {
   id: string;
   category: ArchiveCategory;
@@ -57,6 +66,7 @@ export type MessageType =
   | 'comm-log'
   | 'memory-anchor'
   | 'epilogue'
+  | 'ending-action'
   | 'disconnect'
   | 'reconnectFailed'
   | 'signalError';
@@ -79,6 +89,9 @@ export interface GameStats {
   acceptFarewell: boolean;
   finalChoice?: FinalChoice;
   finalFarewellVariant?: FinalFarewellVariant;
+  finalFarewellTone?: FinalFarewellTone;
+  timedResponse?: TimedResponse;
+  timedProof?: TimedProof;
   ending?: EndingType;
   unlockedArchives: string[];
   endingsUnlocked: EndingId[];
@@ -106,6 +119,8 @@ export interface SaveData {
   timestamp: number;
   /** 剧情拓扑版本；节点分支变更后递增，旧存档将失效 */
   storyVersion?: string;
+  /** 内部剧情内容版本；玩家可见版本仍保持 V1.0 */
+  storyContentVersion?: string;
   /** @deprecated 旧版存档字段，仅用于兼容 */
   currentNodeId?: string;
 }
