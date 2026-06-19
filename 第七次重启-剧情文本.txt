@@ -1,7 +1,7 @@
 # 第七次重启 · 剧情文本导出
 版本：V1.0
-节点数：1515
-生成时间：2026-06-19T13:28:41.475Z
+节点数：1528
+生成时间：2026-06-19T15:12:26.506Z
 
 说明：本文档由 story.ts 自动导出，包含全部节点、选项分支、系统消息、章节、后记、结局、记忆锚点、文件与图片说明。
 分支格式：[选项字母] → 选项文本 → 下一节点ID
@@ -145,7 +145,7 @@ Observer-01 拒绝指令已撤销
 
 [p16c] (Nova/文本)
   meta: 情绪=平常
-那成本有点高
+那成本可真有点高
   next: p17c
 
 [p17c] (Nova/文本)
@@ -250,9 +250,9 @@ Aurora号导航员
   next: p_merge7
 
 [p_merge7] (玩家/选项)
-  [A] → 【确实没听过】  →  p_aurora_unknown
-  [B] → 【Aurora号是船？】  →  p_aurora_ship
-  [C] → 【导航员听起来很重要】  →  p_aurora_nav
+  [A] → 【没听过】  →  p_aurora_unknown
+  [B] → 【Aurora号？】  →  p_aurora_ship
+  [C] → 【导航员？】  →  p_aurora_nav
 
 [p_aurora_unknown] (Nova/文本)
   meta: 情绪=平常
@@ -261,42 +261,92 @@ Aurora号导航员
 
 [p_aurora_unknown2] (Nova/文本)
   meta: 情绪=平常
-我们现在在静默航区，名字传不到你那边也很合理
-  next: p_aurora4
+这名字听起来也不像你那边会有的东西
+  next: p_aurora_merge1
 
 [p_aurora_ship] (Nova/文本)
-  meta: 情绪=微笑
-对，一艘很贵、很大、也很容易出问题的远航观测船
+  meta: 情绪=平常
+对
   next: p_aurora_ship2
 
 [p_aurora_ship2] (Nova/文本)
-  meta: 情绪=平常
-我负责确认它别把自己开进恒星里
-  next: p_aurora4
+  meta: 情绪=微笑
+一艘很贵、很大、也很容易出问题的船
+  next: p_aurora_merge1
 
 [p_aurora_nav] (Nova/文本)
-  meta: 情绪=微笑
-理论上是
+  meta: 情绪=平常
+嗯
   next: p_aurora_nav2
 
 [p_aurora_nav2] (Nova/文本)
   meta: 情绪=平常
-实际上大部分时间是在写报告、值夜班、和警报声互相折磨
-  next: p_aurora4
+负责确认我们没有把自己开进恒星里
+  next: p_aurora_nav3
 
-[p_aurora4] (Nova/文本)
-  meta: 情绪=平常
-总之
-  next: p_aurora5
+[p_aurora_nav3] (Nova/文本)
+  meta: 情绪=微笑
+目前看，我还算称职
+  next: p_aurora_merge1
 
-[p_aurora5] (Nova/文本)
+[p_aurora_merge1] (Nova/文本)
   meta: 情绪=平常
-你这条通讯不在 Aurora 号任何正常协议里
+简单说
+  next: p_aurora_merge2
+
+[p_aurora_merge2] (Nova/文本)
+  meta: 情绪=平常
+Aurora号是一艘远航观测船
+  next: p_aurora_merge3
+
+[p_aurora_merge3] (Nova/文本)
+  meta: 情绪=平常
+不是战舰
+  next: p_aurora_merge4
+
+[p_aurora_merge4] (Nova/文本)
+  meta: 情绪=平常
+也不是那种听起来很壮烈的殖民船
+  next: p_aurora_merge5
+
+[p_aurora_merge5] (Nova/文本)
+  meta: 情绪=平常
+我们的任务是穿过静默航区
+  next: p_aurora_merge6
+
+[p_aurora_merge6] (Nova/文本)
+  meta: 情绪=平常
+记录一些人类还没见过的星域
+  next: p_aurora_merge7
+
+[p_aurora_merge7] (Nova/文本)
+  meta: 情绪=微笑
+听起来很浪漫对吧
+  next: p_aurora_merge8
+
+[p_aurora_merge8] (Nova/文本)
+  meta: 情绪=平常
+实际工作大多是值班、报表
+  next: p_aurora_merge9
+
+[p_aurora_merge9] (Nova/文本)
+  meta: 情绪=平常
+还有半夜响起来的故障警报
+  next: p_aurora_merge10
+
+[p_aurora_merge10] (Nova/文本)
+  meta: 情绪=平常
+而你这条通讯
+  next: p_aurora_merge11
+
+[p_aurora_merge11] (Nova/文本)
+  meta: 情绪=平常
+不在任何正常协议里
   next: p_aurora6
 
 [p_aurora6] (玩家/选项)
   [A] → 【你是说这不是正常通讯？】  →  p_comm_abnormal
-  [B] → 【日志里没有这条链路？】  →  p_comm_log
+  [B] → 【继续说】  →  p_comm_continue
 
 [p_comm_abnormal] (Nova/文本)
   meta: 情绪=平常
@@ -305,17 +355,17 @@ Aurora号导航员
 
 [p_comm_abnormal2] (Nova/文本)
   meta: 情绪=平常
-而且它还绕过了我不认识的权限层
+这条通讯不在任何正常协议里
   next: p_exp1
 
-[p_comm_log] (Nova/文本)
+[p_comm_continue] (Nova/文本)
   meta: 情绪=平常
-不只是没有
-  next: p_comm_log2
+好
+  next: p_comm_continue2
 
-[p_comm_log2] (Nova/文本)
+[p_comm_continue2] (Nova/文本)
   meta: 情绪=平常
-系统甚至假装这条链路不存在
+但你先做好心理准备
   next: p_exp1
 
 [p_exp1] (Nova/文本)
@@ -345,8 +395,8 @@ Aurora号导航员
 
 [p_exp6] (玩家/选项)
   [A] → 【你没事吧？】  →  p_ok1
-  [B] → 【……你先确认自己安全】  →  p_silent1
-  [C] → 【备用链路还撑得住？】  →  p_link1
+  [B] → 【…………】  →  p_silent1
+  [C] → 【为什么你还能聊天？】  →  p_link1
 
 [p_ok1] (Nova/文本)
   meta: 情绪=平常
@@ -375,45 +425,80 @@ Aurora号导航员
 
 [p_silent2] (Nova/文本)
   meta: 情绪=微笑
-像已经开始替我写事故报告了
+像已经开始给我写悼词了
   next: p_silent3
 
 [p_silent3] (Nova/文本)
   meta: 情绪=平常
-先别急，我还在
+先别急
   next: p_silent4
 
 [p_silent4] (Nova/文本)
   meta: 情绪=平常
-备用系统也还在
+我还没死
+  next: p_silent5
+
+[p_silent5] (Nova/文本)
+  meta: 情绪=平常
+暂时
+  next: p_silent6
+
+[p_silent6] (Nova/文本)
+  meta: 情绪=微笑
+应该
   next: p_ok5
 
 [p_link1] (Nova/文本)
   meta: 情绪=平常
-能撑
+好问题
   next: p_link2
 
 [p_link2] (Nova/文本)
   meta: 情绪=平常
-爆炸的是实验舱，不是通讯终端
+因为爆炸的是实验舱
   next: p_link3
 
 [p_link3] (Nova/文本)
-  meta: 情绪=微笑
-也不是我本人
+  meta: 情绪=平常
+不是通讯终端
   next: p_link4
 
 [p_link4] (Nova/文本)
   meta: 情绪=微笑
-至少目前不是
+也不是我本人
+  next: p_link5
+
+[p_link5] (Nova/文本)
+  meta: 情绪=微笑
+至少暂时不是
+  next: p_link6
+
+[p_link6] (Nova/文本)
+  meta: 情绪=平常
+备用链路还能撑一会儿
+  next: p_link7
+
+[p_link7] (Nova/文本)
+  meta: 情绪=平常
+所以
+  next: p_link8
+
+[p_link8] (Nova/文本)
+  meta: 情绪=微笑
+暂时死不了
+  next: p_link9
+
+[p_link9] (Nova/文本)
+  meta: 情绪=微笑
+应该
   next: p_ok5
 
 [p_ok5] (玩家/选项)
-  [A] → 【“应该”听起来不太可靠】  →  p_dead1
+  [A] → 【应该？】  →  p_dead1
 
 [p_dead1] (Nova/文本)
   meta: 情绪=微笑
-医疗系统还没拉最高级警报
+因为医疗系统还没判定我死亡
   next: p_dead2
 
 [p_dead2] (Nova/文本)
@@ -423,10 +508,7 @@ Aurora号导航员
 
 [p_dead3] (Nova/文本)
   meta: 情绪=微笑
-大概
-  next: p_pause1
-
-[p_pause1] (系统/延迟)
+大概吧
   next: p_wonder1
 
 [p_wonder1] (Nova/文本)
@@ -441,12 +523,12 @@ Aurora号导航员
 
 [p_wonder3] (玩家/选项)
   [A] → 【我也不知道】  →  p_idk1
-  [B] → 【这不像巧合】  →  p_coin1
+  [B] → 【也许是巧合】  →  p_coin1
   [C] → 【跨时空通讯？】  →  p_space1
 
 [p_idk1] (Nova/文本)
   meta: 情绪=平常
-好
+好吧
   next: p_idk2
 
 [p_idk2] (Nova/文本)
@@ -456,12 +538,12 @@ Aurora号导航员
 
 [p_coin1] (Nova/文本)
   meta: 情绪=平常
-同意
+如果是巧合
   next: p_coin2
 
 [p_coin2] (Nova/文本)
   meta: 情绪=平常
-巧合不会绕过三层舰内认证，还顺便吓醒一个导航员
+那这是我见过最离谱的巧合
   next: p_idk3
 
 [p_space1] (Nova/文本)
@@ -504,33 +586,30 @@ Aurora号导航员
 
 [p_mean1] (Nova/文本)
   meta: 情绪=平常
-意思是……
+问题就在这里
   next: p_mean2
 
 [p_mean2] (Nova/文本)
   meta: 情绪=平常
-设备在爆炸前
+这台设备在爆炸前
   next: p_mean3
 
 [p_mean3] (Nova/文本)
   meta: 情绪=平常
-就已经知道你存在
+就已经知道你的存在
   next: p_mean4
 
-[p_mean4] (系统/延迟)
+[p_mean4] (Nova/文本)
+  meta: 情绪=平常
+这不合理
   next: p_mean5
 
 [p_mean5] (Nova/文本)
   meta: 情绪=平常
-这不合理
+非常不合理
   next: p_mean6
 
 [p_mean6] (Nova/文本)
-  meta: 情绪=平常
-非常不合理
-  next: p_mean7
-
-[p_mean7] (Nova/文本)
   meta: 情绪=平常
 除非……
   next: p_mean8
@@ -549,8 +628,23 @@ Aurora号导航员
   next: p_unless3
 
 [p_unless3] (玩家/选项)
-  [A] → 【说】  →  p_unless4
-  [B] → 【我不怕】  →  p_unless4
+  [A] → 【没事，说】  →  p_unless_say1
+  [B] → 【我不怕】  →  p_unless_brave1
+
+[p_unless_say1] (Nova/文本)
+  meta: 情绪=平常
+好
+  next: p_unless_say2
+
+[p_unless_say2] (Nova/文本)
+  meta: 情绪=平常
+那我说了
+  next: p_unless4
+
+[p_unless_brave1] (Nova/文本)
+  meta: 情绪=平常
+你最好是真的不怕
+  next: p_unless4
 
 [p_unless4] (Nova/文本)
   meta: 情绪=平常
@@ -591,13 +685,10 @@ Aurora号导航员
 [p_log5] (Nova/文本)
   meta: 情绪=平常
 "第七次连接成功"
-  next: p_log6
-
-[p_log6] (系统/延迟)
   next: p_log7
 
 [p_log7] (玩家/选项)
-  [A] → 【第七次？】  →  p_exp7_1
+  [A] → 【第七次连接是什么意思？】  →  p_exp7_1
 
 [p_exp7_1] (Nova/文本)
   meta: 情绪=平常
@@ -622,9 +713,6 @@ Aurora号导航员
 [p_exp7_5] (Nova/文本)
   meta: 情绪=平常
 而且对象都是你
-  next: p_familiar1
-
-[p_familiar1] (系统/延迟)
   next: p_familiar2
 
 [p_familiar2] (Nova/文本)
@@ -638,7 +726,7 @@ Aurora号导航员
   next: p_familiar4
 
 [p_familiar4] (玩家/选项)
-  [A] → 【我们好像早就认识？】  →  p_fam1
+  [A] → 【你也觉得我们不只是刚认识？】  →  p_fam1
 
 [p_fam1] (Nova/文本)
   meta: 情绪=平常
@@ -651,28 +739,33 @@ Aurora号导航员
   next: p_fam3
 
 [p_fam3] (玩家/选项)
-  [A] → 【没有，但我愿意听你说】  →  p_fam_no
+  [A] → 【没有】  →  p_fam_no
   [B] → 【有一点】  →  p_fam_yes
   [C] → 【你吓到我了】  →  p_fam_scared
 
 [p_fam_no] (Nova/文本)
   meta: 情绪=微笑
-这句话很礼貌
+好吧
   next: p_fam_no2
 
 [p_fam_no2] (Nova/文本)
   meta: 情绪=微笑
-礼貌到让我更觉得你不像系统
+那可能是我单方面熟人错觉
   next: p_fam6
 
 [p_fam_yes] (Nova/文本)
   meta: 情绪=平常
-对吧
+……
   next: p_fam_yes2
 
 [p_fam_yes2] (Nova/文本)
   meta: 情绪=微笑
-我就知道不只是我一个人在犯傻
+你也这么觉得？
+  next: p_fam_yes3
+
+[p_fam_yes3] (Nova/文本)
+  meta: 情绪=平常
+这反而更吓人了
   next: p_fam6
 
 [p_fam_scared] (Nova/文本)
@@ -682,7 +775,12 @@ Aurora号导航员
 
 [p_fam_scared2] (Nova/文本)
   meta: 情绪=平常
-我也被自己吓到了
+我不是故意的
+  next: p_fam_scared3
+
+[p_fam_scared3] (Nova/文本)
+  meta: 情绪=平常
+只是这里真的有点不对劲
   next: p_fam6
 
 [p_fam6] (Nova/文本)
@@ -6715,90 +6813,78 @@ Aurora号恢复正常航线
 
 ### 后记
 [fin_epi2] (系统/后记)
-12年后。
-深空航行学院。
+12年后 · 后记
+深空航行学院
   next: fin_epi3
 
 ### 后记
 [fin_epi3] (系统/后记)
-观测室里一直保留着一个空座位。
+学生："老师，为什么观测室总有一个空座位？"
   next: fin_epi4
 
 ### 后记
 [fin_epi4] (系统/后记)
-有人问 Nova，为什么那里永远空着。
+Nova站在窗前
+很久没有回答
   next: fin_epi5
 
 ### 后记
 [fin_epi5] (系统/后记)
-她说：
-“因为那里曾经坐着一个朋友。”
+"因为那里应该有一个朋友的位置"
   next: fin_epi6
 
 ### 后记
 [fin_epi6] (系统/后记)
-对方又问：
-“他叫什么名字？”
+学生："他叫什么名字？"
   next: fin_epi7
 
 ### 后记
 [fin_epi7] (系统/后记)
-Nova 沉默了很久。
+她愣了一下
+像是想从很远的地方找回一个声音
   next: fin_epi8
 
 ### 后记
 [fin_epi8] (系统/后记)
-她已经记不起那个名字。
+最后，她轻轻摇头
   next: fin_epi9
 
 ### 后记
 [fin_epi9] (系统/后记)
-但她仍然记得。
+"名字想不起来了"
+"但我知道"
+"那里应该有一个朋友的位置"
   next: fin_epi10
 
 ### 后记
 [fin_epi10] (系统/后记)
-曾经有一个人陪她活下来。
+学生离开后
+Nova独自站在窗前
+掌心里有一颗牛奶糖
+她已经不记得它来自哪一次通讯
   next: fin_epi11
 
 ### 后记
 [fin_epi11] (系统/后记)
-后来，观测室恢复安静。
+但每次看见那张空椅子
+她都会想起一件事
   next: fin_epi12
 
 ### 后记
 [fin_epi12] (系统/后记)
-Nova 看向那个空座位。
+有一个人曾经替她记住过一切
   next: fin_epi13
 
 ### 后记
 [fin_epi13] (系统/后记)
-像想起什么，又像只是被星光照了一下。
-  next: fin_epi14
-
-### 后记
-[fin_epi14] (系统/后记)
-她轻声说：
-“不过……谢谢你。”
+名字消失了
+位置留下了
   next: fin_title
 
 [fin_title] (系统/延迟)
-  next: fin_final_text
-
-### 后记
-[fin_final_text] (系统/后记)
-如果记忆终将消失。
-  next: fin_final_text2
-
-### 后记
-[fin_final_text2] (系统/后记)
-那陪伴本身，就是意义。
-  next: fin_credits
-
-[fin_credits] (系统/延迟)
   next: fin_credit_title
 
-## 《第七次重启》
+## 真结局：《第七次重启》
 [fin_credit_title] (系统/章节)
   next: fin_credit_end
 
@@ -6832,7 +6918,7 @@ Nova 看向那个空座位。
   next: normal_1
 
 [normal_1] (系统/文本)
-开始解除第七协议...
+开始解除第七协议……
   next: normal_2
 
 [normal_2] (系统/文本)
@@ -6863,69 +6949,69 @@ Aurora号恢复正常航线
 
 ### 后记
 [normal_6] (系统/后记)
-12年后。
-深空航行学院。
+12年后 · 后记
+深空航行学院
+  next: normal_7
+
+### 后记
+[normal_7] (系统/后记)
+学生："老师，你为什么总看星星？"
+  next: normal_8
+
+### 后记
+[normal_8] (系统/后记)
+Nova："不知道，可能只是习惯"
   next: normal_9
 
 ### 后记
 [normal_9] (系统/后记)
-有人问她，为什么总看星星。
+学生："你在等什么人吗？"
   next: normal_10
 
 ### 后记
 [normal_10] (系统/后记)
-Nova 说：
-“不知道。可能只是习惯。”
+Nova沉默了一会
   next: normal_11
 
 ### 后记
 [normal_11] (系统/后记)
-也有人问她，是不是在等什么人。
+"也许吧"
   next: normal_12
 
 ### 后记
 [normal_12] (系统/后记)
-她沉默了一会儿。
+她从口袋里拿出一颗牛奶糖
+糖纸已经泛黄
   next: normal_13
 
 ### 后记
 [normal_13] (系统/后记)
-“应该没有。”
+她不记得是谁给她的
+也想不起那天的完整对话
   next: normal_14
 
 ### 后记
 [normal_14] (系统/后记)
-“但有时候，我会觉得自己好像忘了一个很重要的梦。”
+只是每次握住它
+她都会觉得
+自己好像曾经被某个人
+很认真地陪过一段路
   next: normal_15
 
 ### 后记
 [normal_15] (系统/后记)
-她活下来了。
+那个人没有留下名字
+也没有留下清晰的脸
   next: normal_16
 
 ### 后记
 [normal_16] (系统/后记)
-但有些陪伴，没能留下名字。
-  next: normal_17
+只留下一个空缺
+和一点怎么都散不掉的温暖
+  next: normal_title
 
-### 后记
-[normal_17] (系统/后记)
-某天，Nova 路过自动贩卖机。
-  next: normal_18
-
-### 后记
-[normal_18] (系统/后记)
-她看见牛奶糖，停了一下。
-  next: normal_19
-
-### 后记
-[normal_19] (系统/后记)
-她不知道为什么。
-  next: normal_20
-
-### 后记
-[normal_20] (系统/后记)
-只是买了一包。
+## 普通结局：《循环之外》
+[normal_title] (系统/章节)
   next: normal_action_prompt
 
 [normal_action_prompt] (系统/结局操作)
