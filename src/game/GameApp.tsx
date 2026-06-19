@@ -676,7 +676,6 @@ export default function GameApp() {
   );
 
   const applyChoiceEffects = useCallback((choice: Choice) => {
-    const text = choice.text;
     const current = statsRef.current;
     const next: GameStats = {
       trust: current.trust,
@@ -695,20 +694,25 @@ export default function GameApp() {
     };
 
     const shouldApplyStatEffects = choice.statEffect !== 'none';
-    if (shouldApplyStatEffects && /没事|我在|别怕|辛苦|晚安|当然|会|记得|真漂亮|听起来不错/.test(text)) {
-      next.trust = clampStat(next.trust + 1);
+    if (shouldApplyStatEffects) {
+      next.trust = clampStat(next.trust + (choice.trustDelta ?? 0));
+      next.memory = clampStat(next.memory + (choice.memoryDelta ?? 0));
+      next.attachment = clampStat(next.attachment + (choice.attachmentDelta ?? 0));
     }
-    if (shouldApplyStatEffects && /第七次|循环|日志|Observer|真相|记录者|记忆载体/.test(text)) {
-      next.memory = clampStat(next.memory + 1);
-    }
-    if (choice.nextId === 'FINALE_DECISION_END' || /结束循环|接受告别/.test(text)) {
+    if (choice.acceptFarewell !== undefined) {
+      next.acceptFarewell = choice.acceptFarewell;
+    } else if (choice.nextId === 'FINALE_DECISION_END') {
       next.acceptFarewell = true;
-      next.finalChoice = 'accept_farewell';
     }
-    if (choice.nextId === 'BAD_END_START' || /拒绝告别|维持循环|不想让你离开|不要离开/.test(text)) {
-      next.attachment = clampStat(next.attachment + 2);
-      next.acceptFarewell = false;
+    if (choice.finalChoice) {
+      next.finalChoice = choice.finalChoice;
+    } else if (choice.nextId === 'FINALE_DECISION_END') {
+      next.finalChoice = 'accept_farewell';
+    } else if (choice.nextId === 'BAD_END_START') {
       next.finalChoice = 'refuse_farewell';
+    }
+    if (next.finalChoice === 'refuse_farewell') {
+      next.acceptFarewell = false;
     }
     const finalFarewellVariant = getFinalFarewellVariant(choice);
     if (finalFarewellVariant) {
@@ -727,7 +731,8 @@ export default function GameApp() {
     const isFinalDecision =
       choice.nextId === 'FINALE_DECISION_END' ||
       choice.nextId === 'BAD_END_START' ||
-      /关闭第七协议|结束循环|接受告别|拒绝告别|维持循环/.test(text);
+      choice.acceptFarewell !== undefined ||
+      choice.finalChoice !== undefined;
     if (isFinalDecision) {
       next.ending = determineEnding(next);
     }
