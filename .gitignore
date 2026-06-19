@@ -22,3 +22,22 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Script / audit artifacts (not release assets)
+scripts/missing-texts.json
+scripts/sync-patches.json
+scripts/compare-diff-report.json
+*_output.txt
+build-output.txt
+extract-output.txt
+_verify_run.log
+_full_verify.log
+_push_result.txt
+_release_audit.txt
+_release_followup.txt
+_img_paths.txt
+_ai_image_scan.txt
+_audit_*
+_release_audit_*
+_audit_helper.mjs
+_git_push_*.txt
