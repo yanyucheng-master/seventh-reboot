@@ -1,4 +1,4 @@
-import type { ContactStage, NovaEmotion } from './types';
+import type { AvatarProfile, ContactStage, NovaEmotion } from './types';
 
 export const anonymousAvatar = `data:image/svg+xml;utf8,${encodeURIComponent(`
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
@@ -34,5 +34,15 @@ export function resolveContactAvatar(
   isGlitch?: boolean,
 ): string {
   if (contactStage !== 'verified') return anonymousAvatar;
+  return resolveNovaAvatar(emotion, isGlitch);
+}
+
+export function resolveAvatarProfile(
+  profile: AvatarProfile,
+  emotion?: NovaEmotion,
+  isGlitch?: boolean,
+): string {
+  if (profile === 'unknown') return anonymousAvatar;
+  if (profile === 'nova_glitch') return novaAvatar.glitch;
   return resolveNovaAvatar(emotion, isGlitch);
 }

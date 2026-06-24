@@ -174,10 +174,37 @@ export function AnomalyRecordCard({
 
 export function FileDisplay({ content }: { content: string }) {
   const { title, body } = splitRecordContent(content, '系统文件');
+  const lines = body.split('\n');
+
+  function renderLine(line: string, index: number) {
+    const trimmed = line.trim();
+    if (!trimmed) return <div key={index} className="file-record-spacer" aria-hidden />;
+
+    const separatorIndex = trimmed.search(/[：:]/);
+    if (separatorIndex > 0) {
+      const label = trimmed.slice(0, separatorIndex).trim();
+      const value = trimmed.slice(separatorIndex + 1).trim();
+      if (label.length <= 18 && value) {
+        return (
+          <div key={index} className="file-record-row">
+            <span className="file-record-label">{label}</span>
+            <span className="file-record-value">{value}</span>
+          </div>
+        );
+      }
+    }
+
+    return (
+      <p key={index} className="file-record-line">
+        {line}
+      </p>
+    );
+  }
+
   return (
-    <div className="anomaly-card-wrap animate-fade-in">
+    <div className="anomaly-card-wrap file-card-wrap animate-fade-in">
       <div className="file-record-card">
-        <div className="flex items-center gap-2">
+        <div className="file-record-header">
           <svg className="w-4 h-4 text-[#F0A030]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               strokeLinecap="round"
@@ -186,9 +213,12 @@ export function FileDisplay({ content }: { content: string }) {
               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
-          <span className="file-record-title">{title}</span>
+          <div className="file-record-heading">
+            <span className="file-record-kicker">NOVA FILE / DECRYPTED</span>
+            <span className="file-record-title">{title}</span>
+          </div>
         </div>
-        <div className="file-record-body whitespace-pre-wrap pl-6">{body}</div>
+        <div className="file-record-body">{lines.map(renderLine)}</div>
       </div>
     </div>
   );

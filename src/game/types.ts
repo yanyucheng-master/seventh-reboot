@@ -4,6 +4,8 @@ export type NovaEmotion = 'normal' | 'smile' | 'sad' | 'glitch';
 
 export type ContactStage = 'unknown' | 'named' | 'verified';
 
+export type AvatarProfile = 'unknown' | 'nova' | 'nova_glitch';
+
 export type Speaker = 'nova' | 'system' | 'player';
 
 export type GlitchLevel = 1 | 2 | 3;
@@ -56,6 +58,7 @@ export type MessageType =
   | 'typing'
   | 'delay'
   | 'status'
+  | 'interaction'
   | 'timestamp'
   | 'chapter'
   | 'draft'
@@ -105,6 +108,8 @@ export type DisplayMessage = {
   emotion?: NovaEmotion;
   image?: string;
   contactStage?: ContactStage;
+  displayName?: string;
+  avatarProfile?: AvatarProfile;
   isGlitch?: boolean;
   glitchLevel?: GlitchLevel;
   isNew?: boolean;

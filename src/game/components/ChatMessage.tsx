@@ -1,4 +1,4 @@
-import { resolveContactAvatar } from '../assets';
+import { resolveAvatarProfile, resolveContactAvatar } from '../assets';
 import { cleanChatText } from '../format';
 import type { ContactStage, DisplayMessage } from '../types';
 import {
@@ -57,7 +57,7 @@ export function ChatMessage({
     }
     if (msg.type === 'file') {
       return (
-        <div className="flex justify-start py-0.5 animate-fade-in">
+        <div className="flex w-full justify-center py-0.5 animate-fade-in">
           <FileDisplay content={msg.content} />
         </div>
       );
@@ -79,8 +79,10 @@ export function ChatMessage({
 
   const isPlayer = msg.speaker === 'player';
   const messageContactStage = msg.contactStage ?? currentContactStage;
-  const avatarSrc = resolveContactAvatar(messageContactStage, msg.emotion, msg.isGlitch);
-  const senderName = messageContactStage === 'unknown' ? '？？？' : 'Nova';
+  const avatarSrc = msg.avatarProfile
+    ? resolveAvatarProfile(msg.avatarProfile, msg.emotion, msg.isGlitch)
+    : resolveContactAvatar(messageContactStage, msg.emotion, msg.isGlitch);
+  const senderName = msg.displayName ?? (messageContactStage === 'unknown' ? '？？？' : 'Nova');
 
   if (msg.type === 'image') {
     return (

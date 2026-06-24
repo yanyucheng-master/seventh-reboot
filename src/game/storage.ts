@@ -18,7 +18,7 @@ import type {
 export const SAVE_KEY = 'seventh_reboot_save';
 /** 剧情分支拓扑版本；变更选项 nextId 后递增，使旧 localStorage 存档失效 */
 export const STORY_VERSION = 'V1.0';
-export const STORY_CONTENT_VERSION = 'v1.0-final-logic-complete';
+export const STORY_CONTENT_VERSION = 'v1.0-choice-feedback-cleanup';
 export const defaultContactStage: ContactStage = 'unknown';
 
 export const defaultStats: GameStats = {

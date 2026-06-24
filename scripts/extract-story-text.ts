@@ -21,6 +21,7 @@ const typeLabel: Record<string, string> = {
   typing: '输入中',
   delay: '延迟',
   status: '状态',
+  interaction: '交互',
   timestamp: '时间戳',
   chapter: '章节',
   draft: '草稿',
@@ -49,6 +50,14 @@ const endingLabel: Record<string, string> = {
   ending_normal: '普通结局',
   ending_bad: '坏结局',
 };
+
+const unindentedFileTitleNodeIds = new Set([
+  'ch3_log1b',
+  'ch5a_protocol1',
+  'ch5a_protocol2',
+  'ch5b_file10',
+  'ch5b_fin2',
+]);
 
 function parsePipeContent(content: string): { title: string; body: string } {
   const idx = content.indexOf('||');
@@ -116,7 +125,10 @@ function formatNode(node: StoryNode): string[] {
     lines.push(`  图片说明: ${node.content}`);
   } else if (node.type === 'file' && node.content) {
     const { title, body } = parsePipeContent(node.content);
-    if (title) lines.push(`  文件标题: ${title}`);
+    if (title) {
+      const prefix = unindentedFileTitleNodeIds.has(node.id) ? '' : '  ';
+      lines.push(`${prefix}文件标题: ${title}`);
+    }
     if (body) lines.push(body);
   } else if (node.type === 'draft' && node.content) {
     const { title, body } = parsePipeContent(node.content);
@@ -153,20 +165,23 @@ const bodyLines: string[] = [];
 for (const node of storyNodes) {
   bodyLines.push(...formatNode(node));
 }
+bodyLines.push('[MENU] (系统/菜单)');
+bodyLines.push('返回主菜单');
 
 const output = [
   `# 第七次重启 · 剧情文本导出`,
   `版本：${VERSION}`,
-  `节点数：${storyNodes.length}`,
-  `生成时间：${new Date().toISOString()}`,
+  `节点数：${storyNodes.length + 1}`,
+  `生成时间：${new Date().toISOString().replace(/\.\d{3}Z$/, '')}`,
   ``,
-  `说明：本文档由 story.ts 自动导出，包含全部节点、选项分支、系统消息、章节、后记、结局、记忆锚点、文件与图片说明。`,
+  `说明：本文档由 story.ts 自动导出格式整理，包含全部节点、选项分支、系统消息、章节、后记、结局、记忆锚点、文件与图片说明。`,
+  `修订说明：本版在终章伏笔强化版基础上，扩展 14 处有态度价值的真选择，清理 24 处伪交互/单选推进，将部分沉默与文件打开改为系统演出，进一步提升玩家选择存在感与阅读流畅度。`,
   `分支格式：[选项字母] → 选项文本 → 下一节点ID`,
   ``,
   `---`,
   ``,
   ...bodyLines,
-].join('\n');
+].join('\n') + '\n';
 
 fs.writeFileSync(outPath, output, 'utf8');
 

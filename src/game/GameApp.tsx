@@ -136,11 +136,62 @@ function getSignalGlitchTone(content: string): SignalGlitchTone {
 }
 
 function getSignalGlitchDuration(level: GlitchLevel, tone: SignalGlitchTone, content: string): number {
-  if (tone === 'success') return 680;
-  if (/重连失败/.test(content)) return 620;
-  if (level === 3) return 1100;
-  if (level === 2) return 760;
-  return 460;
+  if (tone === 'success') return 980;
+  if (/重连失败/.test(content)) return 1400;
+  if (level === 3) return 2100;
+  if (level === 2) return 1550;
+  return 980;
+}
+
+function wait(ms: number): Promise<void> {
+  return new Promise(resolve => window.setTimeout(resolve, ms));
+}
+
+function isNovaSilentBeat(content: string): boolean {
+  const compact = content.trim().replace(/\s+/g, '');
+  return /^(…+|。+|\.{2,}|▇+)$/.test(compact);
+}
+
+function isNovaHesitationBeat(content: string): boolean {
+  return /……|沉默|不知道|只是|除非|像是|所以|其实|可能|也许|对吗|我自己|记不/.test(content);
+}
+
+function getNovaTypingLeadDelay(node: StoryNode): number {
+  const explicitDelay = node.delay ?? 0;
+  let delay = 900;
+
+  if (explicitDelay >= 2500) delay = 1250;
+  if (isNovaHesitationBeat(node.content)) delay = Math.max(delay, 1180);
+  if (isNovaSilentBeat(node.content)) delay = Math.max(delay, 1550);
+  if (/^fin_|^normal_|^bad_/.test(node.id)) delay = Math.max(delay, 1150);
+
+  return Math.min(delay, 2200);
+}
+
+function getNovaCharacterDelay(content: string, index: number): number {
+  const char = content[index] ?? '';
+  const next = content[index + 1] ?? '';
+  const base = isNovaHesitationBeat(content) ? 44 : 30;
+  let delay = base + Math.random() * 22;
+
+  if (char === '\n') delay += 260;
+  if (/[，、]/.test(char)) delay += 120;
+  if (/[。！？?!]/.test(char)) delay += 220;
+  if (char === '…') delay += next === '…' ? 150 : 110;
+  if (char === '▇') delay += 95;
+
+  return delay;
+}
+
+function getNovaPostMessageDelay(node: StoryNode): number {
+  const explicitDelay = node.delay ?? 0;
+  let delay = explicitDelay >= 1000 ? explicitDelay : 0;
+
+  if (isNovaHesitationBeat(node.content)) delay = Math.max(delay, explicitDelay, 780);
+  if (isNovaSilentBeat(node.content)) delay = Math.max(delay, explicitDelay, 1450);
+  if (/^fin_|^normal_|^bad_/.test(node.id) && explicitDelay >= 700) delay = Math.max(delay, explicitDelay);
+
+  return Math.min(delay, 4200);
 }
 
 export default function GameApp() {
@@ -413,7 +464,7 @@ export default function GameApp() {
             persistState(node.nextId ?? nodeId, currentMsgs);
           }
         } else {
-          await new Promise(r => setTimeout(r, node.delay || 1000));
+          await wait(node.delay || 1000);
         }
         if (!isCurrentRun()) return false;
         if (node.nextId) nodeQueueRef.current.push(node.nextId);
@@ -422,7 +473,7 @@ export default function GameApp() {
 
       if (node.type === 'typing') {
         setIsTyping(true);
-        await new Promise(r => setTimeout(r, node.delay || 2000));
+        await wait(node.delay || 2000);
         if (!isCurrentRun()) return false;
         setIsTyping(false);
         if (node.nextId) nodeQueueRef.current.push(node.nextId);
@@ -464,6 +515,8 @@ export default function GameApp() {
         emotion: node.emotion,
         image: node.image,
         contactStage: contactStageRef.current,
+        displayName: node.displayName,
+        avatarProfile: node.avatarProfile,
         isGlitch: node.isGlitch,
         glitchLevel: node.glitchLevel ?? signalGlitchLevel ?? undefined,
         isNew: true,
@@ -480,7 +533,7 @@ export default function GameApp() {
 
       if (node.speaker === 'nova' && node.type === 'text' && !node.isGlitch) {
         setIsTyping(true);
-        await new Promise(r => setTimeout(r, 900));
+        await wait(getNovaTypingLeadDelay(node));
         if (!isCurrentRun()) return false;
         setIsTyping(false);
 
@@ -489,10 +542,11 @@ export default function GameApp() {
 
         setIsTypewriterActive(true);
         const text = node.content;
-        for (let i = 0; i <= text.length; i++) {
+        setTypewriterText('');
+        for (let i = 1; i <= text.length; i++) {
           if (!isCurrentRun()) return false;
           setTypewriterText(text.slice(0, i));
-          await new Promise(r => setTimeout(r, 30 + Math.random() * 20));
+          await wait(getNovaCharacterDelay(text, i - 1));
         }
         setIsTypewriterActive(false);
         setTypewriterText('');
@@ -502,6 +556,8 @@ export default function GameApp() {
         }, 500);
 
         persistState(getPendingNodeIdAfterNode(nodeId), currentMsgs);
+        await wait(getNovaPostMessageDelay(node));
+        if (!isCurrentRun()) return false;
       } else {
         const currentMsgs = addMessage(displayMsg);
         unlockArchives(nodeArchiveUnlocks);
@@ -523,7 +579,7 @@ export default function GameApp() {
           persistState(getPendingNodeIdAfterNode(nodeId), currentMsgs);
         }
 
-        await new Promise(r => setTimeout(r, node.delay || 200));
+        await wait(node.delay || 200);
         if (!isCurrentRun()) return false;
       }
 
@@ -984,11 +1040,16 @@ export default function GameApp() {
           className={`signal-glitch-layer signal-glitch-level-${signalGlitch.level} signal-glitch-${signalGlitch.tone}`}
           aria-hidden
         >
+          <div className="signal-glitch-flash" />
+          <div className="signal-glitch-vignette" />
           <div className="signal-glitch-noise" />
+          <div className="signal-glitch-snow" />
           <div className="signal-glitch-scanlines" />
+          <div className="signal-glitch-bands" />
           <div className="signal-glitch-line signal-glitch-line-a" />
           <div className="signal-glitch-line signal-glitch-line-b" />
           <div className="signal-glitch-line signal-glitch-line-c" />
+          <div className="signal-glitch-line signal-glitch-line-d" />
         </div>
       )}
       {showChapterBanner && (
