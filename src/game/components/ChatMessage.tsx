@@ -87,23 +87,23 @@ export function ChatMessage({
   if (msg.type === 'image') {
     return (
       <div
-        className={`flex items-end gap-2 py-0.5 ${isPlayer ? 'justify-end' : 'justify-start'} ${showNovaAvatar && !isPlayer ? 'gap-2.5' : ''} ${!showNovaAvatar && !isPlayer ? 'pl-[46px]' : ''} ${msg.isNew ? 'animate-fade-in-up' : ''}`}
+        className={`media-message flex items-end gap-2 py-0.5 ${isPlayer ? 'justify-end' : 'justify-start'} ${showNovaAvatar && !isPlayer ? 'gap-2.5' : ''} ${!showNovaAvatar && !isPlayer ? 'pl-[46px]' : ''} ${msg.isNew ? 'animate-fade-in-up' : ''}`}
       >
         {!isPlayer && showNovaAvatar && <img src={avatarSrc} alt="" className="nova-chat-avatar shrink-0" />}
-        <div className={`flex flex-col gap-1 max-w-[min(82%,320px)] ${isPlayer ? 'items-end' : 'items-start'}`}>
+        <div className={`media-message-body flex flex-col gap-1 ${isPlayer ? 'items-end' : 'items-start'}`}>
           {!isPlayer && showNovaAvatar && <span className="remote-sender-label">{senderName}</span>}
-          <div className="cursor-pointer group" onClick={() => onImageClick(msg.image!, msg.content)}>
-            <div className="relative overflow-hidden rounded-xl">
+          <div className="media-message-trigger cursor-pointer group" onClick={() => onImageClick(msg.image!, msg.content)}>
+            <div className="media-message-frame relative overflow-hidden rounded-xl">
               <img
                 src={msg.image}
-                alt=""
+                alt={cleanChatText(msg.content) || '通讯图像'}
                 loading="lazy"
                 decoding="async"
-                className="w-full max-w-[min(260px,85vw)] max-h-[220px] object-cover rounded-xl group-hover:brightness-110 transition-all"
+                className="media-message-img w-full object-contain rounded-xl group-hover:brightness-110 transition-all"
               />
             </div>
             {msg.content && (
-              <p className="text-xs text-[#8B9CB0] mt-1 px-1 whitespace-pre-line">{cleanChatText(msg.content)}</p>
+              <p className="media-message-caption text-xs text-[#8B9CB0] mt-1 px-1 whitespace-pre-line">{cleanChatText(msg.content)}</p>
             )}
           </div>
         </div>

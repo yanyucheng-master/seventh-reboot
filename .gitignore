@@ -34,7 +34,9 @@ _verify_run.log
 _full_verify.log
 _push_result.txt
 _release_audit.txt
+_release_audit_compare.json
 _release_followup.txt
+_push_audit.txt
 _img_paths.txt
 _ai_image_scan.txt
 _audit_*

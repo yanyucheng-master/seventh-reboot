@@ -118,10 +118,35 @@ function getWaitConfig(node: StoryNode): WaitConfig | null {
   return null;
 }
 
+function isMediaMessage(msg?: DisplayMessage): boolean {
+  return msg?.type === 'image';
+}
+
+function hasRecentMediaMessage(messages: DisplayMessage[]): boolean {
+  const start = Math.max(0, messages.length - 5);
+  for (let index = messages.length - 1; index >= start; index -= 1) {
+    const msg = messages[index];
+    if (isMediaMessage(msg)) return true;
+    if (msg.speaker === 'player') return false;
+  }
+  return false;
+}
+
+function getMediaChoiceWaitConfig(): WaitConfig {
+  return {
+    duration: 5200,
+    label: '图像信号稳定中 · 等待回复',
+    hint: '点击查看回复',
+  };
+}
+
 function getSignalGlitchLevel(node: StoryNode): GlitchLevel | null {
   if (node.glitchLevel) return node.glitchLevel;
   if (node.type === 'disconnect' || node.type === 'reconnectFailed' || node.type === 'signalError') return 2;
-  if (/通讯中断|尝试重连|重连失败/.test(node.content)) return 2;
+  if (/信号衰减|连接即将终止|通讯同步断开|文字传输不稳定|通讯丢包|回答超时|第八次重启/.test(node.content)) return 3;
+  if (/第七协议关闭请求未完成|第七协议维持|第七协议关闭序列|UNKNOWN-06 信号中断/.test(node.content)) return 3;
+  if (/通讯中断|信号中断|尝试重连|重连失败|请求被拒绝|倒计时/.test(node.content)) return 2;
+  if (/第七协议/.test(node.content) && (node.type === 'status' || node.type === 'glitch')) return 2;
   if (/重连成功/.test(node.content)) return 1;
   if (node.type === 'glitch' || node.isGlitch) {
     return /^fin_|^bad_/.test(node.id) ? 3 : 1;
@@ -137,9 +162,9 @@ function getSignalGlitchTone(content: string): SignalGlitchTone {
 
 function getSignalGlitchDuration(level: GlitchLevel, tone: SignalGlitchTone, content: string): number {
   if (tone === 'success') return 980;
-  if (/重连失败/.test(content)) return 1400;
-  if (level === 3) return 2100;
-  if (level === 2) return 1550;
+  if (/重连失败/.test(content)) return 1650;
+  if (level === 3) return 2450;
+  if (level === 2) return 1850;
   return 980;
 }
 
@@ -216,6 +241,7 @@ export default function GameApp() {
   const [inputNode, setInputNode] = useState<{ id: string; nextId?: string; placeholder: string } | null>(null);
   const [playerInput, setPlayerInput] = useState('');
   const [waitPrompt, setWaitPrompt] = useState<WaitPrompt | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const nodeQueueRef = useRef<string[]>([]);
@@ -265,6 +291,7 @@ export default function GameApp() {
       signalGlitchTimeoutRef.current = null;
     }
     setSignalGlitch(null);
+    setIsSyncing(false);
     return queueRunIdRef.current;
   }, []);
 
@@ -346,6 +373,9 @@ export default function GameApp() {
     const tone = getSignalGlitchTone(node.content);
     signalGlitchPulseRef.current += 1;
     setSignalGlitch({ level, tone, pulse: signalGlitchPulseRef.current });
+    if (tone === 'error' && 'vibrate' in navigator) {
+      navigator.vibrate(level === 3 ? [18, 28, 24] : 18);
+    }
 
     signalGlitchTimeoutRef.current = window.setTimeout(() => {
       signalGlitchTimeoutRef.current = null;
@@ -488,6 +518,10 @@ export default function GameApp() {
       }
 
       if (node.type === 'choice' && node.choices) {
+        if (hasRecentMediaMessage(messagesRef.current)) {
+          await waitForSignal(getMediaChoiceWaitConfig(), runId);
+          if (!isCurrentRun()) return false;
+        }
         setChoices(node.choices);
         setChoiceNodeId(nodeId);
         setIsTyping(false);
@@ -621,6 +655,7 @@ export default function GameApp() {
   const processQueue = useCallback(async (runId: number) => {
     if (activeQueueRunIdRef.current === runId) return;
     activeQueueRunIdRef.current = runId;
+    setIsSyncing(true);
 
     while (nodeQueueRef.current.length > 0 && queueRunIdRef.current === runId) {
       const nextId = nodeQueueRef.current.shift()!;
@@ -630,6 +665,7 @@ export default function GameApp() {
 
     if (activeQueueRunIdRef.current === runId) {
       activeQueueRunIdRef.current = null;
+      setIsSyncing(false);
     }
   }, [processSingleNode]);
 
@@ -668,6 +704,7 @@ export default function GameApp() {
       setIsTypewriterActive(false);
       setTypewriterText('');
       setSignalGlitch(null);
+      setIsSyncing(false);
       setShowChapterBanner(null);
       setShowArchive(false);
       setShowRestartConfirm(false);
@@ -917,6 +954,9 @@ export default function GameApp() {
   const contactMeta = CONTACT_META[contactStage];
   const contactAvatar = resolveContactAvatar(contactStage, novaEmotion);
   const isEpilogueMode = messages.some(message => message.type === 'epilogue');
+  const isFinished = messages.some(message => message.type === 'end');
+  const isSignalActive = isSyncing || isTyping || isTypewriterActive;
+  const shouldShowMediaSafeSpace = Boolean(choices && hasRecentMediaMessage(messages));
 
   if (screen === 'menu') {
     return (
@@ -1046,6 +1086,8 @@ export default function GameApp() {
           <div className="signal-glitch-snow" />
           <div className="signal-glitch-scanlines" />
           <div className="signal-glitch-bands" />
+          <div className="signal-glitch-ripple signal-glitch-ripple-a" />
+          <div className="signal-glitch-ripple signal-glitch-ripple-b" />
           <div className="signal-glitch-line signal-glitch-line-a" />
           <div className="signal-glitch-line signal-glitch-line-b" />
           <div className="signal-glitch-line signal-glitch-line-c" />
@@ -1073,7 +1115,7 @@ export default function GameApp() {
       )}
 
       <div
-        className={`game-layout relative z-10 flex flex-col flex-1 min-h-0 w-full max-w-[750px] mx-auto bg-[#0B0E14]/82 backdrop-blur-sm ${
+        className={`game-layout relative z-10 flex flex-col flex-1 min-h-0 w-full max-w-[1040px] mx-auto bg-[#0B0E14]/82 backdrop-blur-sm ${
           signalGlitch ? `signal-glitch-frame signal-glitch-frame-level-${signalGlitch.level}` : ''
         }`}
       >
@@ -1178,6 +1220,7 @@ export default function GameApp() {
               </div>
             )}
 
+            {shouldShowMediaSafeSpace && <div className="media-choice-safe-space" aria-hidden />}
             <div ref={messagesEndRef} />
           </div>
 
@@ -1210,9 +1253,15 @@ export default function GameApp() {
                 onClick={skipWaiting}
                 className="chat-idle-bar chat-wait-bar w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left"
               >
+                <span className="sync-signal-icon" aria-hidden>
+                  <span />
+                  <span />
+                  <span />
+                </span>
                 <div className="flex-1 flex flex-col gap-0.5">
                   <span className="chat-idle-text text-xs">{waitPrompt.label}</span>
                   <span className="chat-wait-hint">{waitPrompt.hint}</span>
+                  <span className="chat-wait-progress" aria-hidden />
                 </div>
               </button>
             ) : choices && choiceNodeId !== 'p4' ? (
@@ -1233,6 +1282,24 @@ export default function GameApp() {
               <div className="chat-idle-bar flex items-center gap-3 px-3 py-2 rounded-lg">
                 <div className="flex-1">
                   <span className="chat-idle-text text-xs">等待 Observer-01 接入第七协议……</span>
+                </div>
+              </div>
+            ) : isFinished ? (
+              <div className="chat-idle-bar chat-finished-bar flex items-center gap-3 px-3 py-2 rounded-lg">
+                <div className="flex-1">
+                  <span className="chat-idle-text text-xs">通讯已结束 · 记录已归档</span>
+                </div>
+              </div>
+            ) : isSignalActive ? (
+              <div className="chat-idle-bar chat-sync-bar flex items-center gap-3 px-3 py-2 rounded-lg">
+                <span className="sync-signal-icon" aria-hidden>
+                  <span />
+                  <span />
+                  <span />
+                </span>
+                <div className="flex-1">
+                  <span className="chat-idle-text text-xs">通讯同步中，请等待</span>
+                  <span className="chat-sync-progress" aria-hidden />
                 </div>
               </div>
             ) : (

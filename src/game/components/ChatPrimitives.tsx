@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react';
 import type { GlitchLevel } from '../types';
 
 export function TypingIndicator() {
@@ -148,6 +149,61 @@ function splitRecordContent(content: string, fallbackTitle: string) {
   return { title: fallbackTitle, body: content };
 }
 
+type FileLineEntry =
+  | { kind: 'row'; label: string; value: string; raw: string }
+  | { kind: 'line'; text: string }
+  | { kind: 'spacer' };
+
+function normalizeFileLines(title: string, body: string): string[] {
+  const rawLines = body.split('\n');
+  const meaningfulLines = rawLines.map(line => line.trim()).filter(Boolean);
+
+  if (title.trim() === '双重认证者' && meaningfulLines.length >= 2 && meaningfulLines.every(line => line === 'Nova Arlen')) {
+    return [
+      '当前认证者：Nova Arlen / 本轮',
+      '残留认证者：Nova Arlen / 第六次残留',
+      '认证状态：当前信号与残留信号并存',
+    ];
+  }
+
+  return rawLines;
+}
+
+function parseFileLine(line: string): FileLineEntry {
+  const trimmed = line.trim();
+  if (!trimmed) return { kind: 'spacer' };
+
+  const separatorIndex = trimmed.search(/[：:]/);
+  if (separatorIndex > 0) {
+    const label = trimmed.slice(0, separatorIndex).trim();
+    const value = trimmed.slice(separatorIndex + 1).trim();
+    if (label.length <= 18 && value) {
+      return { kind: 'row', label, value, raw: trimmed };
+    }
+  }
+
+  return { kind: 'line', text: line };
+}
+
+function getFileType(title: string): string {
+  if (/SEVENTH|PROTOCOL|协议/.test(title)) return 'PROTOCOL RECORD';
+  if (/日志|LOG|NOVA-07/.test(title)) return 'MEMORY LOG';
+  if (/认证|身份/.test(title)) return 'IDENTITY FILE';
+  return 'DECRYPTED RECORD';
+}
+
+function getFileSummary(title: string, entries: FileLineEntry[]): string[] {
+  if (title.trim() === '双重认证者') {
+    return ['当前 Nova 与第六次残留同时存在'];
+  }
+
+  return entries
+    .filter(entry => entry.kind !== 'spacer')
+    .slice(0, 2)
+    .map(entry => (entry.kind === 'row' ? `${entry.label}：${entry.value}` : entry.text.trim()))
+    .filter(Boolean);
+}
+
 export function AnomalyRecordCard({
   content,
   fallbackTitle = '异常记录',
@@ -174,36 +230,35 @@ export function AnomalyRecordCard({
 
 export function FileDisplay({ content }: { content: string }) {
   const { title, body } = splitRecordContent(content, '系统文件');
-  const lines = body.split('\n');
+  const lines = useMemo(() => normalizeFileLines(title, body), [body, title]);
+  const entries = useMemo(() => lines.map(parseFileLine), [lines]);
+  const summary = useMemo(() => getFileSummary(title, entries), [entries, title]);
+  const shouldCollapseByDefault = entries.filter(entry => entry.kind !== 'spacer').length > 4;
+  const [isExpanded, setIsExpanded] = useState(!shouldCollapseByDefault);
+  const fileType = getFileType(title);
 
-  function renderLine(line: string, index: number) {
-    const trimmed = line.trim();
-    if (!trimmed) return <div key={index} className="file-record-spacer" aria-hidden />;
+  function renderEntry(entry: FileLineEntry, index: number) {
+    if (entry.kind === 'spacer') return <div key={index} className="file-record-spacer" aria-hidden />;
 
-    const separatorIndex = trimmed.search(/[：:]/);
-    if (separatorIndex > 0) {
-      const label = trimmed.slice(0, separatorIndex).trim();
-      const value = trimmed.slice(separatorIndex + 1).trim();
-      if (label.length <= 18 && value) {
-        return (
-          <div key={index} className="file-record-row">
-            <span className="file-record-label">{label}</span>
-            <span className="file-record-value">{value}</span>
-          </div>
-        );
-      }
+    if (entry.kind === 'row') {
+      return (
+        <div key={index} className="file-record-row">
+          <span className="file-record-label">{entry.label}</span>
+          <span className="file-record-value">{entry.value}</span>
+        </div>
+      );
     }
 
     return (
       <p key={index} className="file-record-line">
-        {line}
+        {entry.text}
       </p>
     );
   }
 
   return (
     <div className="anomaly-card-wrap file-card-wrap animate-fade-in">
-      <div className="file-record-card">
+      <div className="file-record-card" aria-label={`${title} ${lines.join(' ')}`}>
         <div className="file-record-header">
           <svg className="w-4 h-4 text-[#F0A030]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
@@ -216,9 +271,29 @@ export function FileDisplay({ content }: { content: string }) {
           <div className="file-record-heading">
             <span className="file-record-kicker">NOVA FILE / DECRYPTED</span>
             <span className="file-record-title">{title}</span>
+            <span className="file-record-type">{fileType}</span>
           </div>
         </div>
-        <div className="file-record-body">{lines.map(renderLine)}</div>
+        <div className="file-record-summary">
+          {summary.length > 0 ? (
+            summary.map((line, index) => (
+              <p key={index} className="file-record-summary-line">
+                {line}
+              </p>
+            ))
+          ) : (
+            <p className="file-record-summary-line">记录摘要不可用</p>
+          )}
+        </div>
+        <button
+          type="button"
+          className="file-record-toggle"
+          onClick={() => setIsExpanded(value => !value)}
+          aria-expanded={isExpanded}
+        >
+          {isExpanded ? '收起详情' : '展开详情'}
+        </button>
+        {isExpanded && <div className="file-record-body">{entries.map(renderEntry)}</div>}
       </div>
     </div>
   );
