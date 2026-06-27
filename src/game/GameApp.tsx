@@ -52,6 +52,9 @@ const CONTACT_META: Record<ContactStage, { name: string; subtitle: string }> = {
   },
 };
 
+// INTERNAL TEST ONLY: set to false or remove this block before public release.
+const INTERNAL_TEST_SKIP_ENABLED = true;
+
 type WaitPrompt = {
   label: string;
   hint: string;
@@ -60,6 +63,8 @@ type WaitPrompt = {
 type WaitConfig = WaitPrompt & {
   duration: number;
 };
+
+type WaitResult = 'elapsed' | 'skipped' | 'fast-forward';
 
 type SignalGlitchTone = 'error' | 'success' | 'neutral';
 
@@ -168,10 +173,6 @@ function getSignalGlitchDuration(level: GlitchLevel, tone: SignalGlitchTone, con
   return 980;
 }
 
-function wait(ms: number): Promise<void> {
-  return new Promise(resolve => window.setTimeout(resolve, ms));
-}
-
 function isNovaSilentBeat(content: string): boolean {
   const compact = content.trim().replace(/\s+/g, '');
   return /^(…+|。+|\.{2,}|▇+)$/.test(compact);
@@ -242,16 +243,19 @@ export default function GameApp() {
   const [playerInput, setPlayerInput] = useState('');
   const [waitPrompt, setWaitPrompt] = useState<WaitPrompt | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isSkippingToChoice, setIsSkippingToChoice] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const nodeQueueRef = useRef<string[]>([]);
   const queueRunIdRef = useRef(0);
   const activeQueueRunIdRef = useRef<number | null>(null);
   const waitTimeoutRef = useRef<number | null>(null);
-  const waitResolverRef = useRef<(() => void) | null>(null);
+  const waitResolverRef = useRef<((result: WaitResult) => void) | null>(null);
+  const delayResolverRef = useRef<(() => void) | null>(null);
   const choiceTimeoutRef = useRef<number | null>(null);
   const signalGlitchTimeoutRef = useRef<number | null>(null);
   const signalGlitchPulseRef = useRef(0);
+  const skipToChoiceRef = useRef(false);
   const messagesRef = useRef(messages);
   const emotionRef = useRef(novaEmotion);
   const statsRef = useRef(stats);
@@ -276,6 +280,9 @@ export default function GameApp() {
   const cancelActiveSequence = useCallback(() => {
     queueRunIdRef.current += 1;
     nodeQueueRef.current = [];
+    skipToChoiceRef.current = false;
+    delayResolverRef.current?.();
+    delayResolverRef.current = null;
     if (waitTimeoutRef.current !== null) {
       window.clearTimeout(waitTimeoutRef.current);
       waitTimeoutRef.current = null;
@@ -292,6 +299,7 @@ export default function GameApp() {
     }
     setSignalGlitch(null);
     setIsSyncing(false);
+    setIsSkippingToChoice(false);
     return queueRunIdRef.current;
   }, []);
 
@@ -328,7 +336,33 @@ export default function GameApp() {
     setSaveTime('刚刚');
   }, []);
 
-  const waitForSignal = useCallback((config: WaitConfig, runId: number): Promise<'elapsed' | 'skipped'> => {
+  const waitForPlayback = useCallback((duration: number): Promise<void> => {
+    if (duration <= 0 || skipToChoiceRef.current) return Promise.resolve();
+
+    return new Promise(resolve => {
+      let settled = false;
+      const timeoutId = window.setTimeout(() => finish(), duration);
+
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        window.clearTimeout(timeoutId);
+        if (delayResolverRef.current === finish) {
+          delayResolverRef.current = null;
+        }
+        resolve();
+      };
+
+      delayResolverRef.current = finish;
+    });
+  }, []);
+
+  const waitForSignal = useCallback((config: WaitConfig, runId: number): Promise<WaitResult> => {
+    if (skipToChoiceRef.current) {
+      setWaitPrompt(null);
+      return Promise.resolve('fast-forward');
+    }
+
     if (waitTimeoutRef.current !== null) {
       window.clearTimeout(waitTimeoutRef.current);
       waitTimeoutRef.current = null;
@@ -338,7 +372,7 @@ export default function GameApp() {
 
     return new Promise(resolve => {
       let settled = false;
-      const finish = (result: 'elapsed' | 'skipped') => {
+      const finish = (result: WaitResult) => {
         if (settled) return;
         settled = true;
         if (waitTimeoutRef.current !== null) {
@@ -352,14 +386,30 @@ export default function GameApp() {
         resolve(result);
       };
 
-      waitResolverRef.current = () => finish('skipped');
+      waitResolverRef.current = result => finish(result);
       waitTimeoutRef.current = window.setTimeout(() => finish('elapsed'), config.duration);
     });
   }, []);
 
   const skipWaiting = useCallback(() => {
-    waitResolverRef.current?.();
+    waitResolverRef.current?.('skipped');
   }, []);
+
+  const stopFastForwardAtInteraction = useCallback(() => {
+    if (!skipToChoiceRef.current) return;
+    skipToChoiceRef.current = false;
+    setIsSkippingToChoice(false);
+  }, []);
+
+  const skipToNextChoice = useCallback(() => {
+    if (!INTERNAL_TEST_SKIP_ENABLED || choices || inputNode || messagesRef.current.some(message => message.type === 'end')) return;
+    skipToChoiceRef.current = true;
+    setIsSkippingToChoice(true);
+    setWaitPrompt(null);
+    setIsTyping(false);
+    delayResolverRef.current?.();
+    waitResolverRef.current?.('fast-forward');
+  }, [choices, inputNode]);
 
   const triggerSignalGlitch = useCallback((node: StoryNode) => {
     const level = getSignalGlitchLevel(node);
@@ -464,6 +514,7 @@ export default function GameApp() {
       }
 
       if (node.type === 'end') {
+        stopFastForwardAtInteraction();
         unlockArchives(nodeArchiveUnlocks);
         addMessage({
           id: `${node.id}_${Date.now()}`,
@@ -494,7 +545,7 @@ export default function GameApp() {
             persistState(node.nextId ?? nodeId, currentMsgs);
           }
         } else {
-          await wait(node.delay || 1000);
+          await waitForPlayback(node.delay || 1000);
         }
         if (!isCurrentRun()) return false;
         if (node.nextId) nodeQueueRef.current.push(node.nextId);
@@ -503,7 +554,7 @@ export default function GameApp() {
 
       if (node.type === 'typing') {
         setIsTyping(true);
-        await wait(node.delay || 2000);
+        await waitForPlayback(node.delay || 2000);
         if (!isCurrentRun()) return false;
         setIsTyping(false);
         if (node.nextId) nodeQueueRef.current.push(node.nextId);
@@ -511,6 +562,7 @@ export default function GameApp() {
       }
 
       if (node.type === 'input') {
+        stopFastForwardAtInteraction();
         setInputNode({ id: node.id, nextId: node.nextId, placeholder: node.content || '输入你想说的话...' });
         setIsTyping(false);
         persistState(nodeId, messagesRef.current);
@@ -522,6 +574,7 @@ export default function GameApp() {
           await waitForSignal(getMediaChoiceWaitConfig(), runId);
           if (!isCurrentRun()) return false;
         }
+        stopFastForwardAtInteraction();
         setChoices(node.choices);
         setChoiceNodeId(nodeId);
         setIsTyping(false);
@@ -536,7 +589,7 @@ export default function GameApp() {
 
       if (node.type === 'chapter') {
         setShowChapterBanner(node.content);
-        await new Promise(r => setTimeout(r, 2500));
+        await waitForPlayback(2500);
         if (!isCurrentRun()) return false;
         setShowChapterBanner(null);
       }
@@ -567,7 +620,7 @@ export default function GameApp() {
 
       if (node.speaker === 'nova' && node.type === 'text' && !node.isGlitch) {
         setIsTyping(true);
-        await wait(getNovaTypingLeadDelay(node));
+        await waitForPlayback(getNovaTypingLeadDelay(node));
         if (!isCurrentRun()) return false;
         setIsTyping(false);
 
@@ -579,8 +632,12 @@ export default function GameApp() {
         setTypewriterText('');
         for (let i = 1; i <= text.length; i++) {
           if (!isCurrentRun()) return false;
+          if (skipToChoiceRef.current) {
+            setTypewriterText(text);
+            break;
+          }
           setTypewriterText(text.slice(0, i));
-          await wait(getNovaCharacterDelay(text, i - 1));
+          await waitForPlayback(getNovaCharacterDelay(text, i - 1));
         }
         setIsTypewriterActive(false);
         setTypewriterText('');
@@ -590,7 +647,7 @@ export default function GameApp() {
         }, 500);
 
         persistState(getPendingNodeIdAfterNode(nodeId), currentMsgs);
-        await wait(getNovaPostMessageDelay(node));
+        await waitForPlayback(getNovaPostMessageDelay(node));
         if (!isCurrentRun()) return false;
       } else {
         const currentMsgs = addMessage(displayMsg);
@@ -613,7 +670,7 @@ export default function GameApp() {
           persistState(getPendingNodeIdAfterNode(nodeId), currentMsgs);
         }
 
-        await wait(node.delay || 200);
+        await waitForPlayback(node.delay || 200);
         if (!isCurrentRun()) return false;
       }
 
@@ -649,7 +706,7 @@ export default function GameApp() {
       }
       return true;
     },
-    [addMessage, persistState, saveMemoryAnchor, triggerSignalGlitch, unlockArchives, waitForSignal],
+    [addMessage, persistState, saveMemoryAnchor, stopFastForwardAtInteraction, triggerSignalGlitch, unlockArchives, waitForPlayback, waitForSignal],
   );
 
   const processQueue = useCallback(async (runId: number) => {
@@ -1145,6 +1202,17 @@ export default function GameApp() {
               </>
             )}
             <div className="ml-auto flex items-center gap-1.5 shrink-0">
+              {INTERNAL_TEST_SKIP_ENABLED && (
+                <button
+                  type="button"
+                  onClick={skipToNextChoice}
+                  className={`internal-skip-btn text-[11px] px-2.5 py-1.5 rounded transition-colors ${isSkippingToChoice ? 'internal-skip-btn-active' : ''}`}
+                  disabled={Boolean(choices || inputNode || isFinished)}
+                  title="内测限定：快进到下一个选项/交互节点"
+                >
+                  {isSkippingToChoice ? '快进中' : '跳过'}
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => setShowArchive(true)}

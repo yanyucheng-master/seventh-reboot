@@ -19,6 +19,7 @@ const EMOTION = new Map([
   ['微笑', 'smile'],
   ['悲伤', 'sad'],
   ['故障', 'glitch'],
+  ['惊讶', 'normal'],
 ]);
 
 const SPEAKER = new Map([
@@ -30,6 +31,7 @@ const SPEAKER = new Map([
 const TYPE = new Map([
   ['文本', 'text'],
   ['选项', 'choice'],
+  ['限时选项', 'choice'],
   ['图片', 'image'],
   ['输入中', 'typing'],
   ['延迟', 'delay'],
@@ -72,6 +74,15 @@ const DEFAULT_DELAY = {
   'ending-action': 1200,
 };
 
+const NEXT_ID_ALIASES = new Map([
+  ['ch3_dream11-c3', 'ch3_dream11_c3'],
+]);
+
+function cleanNextId(value) {
+  const cleaned = value.split('//')[0].trim();
+  return NEXT_ID_ALIASES.get(cleaned) ?? cleaned;
+}
+
 function normChoice(text) {
   return text
     .trim()
@@ -108,7 +119,7 @@ function parseMeta(metaText, node) {
     if (key === '档案解锁') node.archiveUnlock = parsePipeList(value);
     if (key === '结局') node.endingUnlock = ENDING.get(value) ?? value;
     if (key === '限时') node.choiceTimeoutMs = Number(value.replace(/ms$/i, ''));
-    if (key === '超时跳转') node.timeoutNextId = value;
+    if (key === '超时跳转' || key === '超时') node.timeoutNextId = cleanNextId(value);
   }
 }
 
@@ -188,14 +199,14 @@ function parseExport(text) {
       continue;
     }
     if (trimmed.startsWith('next:')) {
-      current.nextId = trimmed.replace(/^next:\s*/, '').trim();
+      current.nextId = cleanNextId(trimmed.replace(/^next:\s*/, ''));
       continue;
     }
     if (trimmed.startsWith('※ 限时选项')) continue;
 
     const choiceMatch = trimmed.match(/^\[([A-Z])\]\s*→\s*(.+?)\s*→\s*(\S+)(?:\s+meta:\s*(.+))?$/);
     if (choiceMatch) {
-      const choice = { text: choiceMatch[2].trim(), nextId: choiceMatch[3].trim() };
+      const choice = { text: choiceMatch[2].trim(), nextId: cleanNextId(choiceMatch[3]) };
       parseChoiceMeta(choiceMatch[4], choice);
       current.choices = current.choices ?? [];
       current.choices.push(choice);
@@ -272,6 +283,16 @@ function applyDisplayOverrides(node) {
   return node;
 }
 
+function applySourceLogicFixes(node) {
+  if (node.id === 'ch2_dream7f' && node.nextId === 'ch2_dream10') {
+    node.nextId = 'ch2_dream9';
+  }
+  if (node.id === 'ch5a_obs9' && node.nextId === 'ch5a_obs11') {
+    node.nextId = 'ch5a_obs10_choice';
+  }
+  return node;
+}
+
 function prop(key, value, lines) {
   if (value === undefined) return;
   lines.push(`    ${key}: ${esc(value)},`);
@@ -335,7 +356,7 @@ function renderNode(node) {
   return lines.join('\n');
 }
 
-const parsedNodes = parseExport(source).map(preserveNodeRuntime).map(applyDisplayOverrides);
+const parsedNodes = parseExport(source).map(preserveNodeRuntime).map(applySourceLogicFixes).map(applyDisplayOverrides);
 
 const storyJson = JSON.stringify(parsedNodes, null, 2)
   .replace(/`/g, '\\`')

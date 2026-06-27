@@ -33,14 +33,12 @@ const PSEUDO_INTERACTION_IDS = [
   'ch3_dream5',
   'ch3_lunch4',
   'ch3_ref12',
-  'ch3_log9',
   'ch4_fold8',
   'ch5a_10',
   'ch5a_logs4',
   'ch5a_logs7',
   'ch5a_obs11',
   'ch5b_file5',
-  'ch5b_far13',
 ];
 
 const ALLOWED_EXTERNAL_NEXT = new Set(['MENU']);
@@ -102,7 +100,7 @@ const pseudoStillChoices = PSEUDO_INTERACTION_IDS.filter(id => {
 });
 const pseudoMissing = PSEUDO_INTERACTION_IDS.filter(id => !storyNodeMap.has(id));
 
-const unknown06DisplayFailures = ['p11', 'p12a_u06', 'p12b_u06', 'p12e_u06', 'p13_u06', 'p13a_u06']
+const unknown06DisplayFailures = ['p11', 'p12a_u06', 'p13_u06']
   .filter(id => {
     const node = storyNodeMap.get(id);
     return node?.displayName !== 'UNKNOWN-06' || node?.avatarProfile !== 'unknown';

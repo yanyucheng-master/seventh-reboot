@@ -111,38 +111,6 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "type": "text",
     "content": "第七次已经开始",
     "emotion": "normal",
-    "nextId": "p12b_u06",
-    "delay": 600,
-    "displayName": "UNKNOWN-06",
-    "avatarProfile": "unknown"
-  },
-  {
-    "id": "p12b_u06",
-    "speaker": "nova",
-    "type": "text",
-    "content": "别让她太早知道",
-    "emotion": "sad",
-    "nextId": "p12d_u06",
-    "delay": 600,
-    "displayName": "UNKNOWN-06",
-    "avatarProfile": "unknown"
-  },
-  {
-    "id": "p12d_u06",
-    "speaker": "system",
-    "type": "glitch",
-    "content": "消息恢复失败",
-    "isGlitch": true,
-    "glitchLevel": 2,
-    "nextId": "p12e_u06",
-    "delay": 2000
-  },
-  {
-    "id": "p12e_u06",
-    "speaker": "nova",
-    "type": "text",
-    "content": "也别太相信自己",
-    "emotion": "normal",
     "nextId": "p13_u06",
     "delay": 600,
     "displayName": "UNKNOWN-06",
@@ -152,18 +120,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "p13_u06",
     "speaker": "nova",
     "type": "text",
-    "content": "记▇住……第一句▇",
-    "emotion": "sad",
-    "nextId": "p13a_u06",
-    "delay": 600,
-    "displayName": "UNKNOWN-06",
-    "avatarProfile": "unknown"
-  },
-  {
-    "id": "p13a_u06",
-    "speaker": "nova",
-    "type": "text",
-    "content": "那是她找▇▇你的时候",
+    "content": "记▇▇▇……第一▇▇",
     "emotion": "sad",
     "nextId": "p13b_u06",
     "delay": 600,
@@ -381,7 +338,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "p_no3",
     "speaker": "nova",
     "type": "text",
-    "content": "我接受这个答案",
+    "content": "好吧",
     "emotion": "smile",
     "nextId": "p_merge_sys1",
     "delay": 800
@@ -543,7 +500,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "p_aurora_ship2",
     "speaker": "nova",
     "type": "text",
-    "content": "一艘很贵、很大、也很容易出问题的船",
+    "content": "一艘很贵、很大、也很容易出问题的宇宙飞船",
     "emotion": "smile",
     "nextId": "p_aurora_merge1",
     "delay": 900
@@ -681,50 +638,90 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "content": "",
     "choices": [
       {
-        "text": "【你是说这不是正常通讯？】",
-        "nextId": "p_comm_abnormal"
+        "text": "【那它是从哪来的？】",
+        "nextId": "p_comm_source1"
       },
       {
-        "text": "【继续说】",
-        "nextId": "p_comm_continue"
+        "text": "【这会让你有危险吗？】",
+        "nextId": "p_comm_danger1"
+      },
+      {
+        "text": "【听起来不太妙】",
+        "nextId": "p_comm_bad1"
       }
     ]
   },
   {
-    "id": "p_comm_abnormal",
+    "id": "p_comm_source1",
     "speaker": "nova",
     "type": "text",
-    "content": "对",
+    "content": "这就是问题",
     "emotion": "normal",
-    "nextId": "p_comm_abnormal2",
-    "delay": 500
+    "nextId": "p_comm_source2",
+    "delay": 600
   },
   {
-    "id": "p_comm_abnormal2",
+    "id": "p_comm_source2",
     "speaker": "nova",
     "type": "text",
-    "content": "这条通讯不在任何正常协议里",
+    "content": "它像是从一台实验设备里漏出来的",
     "emotion": "normal",
     "nextId": "p_exp1",
-    "delay": 800
+    "delay": 600
   },
   {
-    "id": "p_comm_continue",
+    "id": "p_comm_danger1",
     "speaker": "nova",
     "type": "text",
-    "content": "好",
+    "content": "暂时还不好说",
     "emotion": "normal",
-    "nextId": "p_comm_continue2",
-    "delay": 400
+    "nextId": "p_comm_danger2",
+    "delay": 600
   },
   {
-    "id": "p_comm_continue2",
+    "id": "p_comm_danger2",
     "speaker": "nova",
     "type": "text",
-    "content": "但你先做好心理准备",
+    "content": "但如果你问我现在安不安全",
+    "emotion": "smile",
+    "nextId": "p_comm_danger3",
+    "delay": 600
+  },
+  {
+    "id": "p_comm_danger3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "答案可能有点尴尬",
     "emotion": "normal",
     "nextId": "p_exp1",
-    "delay": 800
+    "delay": 600
+  },
+  {
+    "id": "p_comm_bad1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "恭喜",
+    "emotion": "smile",
+    "nextId": "p_comm_bad2",
+    "delay": 600
+  },
+  {
+    "id": "p_comm_bad2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "你的直觉暂时领先我的安全手册",
+    "emotion": "normal",
+    "nextId": "p_comm_bad3",
+    "delay": 600
+  },
+  {
+    "id": "p_comm_bad3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "因为它确实不太妙",
+    "emotion": "normal",
+    "nextId": "p_exp1",
+    "delay": 600
   },
   {
     "id": "p_exp1",
@@ -1019,8 +1016,8 @@ const rawStoryNodes = JSON.parse(String.raw`[
         "nextId": "p_idk1"
       },
       {
-        "text": "【也许是巧合】",
-        "nextId": "p_coin1"
+        "text": "【我只是打开了这个界面】",
+        "nextId": "p_interface1"
       },
       {
         "text": "【跨时空通讯？】",
@@ -1047,22 +1044,49 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "delay": 600
   },
   {
-    "id": "p_coin1",
+    "id": "p_interface1",
     "speaker": "nova",
     "type": "text",
-    "content": "如果是巧合",
+    "content": "界面？",
     "emotion": "normal",
-    "nextId": "p_coin2",
-    "delay": 500
+    "nextId": "p_interface2",
+    "delay": 600
   },
   {
-    "id": "p_coin2",
+    "id": "p_interface2",
     "speaker": "nova",
     "type": "text",
-    "content": "那这是我见过最离谱的巧合",
+    "content": "你那边听起来也不像正常通讯终端",
+    "emotion": "normal",
+    "nextId": "p_interface3",
+    "delay": 600
+  },
+  {
+    "id": "p_interface3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "好吧",
+    "emotion": "smile",
+    "nextId": "p_interface4",
+    "delay": 600
+  },
+  {
+    "id": "p_interface4",
+    "speaker": "nova",
+    "type": "text",
+    "content": "那我们现在至少可以确认一件事",
+    "emotion": "normal",
+    "nextId": "p_interface5",
+    "delay": 600
+  },
+  {
+    "id": "p_interface5",
+    "speaker": "nova",
+    "type": "text",
+    "content": "这条链路两边都不太正常",
     "emotion": "normal",
     "nextId": "p_idk3",
-    "delay": 900
+    "delay": 600
   },
   {
     "id": "p_space1",
@@ -1206,7 +1230,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "content": "",
     "choices": [
       {
-        "text": "【没事，说】",
+        "text": "【没事，说吧】",
         "nextId": "p_unless_say1"
       },
       {
@@ -1386,16 +1410,12 @@ const rawStoryNodes = JSON.parse(String.raw`[
   },
   {
     "id": "p_familiar4",
-    "speaker": "player",
-    "type": "choice",
-    "content": "",
-    "choices": [
-      {
-        "text": "【你也觉得我们不只是刚认识？】",
-        "nextId": "p_fam1",
-        "memoryDelta": 1
-      }
-    ]
+    "speaker": "nova",
+    "type": "text",
+    "content": "不是很清楚",
+    "emotion": "normal",
+    "nextId": "p_fam1",
+    "delay": 600
   },
   {
     "id": "p_fam1",
@@ -1410,19 +1430,28 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "p_fam2",
     "speaker": "nova",
     "type": "text",
-    "content": "我们好像已经认识很久了",
+    "content": "你不像是突然出现的人",
     "emotion": "normal",
     "nextId": "p_fam3",
     "delay": 1200
   },
   {
     "id": "p_fam3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "更像是我本来就应该认识你",
+    "emotion": "normal",
+    "nextId": "p_fam4",
+    "delay": 600
+  },
+  {
+    "id": "p_fam4",
     "speaker": "player",
     "type": "choice",
     "content": "",
     "choices": [
       {
-        "text": "【没有】",
+        "text": "【我没这种感觉】",
         "nextId": "p_fam_no"
       },
       {
@@ -1732,7 +1761,11 @@ const rawStoryNodes = JSON.parse(String.raw`[
       },
       {
         "text": "【昨晚观测窗外到底是什么】",
-        "nextId": "ch1_win1"
+        "nextId": "ch1_win2"
+      },
+      {
+        "text": "【我可是等了你一个晚上】",
+        "nextId": "ch1_wait1"
       }
     ]
   },
@@ -1791,15 +1824,6 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "delay": 1200
   },
   {
-    "id": "ch1_win1",
-    "speaker": "nova",
-    "type": "text",
-    "content": "先说结论",
-    "emotion": "normal",
-    "nextId": "ch1_win2",
-    "delay": 600
-  },
-  {
     "id": "ch1_win2",
     "speaker": "nova",
     "type": "text",
@@ -1816,6 +1840,51 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "emotion": "smile",
     "nextId": "ch1_merge1",
     "delay": 1200
+  },
+  {
+    "id": "ch1_wait1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "说得像我欠你一条已读回执",
+    "emotion": "smile",
+    "nextId": "ch1_wait2",
+    "delay": 600
+  },
+  {
+    "id": "ch1_wait2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "不过",
+    "emotion": "normal",
+    "nextId": "ch1_wait3",
+    "delay": 600
+  },
+  {
+    "id": "ch1_wait3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "让你等了一晚上",
+    "emotion": "normal",
+    "nextId": "ch1_wait4",
+    "delay": 600
+  },
+  {
+    "id": "ch1_wait4",
+    "speaker": "nova",
+    "type": "text",
+    "content": "抱歉",
+    "emotion": "smile",
+    "nextId": "ch1_wait5",
+    "delay": 600
+  },
+  {
+    "id": "ch1_wait5",
+    "speaker": "nova",
+    "type": "text",
+    "content": "我也没想到自己会直接睡死",
+    "emotion": "smile",
+    "nextId": "ch1_merge1",
+    "delay": 600
   },
   {
     "id": "ch1_merge1",
@@ -1848,7 +1917,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch1_ug1",
     "speaker": "nova",
     "type": "text",
-    "content": "一块漂浮维修板",
+    "content": "只是一块漂到检修通道口的维修板",
     "emotion": "normal",
     "nextId": "ch1_ug2",
     "delay": 600
@@ -1875,8 +1944,8 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch1_ug4",
     "speaker": "nova",
     "type": "text",
-    "content": "他们甚至还给它贴了眼睛",
-    "emotion": "smile",
+    "content": "重点是",
+    "emotion": "normal",
     "nextId": "ch1_ug5",
     "delay": 600
   },
@@ -1884,8 +1953,8 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch1_ug5",
     "speaker": "nova",
     "type": "text",
-    "content": "……",
-    "emotion": "normal",
+    "content": "它上面贴着一双眼睛",
+    "emotion": "smile",
     "nextId": "ch1_ug6",
     "delay": 800
   },
@@ -1893,10 +1962,37 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch1_ug6",
     "speaker": "nova",
     "type": "text",
-    "content": "有时候我真的怀疑人类有没有未来",
+    "content": "当时通道灯还闪了一下",
+    "emotion": "normal",
+    "nextId": "ch1_ug7",
+    "delay": 800
+  },
+  {
+    "id": "ch1_ug7",
+    "speaker": "nova",
+    "type": "text",
+    "content": "我一抬头",
+    "emotion": "normal",
+    "nextId": "ch1_ug8",
+    "delay": 600
+  },
+  {
+    "id": "ch1_ug8",
+    "speaker": "nova",
+    "type": "text",
+    "content": "它就在那儿看着我",
+    "emotion": "smile",
+    "nextId": "ch1_ug9",
+    "delay": 600
+  },
+  {
+    "id": "ch1_ug9",
+    "speaker": "nova",
+    "type": "text",
+    "content": "有时候我真的怀疑人类还有没有未来",
     "emotion": "smile",
     "nextId": "ch1_photo1",
-    "delay": 800
+    "delay": 600
   },
   {
     "id": "ch1_photo1",
@@ -2050,7 +2146,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch1_ph3",
     "speaker": "nova",
     "type": "text",
-    "content": "不知道",
+    "content": "这个问题",
     "emotion": "normal",
     "nextId": "ch1_ph3b",
     "delay": 600
@@ -2059,8 +2155,8 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch1_ph3b",
     "speaker": "nova",
     "type": "text",
-    "content": "但我怀疑是维修组的老霍",
-    "emotion": "normal",
+    "content": "说出来有点丢人",
+    "emotion": "smile",
     "nextId": "ch1_ph3c",
     "delay": 600
   },
@@ -2068,7 +2164,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch1_ph3c",
     "speaker": "nova",
     "type": "text",
-    "content": "只有他会这么闲",
+    "content": "眼睛是我贴的",
     "emotion": "smile",
     "nextId": "ch1_ph3d",
     "delay": 600
@@ -2077,7 +2173,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch1_ph3d",
     "speaker": "nova",
     "type": "text",
-    "content": "他还说再让我给维修板贴眼睛",
+    "content": "前一天贴的",
     "emotion": "normal",
     "nextId": "ch1_ph3e",
     "delay": 700
@@ -2086,13 +2182,58 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch1_ph3e",
     "speaker": "nova",
     "type": "text",
-    "content": "就把我也贴到检修通道上",
-    "emotion": "smile",
+    "content": "但我真的忘了",
+    "emotion": "normal",
     "nextId": "ch1_ph3f",
     "delay": 600
   },
   {
     "id": "ch1_ph3f",
+    "speaker": "nova",
+    "type": "text",
+    "content": "所以严格来说",
+    "emotion": "smile",
+    "nextId": "ch1_ph3g",
+    "delay": 600
+  },
+  {
+    "id": "ch1_ph3g",
+    "speaker": "nova",
+    "type": "text",
+    "content": "我是被昨天的自己吓到了",
+    "emotion": "smile",
+    "nextId": "ch1_ph3h",
+    "delay": 600
+  },
+  {
+    "id": "ch1_ph3h",
+    "speaker": "nova",
+    "type": "text",
+    "content": "维修组的老霍发现以后",
+    "emotion": "normal",
+    "nextId": "ch1_ph3i",
+    "delay": 600
+  },
+  {
+    "id": "ch1_ph3i",
+    "speaker": "nova",
+    "type": "text",
+    "content": "说我再敢给维修板贴眼睛",
+    "emotion": "smile",
+    "nextId": "ch1_ph3j",
+    "delay": 600
+  },
+  {
+    "id": "ch1_ph3j",
+    "speaker": "nova",
+    "type": "text",
+    "content": "就把我也贴到检修通道上",
+    "emotion": "smile",
+    "nextId": "ch1_ph3k",
+    "delay": 600
+  },
+  {
+    "id": "ch1_ph3k",
     "speaker": "nova",
     "type": "text",
     "content": "其实",
@@ -2111,15 +2252,11 @@ const rawStoryNodes = JSON.parse(String.raw`[
   },
   {
     "id": "ch1_worry2",
-    "speaker": "player",
-    "type": "choice",
+    "speaker": "system",
+    "type": "delay",
     "content": "",
-    "choices": [
-      {
-        "text": "【你昨晚在担心我？】",
-        "nextId": "ch1_worry3"
-      }
-    ]
+    "nextId": "ch1_worry3",
+    "delay": 1000
   },
   {
     "id": "ch1_worry3",
@@ -2269,16 +2406,8 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "type": "text",
     "content": "你那边是什么天气？",
     "emotion": "normal",
-    "nextId": "ch1_weather_sys1",
-    "delay": 800
-  },
-  {
-    "id": "ch1_weather_sys1",
-    "speaker": "system",
-    "type": "status",
-    "content": "奇怪",
     "nextId": "ch1_weather_sys2",
-    "delay": 700
+    "delay": 800
   },
   {
     "id": "ch1_weather_sys2",
@@ -2293,35 +2422,8 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "speaker": "system",
     "type": "status",
     "content": "不是系统模拟出来的那种",
-    "nextId": "ch1_weather_sys3",
-    "delay": 700
-  },
-  {
-    "id": "ch1_weather_sys3",
-    "speaker": "nova",
-    "type": "text",
-    "content": "奇怪",
-    "emotion": "normal",
-    "nextId": "ch1_weather_sys4",
-    "delay": 500
-  },
-  {
-    "id": "ch1_weather_sys4",
-    "speaker": "nova",
-    "type": "text",
-    "content": "我总觉得你那边是真的有天气",
-    "emotion": "normal",
-    "nextId": "ch1_weather_sys5",
-    "delay": 700
-  },
-  {
-    "id": "ch1_weather_sys5",
-    "speaker": "nova",
-    "type": "text",
-    "content": "不是系统模拟出来的那种",
-    "emotion": "normal",
     "nextId": "ch1_weather4",
-    "delay": 1000
+    "delay": 700
   },
   {
     "id": "ch1_weather4",
@@ -2394,17 +2496,8 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "type": "text",
     "content": "真的？",
     "emotion": "normal",
-    "nextId": "ch1_rain2",
-    "delay": 400
-  },
-  {
-    "id": "ch1_rain2",
-    "speaker": "nova",
-    "type": "text",
-    "content": "你怎么知道",
-    "emotion": "normal",
     "nextId": "ch1_rain2b",
-    "delay": 600
+    "delay": 400
   },
   {
     "id": "ch1_rain2b",
@@ -2428,7 +2521,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch1_sun_merge",
     "speaker": "nova",
     "type": "text",
-    "content": "这里看不到天气",
+    "content": "我这里看不到天气",
     "emotion": "normal",
     "nextId": "ch1_sun3",
     "delay": 600
@@ -2509,7 +2602,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch1_star3",
     "speaker": "nova",
     "type": "text",
-    "content": "有点单调",
+    "content": "只有星星还是太单调了",
     "emotion": "normal",
     "nextId": "ch1_star4",
     "delay": 800
@@ -2570,10 +2663,9 @@ const rawStoryNodes = JSON.parse(String.raw`[
   },
   {
     "id": "ch1_star12",
-    "speaker": "nova",
-    "type": "text",
-    "content": "是吧",
-    "emotion": "smile",
+    "speaker": "system",
+    "type": "delay",
+    "content": "",
     "nextId": "ch1_star13",
     "delay": 400
   },
@@ -2655,7 +2747,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch1_pet_yes",
     "speaker": "nova",
     "type": "text",
-    "content": "那你懂",
+    "content": "那你肯定懂",
     "emotion": "smile",
     "nextId": "ch1_pet_yes2",
     "delay": 600
@@ -2766,75 +2858,23 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "content": "N7",
     "emotion": "smile",
     "memoryAnchor": "n7",
-    "nextId": "ch1_pet5_idx1",
+    "nextId": "ch1_pet5b",
     "delay": 600
   },
   {
-    "id": "ch1_pet5_idx1",
-    "speaker": "system",
-    "type": "status",
-    "content": "历史索引匹配：N7",
-    "nextId": "ch1_pet5_idx2",
-    "delay": 700
-  },
-  {
-    "id": "ch1_pet5_idx2",
-    "speaker": "system",
-    "type": "status",
-    "content": "匹配来源：未知循环",
-    "nextId": "ch1_pet5_anom1",
-    "delay": 800
-  },
-  {
-    "id": "ch1_pet5_anom1",
+    "id": "ch1_pet5b",
     "speaker": "nova",
     "type": "text",
-    "content": "等等",
-    "emotion": "normal",
-    "nextId": "ch1_pet5_anom2",
-    "delay": 600
-  },
-  {
-    "id": "ch1_pet5_anom2",
-    "speaker": "nova",
-    "type": "text",
-    "content": "我刚才是不是已经跟你说过 N7？",
-    "emotion": "normal",
-    "nextId": "ch1_pet5_anom3",
-    "delay": 800
-  },
-  {
-    "id": "ch1_pet5_anom3",
-    "speaker": "nova",
-    "type": "text",
-    "content": "可这是我们第一次聊到它吧",
-    "emotion": "normal",
-    "nextId": "ch1_pet5_anom4",
-    "delay": 800
-  },
-  {
-    "id": "ch1_pet5_anom4",
-    "speaker": "nova",
-    "type": "text",
-    "content": "……算了",
-    "emotion": "normal",
-    "nextId": "ch1_pet5_anom5",
-    "delay": 600
-  },
-  {
-    "id": "ch1_pet5_anom5",
-    "speaker": "nova",
-    "type": "text",
-    "content": "可能是我睡眠不足",
-    "emotion": "normal",
+    "content": "听起来像什么高级导航编号吧",
+    "emotion": "smile",
     "nextId": "ch1_pet7",
-    "delay": 800
+    "delay": 600
   },
   {
     "id": "ch1_pet7",
     "speaker": "nova",
     "type": "text",
-    "content": "因为我七岁捡到它",
+    "content": "但其实是因为我七岁捡到它",
     "emotion": "smile",
     "nextId": "ch1_pet8",
     "delay": 600
@@ -2923,7 +2963,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch1_n7_emotion3",
     "speaker": "nova",
     "type": "text",
-    "content": "换个话题",
+    "content": "换个话题吧",
     "emotion": "normal",
     "nextId": "ch1_cook1",
     "delay": 600
@@ -3111,66 +3151,98 @@ const rawStoryNodes = JSON.parse(String.raw`[
   },
   {
     "id": "ch1_go1",
-    "speaker": "nova",
-    "type": "text",
-    "content": "等会",
-    "emotion": "normal",
-    "nextId": "ch1_go2",
+    "speaker": "player",
+    "type": "choice",
+    "content": "",
+    "choiceTimeoutMs": 4000,
+    "timeoutNextId": "ch1_go_timeout1",
+    "choices": [
+      {
+        "text": "【快去，别迟到】",
+        "nextId": "ch1_go_fast1"
+      },
+      {
+        "text": "【等等，你的午饭呢？】",
+        "nextId": "ch1_go_food1"
+      },
+      {
+        "text": "【舰长真会杀人吗？】",
+        "nextId": "ch1_go_joke1"
+      }
+    ],
     "delay": 600
   },
   {
-    "id": "ch1_go2",
+    "id": "ch1_go_fast1",
     "speaker": "nova",
     "type": "text",
-    "content": "先说个正事",
-    "emotion": "normal",
-    "nextId": "ch1_go4",
+    "content": "收到",
+    "emotion": "smile",
+    "nextId": "ch1_go_fast2",
     "delay": 600
   },
   {
-    "id": "ch1_go4",
+    "id": "ch1_go_fast2",
     "speaker": "nova",
     "type": "text",
-    "content": "谢谢",
+    "content": "你这句比警报有用",
     "emotion": "normal",
-    "nextId": "ch1_go6",
+    "nextId": "ch1_go10",
     "delay": 600
   },
   {
-    "id": "ch1_go6",
+    "id": "ch1_go_food1",
     "speaker": "nova",
     "type": "text",
-    "content": "不知道",
+    "content": "来不及管它了",
     "emotion": "normal",
-    "nextId": "ch1_go7",
+    "nextId": "ch1_go_food2",
     "delay": 600
   },
   {
-    "id": "ch1_go7",
+    "id": "ch1_go_food2",
     "speaker": "nova",
     "type": "text",
-    "content": "可能是因为你还在",
-    "emotion": "normal",
-    "nextId": "ch1_go8",
-    "delay": 800
-  },
-  {
-    "id": "ch1_go8",
-    "speaker": "nova",
-    "type": "text",
-    "content": "总之",
-    "emotion": "normal",
-    "nextId": "ch1_go9",
-    "delay": 400
-  },
-  {
-    "id": "ch1_go9",
-    "speaker": "nova",
-    "type": "text",
-    "content": "谢谢",
+    "content": "如果它活到晚上\n我再回来审判它",
     "emotion": "smile",
     "nextId": "ch1_go10",
-    "delay": 800
+    "delay": 600
+  },
+  {
+    "id": "ch1_go_joke1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "法律意义上不会",
+    "emotion": "smile",
+    "nextId": "ch1_go_joke2",
+    "delay": 600
+  },
+  {
+    "id": "ch1_go_joke2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "考勤意义上不一定",
+    "emotion": "normal",
+    "nextId": "ch1_go10",
+    "delay": 600
+  },
+  {
+    "id": "ch1_go_timeout1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "喂？",
+    "emotion": "normal",
+    "nextId": "ch1_go_timeout2",
+    "delay": 600
+  },
+  {
+    "id": "ch1_go_timeout2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "算了我真得跑了",
+    "emotion": "normal",
+    "nextId": "ch1_go10",
+    "delay": 600
   },
   {
     "id": "ch1_go10",
@@ -3412,7 +3484,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "content": "",
     "choices": [
       {
-        "text": "【因为我？】",
+        "text": "【因为什么？】",
         "nextId": "ch1_night18",
         "trustDelta": 1
       },
@@ -3439,7 +3511,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch1_night18d",
     "speaker": "nova",
     "type": "text",
-    "content": "有一点",
+    "content": "可能是因为你吧",
     "emotion": "smile",
     "nextId": "ch1_night18e",
     "delay": 600
@@ -3543,7 +3615,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch1_night27",
     "speaker": "nova",
     "type": "text",
-    "content": "晚安",
+    "content": "谢谢",
     "emotion": "smile",
     "nextId": "ch1_night28",
     "delay": 600
@@ -3586,7 +3658,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch1_draft1",
     "speaker": "system",
     "type": "draft",
-    "content": "未发送草稿 / 02:41||不对\n我明明没有告诉过他 N7",
+    "content": "未发送草稿 / 02:41||不对\n我明明是第一次和他说起 N7\n可说出口的时候\n却像已经重复过很多次\n\n第二章：日常",
     "nextId": "CH2_START",
     "delay": 400
   },
@@ -3618,7 +3690,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch2_2",
     "speaker": "nova",
     "type": "text",
-    "content": "坏了",
+    "content": "坏了坏了",
     "emotion": "normal",
     "nextId": "ch2_3",
     "delay": 600
@@ -3912,8 +3984,20 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "type": "text",
     "content": "梦境系统和现实系统之间缺少同步机制",
     "emotion": "normal",
-    "nextId": "ch2_5",
+    "nextId": "ch2_haha_choice",
     "delay": 900
+  },
+  {
+    "id": "ch2_haha_choice",
+    "speaker": "player",
+    "type": "choice",
+    "content": "",
+    "choices": [
+      {
+        "text": "【哈哈哈哈】",
+        "nextId": "ch2_5"
+      }
+    ]
   },
   {
     "id": "ch2_5",
@@ -3957,8 +4041,20 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "type": "text",
     "content": "我做梦了",
     "emotion": "smile",
-    "nextId": "ch2_dream1",
+    "nextId": "ch2_dream_intro_choice",
     "delay": 600
+  },
+  {
+    "id": "ch2_dream_intro_choice",
+    "speaker": "player",
+    "type": "choice",
+    "content": "",
+    "choices": [
+      {
+        "text": "【这不是很正常吗】",
+        "nextId": "ch2_dream1"
+      }
+    ]
   },
   {
     "id": "ch2_dream1",
@@ -3975,8 +4071,28 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "type": "text",
     "content": "因为梦里有你",
     "emotion": "smile",
-    "nextId": "ch2_dream7",
+    "nextId": "ch2_dream2_choice",
     "delay": 800
+  },
+  {
+    "id": "ch2_dream2_choice",
+    "speaker": "player",
+    "type": "choice",
+    "content": "",
+    "choices": [
+      {
+        "text": "【我在梦里做了什么？】",
+        "nextId": "ch2_dream7"
+      },
+      {
+        "text": "【我说了什么吗？】",
+        "nextId": "ch2_dream_say1"
+      },
+      {
+        "text": "【你都没见过我，怎么知道那是我？】",
+        "nextId": "ch2_dream_face1"
+      }
+    ]
   },
   {
     "id": "ch2_dream7",
@@ -3984,32 +4100,104 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "type": "text",
     "content": "我不知道",
     "emotion": "normal",
-    "nextId": "ch2_dream7_v10_1",
+    "nextId": "ch2_dream7b",
     "delay": 600
   },
   {
-    "id": "ch2_dream7_v10_1",
+    "id": "ch2_dream_say1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "好像说了",
+    "emotion": "normal",
+    "nextId": "ch2_dream_say2",
+    "delay": 600
+  },
+  {
+    "id": "ch2_dream_say2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "但我想不起来",
+    "emotion": "normal",
+    "nextId": "ch2_dream7b",
+    "delay": 600
+  },
+  {
+    "id": "ch2_dream_face1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "这就是最奇怪的地方",
+    "emotion": "normal",
+    "nextId": "ch2_dream_face2",
+    "delay": 600
+  },
+  {
+    "id": "ch2_dream_face2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "我其实看不清你的脸",
+    "emotion": "normal",
+    "nextId": "ch2_dream_face3",
+    "delay": 600
+  },
+  {
+    "id": "ch2_dream_face3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "但梦里我就是知道",
+    "emotion": "normal",
+    "nextId": "ch2_dream_face4",
+    "delay": 600
+  },
+  {
+    "id": "ch2_dream_face4",
+    "speaker": "nova",
+    "type": "text",
+    "content": "那个人是你",
+    "emotion": "normal",
+    "nextId": "ch2_dream7b",
+    "delay": 600
+  },
+  {
+    "id": "ch2_dream7b",
     "speaker": "nova",
     "type": "text",
     "content": "梦很模糊",
     "emotion": "normal",
-    "nextId": "ch2_dream7_v10_2",
+    "nextId": "ch2_dream7c",
     "delay": 600
   },
   {
-    "id": "ch2_dream7_v10_2",
+    "id": "ch2_dream7c",
     "speaker": "nova",
     "type": "text",
     "content": "我只记得",
     "emotion": "normal",
-    "nextId": "ch2_dream7_v10_3",
+    "nextId": "ch2_dream7d",
     "delay": 600
   },
   {
-    "id": "ch2_dream7_v10_3",
+    "id": "ch2_dream7d",
     "speaker": "nova",
     "type": "text",
-    "content": "你好像对我说了一句话",
+    "content": "你好像站在观测窗前",
+    "emotion": "normal",
+    "nextId": "ch2_dream7e",
+    "delay": 600
+  },
+  {
+    "id": "ch2_dream7e",
+    "speaker": "nova",
+    "type": "text",
+    "content": "没有说话",
+    "emotion": "normal",
+    "nextId": "ch2_dream7f",
+    "delay": 600
+  },
+  {
+    "id": "ch2_dream7f",
+    "speaker": "nova",
+    "type": "text",
+    "content": "只是看着我",
     "emotion": "normal",
     "nextId": "ch2_dream9",
     "delay": 600
@@ -4024,91 +4212,46 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "delay": 600
   },
   {
-    "id": "ch2_dream10_v10_4",
-    "speaker": "nova",
-    "type": "text",
-    "content": "突然想不起来了",
-    "emotion": "normal",
-    "nextId": "ch2_dream10_v10_5",
-    "delay": 600
-  },
-  {
-    "id": "ch2_dream10_v10_5",
-    "speaker": "nova",
-    "type": "text",
-    "content": "但我记得一个画面",
-    "emotion": "normal",
-    "nextId": "ch2_dream10_v10_6",
-    "delay": 600
-  },
-  {
-    "id": "ch2_dream10_v10_6",
-    "speaker": "nova",
-    "type": "text",
-    "content": "你站在观测窗前",
-    "emotion": "normal",
-    "nextId": "ch2_dream10_v10_7",
-    "delay": 600
-  },
-  {
-    "id": "ch2_dream10_v10_7",
-    "speaker": "nova",
-    "type": "text",
-    "content": "这不可能",
-    "emotion": "normal",
-    "nextId": "ch2_dream10_v10_8",
-    "delay": 600
-  },
-  {
-    "id": "ch2_dream10_v10_8",
-    "speaker": "nova",
-    "type": "text",
-    "content": "你根本不在 Aurora 上",
-    "emotion": "normal",
-    "nextId": "ch2_dream10_v10_9",
-    "delay": 600
-  },
-  {
-    "id": "ch2_dream10_v10_9",
-    "speaker": "nova",
-    "type": "text",
-    "content": "算了",
-    "emotion": "normal",
-    "nextId": "ch2_dream10_v10_10",
-    "delay": 600
-  },
-  {
-    "id": "ch2_dream10_v10_10",
-    "speaker": "nova",
-    "type": "text",
-    "content": "可能只是普通梦",
-    "emotion": "normal",
-    "nextId": "ch2_dream10_v10_11",
-    "delay": 600
-  },
-  {
-    "id": "ch2_dream10_v10_11",
-    "speaker": "nova",
-    "type": "text",
-    "content": "如果普通梦会让人背后发凉的话",
-    "emotion": "normal",
-    "nextId": "ch2_dream13",
-    "delay": 600
-  },
-  {
     "id": "ch2_dream10",
     "speaker": "nova",
     "type": "text",
     "content": "奇怪",
     "emotion": "normal",
-    "nextId": "ch2_dream10_v10_4",
+    "nextId": "ch2_dream10b",
     "delay": 2000
+  },
+  {
+    "id": "ch2_dream10b",
+    "speaker": "nova",
+    "type": "text",
+    "content": "明明只是一个梦",
+    "emotion": "normal",
+    "nextId": "ch2_dream11",
+    "delay": 600
+  },
+  {
+    "id": "ch2_dream11",
+    "speaker": "nova",
+    "type": "text",
+    "content": "可我醒来的时候",
+    "emotion": "normal",
+    "nextId": "ch2_dream12",
+    "delay": 600
+  },
+  {
+    "id": "ch2_dream12",
+    "speaker": "nova",
+    "type": "text",
+    "content": "第一反应不是害怕",
+    "emotion": "normal",
+    "nextId": "ch2_dream13",
+    "delay": 600
   },
   {
     "id": "ch2_dream13",
     "speaker": "nova",
     "type": "text",
-    "content": "也许吧",
+    "content": "是觉得这里好像没那么孤独了",
     "emotion": "normal",
     "nextId": "ch2_dream14",
     "delay": 600
@@ -4117,7 +4260,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch2_dream14",
     "speaker": "nova",
     "type": "text",
-    "content": "这样想的话",
+    "content": "像是有人真的坐在通讯另一端",
     "emotion": "normal",
     "nextId": "ch2_dream15",
     "delay": 600
@@ -4126,8 +4269,8 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch2_dream15",
     "speaker": "nova",
     "type": "text",
-    "content": "这里好像就没那么安静了",
-    "emotion": "normal",
+    "content": "虽然这么说有点怪",
+    "emotion": "smile",
     "nextId": "ch2_dream16",
     "delay": 600
   },
@@ -4135,7 +4278,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch2_dream16",
     "speaker": "nova",
     "type": "text",
-    "content": "你好像对我说了一句话",
+    "content": "但我好像没那么怕睡着了",
     "emotion": "normal",
     "nextId": "ch2_dream17",
     "delay": 800
@@ -4153,7 +4296,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch2_dream18",
     "speaker": "nova",
     "type": "text",
-    "content": "因为梦里的你没有说话",
+    "content": "因为那句话像被什么东西擦掉了",
     "emotion": "normal",
     "nextId": "ch2_dream18b",
     "delay": 800
@@ -4162,7 +4305,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch2_dream18b",
     "speaker": "nova",
     "type": "text",
-    "content": "只是站在观测窗前",
+    "content": "只剩你站在观测窗前",
     "emotion": "normal",
     "nextId": "ch2_dream18c",
     "delay": 600
@@ -4260,7 +4403,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch2_obs3",
     "speaker": "nova",
     "type": "text",
-    "content": "给你看个好东西",
+    "content": "给你看",
     "emotion": "smile",
     "nextId": "ch2_obs4",
     "delay": 1500
@@ -4294,7 +4437,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
         "nextId": "ch2_obs_pretty"
       },
       {
-        "text": "【每天都能看？】",
+        "text": "【你每天都来这吗？】",
         "nextId": "ch2_obs_daily"
       },
       {
@@ -5074,7 +5217,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
         "nextId": "ch2_candy_anom7"
       },
       {
-        "text": "【你不记得？】",
+        "text": "【你不记得了？】",
         "nextId": "ch2_candy_anom8"
       }
     ]
@@ -5128,7 +5271,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch2_candy_anom10",
     "speaker": "nova",
     "type": "text",
-    "content": "隔着通讯怎么还糖啊",
+    "content": "隔着通讯怎么还啊",
     "emotion": "normal",
     "nextId": "ch2_night1",
     "delay": 600
@@ -5236,7 +5379,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "content": "",
     "choices": [
       {
-        "text": "【现在愿意告诉我了？】",
+        "text": "【什么事？】",
         "nextId": "ch2_night10_a1"
       },
       {
@@ -5249,7 +5392,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch2_night10_a1",
     "speaker": "nova",
     "type": "text",
-    "content": "嗯",
+    "content": "嗯..",
     "emotion": "normal",
     "nextId": "ch2_night10_a2",
     "delay": 600
@@ -5609,7 +5752,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
         "nextId": "ch2_n7q6_a1"
       },
       {
-        "text": "【你提过一只猫】",
+        "text": "【你跟我提过它】",
         "nextId": "ch2_n7q6_b1"
       }
     ]
@@ -5619,7 +5762,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "speaker": "nova",
     "type": "text",
     "content": "……",
-    "emotion": "惊讶",
+    "emotion": "normal",
     "nextId": "ch2_n7q6_a2",
     "delay": 600
   },
@@ -5628,7 +5771,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "speaker": "nova",
     "type": "text",
     "content": "等等",
-    "emotion": "惊讶",
+    "emotion": "normal",
     "nextId": "ch2_n7q6_a3",
     "delay": 600
   },
@@ -5707,7 +5850,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "speaker": "nova",
     "type": "text",
     "content": "你连名字都记得",
-    "emotion": "惊讶",
+    "emotion": "normal",
     "nextId": "ch2_n7q11",
     "delay": 600
   },
@@ -5957,7 +6100,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch2_draft1",
     "speaker": "system",
     "type": "draft",
-    "content": "未发送草稿 / 02:17||不只是 N7\n\n今天有好几次\n我都觉得自己已经说过什么\n\n可通讯记录里没有\n\n他记得太自然了\n像是替我保管过很久\n\n这不太像巧合",
+    "content": "未发送草稿 / 02:17||不只是 N7\n今天有好几次\n我都觉得自己已经说过什么\n可通讯记录里没有\n他记得太自然了\n像是替我保管过很久\n这不太像巧合\n\n第三章：异常",
     "nextId": "CH3_START",
     "delay": 400
   },
@@ -6038,21 +6181,66 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "content": "",
     "choices": [
       {
-        "text": "【你那边怎么了？】",
-        "nextId": "ch3_flower_report"
+        "text": "【它是怎么活下来的？】",
+        "nextId": "ch3_flower_survive1"
       },
       {
-        "text": "【为什么不报？】",
-        "nextId": "ch3_flower_why"
+        "text": "【你要上报吗？】",
+        "nextId": "ch3_flower_report1"
       }
     ]
   },
   {
-    "id": "ch3_flower_report",
+    "id": "ch3_flower_survive1",
     "speaker": "nova",
     "type": "text",
-    "content": "我刚刚好像看见一个人",
-    "emotion": "smile",
+    "content": "我也不知道",
+    "emotion": "normal",
+    "nextId": "ch3_flower_survive2",
+    "delay": 600
+  },
+  {
+    "id": "ch3_flower_survive2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "那附近没有培养土",
+    "emotion": "normal",
+    "nextId": "ch3_flower_survive3",
+    "delay": 600
+  },
+  {
+    "id": "ch3_flower_survive3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "也没有稳定光源",
+    "emotion": "normal",
+    "nextId": "ch3_flower_survive4",
+    "delay": 600
+  },
+  {
+    "id": "ch3_flower_survive4",
+    "speaker": "nova",
+    "type": "text",
+    "content": "按理说",
+    "emotion": "normal",
+    "nextId": "ch3_flower_survive5",
+    "delay": 600
+  },
+  {
+    "id": "ch3_flower_survive5",
+    "speaker": "nova",
+    "type": "text",
+    "content": "它连发芽的机会都不该有",
+    "emotion": "normal",
+    "nextId": "ch3_flower_merge",
+    "delay": 600
+  },
+  {
+    "id": "ch3_flower_report1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "正常来说应该上报",
+    "emotion": "normal",
     "nextId": "ch3_flower_report2",
     "delay": 600
   },
@@ -6060,34 +6248,34 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch3_flower_report2",
     "speaker": "nova",
     "type": "text",
-    "content": "在观测窗那边",
+    "content": "但它看起来挺努力的",
     "emotion": "smile",
-    "nextId": "ch3_flower_merge",
+    "nextId": "ch3_flower_report3",
     "delay": 600
   },
   {
-    "id": "ch3_flower_why",
+    "id": "ch3_flower_report3",
     "speaker": "nova",
     "type": "text",
-    "content": "因为它挺努力的",
-    "emotion": "smile",
-    "nextId": "ch3_flower_why2",
+    "content": "我想先观察一下",
+    "emotion": "normal",
+    "nextId": "ch3_flower_report4",
     "delay": 600
   },
   {
-    "id": "ch3_flower_why2",
+    "id": "ch3_flower_report4",
     "speaker": "nova",
     "type": "text",
-    "content": "我准备偷偷养着",
+    "content": "至少别让它刚被发现就进隔离箱",
     "emotion": "smile",
     "nextId": "ch3_flower_merge",
-    "delay": 800
+    "delay": 600
   },
   {
     "id": "ch3_flower_merge",
     "speaker": "nova",
     "type": "text",
-    "content": "好了，说回正事",
+    "content": "很奇怪吧",
     "emotion": "normal",
     "nextId": "ch3_flower_merge2",
     "delay": 600
@@ -6096,7 +6284,34 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch3_flower_merge2",
     "speaker": "nova",
     "type": "text",
-    "content": "我想问你个问题",
+    "content": "一朵不该活下来的花",
+    "emotion": "normal",
+    "nextId": "ch3_flower_merge3",
+    "delay": 600
+  },
+  {
+    "id": "ch3_flower_merge3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "偏偏长在最不该有生命的地方",
+    "emotion": "normal",
+    "nextId": "ch3_flower_merge4",
+    "delay": 600
+  },
+  {
+    "id": "ch3_flower_merge4",
+    "speaker": "nova",
+    "type": "text",
+    "content": "我本来想把它当成今天最奇怪的事",
+    "emotion": "normal",
+    "nextId": "ch3_flower_merge5",
+    "delay": 600
+  },
+  {
+    "id": "ch3_flower_merge5",
+    "speaker": "nova",
+    "type": "text",
+    "content": "但好像不是",
     "emotion": "normal",
     "nextId": "ch3_5",
     "delay": 600
@@ -6105,189 +6320,117 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch3_5",
     "speaker": "nova",
     "type": "text",
-    "content": "你那边今天下雨了吗？",
+    "content": "我想问你个问题",
     "emotion": "normal",
     "nextId": "ch3_6",
     "delay": 2000
   },
   {
     "id": "ch3_6",
+    "speaker": "nova",
+    "type": "text",
+    "content": "你那边今天下雨了吗？",
+    "emotion": "normal",
+    "nextId": "ch3_7",
+    "delay": 600
+  },
+  {
+    "id": "ch3_7",
     "speaker": "player",
     "type": "choice",
     "content": "",
     "choices": [
       {
-        "text": "【你看清那个人了吗？】",
-        "nextId": "ch3_7a"
-      },
-      {
         "text": "【没有】",
-        "nextId": "ch3_7b"
+        "nextId": "ch3_rain_no1"
       },
       {
         "text": "【你怎么突然问这个？】",
-        "nextId": "ch3_7c"
+        "nextId": "ch3_rain_why1"
+      },
+      {
+        "text": "【你听见雨声了？】",
+        "nextId": "ch3_rain_guess1"
       }
     ]
   },
   {
-    "id": "ch3_7a",
-    "speaker": "nova",
-    "type": "text",
-    "content": "……",
-    "emotion": "normal",
-    "nextId": "ch3_7a2",
-    "delay": 600
-  },
-  {
-    "id": "ch3_7a2",
-    "speaker": "nova",
-    "type": "text",
-    "content": "我自己",
-    "emotion": "normal",
-    "nextId": "ch3_7a3",
-    "delay": 600
-  },
-  {
-    "id": "ch3_7a3",
-    "speaker": "nova",
-    "type": "text",
-    "content": "我只是随口问的",
-    "emotion": "normal",
-    "nextId": "ch3_7a4",
-    "delay": 600
-  },
-  {
-    "id": "ch3_7a4",
-    "speaker": "nova",
-    "type": "text",
-    "content": "不对",
-    "emotion": "normal",
-    "nextId": "ch3_7a5",
-    "delay": 400
-  },
-  {
-    "id": "ch3_7a5",
-    "speaker": "nova",
-    "type": "text",
-    "content": "也不算随口",
-    "emotion": "normal",
-    "nextId": "ch3_7a6",
-    "delay": 600
-  },
-  {
-    "id": "ch3_7a6",
-    "speaker": "nova",
-    "type": "text",
-    "content": "我醒来的时候",
-    "emotion": "normal",
-    "nextId": "ch3_7a7",
-    "delay": 600
-  },
-  {
-    "id": "ch3_7a7",
-    "speaker": "nova",
-    "type": "text",
-    "content": "脑子里一直有雨声",
-    "emotion": "normal",
-    "nextId": "ch3_rain_merge",
-    "delay": 800
-  },
-  {
-    "id": "ch3_7b",
+    "id": "ch3_rain_no1",
     "speaker": "nova",
     "type": "text",
     "content": "这样啊",
     "emotion": "normal",
-    "nextId": "ch3_7b2",
+    "nextId": "ch3_rain_no2",
     "delay": 600
   },
   {
-    "id": "ch3_7b2",
+    "id": "ch3_rain_no2",
     "speaker": "nova",
     "type": "text",
-    "content": "那可能是我搞错了",
-    "emotion": "normal",
-    "nextId": "ch3_7b3",
-    "delay": 600
-  },
-  {
-    "id": "ch3_7b3",
-    "speaker": "nova",
-    "type": "text",
-    "content": "我醒来的时候",
-    "emotion": "normal",
-    "nextId": "ch3_7b4",
-    "delay": 600
-  },
-  {
-    "id": "ch3_7b4",
-    "speaker": "nova",
-    "type": "text",
-    "content": "总觉得自己好像听见了雨声",
-    "emotion": "normal",
-    "nextId": "ch3_7b5",
-    "delay": 700
-  },
-  {
-    "id": "ch3_7b5",
-    "speaker": "nova",
-    "type": "text",
-    "content": "明明这里不可能下雨",
+    "content": "那就不是你那边传过来的",
     "emotion": "normal",
     "nextId": "ch3_rain_merge",
-    "delay": 800
+    "delay": 600
   },
   {
-    "id": "ch3_7c",
+    "id": "ch3_rain_why1",
     "speaker": "nova",
     "type": "text",
     "content": "不知道",
     "emotion": "normal",
-    "nextId": "ch3_7c2",
+    "nextId": "ch3_rain_why2",
     "delay": 600
   },
   {
-    "id": "ch3_7c2",
+    "id": "ch3_rain_why2",
     "speaker": "nova",
     "type": "text",
     "content": "我一醒来就在想这个",
     "emotion": "normal",
-    "nextId": "ch3_7c3",
+    "nextId": "ch3_rain_merge",
     "delay": 600
   },
   {
-    "id": "ch3_7c3",
+    "id": "ch3_rain_guess1",
     "speaker": "nova",
     "type": "text",
-    "content": "脑子里像卡了一段声音",
+    "content": "……",
     "emotion": "normal",
-    "nextId": "ch3_7c4",
-    "delay": 700
+    "nextId": "ch3_rain_guess2",
+    "delay": 600
   },
   {
-    "id": "ch3_7c4",
+    "id": "ch3_rain_guess2",
     "speaker": "nova",
     "type": "text",
-    "content": "雨声",
+    "content": "你怎么知道",
     "emotion": "normal",
-    "nextId": "ch3_7c5",
-    "delay": 400
+    "nextId": "ch3_rain_guess3",
+    "delay": 600
   },
   {
-    "id": "ch3_7c5",
+    "id": "ch3_rain_guess3",
     "speaker": "nova",
     "type": "text",
-    "content": "还有窗户被敲到的声音",
+    "content": "不",
+    "emotion": "normal",
+    "nextId": "ch3_rain_guess4",
+    "delay": 600
+  },
+  {
+    "id": "ch3_rain_guess4",
+    "speaker": "nova",
+    "type": "text",
+    "content": "我不是说真的听见",
     "emotion": "normal",
     "nextId": "ch3_rain_merge",
-    "delay": 800
+    "delay": 600
   },
   {
     "id": "ch3_rain_merge",
     "speaker": "nova",
     "type": "text",
-    "content": "很奇怪吧",
+    "content": "更像是脑子里卡了一段声音",
     "emotion": "normal",
     "nextId": "ch3_rain_merge2",
     "delay": 600
@@ -6296,16 +6439,52 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch3_rain_merge2",
     "speaker": "nova",
     "type": "text",
-    "content": "我明明已经很久没听过真正的雨了",
+    "content": "雨声",
+    "emotion": "normal",
+    "nextId": "ch3_rain_merge3",
+    "delay": 900
+  },
+  {
+    "id": "ch3_rain_merge3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "还有窗户被敲到的声音",
+    "emotion": "normal",
+    "nextId": "ch3_rain_merge4",
+    "delay": 600
+  },
+  {
+    "id": "ch3_rain_merge4",
+    "speaker": "nova",
+    "type": "text",
+    "content": "明明这里不可能下雨",
+    "emotion": "normal",
+    "nextId": "ch3_rain_merge5",
+    "delay": 600
+  },
+  {
+    "id": "ch3_rain_merge5",
+    "speaker": "nova",
+    "type": "text",
+    "content": "Aurora 号也没有真正意义上的窗户",
+    "emotion": "normal",
+    "nextId": "ch3_rain_merge6",
+    "delay": 600
+  },
+  {
+    "id": "ch3_rain_merge6",
+    "speaker": "nova",
+    "type": "text",
+    "content": "只有观测窗",
     "emotion": "normal",
     "nextId": "ch3_10",
-    "delay": 900
+    "delay": 600
   },
   {
     "id": "ch3_10",
     "speaker": "nova",
     "type": "text",
-    "content": "先别紧张",
+    "content": "然后我想起另一个画面",
     "emotion": "normal",
     "nextId": "ch3_11",
     "delay": 600
@@ -6314,7 +6493,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch3_11",
     "speaker": "nova",
     "type": "text",
-    "content": "也可能是反光",
+    "content": "观测室",
     "emotion": "normal",
     "nextId": "ch3_12",
     "delay": 600
@@ -6323,7 +6502,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch3_12",
     "speaker": "nova",
     "type": "text",
-    "content": "观测窗有时候会这样",
+    "content": "玻璃上有个人影",
     "emotion": "normal",
     "nextId": "ch3_dream3",
     "delay": 1200
@@ -6332,34 +6511,52 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch3_dream3",
     "speaker": "nova",
     "type": "text",
-    "content": "……",
+    "content": "我一开始以为是反光",
     "emotion": "normal",
     "nextId": "ch3_dream4",
     "delay": 400
   },
   {
-    "id": "ch3_dream4_v10_23",
+    "id": "ch3_dream4",
     "speaker": "nova",
     "type": "text",
-    "content": "因为她看着我",
+    "content": "观测窗有时候会这样",
+    "emotion": "normal",
+    "nextId": "ch3_dream4b",
+    "delay": 800
+  },
+  {
+    "id": "ch3_dream4b",
+    "speaker": "nova",
+    "type": "text",
+    "content": "但那个影子没有跟着我动",
+    "emotion": "normal",
+    "nextId": "ch3_dream4c",
+    "delay": 600
+  },
+  {
+    "id": "ch3_dream4c",
+    "speaker": "nova",
+    "type": "text",
+    "content": "它只是站在那里",
+    "emotion": "normal",
+    "nextId": "ch3_dream4d",
+    "delay": 600
+  },
+  {
+    "id": "ch3_dream4d",
+    "speaker": "nova",
+    "type": "text",
+    "content": "像是在看我",
     "emotion": "normal",
     "nextId": "ch3_dream6",
     "delay": 600
   },
   {
-    "id": "ch3_dream4",
-    "speaker": "nova",
-    "type": "text",
-    "content": "不确定",
-    "emotion": "normal",
-    "nextId": "ch3_dream4_v10_23",
-    "delay": 800
-  },
-  {
     "id": "ch3_dream6",
     "speaker": "nova",
     "type": "text",
-    "content": "我站在观测室",
+    "content": "后来我又梦见了那里",
     "emotion": "normal",
     "nextId": "ch3_dream7",
     "delay": 600
@@ -6368,7 +6565,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch3_dream7",
     "speaker": "nova",
     "type": "text",
-    "content": "你站在我旁边",
+    "content": "我站在观测室",
     "emotion": "normal",
     "nextId": "ch3_dream8",
     "delay": 400
@@ -6377,7 +6574,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch3_dream8",
     "speaker": "nova",
     "type": "text",
-    "content": "但我看不清脸",
+    "content": "你站在我旁边",
     "emotion": "normal",
     "nextId": "ch3_dream9",
     "delay": 600
@@ -6386,7 +6583,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch3_dream9",
     "speaker": "nova",
     "type": "text",
-    "content": "然后你说：",
+    "content": "然后你开口了",
     "emotion": "normal",
     "nextId": "ch3_dream10",
     "delay": 600
@@ -6395,10 +6592,19 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch3_dream10",
     "speaker": "nova",
     "type": "text",
-    "content": "\"别去那里\"",
+    "content": "我只听清了前半句",
+    "emotion": "normal",
+    "nextId": "ch3_dream10b",
+    "delay": 2000
+  },
+  {
+    "id": "ch3_dream10b",
+    "speaker": "nova",
+    "type": "text",
+    "content": "“别去——”",
     "emotion": "normal",
     "nextId": "ch3_dream11",
-    "delay": 2000
+    "delay": 600
   },
   {
     "id": "ch3_dream11",
@@ -6407,12 +6613,16 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "content": "",
     "choices": [
       {
-        "text": "【你说别去哪里？】",
+        "text": "【我说的？】",
         "nextId": "ch3_dream11_a1"
       },
       {
-        "text": "【观测室？】",
+        "text": "【观测窗那边？】",
         "nextId": "ch3_dream11_b1"
+      },
+      {
+        "text": "【别去哪里？】",
+        "nextId": "ch3_dream11_c1"
       }
     ]
   },
@@ -6420,7 +6630,25 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch3_dream11_a1",
     "speaker": "nova",
     "type": "text",
-    "content": "我只听清了前半句",
+    "content": "嗯",
+    "emotion": "normal",
+    "nextId": "ch3_dream11_a2",
+    "delay": 600
+  },
+  {
+    "id": "ch3_dream11_a2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "至少梦里是你",
+    "emotion": "normal",
+    "nextId": "ch3_dream11_a3",
+    "delay": 600
+  },
+  {
+    "id": "ch3_dream11_a3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "但我还是看不清你的脸",
     "emotion": "normal",
     "nextId": "ch3_dream12",
     "delay": 600
@@ -6430,7 +6658,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "speaker": "nova",
     "type": "text",
     "content": "……",
-    "emotion": "惊讶",
+    "emotion": "normal",
     "nextId": "ch3_dream11_b2",
     "delay": 600
   },
@@ -6438,16 +6666,70 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch3_dream11_b2",
     "speaker": "nova",
     "type": "text",
-    "content": "你为什么会先想到那里",
+    "content": "你为什么会想到观测窗那边",
+    "emotion": "normal",
+    "nextId": "ch3_dream11_b3",
+    "delay": 600
+  },
+  {
+    "id": "ch3_dream11_b3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "梦里那个影子",
+    "emotion": "normal",
+    "nextId": "ch3_dream11_b4",
+    "delay": 600
+  },
+  {
+    "id": "ch3_dream11_b4",
+    "speaker": "nova",
+    "type": "text",
+    "content": "确实一直站在那里",
     "emotion": "normal",
     "nextId": "ch3_dream12",
+    "delay": 600
+  },
+  {
+    "id": "ch3_dream11_c1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "不知道",
+    "emotion": "normal",
+    "nextId": "ch3_dream11_c2",
+    "delay": 600
+  },
+  {
+    "id": "ch3_dream11_c2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "后半句像被什么东西截断了",
+    "emotion": "normal",
+    "nextId": "ch3_dream11_c3",
+    "delay": 600
+  },
+  {
+    "id": "ch3_dream11_c3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "我越想听清",
+    "emotion": "normal",
+    "nextId": "ch3_dream11_c4",
+    "delay": 600
+  },
+  {
+    "id": "ch3_dream11_c4",
+    "speaker": "nova",
+    "type": "text",
+    "content": "它就越像被擦掉",
+    "emotion": "sad",
+    "nextId": "ch3_dream13",
     "delay": 600
   },
   {
     "id": "ch3_dream12",
     "speaker": "nova",
     "type": "text",
-    "content": "不知道",
+    "content": "那句警告只剩下一点回声",
     "emotion": "normal",
     "nextId": "ch3_dream13",
     "delay": 600
@@ -6759,11 +7041,15 @@ const rawStoryNodes = JSON.parse(String.raw`[
   },
   {
     "id": "ch3_ref9",
-    "speaker": "nova",
-    "type": "text",
-    "content": "先别紧张",
-    "emotion": "normal",
-    "nextId": "ch3_ref10",
+    "speaker": "player",
+    "type": "choice",
+    "content": "",
+    "choices": [
+      {
+        "text": "【？】",
+        "nextId": "ch3_ref10"
+      }
+    ],
     "delay": 600
   },
   {
@@ -6844,12 +7130,12 @@ const rawStoryNodes = JSON.parse(String.raw`[
         "timedResponse": "calm_nova"
       },
       {
-        "text": "【离开观测室】",
+        "text": "【赶快离开观测室】",
         "nextId": "ch3_ref_leave1",
         "statEffect": "none"
       },
       {
-        "text": "【检查通讯日志】",
+        "text": "【快检查通讯日志】",
         "nextId": "ch3_ref_log1",
         "statEffect": "none",
         "timedResponse": "investigate_log"
@@ -6959,7 +7245,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch3_ref_log3",
     "speaker": "nova",
     "type": "text",
-    "content": "我查日志",
+    "content": "我查查日志",
     "emotion": "normal",
     "nextId": "ch3_ref_log4",
     "delay": 600
@@ -7234,7 +7520,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch3_log1",
     "speaker": "system",
     "type": "file",
-    "content": "通讯日志.txt||连接建立\n连接建立\n连接建立\n连接建立\n连接建立\n连接建立\n连接建立\n\n第七次连接成功",
+    "content": "通讯日志.txt||连接建立\n连接建立\n连接建立\n连接建立\n连接建立\n连接建立\n连接建立\n第七次连接成功",
     "nextId": "ch3_log1b",
     "delay": 400
   },
@@ -7332,14 +7618,66 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "type": "text",
     "content": "我已经开始讨厌数字七了",
     "emotion": "smile",
-    "nextId": "ch3_log10",
+    "nextId": "ch3_log9",
     "delay": 800
+  },
+  {
+    "id": "ch3_log9",
+    "speaker": "player",
+    "type": "choice",
+    "content": "",
+    "choices": [
+      {
+        "text": "【也许只是程序错误】",
+        "nextId": "ch3_log10"
+      },
+      {
+        "text": "【这不像普通错误】",
+        "nextId": "ch3_log10_alt"
+      }
+    ]
   },
   {
     "id": "ch3_log10",
     "speaker": "nova",
     "type": "text",
     "content": "希望如此",
+    "emotion": "normal",
+    "nextId": "ch3_log10b",
+    "delay": 600
+  },
+  {
+    "id": "ch3_log10b",
+    "speaker": "nova",
+    "type": "text",
+    "content": "我也想这么解释",
+    "emotion": "normal",
+    "nextId": "ch3_log11",
+    "delay": 600
+  },
+  {
+    "id": "ch3_log10_alt",
+    "speaker": "nova",
+    "type": "text",
+    "content": "……",
+    "emotion": "normal",
+    "nextId": "ch3_log10_alt2",
+    "delay": 600
+  },
+  {
+    "id": "ch3_log10_alt2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "你也这么觉得？",
+    "emotion": "normal",
+    "nextId": "ch3_log10_alt3",
+    "delay": 600
+  },
+  {
+    "id": "ch3_log10_alt3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "那我可能没法继续装作没事了",
     "emotion": "normal",
     "nextId": "ch3_log11",
     "delay": 600
@@ -7383,7 +7721,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "speaker": "nova",
     "type": "text",
     "content": "你也注意到了",
-    "emotion": "惊讶",
+    "emotion": "normal",
     "nextId": "ch3_log12_b2",
     "delay": 600
   },
@@ -7830,7 +8168,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch3_draft1",
     "speaker": "system",
     "type": "draft",
-    "content": "加密草稿 / 03:07||我找到她了\n她就在观测室",
+    "content": "加密草稿 / 03:07||我找到她了\n她就在观测室\n\n第四章：记忆",
     "nextId": "CH4_START",
     "delay": 400
   },
@@ -8854,7 +9192,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "content": "",
     "choices": [
       {
-        "text": "【另一个认证者也是你？】",
+        "text": "【另一个认证者是？】",
         "nextId": "ch4_fold13_a1"
       },
       {
@@ -8867,9 +9205,18 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch4_fold13_a1",
     "speaker": "nova",
     "type": "text",
-    "content": "看起来是这样",
+    "content": "显示是我",
     "emotion": "normal",
     "nextId": "ch4_fold14",
+    "delay": 600
+  },
+  {
+    "id": "ch4_fold14",
+    "speaker": "nova",
+    "type": "text",
+    "content": "但我不知道它为什么会这么记录",
+    "emotion": "normal",
+    "nextId": "ch4_fold15",
     "delay": 600
   },
   {
@@ -8885,16 +9232,16 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch4_fold13_b2",
     "speaker": "nova",
     "type": "text",
-    "content": "所以这可能不是正常系统留下的东西",
+    "content": "除非它记录的不是两个“我”",
     "emotion": "normal",
-    "nextId": "ch4_fold15",
+    "nextId": "ch4_fold13_b3",
     "delay": 600
   },
   {
-    "id": "ch4_fold14",
+    "id": "ch4_fold13_b3",
     "speaker": "nova",
     "type": "text",
-    "content": "不知道",
+    "content": "而是两个不同时间留下的认证",
     "emotion": "normal",
     "nextId": "ch4_fold15",
     "delay": 600
@@ -9688,7 +10035,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "content": "",
     "choices": [
       {
-        "text": "【......】",
+        "text": "【……】",
         "nextId": "ch4_trust15"
       }
     ]
@@ -9761,15 +10108,6 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "type": "text",
     "content": "这句话本来就不好接",
     "emotion": "sad",
-    "nextId": "ch4_trust19",
-    "delay": 600
-  },
-  {
-    "id": "ch4_trust18",
-    "speaker": "nova",
-    "type": "text",
-    "content": "因为",
-    "emotion": "normal",
     "nextId": "ch4_trust19",
     "delay": 600
   },
@@ -9895,7 +10233,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch4_log1",
     "speaker": "system",
     "type": "file",
-    "content": "隐藏日志：NOVA-07||如果你正在阅读这段记录。\n说明我已经忘记他了。\n请不要尝试恢复记忆。\n不要寻找观测室中的我。\n不要打开第七协议。\n尤其不要相信我。\n\n因为我已经失败六次了。",
+    "content": "隐藏日志：NOVA-07||如果你正在阅读这段记录。\n说明我已经忘记他了。\n请不要尝试恢复记忆。\n不要寻找观测室中的我。\n不要打开第七协议。\n尤其不要相信我。\n因为我已经失败六次了。\n\n第五章：真相（上）",
     "nextId": "CH5A_START",
     "delay": 400
   },
@@ -9936,7 +10274,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch5a_4",
     "speaker": "nova",
     "type": "text",
-    "content": "我打开了那个文件夹",
+    "content": "早上我打开了那个文件夹\n玩家：【今天怎么能打开了？】",
     "emotion": "normal",
     "nextId": "ch5a_6",
     "delay": 800
@@ -10035,7 +10373,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch5a_protocol5",
     "speaker": "nova",
     "type": "text",
-    "content": "它更像一套紧急安全阀",
+    "content": "它更像一套紧急安全装置",
     "emotion": "normal",
     "nextId": "ch5a_protocol6",
     "delay": 700
@@ -10071,7 +10409,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch5a_protocol7c",
     "speaker": "nova",
     "type": "text",
-    "content": "船员、系统、航线、航行记录\n都会一起回溯",
+    "content": "船员、系统、航线、航行记录都会一起回溯",
     "emotion": "normal",
     "nextId": "ch5a_protocol7d",
     "delay": 800
@@ -10100,6 +10438,80 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "type": "text",
     "content": "舰外对象不会被一起重写",
     "emotion": "normal",
+    "nextId": "ch5a_protocol_check",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_protocol_check",
+    "speaker": "player",
+    "type": "choice",
+    "content": "",
+    "choices": [
+      {
+        "text": "【所以它不是在救你？】",
+        "nextId": "ch5a_protocol_check_a1"
+      },
+      {
+        "text": "【它只是在救任务？】",
+        "nextId": "ch5a_protocol_check_b1"
+      },
+      {
+        "text": "【那为什么会留下你？】",
+        "nextId": "ch5a_protocol_check_c1"
+      }
+    ]
+  },
+  {
+    "id": "ch5a_protocol_check_a1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "对",
+    "emotion": "normal",
+    "nextId": "ch5a_protocol_check_a2",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_protocol_check_a2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "至少文件里不是这么写的",
+    "emotion": "sad",
+    "nextId": "ch5a_protocol8",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_protocol_check_b1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "嗯",
+    "emotion": "normal",
+    "nextId": "ch5a_protocol_check_b2",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_protocol_check_b2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "人只是任务状态的一部分",
+    "emotion": "normal",
+    "nextId": "ch5a_protocol8",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_protocol_check_c1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "这就是问题",
+    "emotion": "normal",
+    "nextId": "ch5a_protocol_check_c2",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_protocol_check_c2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "理论上，它不该留下任何完整的我",
+    "emotion": "sad",
     "nextId": "ch5a_protocol8",
     "delay": 600
   },
@@ -10161,7 +10573,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch5a_logs1",
     "speaker": "system",
     "type": "file",
-    "content": "回溯日志集||日志001：如果你看到这里，说明循环已经开始。\n\n日志002：不要相信系统时间。\n\n日志003：不要进入观测室。\n\n日志004：如果你收到来自自己的消息，删除它。\n\n日志007：如果你已经认识他，请善待他。\n\n日志012：他会记得一切。所以不要让他知道真相。",
+    "content": "回溯日志节选||备注：编号为日志条目编号，非循环次数\n日志001：如果你看到这里，说明循环已经开始。\n日志002：不要相信系统时间。\n日志003：不要进入观测室。\n日志004：如果你收到来自自己的消息，删除它。\n日志007：如果你已经认识他，请善待他。\n日志012：他会记得一切。所以不要让他知道真相。",
     "nextId": "ch5a_protocol1",
     "delay": 400
   },
@@ -10223,7 +10635,146 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "type": "text",
     "content": "你还记得吗？",
     "emotion": "normal",
+    "nextId": "ch5a_firstline_choice",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_firstline_choice",
+    "speaker": "player",
+    "type": "choice",
+    "content": "",
+    "choiceTimeoutMs": 3500,
+    "timeoutNextId": "ch5a_firstline_timeout1",
+    "choices": [
+      {
+        "text": "【好像记得】",
+        "nextId": "ch5a_firstline_remember1"
+      },
+      {
+        "text": "【不太确定】",
+        "nextId": "ch5a_firstline_unsure1"
+      },
+      {
+        "text": "【等等，让我想想】",
+        "nextId": "ch5a_firstline_think1"
+      }
+    ]
+  },
+  {
+    "id": "ch5a_firstline_remember1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "那就先别告诉我",
+    "emotion": "normal",
+    "nextId": "ch5a_firstline_remember2",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_firstline_remember2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "我怕我现在听见",
+    "emotion": "smile",
+    "nextId": "ch5a_firstline_remember3",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_firstline_remember3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "反而会把它弄丢",
+    "emotion": "normal",
     "nextId": "ch5a_firstline_hint6",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_firstline_unsure1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "没关系",
+    "emotion": "normal",
+    "nextId": "ch5a_firstline_unsure2",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_firstline_unsure2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "不确定也算一种记得",
+    "emotion": "normal",
+    "nextId": "ch5a_firstline_unsure3",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_firstline_unsure3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "至少你开始在找它了",
+    "emotion": "smile",
+    "nextId": "ch5a_firstline_hint6",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_firstline_think1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "别现在想太久",
+    "emotion": "normal",
+    "nextId": "ch5a_firstline_think2",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_firstline_think2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "越重要的东西",
+    "emotion": "normal",
+    "nextId": "ch5a_firstline_think3",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_firstline_think3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "越容易在紧张的时候变形",
+    "emotion": "normal",
+    "nextId": "ch5a_firstline_hint6",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_firstline_timeout1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "……",
+    "emotion": "normal",
+    "nextId": "ch5a_firstline_timeout2",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_firstline_timeout2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "算了",
+    "emotion": "normal",
+    "nextId": "ch5a_firstline_timeout3",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_firstline_timeout3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "你刚才那个停顿",
+    "emotion": "smile",
+    "nextId": "ch5a_firstline_timeout4",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_firstline_timeout4",
+    "speaker": "nova",
+    "type": "text",
+    "content": "已经说明你在想了",
+    "emotion": "normal",
+    "nextId": "ch5a_firstline_hint7",
     "delay": 600
   },
   {
@@ -10383,7 +10934,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch5a_logs6",
     "speaker": "system",
     "type": "file",
-    "content": "日志007-012||日志007：如果你已经认识他，请善待他。\n\n日志012：他会记得一切。所以不要让他知道真相。\n\nNova，不要再问了。继续循环下去，对你们都好。",
+    "content": "日志007-012||日志007：如果你已经认识他，请善待他。\n日志012：他会记得一切。所以不要让他知道真相。\nNova，不要再问了。继续循环下去，对你们都好。",
     "nextId": "ch5a_logs8",
     "delay": 400
   },
@@ -10449,9 +11000,62 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "choices": [
       {
         "text": "【六份日志对应六次循环？】",
-        "nextId": "ch5a_logs16"
+        "nextId": "ch5a_logs15_a1"
+      },
+      {
+        "text": "【这些都是你写的？】",
+        "nextId": "ch5a_logs15_b1"
+      },
+      {
+        "text": "【有没有可能是伪造的？】",
+        "nextId": "ch5a_logs15_c1"
       }
     ]
+  },
+  {
+    "id": "ch5a_logs15_a1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "我也是这么想的",
+    "emotion": "normal",
+    "nextId": "ch5a_logs16",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_logs15_b1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "字迹和权限都是我的",
+    "emotion": "normal",
+    "nextId": "ch5a_logs15_b2",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_logs15_b2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "但我一点也不记得自己写过",
+    "emotion": "sad",
+    "nextId": "ch5a_logs16",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_logs15_c1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "我希望是",
+    "emotion": "normal",
+    "nextId": "ch5a_logs15_c2",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_logs15_c2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "可认证签名骗不了人",
+    "emotion": "normal",
+    "nextId": "ch5a_logs16",
+    "delay": 600
   },
   {
     "id": "ch5a_logs16",
@@ -10494,14 +11098,106 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "type": "text",
     "content": "我去了观测室",
     "emotion": "normal",
-    "nextId": "ch5a_obs4",
+    "nextId": "ch5a_obs2_choice",
     "delay": 800
+  },
+  {
+    "id": "ch5a_obs2_choice",
+    "speaker": "player",
+    "type": "choice",
+    "content": "",
+    "choices": [
+      {
+        "text": "【你还是去找她了？】",
+        "nextId": "ch5a_obs2_a1"
+      },
+      {
+        "text": "【别靠太近】",
+        "nextId": "ch5a_obs2_b1"
+      },
+      {
+        "text": "【我在，继续说】",
+        "nextId": "ch5a_obs2_c1"
+      }
+    ]
+  },
+  {
+    "id": "ch5a_obs2_a1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "嗯",
+    "emotion": "normal",
+    "nextId": "ch5a_obs2_a2",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_obs2_a2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "如果一直避开那里",
+    "emotion": "normal",
+    "nextId": "ch5a_obs2_a3",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_obs2_a3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "我可能永远都弄不明白自己在怕什么",
+    "emotion": "normal",
+    "nextId": "ch5a_obs4",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_obs2_b1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "我知道",
+    "emotion": "normal",
+    "nextId": "ch5a_obs2_b2",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_obs2_b2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "我没有直接进去",
+    "emotion": "normal",
+    "nextId": "ch5a_obs2_b3",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_obs2_b3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "只站在门口看了一会儿",
+    "emotion": "normal",
+    "nextId": "ch5a_obs4",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_obs2_c1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "嗯",
+    "emotion": "normal",
+    "nextId": "ch5a_obs2_c2",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_obs2_c2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "那我慢慢说",
+    "emotion": "normal",
+    "nextId": "ch5a_obs4",
+    "delay": 600
   },
   {
     "id": "ch5a_obs4",
     "speaker": "nova",
     "type": "text",
-    "content": "我知道",
+    "content": "她还在那里",
     "emotion": "normal",
     "nextId": "ch5a_obs5",
     "delay": 400
@@ -10510,37 +11206,230 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch5a_obs5",
     "speaker": "nova",
     "type": "text",
-    "content": "但总得有人搞清楚发生什么",
+    "content": "就在观测窗前",
     "emotion": "normal",
-    "nextId": "ch5a_obs6",
+    "nextId": "ch5a_obs6_choice",
     "delay": 800
   },
   {
-    "id": "ch5a_obs6",
+    "id": "ch5a_obs6_choice",
+    "speaker": "player",
+    "type": "choice",
+    "content": "",
+    "choices": [
+      {
+        "text": "【她看见你了吗？】",
+        "nextId": "ch5a_obs6_a1"
+      },
+      {
+        "text": "【她像是在等你】",
+        "nextId": "ch5a_obs6_b1"
+      },
+      {
+        "text": "【这次和之前不一样？】",
+        "nextId": "ch5a_obs6_c1"
+      }
+    ]
+  },
+  {
+    "id": "ch5a_obs6_a1",
     "speaker": "nova",
     "type": "text",
-    "content": "里面有人",
+    "content": "看见了",
     "emotion": "normal",
+    "nextId": "ch5a_obs6_a2",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_obs6_a2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "她甚至像是早就知道我会来",
+    "emotion": "sad",
     "nextId": "ch5a_obs9",
-    "delay": 800
+    "delay": 600
+  },
+  {
+    "id": "ch5a_obs6_b1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "对",
+    "emotion": "normal",
+    "nextId": "ch5a_obs6_b2",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_obs6_b2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "不是偶然站在那里",
+    "emotion": "sad",
+    "nextId": "ch5a_obs6_b3",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_obs6_b3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "是等在那里",
+    "emotion": "sad",
+    "nextId": "ch5a_obs9",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_obs6_c1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "不一样",
+    "emotion": "normal",
+    "nextId": "ch5a_obs6_c2",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_obs6_c2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "之前像是我看见了她",
+    "emotion": "normal",
+    "nextId": "ch5a_obs6_c3",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_obs6_c3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "这次像是她终于等到我看见她",
+    "emotion": "sad",
+    "nextId": "ch5a_obs9",
+    "delay": 600
   },
   {
     "id": "ch5a_obs9",
     "speaker": "nova",
     "type": "text",
-    "content": "不",
+    "content": "然后她开口了",
     "emotion": "normal",
-    "nextId": "ch5a_obs9b",
+    "nextId": "ch5a_obs10_choice",
     "delay": 500
   },
   {
-    "id": "ch5a_obs9b",
+    "id": "ch5a_obs10_choice",
+    "speaker": "player",
+    "type": "choice",
+    "content": "",
+    "choices": [
+      {
+        "text": "【她在和你说话？】",
+        "nextId": "ch5a_obs10_a1"
+      },
+      {
+        "text": "【那不是现在的你】",
+        "nextId": "ch5a_obs10_b1"
+      },
+      {
+        "text": "【别怕，我在】",
+        "nextId": "ch5a_obs10_c1"
+      }
+    ]
+  },
+  {
+    "id": "ch5a_obs10_a1",
     "speaker": "nova",
     "type": "text",
-    "content": "是我",
+    "content": "嗯",
     "emotion": "normal",
+    "nextId": "ch5a_obs10_a2",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_obs10_a2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "她看着我",
+    "emotion": "normal",
+    "nextId": "ch5a_obs10_a3",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_obs10_a3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "像是早就知道我会来",
+    "emotion": "sad",
     "nextId": "ch5a_obs11",
-    "delay": 1200
+    "delay": 600
+  },
+  {
+    "id": "ch5a_obs10_b1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "我也这么告诉自己",
+    "emotion": "normal",
+    "nextId": "ch5a_obs10_b2",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_obs10_b2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "但她有我的脸",
+    "emotion": "sad",
+    "nextId": "ch5a_obs10_b3",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_obs10_b3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "也有我的声音",
+    "emotion": "sad",
+    "nextId": "ch5a_obs10_b4",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_obs10_b4",
+    "speaker": "nova",
+    "type": "text",
+    "content": "我没办法立刻把她当成别人",
+    "emotion": "sad",
+    "nextId": "ch5a_obs11",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_obs10_c1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "……",
+    "emotion": "normal",
+    "nextId": "ch5a_obs10_c2",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_obs10_c2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "你每次都说得好像很简单",
+    "emotion": "sad",
+    "nextId": "ch5a_obs10_c3",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_obs10_c3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "但奇怪的是",
+    "emotion": "normal",
+    "nextId": "ch5a_obs10_c4",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_obs10_c4",
+    "speaker": "nova",
+    "type": "text",
+    "content": "我好像真的没那么怕了",
+    "emotion": "sad",
+    "nextId": "ch5a_obs11",
+    "delay": 600
   },
   {
     "id": "ch5a_obs11",
@@ -10554,7 +11443,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch5a_obs11a",
     "speaker": "nova",
     "type": "text",
-    "content": "我知道",
+    "content": "我缓了一会儿",
     "emotion": "normal",
     "nextId": "ch5a_obs11b",
     "delay": 600
@@ -10563,7 +11452,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch5a_obs11b",
     "speaker": "nova",
     "type": "text",
-    "content": "这段录像很难接着看下去",
+    "content": "因为那不是普通的影像",
     "emotion": "sad",
     "nextId": "ch5a_obs12",
     "delay": 600
@@ -10572,7 +11461,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch5a_obs12",
     "speaker": "nova",
     "type": "text",
-    "content": "我知道听起来很蠢",
+    "content": "她不是另一个活着的我",
     "emotion": "normal",
     "nextId": "ch5a_obs13",
     "delay": 600
@@ -10581,7 +11470,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch5a_obs13",
     "speaker": "nova",
     "type": "text",
-    "content": "但她不是另一个活着的我",
+    "content": "更像是一个被第七协议留在这里的残影",
     "emotion": "normal",
     "nextId": "ch5a_obs14",
     "delay": 700
@@ -10590,35 +11479,35 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch5a_obs14",
     "speaker": "nova",
     "type": "text",
-    "content": "更像一个由记忆和协议拼出来的残影",
+    "content": "由记忆、记录",
+    "emotion": "normal",
+    "nextId": "ch5a_obs14b",
+    "delay": 900
+  },
+  {
+    "id": "ch5a_obs14b",
+    "speaker": "nova",
+    "type": "text",
+    "content": "还有某种不该留下来的东西拼在一起",
     "emotion": "normal",
     "nextId": "ch5a_obs15",
-    "delay": 900
+    "delay": 600
   },
   {
     "id": "ch5a_obs15",
     "speaker": "nova",
     "type": "text",
-    "content": "她坐在观测窗前，像是等了很久",
+    "content": "她坐在观测窗前",
     "emotion": "normal",
-    "nextId": "ch5a_obs17",
+    "nextId": "ch5a_obs16",
     "delay": 900
   },
   {
-    "id": "ch5a_obs17",
+    "id": "ch5a_obs16",
     "speaker": "nova",
     "type": "text",
-    "content": "说了",
-    "emotion": "normal",
-    "nextId": "ch5a_obs19",
-    "delay": 600
-  },
-  {
-    "id": "ch5a_obs19",
-    "speaker": "nova",
-    "type": "text",
-    "content": "回答了",
-    "emotion": "normal",
+    "content": "像是已经等了很久",
+    "emotion": "sad",
     "nextId": "ch5a_obs21",
     "delay": 600
   },
@@ -10768,7 +11657,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch5a_obs34",
     "speaker": "nova",
     "type": "text",
-    "content": "我问她是谁",
+    "content": "她也没办法听见我说话",
     "emotion": "normal",
     "nextId": "ch5a_obs35",
     "delay": 600
@@ -10830,7 +11719,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch5a_back5",
     "speaker": "nova",
     "type": "text",
-    "content": "因为她给我看了东西",
+    "content": "因为她给我看了些东西",
     "emotion": "normal",
     "nextId": "ch5a_back7",
     "delay": 800
@@ -10969,9 +11858,62 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "choices": [
       {
         "text": "【第六段里发生了什么？】",
-        "nextId": "ch5a_vids14"
+        "nextId": "ch5a_vids13_a1"
+      },
+      {
+        "text": "【前五次都失败了？】",
+        "nextId": "ch5a_vids13_b1"
+      },
+      {
+        "text": "【她为什么还要录下来？】",
+        "nextId": "ch5a_vids13_c1"
       }
     ]
+  },
+  {
+    "id": "ch5a_vids13_a1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "我也是先看的第六段",
+    "emotion": "normal",
+    "nextId": "ch5a_vids14",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_vids13_b1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "嗯",
+    "emotion": "sad",
+    "nextId": "ch5a_vids13_b2",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_vids13_b2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "至少录像里是这样",
+    "emotion": "sad",
+    "nextId": "ch5a_vids14",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_vids13_c1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "也许不是给自己看的",
+    "emotion": "normal",
+    "nextId": "ch5a_vids13_c2",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_vids13_c2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "也许是给下一次的我看的",
+    "emotion": "sad",
+    "nextId": "ch5a_vids14",
+    "delay": 600
   },
   {
     "id": "ch5a_vids14",
@@ -11322,8 +12264,82 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "type": "text",
     "content": "都会提到你？",
     "emotion": "normal",
-    "nextId": "ch5a_fut19",
+    "nextId": "ch5a_fut17_choice",
     "delay": 900
+  },
+  {
+    "id": "ch5a_fut17_choice",
+    "speaker": "player",
+    "type": "choice",
+    "content": "",
+    "choices": [
+      {
+        "text": "【因为我也在里面？】",
+        "nextId": "ch5a_fut17_a1"
+      },
+      {
+        "text": "【因为她想让我知道？】",
+        "nextId": "ch5a_fut17_b1"
+      },
+      {
+        "text": "【也许不是我】",
+        "nextId": "ch5a_fut17_c1"
+      }
+    ]
+  },
+  {
+    "id": "ch5a_fut17_a1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "我不知道你是不是“在里面”",
+    "emotion": "normal",
+    "nextId": "ch5a_fut17_a2",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_fut17_a2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "但你一定在她的计划里",
+    "emotion": "normal",
+    "nextId": "ch5a_fut19",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_fut17_b1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "有可能",
+    "emotion": "normal",
+    "nextId": "ch5a_fut17_b2",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_fut17_b2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "她像是把所有没法说出口的话都塞进了录像里",
+    "emotion": "sad",
+    "nextId": "ch5a_fut19",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_fut17_c1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "我也希望不是",
+    "emotion": "normal",
+    "nextId": "ch5a_fut17_c2",
+    "delay": 600
+  },
+  {
+    "id": "ch5a_fut17_c2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "但所有线索都在往你身上靠",
+    "emotion": "normal",
+    "nextId": "ch5a_fut19",
+    "delay": 600
   },
   {
     "id": "ch5a_fut19",
@@ -11444,7 +12460,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch5a_msg8",
     "speaker": "system",
     "type": "glitch",
-    "content": "真正被困住的不是 Nova，是你",
+    "content": "真正被困住的不是 Nova，是你\n第五章：真相（下）",
     "isGlitch": true,
     "nextId": "CH5B_START",
     "delay": 2500
@@ -11629,6 +12645,8 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "speaker": "player",
     "type": "choice",
     "content": "",
+    "choiceTimeoutMs": 4200,
+    "timeoutNextId": "ch5b_obs_timeout",
     "choices": [
       {
         "text": "【其实是第七次】",
@@ -11643,6 +12661,24 @@ const rawStoryNodes = JSON.parse(String.raw`[
         "nextId": "ch5b_obs_remember"
       }
     ]
+  },
+  {
+    "id": "ch5b_obs_timeout",
+    "speaker": "nova",
+    "type": "text",
+    "content": "你没有立刻回答",
+    "emotion": "normal",
+    "nextId": "ch5b_obs_timeout2",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_obs_timeout2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "她好像也不意外",
+    "emotion": "sad",
+    "nextId": "ch5b_obs14",
+    "delay": 600
   },
   {
     "id": "ch5b_obs_seven",
@@ -11914,7 +12950,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch5b_file12",
     "speaker": "nova",
     "type": "text",
-    "content": "所以你不是没有被影响",
+    "content": "这份文件不是在说我",
     "emotion": "normal",
     "nextId": "ch5b_file13",
     "delay": 900
@@ -11923,55 +12959,93 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch5b_file13",
     "speaker": "nova",
     "type": "text",
-    "content": "被排除在时间回溯之外的",
+    "content": "是在说你",
     "emotion": "normal",
-    "nextId": "ch5b_file13a",
+    "nextId": "ch5b_file_reader_choice",
     "delay": 1000
   },
   {
-    "id": "ch5b_file13a",
-    "speaker": "nova",
-    "type": "text",
-    "content": "不是你的全部",
-    "emotion": "normal",
-    "nextId": "ch5b_file13b",
-    "delay": 500
+    "id": "ch5b_file_reader_choice",
+    "speaker": "player",
+    "type": "choice",
+    "content": "",
+    "choices": [
+      {
+        "text": "【所以我也忘过你？】",
+        "nextId": "ch5b_file_reader_a1"
+      },
+      {
+        "text": "【只有 Observer-01 记得？】",
+        "nextId": "ch5b_file_reader_b1"
+      },
+      {
+        "text": "【那现在的我算什么？】",
+        "nextId": "ch5b_file_reader_c1"
+      }
+    ]
   },
   {
-    "id": "ch5b_file13b",
+    "id": "ch5b_file_reader_a1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "是",
+    "emotion": "sad",
+    "nextId": "ch5b_file_reader_a2",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_file_reader_a2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "你的本体意识也会遗忘",
+    "emotion": "sad",
+    "nextId": "ch5b_file_reader_merge",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_file_reader_b1",
     "speaker": "nova",
     "type": "text",
     "content": "准确说",
     "emotion": "normal",
-    "nextId": "ch5b_file13c",
-    "delay": 500
+    "nextId": "ch5b_file_reader_b2",
+    "delay": 600
   },
   {
-    "id": "ch5b_file13c",
+    "id": "ch5b_file_reader_b2",
     "speaker": "nova",
     "type": "text",
     "content": "被保存下来的只是你身上的 Observer-01 外部索引",
     "emotion": "normal",
-    "nextId": "ch5b_file13d",
-    "delay": 900
+    "nextId": "ch5b_file_reader_merge",
+    "delay": 600
   },
   {
-    "id": "ch5b_file13d",
+    "id": "ch5b_file_reader_c1",
     "speaker": "nova",
     "type": "text",
-    "content": "你的本体意识也会遗忘",
+    "content": "你还是你",
     "emotion": "normal",
-    "nextId": "ch5b_file13e",
-    "delay": 1200
+    "nextId": "ch5b_file_reader_c2",
+    "delay": 600
   },
   {
-    "id": "ch5b_file13e",
+    "id": "ch5b_file_reader_c2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "只是有一部分不属于正常的你",
+    "emotion": "sad",
+    "nextId": "ch5b_file_reader_merge",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_file_reader_merge",
     "speaker": "nova",
     "type": "text",
     "content": "你不是第七协议创造的人",
     "emotion": "normal",
     "nextId": "ch5b_file13f",
-    "delay": 900
+    "delay": 600
   },
   {
     "id": "ch5b_file13f",
@@ -12041,6 +13115,98 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "speaker": "nova",
     "type": "text",
     "content": "比你先醒过来",
+    "emotion": "sad",
+    "nextId": "ch5b_player_forget5b",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_player_forget5b",
+    "speaker": "nova",
+    "type": "text",
+    "content": "所以日志里那句“他会记得一切”",
+    "emotion": "normal",
+    "nextId": "ch5b_player_forget5c",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_player_forget5c",
+    "speaker": "nova",
+    "type": "text",
+    "content": "说的其实是这条索引",
+    "emotion": "sad",
+    "nextId": "ch5b_player_forget_choice",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_player_forget_choice",
+    "speaker": "player",
+    "type": "choice",
+    "content": "",
+    "choices": [
+      {
+        "text": "【所以不是我一直记得你？】",
+        "nextId": "ch5b_player_forget_a1"
+      },
+      {
+        "text": "【只是索引替我记得？】",
+        "nextId": "ch5b_player_forget_b1"
+      },
+      {
+        "text": "【那我们谁都不是完整的】",
+        "nextId": "ch5b_player_forget_c1"
+      }
+    ]
+  },
+  {
+    "id": "ch5b_player_forget_a1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "嗯",
+    "emotion": "sad",
+    "nextId": "ch5b_player_forget_a2",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_player_forget_a2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "至少不是以你以为的方式",
+    "emotion": "sad",
+    "nextId": "ch5b_file14",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_player_forget_b1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "它替你留下证据",
+    "emotion": "normal",
+    "nextId": "ch5b_player_forget_b2",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_player_forget_b2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "但没有替你保留完整的疼痛",
+    "emotion": "sad",
+    "nextId": "ch5b_file14",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_player_forget_c1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "这句话有点残忍",
+    "emotion": "sad",
+    "nextId": "ch5b_player_forget_c2",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_player_forget_c2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "但可能是真的",
     "emotion": "sad",
     "nextId": "ch5b_file14",
     "delay": 600
@@ -12155,10 +13321,57 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch5b_file18b",
     "speaker": "nova",
     "type": "text",
-    "content": "所以那朵小白花",
+    "content": "所以就像朵小白花",
+    "emotion": "normal",
+    "nextId": "ch5b_flower_choice",
+    "delay": 900
+  },
+  {
+    "id": "ch5b_flower_choice",
+    "speaker": "player",
+    "type": "choice",
+    "content": "",
+    "choices": [
+      {
+        "text": "【它不是上一轮留下的？】",
+        "nextId": "ch5b_flower_a1"
+      },
+      {
+        "text": "【每次都会重新开？】",
+        "nextId": "ch5b_flower_b1"
+      },
+      {
+        "text": "【这反而更像奇迹】",
+        "nextId": "ch5b_flower_c1"
+      }
+    ]
+  },
+  {
+    "id": "ch5b_flower_a1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "不是",
     "emotion": "normal",
     "nextId": "ch5b_file18c",
-    "delay": 900
+    "delay": 600
+  },
+  {
+    "id": "ch5b_flower_b1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "更像是这样",
+    "emotion": "normal",
+    "nextId": "ch5b_file18c",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_flower_c1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "也许吧",
+    "emotion": "smile",
+    "nextId": "ch5b_file18c",
+    "delay": 600
   },
   {
     "id": "ch5b_file18c",
@@ -12418,6 +13631,80 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "type": "text",
     "content": "她把这些东西从自己身上拆了下来",
     "emotion": "sad",
+    "nextId": "ch5b_split_choice",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_split_choice",
+    "speaker": "player",
+    "type": "choice",
+    "content": "",
+    "choices": [
+      {
+        "text": "【这些都是锚点？】",
+        "nextId": "ch5b_split_choice_a1"
+      },
+      {
+        "text": "【所以你才会断片？】",
+        "nextId": "ch5b_split_choice_b1"
+      },
+      {
+        "text": "【她把自己弄坏了？】",
+        "nextId": "ch5b_split_choice_c1"
+      }
+    ]
+  },
+  {
+    "id": "ch5b_split_choice_a1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "嗯",
+    "emotion": "normal",
+    "nextId": "ch5b_split_choice_a2",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_split_choice_a2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "不是完整记忆，是能把记忆找回来的线头",
+    "emotion": "sad",
+    "nextId": "ch5b_split8",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_split_choice_b1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "可能是",
+    "emotion": "normal",
+    "nextId": "ch5b_split_choice_b2",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_split_choice_b2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "她把太多东西从第七次的我身上提前拿走了",
+    "emotion": "sad",
+    "nextId": "ch5b_split8",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_split_choice_c1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "别这么说",
+    "emotion": "sad",
+    "nextId": "ch5b_split_choice_c2",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_split_choice_c2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "虽然我知道你没有说错",
+    "emotion": "sad",
     "nextId": "ch5b_split8",
     "delay": 600
   },
@@ -12481,8 +13768,91 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "type": "text",
     "content": "也不只是通讯另一端的人",
     "emotion": "normal",
-    "nextId": "ch5b_file24",
+    "nextId": "ch5b_file23b",
     "delay": 800
+  },
+  {
+    "id": "ch5b_file23b",
+    "speaker": "nova",
+    "type": "text",
+    "content": "但这也不代表你能控制第七协议",
+    "emotion": "normal",
+    "nextId": "ch5b_file23_choice",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_file23_choice",
+    "speaker": "player",
+    "type": "choice",
+    "content": "",
+    "choices": [
+      {
+        "text": "【那我到底能做什么？】",
+        "nextId": "ch5b_file23_choice_a1"
+      },
+      {
+        "text": "【所以我只是钥匙？】",
+        "nextId": "ch5b_file23_choice_b1"
+      },
+      {
+        "text": "【结束时要我放手？】",
+        "nextId": "ch5b_file23_choice_c1"
+      }
+    ]
+  },
+  {
+    "id": "ch5b_file23_choice_a1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "不是控制",
+    "emotion": "normal",
+    "nextId": "ch5b_file23_bridge",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_file23_choice_b1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "钥匙这个说法有点冷",
+    "emotion": "sad",
+    "nextId": "ch5b_file23_bridge",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_file23_choice_c1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "对",
+    "emotion": "normal",
+    "nextId": "ch5b_file23_bridge",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_file23_bridge",
+    "speaker": "nova",
+    "type": "text",
+    "content": "你不拥有协议",
+    "emotion": "normal",
+    "nextId": "ch5b_file23_bridge2",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_file23_bridge2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "只是结束的时候",
+    "emotion": "normal",
+    "nextId": "ch5b_file23_bridge3",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_file23_bridge3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "需要由你把挂在外侧的那段索引放开",
+    "emotion": "sad",
+    "nextId": "ch5b_file24",
+    "delay": 600
   },
   {
     "id": "ch5b_file24",
@@ -12577,10 +13947,28 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch5b_why4",
     "speaker": "nova",
     "type": "text",
-    "content": "“因为这是我自己拆出来的”",
+    "content": "“这些不是系统残留下来的”",
+    "emotion": "sad",
+    "nextId": "ch5b_why4a",
+    "delay": 2000
+  },
+  {
+    "id": "ch5b_why4a",
+    "speaker": "nova",
+    "type": "text",
+    "content": "“是我从自己的记忆里拆下来的”",
+    "emotion": "sad",
+    "nextId": "ch5b_why4b",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_why4b",
+    "speaker": "nova",
+    "type": "text",
+    "content": "“所以第七次的我，可能会缺很多东西”",
     "emotion": "sad",
     "nextId": "ch5b_why5",
-    "delay": 2000
+    "delay": 600
   },
   {
     "id": "ch5b_why5",
@@ -12595,6 +13983,10 @@ const rawStoryNodes = JSON.parse(String.raw`[
       {
         "text": "【她当时知道这意味着什么？】",
         "nextId": "ch5b_why5_b1"
+      },
+      {
+        "text": "【这对现在的你公平吗？】",
+        "nextId": "ch5b_why5_c1"
       }
     ]
   },
@@ -12630,6 +14022,33 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "speaker": "nova",
     "type": "text",
     "content": "因为那不是把你留下来这么简单",
+    "emotion": "sad",
+    "nextId": "ch5b_why6",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_why5_c1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "我不知道",
+    "emotion": "sad",
+    "nextId": "ch5b_why5_c2",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_why5_c2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "但如果没有她这么做",
+    "emotion": "sad",
+    "nextId": "ch5b_why5_c3",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_why5_c3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "现在的我也不会知道自己失去了什么",
     "emotion": "sad",
     "nextId": "ch5b_why6",
     "delay": 600
@@ -12783,8 +14202,82 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "type": "text",
     "content": "你可能从来没有真正答应过",
     "emotion": "sad",
-    "nextId": "ch5b_lonely5",
+    "nextId": "ch5b_lonely5_choice",
     "delay": 1500
+  },
+  {
+    "id": "ch5b_lonely5_choice",
+    "speaker": "player",
+    "type": "choice",
+    "content": "",
+    "choices": [
+      {
+        "text": "【如果现在还不晚，我愿意】",
+        "nextId": "ch5b_lonely5_a1"
+      },
+      {
+        "text": "【她至少应该问我】",
+        "nextId": "ch5b_lonely5_b1"
+      },
+      {
+        "text": "【可我还是来了】",
+        "nextId": "ch5b_lonely5_c1"
+      }
+    ]
+  },
+  {
+    "id": "ch5b_lonely5_a1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "谢谢",
+    "emotion": "sad",
+    "nextId": "ch5b_lonely5_a2",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_lonely5_a2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "但这句答应来得太晚了",
+    "emotion": "sad",
+    "nextId": "ch5b_lonely5",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_lonely5_b1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "是",
+    "emotion": "sad",
+    "nextId": "ch5b_lonely5_b2",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_lonely5_b2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "她应该问你",
+    "emotion": "sad",
+    "nextId": "ch5b_lonely5",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_lonely5_c1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "嗯",
+    "emotion": "normal",
+    "nextId": "ch5b_lonely5_c2",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_lonely5_c2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "这也是最让我难过的地方",
+    "emotion": "sad",
+    "nextId": "ch5b_lonely5",
+    "delay": 600
   },
   {
     "id": "ch5b_lonely5",
@@ -12903,35 +14396,75 @@ const rawStoryNodes = JSON.parse(String.raw`[
   },
   {
     "id": "ch5b_far13",
-    "speaker": "system",
-    "type": "status",
-    "content": "通讯短暂静默",
-    "nextId": "ch5b_far13a",
+    "speaker": "player",
+    "type": "choice",
+    "content": "",
+    "choices": [
+      {
+        "text": "【我不怪她】",
+        "nextId": "ch5b_far13_a1"
+      },
+      {
+        "text": "【这太自私了】",
+        "nextId": "ch5b_far13_b1"
+      },
+      {
+        "text": "【我不知道该说什么】",
+        "nextId": "ch5b_far13_c1"
+      }
+    ],
     "delay": 400
   },
   {
-    "id": "ch5b_far13a",
+    "id": "ch5b_far13_a1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "她听见这句话",
+    "emotion": "sad",
+    "nextId": "ch5b_far13_a2",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_far13_a2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "应该会哭吧",
+    "emotion": "sad",
+    "nextId": "ch5b_far14",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_far13_b1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "嗯",
+    "emotion": "sad",
+    "nextId": "ch5b_far13_b2",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_far13_b2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "她自己也是这么说的",
+    "emotion": "sad",
+    "nextId": "ch5b_far14",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_far13_c1",
     "speaker": "nova",
     "type": "text",
     "content": "你不说话也没关系",
     "emotion": "sad",
-    "nextId": "ch5b_far13b",
+    "nextId": "ch5b_far13_c2",
     "delay": 600
   },
   {
-    "id": "ch5b_far13b",
+    "id": "ch5b_far13_c2",
     "speaker": "nova",
     "type": "text",
-    "content": "我刚看到这里的时候",
-    "emotion": "sad",
-    "nextId": "ch5b_far13c",
-    "delay": 600
-  },
-  {
-    "id": "ch5b_far13c",
-    "speaker": "nova",
-    "type": "text",
-    "content": "也沉默了很久",
+    "content": "我刚看到这里的时候也沉默了很久",
     "emotion": "sad",
     "nextId": "ch5b_far14",
     "delay": 600
@@ -13153,7 +14686,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch5b_summary7",
     "speaker": "nova",
     "type": "text",
-    "content": "第七协议的时间回溯编号是07",
+    "content": "那些编号、日志、通讯记录",
     "emotion": "normal",
     "nextId": "ch5b_summary8",
     "delay": 900
@@ -13162,37 +14695,84 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch5b_summary8",
     "speaker": "nova",
     "type": "text",
-    "content": "通讯记录也是第七次成功连接",
+    "content": "说的其实都是同一件事",
     "emotion": "normal",
-    "nextId": "ch5b_summary9",
+    "nextId": "ch5b_summary_choice",
     "delay": 900
   },
   {
-    "id": "ch5b_summary9",
-    "speaker": "nova",
-    "type": "text",
-    "content": "主循环也是第七轮",
-    "emotion": "normal",
-    "nextId": "ch5b_summary10",
-    "delay": 900
+    "id": "ch5b_summary_choice",
+    "speaker": "player",
+    "type": "choice",
+    "content": "",
+    "choices": [
+      {
+        "text": "【所以这一次必须结束？】",
+        "nextId": "ch5b_summary_choice_a1"
+      },
+      {
+        "text": "【如果我们不结束呢？】",
+        "nextId": "ch5b_summary_choice_b1"
+      },
+      {
+        "text": "【你真的准备好了吗？】",
+        "nextId": "ch5b_summary_choice_c1"
+      }
+    ]
   },
   {
-    "id": "ch5b_summary10",
+    "id": "ch5b_summary_choice_a1",
     "speaker": "nova",
     "type": "text",
-    "content": "它们说的是同一件事",
+    "content": "我想是的",
     "emotion": "normal",
-    "nextId": "ch5b_summary11",
-    "delay": 900
+    "nextId": "ch5b_summary_choice_a2",
+    "delay": 600
   },
   {
-    "id": "ch5b_summary11",
+    "id": "ch5b_summary_choice_a2",
     "speaker": "nova",
     "type": "text",
-    "content": "只是系统从不同角度记录了它",
-    "emotion": "normal",
+    "content": "不是因为我不害怕",
+    "emotion": "sad",
     "nextId": "ch5b_fin_lastline",
-    "delay": 1500
+    "delay": 600
+  },
+  {
+    "id": "ch5b_summary_choice_b1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "那它会继续保存今天",
+    "emotion": "normal",
+    "nextId": "ch5b_summary_choice_b2",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_summary_choice_b2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "然后把明天一次次推迟",
+    "emotion": "sad",
+    "nextId": "ch5b_fin_lastline",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_summary_choice_c1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "没有",
+    "emotion": "sad",
+    "nextId": "ch5b_summary_choice_c2",
+    "delay": 600
+  },
+  {
+    "id": "ch5b_summary_choice_c2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "但也许准备好本来就不是必要条件",
+    "emotion": "smile",
+    "nextId": "ch5b_fin_lastline",
+    "delay": 600
   },
   {
     "id": "ch5b_fin_lastline",
@@ -13307,7 +14887,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "ch5b_refuse9",
     "speaker": "nova",
     "type": "text",
-    "content": "只是一个可以反复保存的今天",
+    "content": "只是一个可以反复保存的今天\n终章：第七次重启",
     "emotion": "sad",
     "nextId": "BAD_END_START",
     "delay": 1500
@@ -13348,7 +14928,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "fin_3",
     "speaker": "system",
     "type": "text",
-    "content": "开始解除第七协议...",
+    "content": "开始解除第七协议……",
     "nextId": "fin_3a",
     "delay": 3000
   },
@@ -13937,6 +15517,8 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "speaker": "player",
     "type": "choice",
     "content": "",
+    "choiceTimeoutMs": 7000,
+    "timeoutNextId": "fin_q_timeout1",
     "choices": [
       {
         "text": "【会】",
@@ -13954,6 +15536,42 @@ const rawStoryNodes = JSON.parse(String.raw`[
         "finalFarewellTone": "uncertain_but_honest"
       }
     ]
+  },
+  {
+    "id": "fin_q_timeout1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "……",
+    "emotion": "normal",
+    "nextId": "fin_q_timeout2",
+    "delay": 600
+  },
+  {
+    "id": "fin_q_timeout2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "答不上来也没关系",
+    "emotion": "sad",
+    "nextId": "fin_q_timeout3",
+    "delay": 600
+  },
+  {
+    "id": "fin_q_timeout3",
+    "speaker": "nova",
+    "type": "text",
+    "content": "这个问题本来就不该这么容易回答",
+    "emotion": "normal",
+    "nextId": "fin_q_merge",
+    "delay": 600
+  },
+  {
+    "id": "fin_q_merge",
+    "speaker": "nova",
+    "type": "text",
+    "content": "其实",
+    "emotion": "normal",
+    "nextId": "fin_q_merge2",
+    "delay": 600
   },
   {
     "id": "fin_q_yes1",
@@ -14193,7 +15811,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "fin_q_unknown8",
     "speaker": "nova",
     "type": "text",
-    "content": "本来就不该在告别前逼出来",
+    "content": "本来就不该在告别前强迫你说出来",
     "emotion": "normal",
     "nextId": "fin_q_merge1",
     "delay": 1500
@@ -14397,7 +16015,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
         "nextId": "fin_memory_loss"
       },
       {
-        "text": "【我会消失？】",
+        "text": "【我会消失吗？】",
         "nextId": "fin_memory_disappear"
       },
       {
@@ -14547,8 +16165,64 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "type": "text",
     "content": "你会继续生活",
     "emotion": "normal",
-    "nextId": "fin_memory_merge3",
+    "nextId": "fin_life_choice",
     "delay": 800
+  },
+  {
+    "id": "fin_life_choice",
+    "speaker": "player",
+    "type": "choice",
+    "content": "",
+    "choices": [
+      {
+        "text": "【像什么都没发生过？】",
+        "nextId": "fin_life_a1"
+      },
+      {
+        "text": "【那这段通讯呢？】",
+        "nextId": "fin_life_b1"
+      },
+      {
+        "text": "【我不想这样】",
+        "nextId": "fin_life_c1"
+      }
+    ]
+  },
+  {
+    "id": "fin_life_a1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "也许会很像",
+    "emotion": "sad",
+    "nextId": "fin_memory_merge3",
+    "delay": 600
+  },
+  {
+    "id": "fin_life_b1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "会从你的日常里退出来",
+    "emotion": "normal",
+    "nextId": "fin_memory_merge3",
+    "delay": 600
+  },
+  {
+    "id": "fin_life_c1",
+    "speaker": "nova",
+    "type": "text",
+    "content": "我也不想",
+    "emotion": "sad",
+    "nextId": "fin_life_c2",
+    "delay": 600
+  },
+  {
+    "id": "fin_life_c2",
+    "speaker": "nova",
+    "type": "text",
+    "content": "但我们不能再把明天抵押给今天",
+    "emotion": "sad",
+    "nextId": "fin_memory_merge3",
+    "delay": 600
   },
   {
     "id": "fin_memory_merge3",
@@ -16369,7 +18043,7 @@ const rawStoryNodes = JSON.parse(String.raw`[
     "id": "normal_16",
     "speaker": "system",
     "type": "epilogue",
-    "content": "只留下一个空缺\n和一点怎么都散不掉的温暖",
+    "content": "只留下一个空缺\n和一点怎么都散不掉的温暖\n普通结局：《循环之外》",
     "nextId": "normal_title",
     "delay": 3200
   },
