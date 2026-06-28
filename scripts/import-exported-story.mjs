@@ -43,6 +43,7 @@ const TYPE = new Map([
   ['文件', 'file'],
   ['结局', 'end'],
   ['输入', 'input'],
+  ['限时输入', 'input'],
   ['交互', 'interaction'],
   ['通讯日志', 'comm-log'],
   ['记忆锚点', 'memory-anchor'],
@@ -101,6 +102,13 @@ function parsePipeList(value) {
   return items.length <= 1 ? items[0] : items;
 }
 
+function parseLengthRange(value, node) {
+  const match = value.match(/^(\d+)\s*-\s*(\d+)$/);
+  if (!match) return;
+  node.inputMinLength = Number(match[1]);
+  node.inputMaxLength = Number(match[2]);
+}
+
 function parseMeta(metaText, node) {
   for (const raw of metaText.split('|')) {
     const part = raw.trim();
@@ -120,6 +128,16 @@ function parseMeta(metaText, node) {
     if (key === '结局') node.endingUnlock = ENDING.get(value) ?? value;
     if (key === '限时') node.choiceTimeoutMs = Number(value.replace(/ms$/i, ''));
     if (key === '超时跳转' || key === '超时') node.timeoutNextId = cleanNextId(value);
+    if (key === '记录变量') node.recordVariable = value;
+    if (key === '输入变量') node.inputVariable = value;
+    if (key === '自动聚焦') node.inputAutoFocus = value === 'true';
+    if (key === '长度') parseLengthRange(value, node);
+    if (key.startsWith('特殊值')) {
+      const specialValue = key.replace(/^特殊值/, '').trim();
+      if (specialValue && value) {
+        node.specialInputNextIds = { ...(node.specialInputNextIds ?? {}), [specialValue]: cleanNextId(value) };
+      }
+    }
   }
 }
 
@@ -202,10 +220,15 @@ function parseExport(text) {
       current.nextId = cleanNextId(trimmed.replace(/^next:\s*/, ''));
       continue;
     }
-    if (trimmed.startsWith('※ 限时选项')) continue;
+    if (trimmed.startsWith('※ 限时选项') || trimmed.startsWith('※ 限时输入')) continue;
 
-    const choiceMatch = trimmed.match(/^\[([A-Z])\]\s*→\s*(.+?)\s*→\s*(\S+)(?:\s+meta:\s*(.+))?$/);
-    if (choiceMatch) {
+    const choiceMatch = trimmed.match(/^\[([^\]]+)\]\s*→\s*(.+?)\s*→\s*(\S+)(?:\s+meta:\s*(.+))?$/);
+    if (choiceMatch && current.type === 'input') {
+      current.inputSubmitText = choiceMatch[2].trim();
+      current.nextId = cleanNextId(choiceMatch[3]);
+      continue;
+    }
+    if (choiceMatch && /^[A-Z]$/.test(choiceMatch[1])) {
       const choice = { text: choiceMatch[2].trim(), nextId: cleanNextId(choiceMatch[3]) };
       parseChoiceMeta(choiceMatch[4], choice);
       current.choices = current.choices ?? [];
@@ -243,12 +266,17 @@ function preserveNodeRuntime(parsed) {
     'archiveUnlock',
     'endingUnlock',
     'requiresAnchor',
-    'choiceTimeoutMs',
-    'timeoutNextId',
     'image',
     'memoryAnchor',
     'contactStage',
     'glitchLevel',
+    'recordVariable',
+    'inputVariable',
+    'inputMinLength',
+    'inputMaxLength',
+    'inputAutoFocus',
+    'specialInputNextIds',
+    'inputSubmitText',
   ]) {
     if (node[key] === undefined && old?.[key] !== undefined) node[key] = old[key];
   }
@@ -284,9 +312,6 @@ function applyDisplayOverrides(node) {
 }
 
 function applySourceLogicFixes(node) {
-  if (node.id === 'ch2_dream7f' && node.nextId === 'ch2_dream10') {
-    node.nextId = 'ch2_dream9';
-  }
   if (node.id === 'ch5a_obs9' && node.nextId === 'ch5a_obs11') {
     node.nextId = 'ch5a_obs10_choice';
   }
@@ -301,6 +326,11 @@ function prop(key, value, lines) {
 function propRaw(key, value, lines) {
   if (value === undefined) return;
   lines.push(`    ${key}: ${value},`);
+}
+
+function propJson(key, value, lines) {
+  if (value === undefined) return;
+  lines.push(`    ${key}: ${JSON.stringify(value)},`);
 }
 
 function renderChoice(choice) {
@@ -344,6 +374,13 @@ function renderNode(node) {
   prop('memoryAnchor', node.memoryAnchor, lines);
   prop('requiresAnchor', node.requiresAnchor, lines);
   prop('contactStage', node.contactStage, lines);
+  prop('recordVariable', node.recordVariable, lines);
+  prop('inputVariable', node.inputVariable, lines);
+  propRaw('inputMinLength', node.inputMinLength, lines);
+  propRaw('inputMaxLength', node.inputMaxLength, lines);
+  propRaw('inputAutoFocus', node.inputAutoFocus, lines);
+  propJson('specialInputNextIds', node.specialInputNextIds, lines);
+  prop('inputSubmitText', node.inputSubmitText, lines);
   if (Array.isArray(node.archiveUnlock)) {
     lines.push(`    archiveUnlock: ${JSON.stringify(node.archiveUnlock)},`);
   } else {
@@ -358,10 +395,8 @@ function renderNode(node) {
 
 const parsedNodes = parseExport(source).map(preserveNodeRuntime).map(applySourceLogicFixes).map(applyDisplayOverrides);
 
-const storyJson = JSON.stringify(parsedNodes, null, 2)
-  .replace(/`/g, '\\`')
-  .replace(/\$\{/g, '\\${');
-const generated = `const rawStoryNodes = JSON.parse(String.raw\`${storyJson}\`) as StoryNode[];`;
+const storyJson = JSON.stringify(parsedNodes, null, 2);
+const generated = `const rawStoryNodes = JSON.parse(${JSON.stringify(storyJson)}) as StoryNode[];`;
 
 let start = originalStory.indexOf('// Helper to create nodes more easily');
 if (start === -1) start = originalStory.indexOf('// Story nodes imported from exported V1.0 narrative document.');

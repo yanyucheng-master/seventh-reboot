@@ -81,13 +81,24 @@ function formatMeta(node: StoryNode): string[] {
   if (node.endingUnlock) meta.push(`结局=${endingLabel[node.endingUnlock] ?? node.endingUnlock}`);
   if (node.choiceTimeoutMs) meta.push(`限时=${node.choiceTimeoutMs}ms`);
   if (node.timeoutNextId) meta.push(`超时跳转=${node.timeoutNextId}`);
+  if (node.recordVariable) meta.push(`记录变量=${node.recordVariable}`);
+  if (node.inputAutoFocus) meta.push('自动聚焦=true');
+  if (node.inputVariable) meta.push(`输入变量=${node.inputVariable}`);
+  if (node.inputMinLength !== undefined || node.inputMaxLength !== undefined) {
+    meta.push(`长度=${node.inputMinLength ?? 0}-${node.inputMaxLength ?? '?'}`);
+  }
+  if (node.specialInputNextIds) {
+    Object.entries(node.specialInputNextIds).forEach(([value, nextId]) => {
+      meta.push(`特殊值${value}=${nextId}`);
+    });
+  }
   return meta;
 }
 
 function formatNode(node: StoryNode): string[] {
   const lines: string[] = [];
   const sp = speakerLabel[node.speaker] ?? node.speaker;
-  const tp = typeLabel[node.type] ?? node.type;
+  const tp = node.type === 'input' && node.choiceTimeoutMs ? '限时输入' : typeLabel[node.type] ?? node.type;
   const meta = formatMeta(node);
 
   if (node.type === 'chapter') {
@@ -134,6 +145,14 @@ function formatNode(node: StoryNode): string[] {
     const { title, body } = parsePipeContent(node.content);
     if (title) lines.push(`  草稿标题: ${title}`);
     if (body) lines.push(body);
+  } else if (node.type === 'input') {
+    if (node.content) lines.push(node.content);
+    if (node.nextId) {
+      lines.push(`  [提交] → ${node.inputSubmitText ?? '【输入内容】'}  →  ${node.nextId}`);
+    }
+    if (node.choiceTimeoutMs || node.timeoutNextId) {
+      lines.push(`  ※ 限时输入：${node.choiceTimeoutMs ?? '?'}ms，超时 → ${node.timeoutNextId ?? '?'}`);
+    }
   } else if (node.content) {
     lines.push(node.content);
   }
@@ -156,7 +175,7 @@ function formatNode(node: StoryNode): string[] {
     }
   }
 
-  if (node.nextId) lines.push(`  next: ${node.nextId}`);
+  if (node.nextId && node.type !== 'input') lines.push(`  next: ${node.nextId}`);
   lines.push('');
   return lines;
 }
@@ -175,8 +194,8 @@ const output = [
   `生成时间：${new Date().toISOString().replace(/\.\d{3}Z$/, '')}`,
   ``,
   `说明：本文档由 story.ts 自动导出格式整理，包含全部节点、选项分支、系统消息、章节、后记、结局、记忆锚点、文件与图片说明。`,
-  `修订说明：本版在格式统一校对版基础上，重点强化第五章真相揭露阶段的玩家参与感，新增多选项与限时选项，压缩部分连续解释段，让系统文件负责证据、Nova负责情绪、玩家负责回应。`,
-  `深度审查修订说明：本版依据完整剧情深度审查结果，修复 N7 草稿矛盾、第二章梦境旧稿残留、第三章小白花/雨声/观测窗逻辑串线、第三章梦中警告前后冲突、第四章双重认证解释不完整、第五章 Observer-01 索引说明歧义，并补充关键伦理回应选项。`,
+  `修订说明：本版完成主题级结构重写。情感层保留“被记住的幸福”，价值层调整为“记忆必须经过双方同意”；前置外部通讯覆盖规则，强化Nova-06对选项与锚点的主动操控，并将终章改为记忆授权、索引释放与限时姓名输入。`,
+  `核心规则：玩家以现实身份接入疑似平行世界。第七协议仅回溯Aurora号；每次循环会覆盖同一外部时间窗口中的旧通讯历史。Observer-01位于通讯夹层，只保存被覆盖的记录残片，不能修改玩家意识。协议关闭后玩家不会被强制失忆，但失去一切外部证据，只能依靠普通人的记忆与双方自愿留下的检索钥匙。`,
   `分支格式：[选项字母] → 选项文本 → 下一节点ID`,
   ``,
   `---`,

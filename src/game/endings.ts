@@ -27,6 +27,6 @@ export function resolveEndingStart(requestedNextId: string, stats: GameStats): s
 
   const ending = determineEnding(stats);
   if (ending === 'bad') return 'BAD_END_START';
-  if (ending === 'true') return 'FINALE_START';
+  if (ending === 'true') return 'FINALE_DECISION_END';
   return 'NORMAL_END_START';
 }

@@ -35,6 +35,8 @@ const MEMORY_ANCHOR_LABELS: Record<MemoryAnchorId, string> = {
   observatory: '观测室',
   maintenance_board: '维修板',
   steak: '合成牛排',
+  shared_phrase: '共同暗号',
+  chosen_name: '玩家姓名',
 };
 
 const CONTACT_META: Record<ContactStage, { name: string; subtitle: string }> = {
@@ -72,6 +74,19 @@ type ActiveSignalGlitch = {
   level: GlitchLevel;
   tone: SignalGlitchTone;
   pulse: number;
+};
+
+type ActiveInputNode = {
+  id: string;
+  nextId?: string;
+  placeholder: string;
+  timeoutMs?: number;
+  timeoutNextId?: string;
+  inputVariable?: string;
+  inputMinLength?: number;
+  inputMaxLength?: number;
+  inputAutoFocus?: boolean;
+  specialInputNextIds?: Record<string, string>;
 };
 
 function clampStat(value: number): number {
@@ -142,6 +157,36 @@ function getMediaChoiceWaitConfig(): WaitConfig {
     duration: 5200,
     label: '图像信号稳定中 · 等待回复',
     hint: '点击查看回复',
+  };
+}
+
+function renderStoryTemplate(content: string, stats: GameStats): string {
+  const playerName = stats.playerName?.trim() || 'Observer-01';
+  const sharedAnchorPhrase = stats.sharedAnchorPhrase?.trim() || '共同暗号';
+  return content
+    .replace(/\$\{playerName\|Observer-01\}/g, playerName)
+    .replace(/\$\{playerName\}/g, playerName)
+    .replace(/\$\{sharedAnchorPhrase\}/g, sharedAnchorPhrase);
+}
+
+function getInputPlaceholder(node: StoryNode): string {
+  if (node.content) return node.content;
+  if (node.inputVariable === 'playerName') return '输入你希望 Nova 怎么叫你';
+  return '输入你想说的话...';
+}
+
+function createActiveInputNode(node: StoryNode): ActiveInputNode {
+  return {
+    id: node.id,
+    nextId: node.nextId,
+    placeholder: getInputPlaceholder(node),
+    timeoutMs: node.choiceTimeoutMs,
+    timeoutNextId: node.timeoutNextId,
+    inputVariable: node.inputVariable,
+    inputMinLength: node.inputMinLength,
+    inputMaxLength: node.inputMaxLength,
+    inputAutoFocus: node.inputAutoFocus,
+    specialInputNextIds: node.specialInputNextIds,
   };
 }
 
@@ -239,7 +284,7 @@ export default function GameApp() {
   const [showArchive, setShowArchive] = useState(false);
   const [stats, setStats] = useState<GameStats>(defaultStats);
   const [contactStage, setContactStage] = useState<ContactStage>(defaultContactStage);
-  const [inputNode, setInputNode] = useState<{ id: string; nextId?: string; placeholder: string } | null>(null);
+  const [inputNode, setInputNode] = useState<ActiveInputNode | null>(null);
   const [playerInput, setPlayerInput] = useState('');
   const [waitPrompt, setWaitPrompt] = useState<WaitPrompt | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -563,7 +608,8 @@ export default function GameApp() {
 
       if (node.type === 'input') {
         stopFastForwardAtInteraction();
-        setInputNode({ id: node.id, nextId: node.nextId, placeholder: node.content || '输入你想说的话...' });
+        setInputNode(createActiveInputNode(node));
+        setPlayerInput('');
         setIsTyping(false);
         persistState(nodeId, messagesRef.current);
         return false;
@@ -598,7 +644,7 @@ export default function GameApp() {
         id: `${node.id}_${Date.now()}`,
         speaker: node.speaker,
         type: node.type,
-        content: node.content,
+        content: renderStoryTemplate(node.content, statsRef.current),
         emotion: node.emotion,
         image: node.image,
         contactStage: contactStageRef.current,
@@ -793,11 +839,8 @@ export default function GameApp() {
           }
 
           if (resumeNode?.type === 'input') {
-            setInputNode({
-              id: resumeNode.id,
-              nextId: resumeNode.nextId,
-              placeholder: resumeNode.content || '输入你想说的话...',
-            });
+            setInputNode(createActiveInputNode(resumeNode));
+            setPlayerInput('');
             return;
           }
 
@@ -825,7 +868,7 @@ export default function GameApp() {
     [cancelActiveSequence, scheduleSequence, startSequence],
   );
 
-  const applyChoiceEffects = useCallback((choice: Choice) => {
+  const applyChoiceEffects = useCallback((choice: Choice, choiceNode?: StoryNode) => {
     const current = statsRef.current;
     const next: GameStats = {
       trust: current.trust,
@@ -838,6 +881,8 @@ export default function GameApp() {
       finalFarewellTone: current.finalFarewellTone,
       timedResponse: current.timedResponse,
       timedProof: current.timedProof,
+      sharedAnchorPhrase: current.sharedAnchorPhrase,
+      playerName: current.playerName,
       ending: current.ending,
       unlockedArchives: [...current.unlockedArchives],
       endingsUnlocked: [...current.endingsUnlocked],
@@ -877,6 +922,9 @@ export default function GameApp() {
     if (choice.timedProof) {
       next.timedProof = choice.timedProof;
     }
+    if (choiceNode?.recordVariable === 'sharedAnchorPhrase') {
+      next.sharedAnchorPhrase = formatChoiceText(choice.text);
+    }
 
     const isFinalDecision =
       choice.nextId === 'FINALE_DECISION_END' ||
@@ -894,13 +942,14 @@ export default function GameApp() {
 
   const handleChoice = useCallback(
     (choice: Choice) => {
+      const sourceChoiceNode = choiceNodeId ? storyNodeMap.get(choiceNodeId) : undefined;
       if (choiceTimeoutRef.current !== null) {
         window.clearTimeout(choiceTimeoutRef.current);
         choiceTimeoutRef.current = null;
       }
       setChoices(null);
       setChoiceNodeId(null);
-      const nextStats = applyChoiceEffects(choice);
+      const nextStats = applyChoiceEffects(choice, sourceChoiceNode);
       const nextId = resolveEndingStart(choice.nextId, nextStats);
 
       const playerMsg: DisplayMessage = {
@@ -918,7 +967,7 @@ export default function GameApp() {
       scrollToBottom();
       scheduleSequence(nextId, 550);
     },
-    [applyChoiceEffects, persistState, scheduleSequence, scrollToBottom],
+    [applyChoiceEffects, choiceNodeId, persistState, scheduleSequence, scrollToBottom],
   );
 
   const handleChoiceTimeout = useCallback(
@@ -978,9 +1027,58 @@ export default function GameApp() {
     };
   }, [choiceNodeId, choices, handleChoiceTimeout]);
 
+  const handleInputTimeout = useCallback(
+    (node: ActiveInputNode) => {
+      if (!node.timeoutNextId) return;
+      setInputNode(null);
+      setPlayerInput('');
+      persistState(node.timeoutNextId, messagesRef.current);
+      scrollToBottom();
+      scheduleSequence(node.timeoutNextId, 550);
+    },
+    [persistState, scheduleSequence, scrollToBottom],
+  );
+
+  useEffect(() => {
+    if (!inputNode?.timeoutMs || !inputNode.timeoutNextId) return undefined;
+
+    if (choiceTimeoutRef.current !== null) {
+      window.clearTimeout(choiceTimeoutRef.current);
+    }
+    choiceTimeoutRef.current = window.setTimeout(() => {
+      choiceTimeoutRef.current = null;
+      handleInputTimeout(inputNode);
+    }, inputNode.timeoutMs);
+
+    return () => {
+      if (choiceTimeoutRef.current !== null) {
+        window.clearTimeout(choiceTimeoutRef.current);
+        choiceTimeoutRef.current = null;
+      }
+    };
+  }, [handleInputTimeout, inputNode]);
+
   const handlePlayerInput = useCallback(() => {
     if (!inputNode) return;
-    const text = playerInput.trim() || '......';
+    const trimmed = playerInput.trim();
+    if (inputNode.inputMinLength && trimmed.length < inputNode.inputMinLength) return;
+    const text = inputNode.inputMaxLength ? trimmed.slice(0, inputNode.inputMaxLength) : trimmed || '......';
+    if (choiceTimeoutRef.current !== null) {
+      window.clearTimeout(choiceTimeoutRef.current);
+      choiceTimeoutRef.current = null;
+    }
+    if (inputNode.inputVariable === 'playerName') {
+      const nextStats: GameStats = {
+        ...statsRef.current,
+        memoryAnchors: [...statsRef.current.memoryAnchors],
+        unlockedArchives: [...statsRef.current.unlockedArchives],
+        endingsUnlocked: [...statsRef.current.endingsUnlocked],
+        playerName: text,
+      };
+      statsRef.current = nextStats;
+      setStats(nextStats);
+    }
+    const nextId = inputNode.specialInputNextIds?.[text] ?? inputNode.nextId ?? inputNode.id;
     const playerMsg: DisplayMessage = {
       id: `player_${Date.now()}`,
       speaker: 'player',
@@ -994,13 +1092,14 @@ export default function GameApp() {
     setMessages(updated);
     setInputNode(null);
     setPlayerInput('');
-    persistState(inputNode.nextId ?? inputNode.id, updated);
-    if (inputNode.nextId) scheduleSequence(inputNode.nextId, 400);
+    persistState(nextId, updated);
+    scheduleSequence(nextId, 400);
   }, [inputNode, persistState, playerInput, scheduleSequence]);
 
   const lastMsg = messages[messages.length - 1];
   const isLastNovaTyping =
     isTypewriterActive && lastMsg && lastMsg.speaker === 'nova' && lastMsg.type === 'text';
+  const isInputReady = !inputNode?.inputMinLength || playerInput.trim().length >= inputNode.inputMinLength;
 
   const saveSnapshot = hasSave ? loadGame() : null;
   const saveProgress = saveSnapshot
@@ -1297,20 +1396,28 @@ export default function GameApp() {
               <div className="flex gap-2">
                 <input
                   value={playerInput}
-                  onChange={e => setPlayerInput(e.target.value)}
+                  onChange={e => {
+                    const value = inputNode.inputMaxLength
+                      ? e.target.value.slice(0, inputNode.inputMaxLength)
+                      : e.target.value;
+                    setPlayerInput(value);
+                  }}
                   onFocus={scrollToBottom}
                   onKeyDown={e => {
-                    if (e.key === 'Enter') handlePlayerInput();
+                    if (e.key === 'Enter' && isInputReady) handlePlayerInput();
                   }}
                   placeholder={inputNode.placeholder}
                   enterKeyHint="send"
                   autoComplete="off"
+                  maxLength={inputNode.inputMaxLength}
+                  autoFocus={inputNode.inputAutoFocus}
                   className="mobile-input flex-1 rounded-lg bg-[#0B0E14] border border-[#2A3550] px-4 py-2.5 text-[#E2E8F0] outline-none focus:border-[#F0A030]"
                 />
                 <button
                   type="button"
                   onClick={handlePlayerInput}
-                  className="menu-btn shrink-0 px-4 py-2.5 rounded-lg bg-[#F0A030]/20 border border-[#F0A030]/50 text-[#F0A030] text-sm hover:bg-[#F0A030]/30 transition-colors"
+                  disabled={!isInputReady}
+                  className={`menu-btn shrink-0 px-4 py-2.5 rounded-lg bg-[#F0A030]/20 border border-[#F0A030]/50 text-[#F0A030] text-sm transition-colors ${isInputReady ? 'hover:bg-[#F0A030]/30' : 'opacity-50 cursor-not-allowed'}`}
                 >
                   发送
                 </button>

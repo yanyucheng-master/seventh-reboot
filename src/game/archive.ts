@@ -21,6 +21,8 @@ export const ANCHOR_ARCHIVE_IDS: Record<MemoryAnchorId, string> = {
   milk_candy: 'anchor_milk_candy',
   maintenance_board: 'anchor_maintenance_board',
   steak: 'anchor_steak',
+  shared_phrase: 'anchor_shared_phrase',
+  chosen_name: 'anchor_chosen_name',
 };
 
 const PHOTO_ARCHIVE_BY_IMAGE: Record<string, string> = {
@@ -116,6 +118,24 @@ export const ARCHIVE_ENTRIES: ArchiveDefinition[] = [
     description: 'Aurora 号食堂供应的合成牛排，Nova 怀疑它更接近建筑材料。',
     chapter: '第三章：异常',
     order: 80,
+  },
+  {
+    id: 'anchor_shared_phrase',
+    category: 'anchor',
+    title: '共同暗号',
+    quote: '只属于现在的我们',
+    description: '由当前 Nova 与外部响应者共同授权保留的本轮检索钥匙。',
+    chapter: '第二章：日常',
+    order: 90,
+  },
+  {
+    id: 'anchor_chosen_name',
+    category: 'anchor',
+    title: '玩家姓名',
+    quote: '是你自己告诉我的',
+    description: '终章通讯断开前，外部响应者主动交给 Nova 的称呼。',
+    chapter: '终章：第七次重启',
+    order: 100,
   },
   {
     id: 'photo_maintenance_board',
