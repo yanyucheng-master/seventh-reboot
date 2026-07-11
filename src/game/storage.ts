@@ -10,7 +10,10 @@ import type {
   GameStats,
   MemoryAnchorId,
   NovaEmotion,
+  PowerRoutingResult,
   SaveData,
+  SealableMemoryAnchor,
+  SignalSeparationResult,
   TimedProof,
   TimedResponse,
 } from './types';
@@ -18,7 +21,7 @@ import type {
 export const SAVE_KEY = 'seventh_reboot_save';
 /** 剧情分支拓扑版本；变更选项 nextId 后递增，使旧 localStorage 存档失效 */
 export const STORY_VERSION = 'V1.0';
-export const STORY_CONTENT_VERSION = 'v1.0-bilingual-20260711';
+export const STORY_CONTENT_VERSION = 'v1.0-special-interactions-20260711';
 export const defaultContactStage: ContactStage = 'unknown';
 
 export const defaultStats: GameStats = {
@@ -29,6 +32,12 @@ export const defaultStats: GameStats = {
   acceptFarewell: false,
   unlockedArchives: [],
   endingsUnlocked: [],
+  criticalLogUnlocked: false,
+  signalCurrentNovaRecovered: false,
+  signalNova06Recovered: false,
+  signalCoreTelemetryRecovered: false,
+  timelineAlignmentCompleted: false,
+  temporaryAnchorRestored: false,
 };
 
 const MEMORY_ANCHOR_IDS = new Set<MemoryAnchorId>([
@@ -58,6 +67,13 @@ const FINAL_FAREWELL_TONES = new Set<FinalFarewellTone>([
 const TIMED_RESPONSES = new Set<TimedResponse>(['calm_nova', 'investigate_log']);
 const TIMED_PROOFS = new Set<TimedProof>(['n7_core_anchor']);
 const ENDING_TYPES = new Set<EndingType>(['true', 'normal', 'bad']);
+const SIGNAL_SEPARATION_RESULTS = new Set<SignalSeparationResult>(['clean', 'assisted']);
+const POWER_ROUTING_RESULTS = new Set<PowerRoutingResult>(['excellent', 'stable', 'emergency_assist']);
+const SEALABLE_MEMORY_ANCHORS = new Set<SealableMemoryAnchor>([
+  'maintenance_board',
+  'white_flower',
+  'goodnight',
+]);
 
 const LEGACY_ANCHORS: Record<string, MemoryAnchorId | undefined> = {
   n7: 'n7',
@@ -121,6 +137,24 @@ function normalizeEndingType(value: unknown): EndingType | undefined {
   return typeof value === 'string' && ENDING_TYPES.has(value as EndingType) ? value as EndingType : undefined;
 }
 
+function normalizeSignalSeparationResult(value: unknown): SignalSeparationResult | undefined {
+  return typeof value === 'string' && SIGNAL_SEPARATION_RESULTS.has(value as SignalSeparationResult)
+    ? value as SignalSeparationResult
+    : undefined;
+}
+
+function normalizePowerRoutingResult(value: unknown): PowerRoutingResult | undefined {
+  return typeof value === 'string' && POWER_ROUTING_RESULTS.has(value as PowerRoutingResult)
+    ? value as PowerRoutingResult
+    : undefined;
+}
+
+function normalizeSealableMemoryAnchor(value: unknown): SealableMemoryAnchor | undefined {
+  return typeof value === 'string' && SEALABLE_MEMORY_ANCHORS.has(value as SealableMemoryAnchor)
+    ? value as SealableMemoryAnchor
+    : undefined;
+}
+
 export function normalizeGameStats(value: unknown): GameStats {
   const stats = value && typeof value === 'object' ? value as Partial<GameStats> : {};
   const memoryAnchors = normalizeMemoryAnchors(stats.memoryAnchors);
@@ -132,6 +166,12 @@ export function normalizeGameStats(value: unknown): GameStats {
     acceptFarewell: typeof stats.acceptFarewell === 'boolean' ? stats.acceptFarewell : defaultStats.acceptFarewell,
     unlockedArchives: normalizeStringList(stats.unlockedArchives),
     endingsUnlocked: normalizeEndings(stats.endingsUnlocked),
+    criticalLogUnlocked: stats.criticalLogUnlocked === true,
+    signalCurrentNovaRecovered: stats.signalCurrentNovaRecovered === true,
+    signalNova06Recovered: stats.signalNova06Recovered === true,
+    signalCoreTelemetryRecovered: stats.signalCoreTelemetryRecovered === true,
+    timelineAlignmentCompleted: stats.timelineAlignmentCompleted === true,
+    temporaryAnchorRestored: stats.temporaryAnchorRestored === true,
   };
 
   const finalChoice = normalizeFinalChoice(stats.finalChoice);
@@ -140,12 +180,18 @@ export function normalizeGameStats(value: unknown): GameStats {
   const timedResponse = normalizeTimedResponse(stats.timedResponse);
   const timedProof = normalizeTimedProof(stats.timedProof);
   const ending = normalizeEndingType(stats.ending);
+  const signalSeparationResult = normalizeSignalSeparationResult(stats.signalSeparationResult);
+  const powerRoutingResult = normalizePowerRoutingResult(stats.powerRoutingResult);
+  const temporaryAnchorSealed = normalizeSealableMemoryAnchor(stats.temporaryAnchorSealed);
   if (finalChoice) normalized.finalChoice = finalChoice;
   if (finalFarewellVariant) normalized.finalFarewellVariant = finalFarewellVariant;
   if (finalFarewellTone) normalized.finalFarewellTone = finalFarewellTone;
   if (timedResponse) normalized.timedResponse = timedResponse;
   if (timedProof) normalized.timedProof = timedProof;
   if (ending) normalized.ending = ending;
+  if (signalSeparationResult) normalized.signalSeparationResult = signalSeparationResult;
+  if (powerRoutingResult) normalized.powerRoutingResult = powerRoutingResult;
+  if (temporaryAnchorSealed) normalized.temporaryAnchorSealed = temporaryAnchorSealed;
   return normalized;
 }
 
@@ -190,6 +236,15 @@ function isValidSaveData(data: unknown): data is SaveData {
   if (stats.ending !== undefined && typeof stats.ending !== 'string') return false;
   if (stats.unlockedArchives !== undefined && !Array.isArray(stats.unlockedArchives)) return false;
   if (stats.endingsUnlocked !== undefined && !Array.isArray(stats.endingsUnlocked)) return false;
+  if (stats.criticalLogUnlocked !== undefined && typeof stats.criticalLogUnlocked !== 'boolean') return false;
+  if (stats.signalSeparationResult !== undefined && typeof stats.signalSeparationResult !== 'string') return false;
+  if (stats.signalCurrentNovaRecovered !== undefined && typeof stats.signalCurrentNovaRecovered !== 'boolean') return false;
+  if (stats.signalNova06Recovered !== undefined && typeof stats.signalNova06Recovered !== 'boolean') return false;
+  if (stats.signalCoreTelemetryRecovered !== undefined && typeof stats.signalCoreTelemetryRecovered !== 'boolean') return false;
+  if (stats.timelineAlignmentCompleted !== undefined && typeof stats.timelineAlignmentCompleted !== 'boolean') return false;
+  if (stats.powerRoutingResult !== undefined && typeof stats.powerRoutingResult !== 'string') return false;
+  if (stats.temporaryAnchorSealed !== undefined && typeof stats.temporaryAnchorSealed !== 'string') return false;
+  if (stats.temporaryAnchorRestored !== undefined && typeof stats.temporaryAnchorRestored !== 'boolean') return false;
   if (typeof save.timestamp !== 'number') return false;
   if (save.storyVersion !== STORY_VERSION) return false;
   if (save.storyContentVersion !== STORY_CONTENT_VERSION) return false;
@@ -250,7 +305,7 @@ export function getSaveTimeString(
 export function getPendingNodeIdAfterNode(nodeId: string): string {
   const node = storyNodeMap.get(nodeId);
   if (!node) return nodeId;
-  if (node.type === 'choice' || node.type === 'end') return nodeId;
+  if (node.type === 'choice' || node.type === 'input' || node.type === 'interaction' || node.type === 'end') return nodeId;
   return node.nextId ?? nodeId;
 }
 
@@ -263,7 +318,7 @@ export function resolveResumeNodeId(save: SaveData): string {
 
   const node = storyNodeMap.get(legacyId);
   if (!node) return legacyId;
-  if (node.type === 'choice' || node.type === 'end') return legacyId;
+  if (node.type === 'choice' || node.type === 'input' || node.type === 'interaction' || node.type === 'end') return legacyId;
 
   const lastMsg = save.messages[save.messages.length - 1];
   if (lastMsg?.id.startsWith(`${legacyId}_`)) {

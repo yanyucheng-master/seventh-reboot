@@ -37,6 +37,26 @@ export type TimedResponse = 'calm_nova' | 'investigate_log';
 
 export type TimedProof = 'n7_core_anchor';
 
+export type SpecialInteractionKind =
+  | 'critical-log-password'
+  | 'signal-separation'
+  | 'power-routing'
+  | 'memory-seal'
+  | 'memory-restore';
+
+export type SignalSeparationResult = 'clean' | 'assisted';
+
+export type PowerRoutingResult = 'excellent' | 'stable' | 'emergency_assist';
+
+export type SealableMemoryAnchor = 'maintenance_board' | 'white_flower' | 'goodnight';
+
+export type SpecialInteractionCompletion =
+  | { kind: 'critical-log-password'; routeKey: 'success' }
+  | { kind: 'signal-separation'; routeKey: SignalSeparationResult }
+  | { kind: 'power-routing'; routeKey: PowerRoutingResult }
+  | { kind: 'memory-seal'; routeKey: SealableMemoryAnchor; anchor: SealableMemoryAnchor }
+  | { kind: 'memory-restore'; routeKey: SealableMemoryAnchor | 'none'; anchor?: SealableMemoryAnchor };
+
 export interface ArchiveEntry {
   id: string;
   category: ArchiveCategory;
@@ -98,6 +118,15 @@ export interface GameStats {
   ending?: EndingType;
   unlockedArchives: string[];
   endingsUnlocked: EndingId[];
+  criticalLogUnlocked: boolean;
+  signalSeparationResult?: SignalSeparationResult;
+  signalCurrentNovaRecovered: boolean;
+  signalNova06Recovered: boolean;
+  signalCoreTelemetryRecovered: boolean;
+  timelineAlignmentCompleted: boolean;
+  powerRoutingResult?: PowerRoutingResult;
+  temporaryAnchorSealed?: SealableMemoryAnchor;
+  temporaryAnchorRestored: boolean;
 }
 
 /** UI 生成的系统提示（非剧情节点正文），切语言时按 key 重算 */

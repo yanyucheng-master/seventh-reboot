@@ -2,6 +2,8 @@ import type { StoryNode } from '../game/story';
 import type { Locale, StoryLocaleData, StoryLocaleNode } from './types';
 import storyZh from './locales/zh-CN/story.json';
 import storyEn from './locales/en-US/story.json';
+import interactionEn from './locales/en-US/interactions.json';
+import interactionZh from './locales/zh-CN/interactions.json';
 
 const STORY_BY_LOCALE: Record<Locale, StoryLocaleData> = {
   'zh-CN': storyZh as StoryLocaleData,
@@ -25,9 +27,12 @@ function resolveChoiceText(
 
 export function applyStoryLocale(baseNodes: StoryNode[], locale: Locale): StoryNode[] {
   const primary = STORY_BY_LOCALE[locale];
+  const interactionOverlay = locale === 'en-US'
+    ? interactionEn as StoryLocaleData
+    : interactionZh as StoryLocaleData;
 
   return baseNodes.map(node => {
-    const primaryNode = primary.nodes[node.id];
+    const primaryNode = interactionOverlay?.nodes[node.id] ?? primary.nodes[node.id];
     const content = resolveNodeText(node, primaryNode);
 
     if (!node.choices?.length) {

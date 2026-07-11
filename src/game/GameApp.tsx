@@ -15,7 +15,17 @@ import {
   resolveResumeNodeId,
   saveGame,
 } from './storage';
-import type { ContactStage, DisplayMessage, FinalFarewellVariant, GameScreen, GameStats, GlitchLevel, MemoryAnchorId, NovaEmotion } from './types';
+import type {
+  ContactStage,
+  DisplayMessage,
+  FinalFarewellVariant,
+  GameScreen,
+  GameStats,
+  GlitchLevel,
+  MemoryAnchorId,
+  NovaEmotion,
+  SpecialInteractionCompletion,
+} from './types';
 import { StarBackground } from './components/StarBackground';
 import { ImageModal } from './components/ImageModal';
 import { ChatMessage } from './components/ChatMessage';
@@ -27,11 +37,20 @@ import { getSaveProgressLabel } from './progress';
 import { formatChoiceText, shouldShowNovaAvatar, shouldShowTypingAvatar } from './format';
 import { determineEnding, resolveEndingStart } from './endings';
 import { ANCHOR_ARCHIVE_IDS, getArchiveUnlocksForNode } from './archive';
+import { SpecialInteractionOverlay } from './interactions/SpecialInteractionOverlay';
+import { applySpecialInteractionCompletion, isSealableMemoryAnchor } from './interactions/logic';
 
 type Translate = (key: string, params?: Record<string, string | number>) => string;
 
 // INTERNAL TEST ONLY: set to false or remove this block before public release.
 const INTERNAL_TEST_SKIP_ENABLED = true;
+// INTERNAL TEST ONLY: Vite development builds may open a node directly with ?testNode=<id>.
+const INTERNAL_TEST_NODE_ID = import.meta.env.DEV
+  ? new URLSearchParams(window.location.search).get('testNode')
+  : null;
+const INTERNAL_TEST_ANCHOR_ID = import.meta.env.DEV
+  ? new URLSearchParams(window.location.search).get('testAnchor')
+  : null;
 
 type WaitPrompt = {
   label: string;
@@ -251,6 +270,7 @@ export default function GameApp() {
   const [stats, setStats] = useState<GameStats>(defaultStats);
   const [contactStage, setContactStage] = useState<ContactStage>(defaultContactStage);
   const [inputNode, setInputNode] = useState<ActiveInputNode | null>(null);
+  const [activeInteraction, setActiveInteraction] = useState<StoryNode | null>(null);
   const [playerInput, setPlayerInput] = useState('');
   const [waitPrompt, setWaitPrompt] = useState<WaitPrompt | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -303,6 +323,7 @@ export default function GameApp() {
   const emotionRef = useRef(novaEmotion);
   const statsRef = useRef(stats);
   const contactStageRef = useRef(contactStage);
+  const internalTestBootstrappedRef = useRef(false);
 
   useEffect(() => {
     messagesRef.current = messages;
@@ -350,6 +371,11 @@ export default function GameApp() {
         setInputNode(createActiveInputNode(node, t));
       }
     }
+    setActiveInteraction(current => {
+      if (!current) return current;
+      const node = storyNodeMap.get(current.id);
+      return node?.type === 'interaction' ? node : current;
+    });
     // Re-localize when language changes or when entering the playing screen (e.g. continue).
     // eslint-disable-next-line react-hooks/exhaustive-deps -- choice/input refreshed from current ids
   }, [locale, storyNodeMap, t, applyLocalizedMessages, screen]);
@@ -377,6 +403,7 @@ export default function GameApp() {
     setSignalGlitch(null);
     setIsSyncing(false);
     setIsSkippingToChoice(false);
+    setActiveInteraction(null);
     return queueRunIdRef.current;
   }, []);
 
@@ -479,14 +506,14 @@ export default function GameApp() {
   }, []);
 
   const skipToNextChoice = useCallback(() => {
-    if (!INTERNAL_TEST_SKIP_ENABLED || choices || inputNode || messagesRef.current.some(message => message.type === 'end')) return;
+    if (!INTERNAL_TEST_SKIP_ENABLED || choices || inputNode || activeInteraction || messagesRef.current.some(message => message.type === 'end')) return;
     skipToChoiceRef.current = true;
     setIsSkippingToChoice(true);
     setWaitPrompt(null);
     setIsTyping(false);
     delayResolverRef.current?.();
     waitResolverRef.current?.('fast-forward');
-  }, [choices, inputNode]);
+  }, [activeInteraction, choices, inputNode]);
 
   const triggerSignalGlitch = useCallback((node: StoryNode) => {
     const level = getSignalGlitchLevel(node);
@@ -590,6 +617,14 @@ export default function GameApp() {
       if (node.requiresAnchor && !statsRef.current.memoryAnchors.includes(node.requiresAnchor)) {
         if (node.nextId) nodeQueueRef.current.push(node.nextId);
         return true;
+      }
+
+      if (node.type === 'interaction' && node.interactionKind) {
+        stopFastForwardAtInteraction();
+        setActiveInteraction(node);
+        setIsTyping(false);
+        persistState(nodeId, messagesRef.current);
+        return false;
       }
 
       if (node.type === 'end') {
@@ -838,6 +873,42 @@ export default function GameApp() {
     [startSequence],
   );
 
+  useEffect(() => {
+    if (!INTERNAL_TEST_NODE_ID || internalTestBootstrappedRef.current) return;
+    if (!storyNodeMap.has(INTERNAL_TEST_NODE_ID)) return;
+    internalTestBootstrappedRef.current = true;
+    cancelActiveSequence();
+    clearSave();
+
+    const testStats: GameStats = {
+      ...defaultStats,
+      memoryAnchors: [
+        'n7',
+        'milk_candy',
+        'white_flower',
+        'first_message',
+        'goodnight',
+        'observatory',
+        'maintenance_board',
+        'steak',
+      ],
+    };
+    if (INTERNAL_TEST_ANCHOR_ID && isSealableMemoryAnchor(INTERNAL_TEST_ANCHOR_ID)) {
+      testStats.temporaryAnchorSealed = INTERNAL_TEST_ANCHOR_ID;
+    }
+
+    messagesRef.current = [];
+    statsRef.current = testStats;
+    emotionRef.current = 'normal';
+    contactStageRef.current = 'verified';
+    setMessages([]);
+    setStats(testStats);
+    setNovaEmotion('normal');
+    setContactStage('verified');
+    setScreen('playing');
+    startSequence(INTERNAL_TEST_NODE_ID);
+  }, [cancelActiveSequence, startSequence, storyNodeMap]);
+
   const startGame = useCallback(
     (mode: 'new' | 'continue') => {
       cancelActiveSequence();
@@ -851,6 +922,7 @@ export default function GameApp() {
       setShowChapterBanner(null);
       setShowArchive(false);
       setShowRestartConfirm(false);
+      setActiveInteraction(null);
 
       if (mode === 'continue') {
         const save = loadGame();
@@ -890,6 +962,11 @@ export default function GameApp() {
             return;
           }
 
+          if (resumeNode?.type === 'interaction' && resumeNode.interactionKind) {
+            setActiveInteraction(resumeNode);
+            return;
+          }
+
           scheduleSequence(resumeId, 500);
           return;
         }
@@ -907,6 +984,7 @@ export default function GameApp() {
       setInputNode(null);
       setPlayerInput('');
       setWaitPrompt(null);
+      setActiveInteraction(null);
       setShowArchive(false);
       setScreen('playing');
       startSequence('p0');
@@ -914,20 +992,35 @@ export default function GameApp() {
     [cancelActiveSequence, memoryAnchorLabels, scheduleSequence, startSequence, storyNodeMap, t],
   );
 
+  const handleSpecialInteractionComplete = useCallback(
+    (completion: SpecialInteractionCompletion) => {
+      if (!activeInteraction) return;
+      const nextStats = applySpecialInteractionCompletion(statsRef.current, completion);
+      statsRef.current = nextStats;
+      setStats(nextStats);
+
+      const nextId = activeInteraction.interactionNextIds?.[completion.routeKey]
+        ?? activeInteraction.nextId
+        ?? activeInteraction.id;
+      setActiveInteraction(null);
+      persistState(nextId, messagesRef.current);
+      scheduleSequence(nextId, 350);
+    },
+    [activeInteraction, persistState, scheduleSequence],
+  );
+
+  const saveInteractionAndExit = useCallback(() => {
+    if (activeInteraction) {
+      persistState(activeInteraction.id, messagesRef.current);
+    }
+    goToMenu();
+  }, [activeInteraction, goToMenu, persistState]);
+
   const applyChoiceEffects = useCallback((choice: Choice) => {
     const current = statsRef.current;
     const next: GameStats = {
-      trust: current.trust,
-      memory: current.memory,
-      attachment: current.attachment,
+      ...current,
       memoryAnchors: [...current.memoryAnchors],
-      acceptFarewell: current.acceptFarewell,
-      finalChoice: current.finalChoice,
-      finalFarewellVariant: current.finalFarewellVariant,
-      finalFarewellTone: current.finalFarewellTone,
-      timedResponse: current.timedResponse,
-      timedProof: current.timedProof,
-      ending: current.ending,
       unlockedArchives: [...current.unlockedArchives],
       endingsUnlocked: [...current.endingsUnlocked],
     };
@@ -1290,8 +1383,8 @@ export default function GameApp() {
 
   return (
     <div className="app-shell game-shell chat-screen relative overflow-hidden">
-      <StarBackground />
-      <div className="chat-atmosphere pointer-events-none" aria-hidden />
+      {!activeInteraction && <StarBackground />}
+      {!activeInteraction && <div className="chat-atmosphere pointer-events-none" aria-hidden />}
       {signalGlitch && (
         <div
           key={signalGlitch.pulse}
@@ -1331,6 +1424,15 @@ export default function GameApp() {
           onClose={() => setShowArchive(false)}
         />
       )}
+      {activeInteraction && (
+        <SpecialInteractionOverlay
+          node={activeInteraction}
+          locale={locale}
+          sealedAnchor={stats.temporaryAnchorSealed}
+          onComplete={handleSpecialInteractionComplete}
+          onSaveAndExit={saveInteractionAndExit}
+        />
+      )}
 
       <div
         className={`game-layout relative z-10 flex flex-col flex-1 min-h-0 w-full max-w-[1040px] mx-auto bg-[#0B0E14]/82 backdrop-blur-sm ${
@@ -1368,7 +1470,7 @@ export default function GameApp() {
                   type="button"
                   onClick={skipToNextChoice}
                   className={`internal-skip-btn text-[11px] px-2.5 py-1.5 rounded transition-colors ${isSkippingToChoice ? 'internal-skip-btn-active' : ''}`}
-                  disabled={Boolean(choices || inputNode || isFinished)}
+                  disabled={Boolean(choices || inputNode || activeInteraction || isFinished)}
                   title="Internal test: skip to next choice/input"
                 >
                   {isSkippingToChoice ? t('game.skipping') : t('game.skip')}

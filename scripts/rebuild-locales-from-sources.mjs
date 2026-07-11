@@ -23,7 +23,7 @@ function run(cmd, args) {
 
 function extractLocaleFromStoryTs() {
   const raw = fs.readFileSync(path.join(root, 'src/game/story.ts'), 'utf8');
-  const marker = 'JSON.parse("');
+  const marker = 'JSON.parse("';
   const start = raw.indexOf(marker) + marker.length;
   let enc = '';
   let i = start;

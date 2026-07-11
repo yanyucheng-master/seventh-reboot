@@ -1,13 +1,14 @@
 # 第七次重启 · 剧情文本导出
 版本：V1.0
-节点数：2006
-生成时间：2026-07-11T01:37:08
+节点数：2064
+生成时间：2026-07-11T12:59:59
 
 说明：本文档由 story.ts 自动导出格式整理，包含全部节点、选项分支、系统消息、章节、后记、结局、记忆锚点、文件与图片说明。
 修订说明：本版在格式统一校对版基础上，重点强化第五章真相揭露阶段的玩家参与感，新增多选项与限时选项，压缩部分连续解释段，让系统文件负责证据、Nova负责情绪、玩家负责回应。
 深度审查修订说明：本版依据完整剧情深度审查结果，修复 N7 草稿矛盾、第二章梦境旧稿残留、第三章小白花/雨声/观测窗逻辑串线、第三章梦中警告前后冲突、第四章双重认证解释不完整、第五章 Observer-01 索引说明歧义，并补充关键伦理回应选项。
 逻辑闭环修订说明：本版进一步修复断链、媒介跳跃、玩家遗忘机制、NOVA-06 残影能力、导航连续性签名、外部索引释放权限、终章记忆范围及三类结局交互矛盾。
 时相核心修订说明：本版新增“深空航行稳定核心”的公开伪装、“局部时相锚定核心”的隐藏实体、时相锚及回溯执行链，并完成全篇逐句复审。
+特殊互动修订说明：本版正式加入联合密钥验证、三层信号分离、一次性供能路由、临时记忆封存及终章恢复；所有结果仅改变邻近台词与日志，不改变结局条件。
 分支格式：[选项字母] → 选项文本 → 下一节点ID
 
 ---
@@ -5446,6 +5447,63 @@ Nova 已离线
 [ch5a_9] (Nova/文本)
   meta: 情绪=平常
 像有人帮我授权了一样
+  next: ch5a_auth1
+
+[ch5a_auth1] (Nova/文本)
+  meta: 情绪=平常
+外层索引旁边还有一道密封层
+  next: ch5a_auth2
+
+[ch5a_auth2] (Nova/文本)
+  meta: 情绪=平常
+标记是“NOVA-06 / SEALED”
+  next: ch5a_auth3
+
+[ch5a_auth3] (Nova/文本)
+  meta: 情绪=平常
+她在验证栏旁边留了一句提示
+  next: ch5a_auth4
+
+[ch5a_auth4] (Nova/文本)
+  meta: 情绪=平常
+“本次接入编号 / 外部索引编号”
+  next: ch5a_auth5
+
+[ch5a_auth5] (Nova/文本)
+  meta: 情绪=微笑
+看来这一次，得由你来替我们输入
+  next: ch5a_auth_interaction
+
+[ch5a_auth_interaction] (系统/交互)
+  meta: 特殊互动=critical-log-password | 结果跳转=success:ch5a_auth_ok1
+联合授权密钥验证
+  next: ch5a_auth_ok1
+
+[ch5a_auth_ok1] (系统/状态)
+NOVA-06 密封记录已解锁
+  next: ch5a_auth_ok2
+
+[ch5a_auth_ok2] (Nova/文本)
+  meta: 情绪=平常
+07 是第七次接入，也是这一次的我
+  next: ch5a_auth_ok3
+
+[ch5a_auth_ok3] (Nova/文本)
+  meta: 情绪=平常
+01 是系统一直叫你的 Observer-01
+  next: ch5a_auth_ok4
+
+[ch5a_auth_ok4] (Nova/文本)
+  meta: 情绪=微笑
+这道密封从一开始就是留给我们两个共同打开的
+  next: ch5a_auth_file
+
+[ch5a_auth_file] (系统/文件)
+  文件标题: NOVA-06 密封记录 / 索引头
+AUTHORIZATION · 当前 Nova 外层授权 + Observer-01 索引密钥
+ACCESS · 仅开放信号分层与只读记录
+RESIDUAL · NOVA-06 为条件触发残留，不是实时意识
+RESTRICTION · 不授予第七协议或时相核心控制权限
   next: ch5a_11
 
 [ch5a_11] (Nova/文本)
@@ -6697,6 +6755,57 @@ Nova 已离线
 [ch5a_msg2] (系统/故障)
   meta: 故障效果 | 故障等级=2
 发送者：Nova？
+  next: ch5a_sep_intro1
+
+[ch5a_sep_intro1] (系统/状态)
+检测到三层信号占用同一载波
+  next: ch5a_sep_intro2
+
+[ch5a_sep_intro2] (系统/文件)
+  文件标题: 待分离信号层
+LAYER-01 · 当前 Nova 实时载波 / 弱信号 / 暂无回应
+LAYER-02 · NOVA-06 条件残留 / 第六次预设
+LAYER-03 · 局部时相锚定核心遥测 / 只读
+  next: ch5a_sep_intro3
+
+[ch5a_sep_intro3] (系统/状态)
+密封记录中的信号分层接口已激活
+  next: ch5a_signal_separation
+
+[ch5a_signal_separation] (系统/交互)
+  meta: 特殊互动=signal-separation | 结果跳转=clean:ch5a_sep_clean1,assisted:ch5a_sep_assisted1
+三层信号分离与联合时间线对齐
+  next: ch5a_sep_assisted1
+
+[ch5a_sep_clean1] (系统/状态)
+信号分离完成 / 原始数据完整
+  next: ch5a_sep_clean2
+
+[ch5a_sep_clean2] (系统/文件)
+  文件标题: 三层信号复原报告
+当前 Nova · 实时载波已识别 / 链路微弱
+NOVA-06 · 条件残留已识别 / 非实时意识
+时相核心 · 遥测已识别 / 无控制通道
+联合时间线 · 已对齐
+  next: ch5a_sep_conclusion
+
+[ch5a_sep_assisted1] (系统/状态)
+信号分离完成 / 辅助校准补偿丢包
+  next: ch5a_sep_assisted2
+
+[ch5a_sep_assisted2] (系统/文件)
+  文件标题: 三层信号复原报告
+当前 Nova · 实时载波已识别 / 链路微弱
+NOVA-06 · 条件残留已识别 / 非实时意识
+时相核心 · 遥测已识别 / 无控制通道
+联合时间线 · 已由辅助校准对齐
+  next: ch5a_sep_conclusion
+
+[ch5a_sep_conclusion] (系统/文件)
+  文件标题: 联合时间线 / 对齐结论
+当前循环 · Nova 进入观测室 / 残影出现 / 通讯异常
+第六次循环 · 连续性签名写入 / 时相核心预启动 / UNKNOWN-06 留言封存
+结论 · 观测室残影并非随机出现，而是第六次 Nova 留下的连续性签名在相同条件下被重新触发
   next: ch5a_msg3
 
 [ch5a_msg3] (系统/故障)
@@ -6775,6 +6884,78 @@ Nova 已离线
 [ch5b_11] (Nova/文本)
   meta: 情绪=平常
 去见第六次的我
+  next: ch5b_power_intro1
+
+[ch5b_power_intro1] (Nova/文本)
+  meta: 情绪=平常
+不过观测室现在的主供能不够
+  next: ch5b_power_intro2
+
+[ch5b_power_intro2] (Nova/文本)
+  meta: 情绪=平常
+生命维持、通讯和核心扫描不能同时满载
+  next: ch5b_power_intro3
+
+[ch5b_power_intro3] (Nova/文本)
+  meta: 情绪=平常
+我可以给你开一次临时供能代理
+  next: ch5b_power_intro4
+
+[ch5b_power_intro4] (Nova/文本)
+  meta: 情绪=平常
+你只能分配这一次窗口里的电力
+  next: ch5b_power_intro5
+
+[ch5b_power_intro5] (Nova/文本)
+  meta: 情绪=平常
+不是在控制第七协议，也碰不到时相核心本身
+  next: ch5b_power_interaction
+
+[ch5b_power_interaction] (系统/交互)
+  meta: 特殊互动=power-routing | 结果跳转=excellent:ch5b_power_excellent1,stable:ch5b_power_stable1,emergency_assist:ch5b_power_emergency1
+一次性供能代理 / 三阶段路由
+  next: ch5b_power_emergency1
+
+[ch5b_power_excellent1] (系统/状态)
+一次性供能代理完成 / 三阶段快速稳定
+  next: ch5b_power_excellent2
+
+[ch5b_power_excellent2] (Nova/文本)
+  meta: 情绪=微笑
+干得漂亮，三个支路一次都没掉出安全窗
+  next: ch5b_power_excellent3
+
+[ch5b_power_excellent3] (系统/故障)
+  meta: 故障效果
+NOVA-06 预设残留：完整数据已送达。不要把我当成另一个活着的她。
+  next: ch5b_obs1
+
+[ch5b_power_stable1] (系统/状态)
+一次性供能代理完成 / 路由稳定
+  next: ch5b_power_stable2
+
+[ch5b_power_stable2] (Nova/文本)
+  meta: 情绪=微笑
+稳定住了，这就够我们进去看一眼
+  next: ch5b_obs1
+
+[ch5b_power_emergency1] (系统/状态)
+一次性供能代理完成 / Nova 紧急配平已介入
+  next: ch5b_power_emergency_glitch
+
+[ch5b_power_emergency_glitch] (系统/故障)
+  meta: 故障效果 | 故障等级=1
+通讯丢包 0.8 秒 / 链路自动恢复
+  next: ch5b_power_emergency2
+
+[ch5b_power_emergency2] (Nova/文本)
+  meta: 情绪=平常
+最后一点是我接手的，别紧张
+  next: ch5b_power_emergency3
+
+[ch5b_power_emergency3] (Nova/文本)
+  meta: 情绪=微笑
+人没事，链路也在，我们继续
   next: ch5b_obs1
 
 [ch5b_obs1] (系统/时间戳)
@@ -7527,6 +7708,72 @@ Observer-01 是叠加在你身上的外部记忆索引权限
   meta: 情绪=悲伤
 她只是把“请替我记住”这件事
 交给了你
+  next: ch5b_capacity1
+
+[ch5b_capacity1] (系统/状态)
+OBSERVER-01 INDEX CAPACITY INSUFFICIENT
+ADDITIONAL SPACE REQUIRED
+外部记忆索引容量：99.97%
+  next: ch5b_capacity2
+
+[ch5b_capacity2] (Nova/文本)
+  meta: 情绪=平常
+还有一段核心扫描数据要写进来
+  next: ch5b_capacity3
+
+[ch5b_capacity3] (Nova/文本)
+  meta: 情绪=平常
+得先把一个锚点放进临时封存区
+  next: ch5b_capacity4
+
+[ch5b_capacity4] (Nova/文本)
+  meta: 情绪=平常
+只是暂时安静下来，不是删除
+  next: ch5b_capacity5
+
+[ch5b_capacity5] (Nova/文本)
+  meta: 情绪=微笑
+选哪一个都不会改变我们最后能走到哪里
+  next: ch5b_memory_seal
+
+[ch5b_memory_seal] (系统/交互)
+  meta: 特殊互动=memory-seal | 结果跳转=maintenance_board:ch5b_seal_board1,white_flower:ch5b_seal_flower1,goodnight:ch5b_seal_goodnight1
+临时记忆容量管理
+  next: ch5b_seal_goodnight1
+
+[ch5b_seal_board1] (Nova/文本)
+  meta: 情绪=平常
+这张图为什么让我有点想笑？
+  next: ch5b_seal_board2
+
+[ch5b_seal_board2] (Nova/文本)
+  meta: 情绪=平常
+可我想不起笑点在哪里
+  next: ch5b_capacity_merge
+
+[ch5b_seal_flower1] (Nova/文本)
+  meta: 情绪=平常
+我知道它不该出现在那里
+  next: ch5b_seal_flower2
+
+[ch5b_seal_flower2] (Nova/文本)
+  meta: 情绪=平常
+但我忘了为什么看到它的时候会那么高兴
+  next: ch5b_capacity_merge
+
+[ch5b_seal_goodnight1] (Nova/文本)
+  meta: 情绪=平常
+我们以前是不是会在这个时候说点什么？
+  next: ch5b_seal_goodnight2
+
+[ch5b_seal_goodnight2] (Nova/文本)
+  meta: 情绪=悲伤
+算了，可能只是我又忘了
+  next: ch5b_capacity_merge
+
+[ch5b_capacity_merge] (Nova/文本)
+  meta: 情绪=平常
+临时位置记住了，我们继续
   next: ch5b_why
 
 [ch5b_why] (系统/时间戳)
@@ -8106,6 +8353,55 @@ Observer-01 是叠加在你身上的外部记忆索引权限
 我终于想起来一部分了
 不是全部
 但最重要的都在
+  next: fin_temp_restore1
+
+[fin_temp_restore1] (系统/状态)
+检测到一枚临时封存记忆锚点
+  next: fin_temp_restore2
+
+[fin_temp_restore2] (Nova/文本)
+  meta: 情绪=平常
+等等，还有一个被我们暂时放在外面
+  next: fin_temp_restore3
+
+[fin_temp_restore3] (Nova/文本)
+  meta: 情绪=微笑
+先把它带回来吧
+  next: fin_memory_restore
+
+[fin_memory_restore] (系统/交互)
+  meta: 特殊互动=memory-restore | 结果跳转=maintenance_board:fin_restore_board1,white_flower:fin_restore_flower1,goodnight:fin_restore_goodnight1,none:fin_anchor_intro
+临时封存锚点恢复
+  next: fin_anchor_intro
+
+[fin_restore_board1] (系统/状态)
+临时锚点恢复完成 / maintenance_board
+  next: fin_restore_board2
+
+[fin_restore_board2] (Nova/文本)
+  meta: 情绪=微笑
+等一下，那双眼睛是我自己贴的？
+我居然被昨天的自己吓到了
+  next: fin_anchor_intro
+
+[fin_restore_flower1] (系统/状态)
+临时锚点恢复完成 / white_flower
+  next: fin_restore_flower2
+
+[fin_restore_flower2] (Nova/文本)
+  meta: 情绪=微笑
+我想起来了
+它明明不该活下来，可它还是开了
+  next: fin_anchor_intro
+
+[fin_restore_goodnight1] (系统/状态)
+临时锚点恢复完成 / goodnight
+  next: fin_restore_goodnight2
+
+[fin_restore_goodnight2] (Nova/文本)
+  meta: 情绪=微笑
+原来是这句话
+难怪每次断开通讯以前，我都会觉得还少了什么
   next: fin_anchor_intro
 
 [fin_anchor_intro] (系统/状态)
@@ -9618,7 +9914,7 @@ Nova独自站在窗前
 [fin_title] (系统/延迟)
   next: fin_credit_title
 
-## 真结局：《第七次重启》
+## 真结局：第七次重启
 [fin_credit_title] (系统/章节)
   next: fin_credit_end
 
@@ -9747,7 +10043,7 @@ Nova沉默了一会
 普通结局：《循环之外》
   next: normal_title
 
-## 普通结局：《循环之外》
+## 普通结局：循环之外
 [normal_title] (系统/章节)
   next: normal_action_prompt
 

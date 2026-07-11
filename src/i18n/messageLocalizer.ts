@@ -8,12 +8,16 @@ import type {
 import type { StoryLocaleData } from './types';
 import storyZh from './locales/zh-CN/story.json';
 import storyEn from './locales/en-US/story.json';
+import interactionEn from './locales/en-US/interactions.json';
+import interactionZh from './locales/zh-CN/interactions.json';
 
 type Translate = (key: string, params?: Record<string, string | number>) => string;
 
 const STORY_LOCALES: StoryLocaleData[] = [
   storyZh as StoryLocaleData,
   storyEn as StoryLocaleData,
+  interactionZh as StoryLocaleData,
+  interactionEn as StoryLocaleData,
 ];
 
 const MEMORY_ANCHOR_IDS: MemoryAnchorId[] = [

@@ -95,6 +95,13 @@ function formatMeta(node: StoryNode): string[] {
       meta.push(`特殊值${value}=${nextId}`);
     });
   }
+  if (node.interactionKind) meta.push(`特殊互动=${node.interactionKind}`);
+  if (node.interactionNextIds) {
+    const routes = Object.entries(node.interactionNextIds)
+      .map(([result, nextId]) => `${result}:${nextId}`)
+      .join(',');
+    meta.push(`结果跳转=${routes}`);
+  }
   return meta;
 }
 
@@ -201,6 +208,7 @@ const output = [
   `深度审查修订说明：本版依据完整剧情深度审查结果，修复 N7 草稿矛盾、第二章梦境旧稿残留、第三章小白花/雨声/观测窗逻辑串线、第三章梦中警告前后冲突、第四章双重认证解释不完整、第五章 Observer-01 索引说明歧义，并补充关键伦理回应选项。`,
   `逻辑闭环修订说明：本版进一步修复断链、媒介跳跃、玩家遗忘机制、NOVA-06 残影能力、导航连续性签名、外部索引释放权限、终章记忆范围及三类结局交互矛盾。`,
   `时相核心修订说明：本版新增“深空航行稳定核心”的公开伪装、“局部时相锚定核心”的隐藏实体、时相锚及回溯执行链，并完成全篇逐句复审。`,
+  `特殊互动修订说明：本版正式加入联合密钥验证、三层信号分离、一次性供能路由、临时记忆封存及终章恢复；所有结果仅改变邻近台词与日志，不改变结局条件。`,
   `分支格式：[选项字母] → 选项文本 → 下一节点ID`,
   ``,
   `---`,

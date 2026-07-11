@@ -149,6 +149,22 @@ function parseLengthRange(value, node) {
   node.inputMaxLength = Number(match[2]);
 }
 
+function parseInteractionNextIds(value) {
+  const entries = value
+    .split(',')
+    .map(part => part.trim())
+    .filter(Boolean)
+    .map(part => {
+      const separator = part.indexOf(':');
+      if (separator === -1) return null;
+      const key = part.slice(0, separator).trim();
+      const nextId = cleanNextId(part.slice(separator + 1));
+      return key && nextId ? [key, nextId] : null;
+    })
+    .filter(Boolean);
+  return entries.length ? Object.fromEntries(entries) : undefined;
+}
+
 function parseMeta(metaText, node) {
   for (const raw of metaText.split('|')) {
     const part = raw.trim();
@@ -177,6 +193,10 @@ function parseMeta(metaText, node) {
     if (key === '输入变量' || key === 'input_variable') node.inputVariable = value;
     if (key === '自动聚焦' || key === 'auto_focus') node.inputAutoFocus = value === 'true';
     if (key === '长度' || key === 'length') parseLengthRange(value, node);
+    if (key === '特殊互动' || key === 'interaction_kind') node.interactionKind = value;
+    if (key === '结果跳转' || key === 'interaction_next') {
+      node.interactionNextIds = parseInteractionNextIds(value);
+    }
     if (key.startsWith('特殊值') || key.startsWith('special_value')) {
       const specialValue = key.replace(/^(特殊值|special_value)/, '').trim();
       if (specialValue && value) {
@@ -504,6 +524,8 @@ function renderNode(node) {
   propRaw('inputMaxLength', node.inputMaxLength, lines);
   propRaw('inputAutoFocus', node.inputAutoFocus, lines);
   propJson('specialInputNextIds', node.specialInputNextIds, lines);
+  prop('interactionKind', node.interactionKind, lines);
+  propJson('interactionNextIds', node.interactionNextIds, lines);
   prop('inputSubmitText', node.inputSubmitText, lines);
   if (Array.isArray(node.archiveUnlock)) {
     lines.push(`    archiveUnlock: ${JSON.stringify(node.archiveUnlock)},`);
