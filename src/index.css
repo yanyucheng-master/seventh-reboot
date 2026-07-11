@@ -729,48 +729,163 @@
   border-block: 1px solid #2b3741;
 }
 
-.power-nova-feedback {
+.nova-ticker {
+  --nova-ticker-accent: #63ced6;
+  --nova-ticker-glow: rgba(99, 206, 214, 0.18);
+  --nova-ticker-fill: #0f1820;
+  position: relative;
   display: grid;
-  grid-template-columns: 92px minmax(0, 1fr);
-  gap: 12px;
-  margin: 14px 0 0;
-  border: 1px solid #3a4a56;
-  border-left-width: 3px;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: stretch;
+  gap: 0;
+  margin: 12px 0 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--nova-ticker-accent) 42%, #2a3640);
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--nova-ticker-accent) 16%, transparent) 0%, transparent 42%),
+    var(--nova-ticker-fill);
+  box-shadow:
+    inset 4px 0 0 var(--nova-ticker-accent),
+    0 0 0 1px rgba(255, 255, 255, 0.02),
+    0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+.nova-ticker::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0 18px,
+    rgba(255, 255, 255, 0.015) 18px 19px
+  );
+  opacity: 0.7;
+}
+
+.nova-ticker::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -18%;
+  width: 18%;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--nova-ticker-glow), transparent);
+  animation: nova-ticker-sweep 4.8s ease-in-out infinite;
+}
+
+.nova-ticker-badge {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-width: 92px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
   padding: 10px 12px;
-  background: #0d1318;
+  background: color-mix(in srgb, var(--nova-ticker-accent) 18%, #0a1016);
+  border-right: 1px solid color-mix(in srgb, var(--nova-ticker-accent) 38%, transparent);
 }
 
-.power-nova-feedback > span {
-  color: #63ced6;
+.nova-ticker-live {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--nova-ticker-accent);
+  box-shadow: 0 0 0 0 var(--nova-ticker-glow);
+  animation: nova-ticker-pulse 1.6s ease-out infinite;
+}
+
+.nova-ticker-badge strong {
+  color: #f4f8fa;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.1;
+}
+
+.nova-ticker-badge em {
+  color: var(--nova-ticker-accent);
   font-size: 9px;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.16em;
 }
 
-.power-nova-feedback > p {
+.nova-ticker-text {
+  position: relative;
+  z-index: 1;
   margin: 0;
-  color: #c1ccd4;
+  padding: 11px 14px;
+  color: #e8eef4;
   font-family: "Microsoft YaHei", system-ui, sans-serif;
-  font-size: 11px;
-  line-height: 1.55;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
 }
 
-.power-nova-feedback[data-alert="lifeSupport"] {
-  border-color: #b84f48;
-  background: #1b1010;
+.nova-ticker[data-alert="lifeSupport"] {
+  --nova-ticker-accent: #ef6b63;
+  --nova-ticker-glow: rgba(239, 107, 99, 0.22);
+  --nova-ticker-fill: #1a1012;
 }
 
-.power-nova-feedback[data-alert="communications"] {
-  border-color: #c18343;
-  background: #19140e;
+.nova-ticker[data-alert="communications"] {
+  --nova-ticker-accent: #e0a24d;
+  --nova-ticker-glow: rgba(224, 162, 77, 0.2);
+  --nova-ticker-fill: #18140e;
 }
 
-.power-nova-feedback[data-alert="coreScan"] {
-  border-color: #7b6aa8;
-  background: #13111b;
+.nova-ticker[data-alert="coreScan"] {
+  --nova-ticker-accent: #9b86d6;
+  --nova-ticker-glow: rgba(155, 134, 214, 0.2);
+  --nova-ticker-fill: #13111b;
 }
 
-.power-nova-feedback[data-alert="stable"] {
-  border-color: #3d8a72;
-  background: #0d1815;
+.nova-ticker[data-alert="stable"] {
+  --nova-ticker-accent: #4fc9a0;
+  --nova-ticker-glow: rgba(79, 201, 160, 0.18);
+  --nova-ticker-fill: #0d1815;
+}
+
+.nova-ticker[data-alert="hint"] {
+  --nova-ticker-accent: #65d6df;
+  --nova-ticker-glow: rgba(101, 214, 223, 0.2);
+  --nova-ticker-fill: #0e171d;
+}
+
+.password-nova-help {
+  margin-top: 12px;
+}
+
+.password-nova-help .nova-ticker {
+  margin-top: 0;
+}
+
+.password-help-placeholder {
+  min-height: 52px;
+  margin-top: 12px;
+}
+
+@keyframes nova-ticker-pulse {
+  0% { box-shadow: 0 0 0 0 var(--nova-ticker-glow); opacity: 1; }
+  70% { box-shadow: 0 0 0 8px transparent; opacity: 0.85; }
+  100% { box-shadow: 0 0 0 0 transparent; opacity: 1; }
+}
+
+@keyframes nova-ticker-sweep {
+  0% { transform: translateX(0); opacity: 0; }
+  12% { opacity: 0.9; }
+  45% { transform: translateX(620%); opacity: 0.35; }
+  100% { transform: translateX(620%); opacity: 0; }
+}
+
+.interaction-reduced-motion .nova-ticker::after,
+.interaction-reduced-motion .nova-ticker-live {
+  animation: none;
 }
 
 .power-objective > div:first-child > span {
@@ -1222,9 +1337,27 @@
     gap: 10px;
   }
 
-  .power-nova-feedback {
+  .nova-ticker {
     grid-template-columns: 1fr;
-    gap: 4px;
+  }
+
+  .nova-ticker-badge {
+    min-width: 0;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 8px;
+    padding: 8px 12px;
+    border-right: 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--nova-ticker-accent) 38%, transparent);
+  }
+
+  .nova-ticker-text {
+    padding: 10px 12px 12px;
+    font-size: 12px;
+  }
+
+  .password-help-placeholder {
+    min-height: 0;
   }
 
   .power-countdown {

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { SpecialInteractionCompletion } from '../types';
 import type { SpecialInteractionCopy } from './copy';
 import { isCriticalLogPassword } from './logic';
+import { NovaTicker } from './NovaTicker';
 
 type PasswordInteractionProps = {
   copy: SpecialInteractionCopy;
@@ -19,10 +20,14 @@ export function PasswordInteraction({ copy, assistMode, onComplete }: PasswordIn
     inputRef.current?.focus();
   }, []);
 
-  const visibleHintCount = Math.min(
-    copy.password.hints.length,
-    Math.max(1, attempts + 1, assistMode ? copy.password.hints.length : 1),
+  const hintIndex = Math.min(
+    copy.password.hints.length - 1,
+    Math.max(0, attempts - 1),
   );
+  const showNovaHelp = attempts > 0 || assistMode;
+  const novaLine = showNovaHelp
+    ? copy.password.hints[assistMode ? Math.max(hintIndex, 0) : hintIndex]
+    : '';
 
   function verify() {
     if (isCriticalLogPassword(value)) {
@@ -86,7 +91,7 @@ export function PasswordInteraction({ copy, assistMode, onComplete }: PasswordIn
             inputMode="numeric"
             autoComplete="one-time-code"
             placeholder={attempts >= 2 ? copy.password.partialPlaceholder : copy.password.placeholder}
-            aria-describedby="password-hints password-feedback"
+            aria-describedby={showNovaHelp ? 'password-nova-help' : undefined}
           />
           <button type="submit" className="interaction-primary-btn">
             {copy.password.submit}
@@ -94,13 +99,13 @@ export function PasswordInteraction({ copy, assistMode, onComplete }: PasswordIn
         </div>
       </form>
 
-      <div id="password-feedback" className="password-feedback" aria-live="polite">
-        {attempts > 0 ? copy.password.rejected : '\u00a0'}
-      </div>
-
-      <ol id="password-hints" className="password-hints">
-        {copy.password.hints.slice(0, visibleHintCount).map(hint => <li key={hint}>{hint}</li>)}
-      </ol>
+      {showNovaHelp ? (
+        <div id="password-nova-help" className="password-nova-help">
+          <NovaTicker text={novaLine} alert="hint" liveLabel="HELP" />
+        </div>
+      ) : (
+        <div className="password-help-placeholder" aria-hidden />
+      )}
     </section>
   );
 }

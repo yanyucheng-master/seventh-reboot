@@ -9,6 +9,7 @@ import {
   type PowerChannel,
   type PowerThresholds,
 } from './logic';
+import { NovaTicker } from './NovaTicker';
 
 type PowerRoutingInteractionProps = {
   copy: SpecialInteractionCopy;
@@ -209,13 +210,14 @@ export function PowerRoutingInteraction({
     ]),
   ) as PowerThresholds;
   const lowChannel = CHANNELS.find(channel => allocation[channel] < (effectiveThresholds[channel] ?? 0));
-  const liveMessage = lowChannel === 'lifeSupport'
+  const rawLiveMessage = lowChannel === 'lifeSupport'
     ? copy.power.liveMessages.lowLifeSupport
     : lowChannel === 'communications'
       ? copy.power.liveMessages.lowCommunications
       : lowChannel === 'coreScan'
         ? copy.power.liveMessages.lowCoreScan
         : copy.power.liveMessages.stable[phaseIndex];
+  const liveMessage = rawLiveMessage.replace(/^Nova[:：]\s*/i, '');
 
   return (
     <section className="power-router" aria-labelledby="power-interaction-title" data-alert={lowChannel ?? 'stable'}>
@@ -231,10 +233,10 @@ export function PowerRoutingInteraction({
         ))}
       </div>
 
-      <div className="power-nova-feedback" data-alert={lowChannel ?? 'stable'} aria-live="polite">
-        <span>NOVA / LIVE</span>
-        <p>{liveMessage}</p>
-      </div>
+      <NovaTicker
+        text={liveMessage}
+        alert={(lowChannel ?? 'stable') as 'stable' | 'lifeSupport' | 'communications' | 'coreScan'}
+      />
 
       <div className="power-objective">
         <div>
