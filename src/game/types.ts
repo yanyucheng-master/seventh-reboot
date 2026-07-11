@@ -100,6 +100,9 @@ export interface GameStats {
   endingsUnlocked: EndingId[];
 }
 
+/** UI 生成的系统提示（非剧情节点正文），切语言时按 key 重算 */
+export type DisplayMessageUiKind = 'memoryRecorded' | 'syncNext' | 'choiceTimeout';
+
 export type DisplayMessage = {
   id: string;
   speaker: Speaker;
@@ -113,6 +116,14 @@ export type DisplayMessage = {
   isGlitch?: boolean;
   glitchLevel?: GlitchLevel;
   isNew?: boolean;
+  /** 来源剧情节点；切语言 / 读档时用于重本地化 */
+  sourceNodeId?: string;
+  /** 玩家选项回复对应的选项下标 */
+  sourceChoiceIndex?: number;
+  /** 非剧情正文的 UI 文案种类 */
+  uiKind?: DisplayMessageUiKind;
+  /** memoryRecorded 对应的记忆锚点 */
+  memoryAnchor?: MemoryAnchorId;
 };
 
 export interface SaveData {

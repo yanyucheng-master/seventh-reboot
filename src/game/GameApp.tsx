@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { type Choice, type StoryNode } from './story';
-import { useI18n } from '../i18n';
+import { relocalizeChapterBanner, relocalizeDisplayMessages, useI18n } from '../i18n';
 import type { Locale } from '../i18n';
 import { resolveContactAvatar } from './assets';
 import {
@@ -324,6 +324,36 @@ export default function GameApp() {
     setSaveTime(getSaveTimeString(t));
   }, [locale, t]);
 
+  const applyLocalizedMessages = useCallback(
+    (msgs: DisplayMessage[]) => {
+      const localized = relocalizeDisplayMessages(msgs, storyNodeMap, t, memoryAnchorLabels);
+      messagesRef.current = localized;
+      setMessages(localized);
+      return localized;
+    },
+    [memoryAnchorLabels, storyNodeMap, t],
+  );
+
+  useEffect(() => {
+    if (screen !== 'playing') return;
+    applyLocalizedMessages(messagesRef.current);
+    setShowChapterBanner(prev => relocalizeChapterBanner(prev, storyNodeMap));
+    if (choiceNodeId) {
+      const node = storyNodeMap.get(choiceNodeId);
+      if (node?.type === 'choice' && node.choices) {
+        setChoices(node.choices);
+      }
+    }
+    if (inputNode) {
+      const node = storyNodeMap.get(inputNode.id);
+      if (node?.type === 'input') {
+        setInputNode(createActiveInputNode(node, t));
+      }
+    }
+    // Re-localize when language changes or when entering the playing screen (e.g. continue).
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- choice/input refreshed from current ids
+  }, [locale, storyNodeMap, t, applyLocalizedMessages, screen]);
+
   const cancelActiveSequence = useCallback(() => {
     queueRunIdRef.current += 1;
     nodeQueueRef.current = [];
@@ -540,6 +570,8 @@ export default function GameApp() {
         content: t('game.memoryRecorded', { label: memoryAnchorLabels[anchor] }),
         contactStage: contactStageRef.current,
         isNew: true,
+        uiKind: 'memoryRecorded',
+        memoryAnchor: anchor,
       });
       persistState(pendingNodeId, nextMessages);
     },
@@ -565,12 +597,13 @@ export default function GameApp() {
         unlockArchives(nodeArchiveUnlocks);
         addMessage({
           id: `${node.id}_${Date.now()}`,
-        speaker: 'system',
-        type: 'end',
-        content: '',
-        contactStage: contactStageRef.current,
-        isNew: true,
-      });
+          speaker: 'system',
+          type: 'end',
+          content: '',
+          contactStage: contactStageRef.current,
+          isNew: true,
+          sourceNodeId: node.id,
+        });
         persistState(nodeId, messagesRef.current);
         return false;
       }
@@ -588,6 +621,8 @@ export default function GameApp() {
               content: t('game.syncNext'),
               contactStage: contactStageRef.current,
               isNew: true,
+              uiKind: 'syncNext',
+              sourceNodeId: node.id,
             });
             persistState(node.nextId ?? nodeId, currentMsgs);
           }
@@ -655,6 +690,7 @@ export default function GameApp() {
         isGlitch: node.isGlitch,
         glitchLevel: node.glitchLevel ?? signalGlitchLevel ?? undefined,
         isNew: true,
+        sourceNodeId: node.id,
       };
 
       if (node.speaker === 'nova' && node.emotion) {
@@ -744,6 +780,8 @@ export default function GameApp() {
             content: t('game.syncNext'),
             contactStage: contactStageRef.current,
             isNew: true,
+            uiKind: 'syncNext',
+            sourceNodeId: node.id,
           });
           persistState(getPendingNodeIdAfterNode(nodeId), currentMsgs);
         }
@@ -817,11 +855,17 @@ export default function GameApp() {
       if (mode === 'continue') {
         const save = loadGame();
         if (save) {
-          messagesRef.current = save.messages;
+          const localizedMessages = relocalizeDisplayMessages(
+            save.messages,
+            storyNodeMap,
+            t,
+            memoryAnchorLabels,
+          );
+          messagesRef.current = localizedMessages;
           emotionRef.current = save.novaEmotion;
           statsRef.current = save.stats;
           contactStageRef.current = save.contactStage;
-          setMessages(save.messages);
+          setMessages(localizedMessages);
           setNovaEmotion(save.novaEmotion);
           setStats(save.stats);
           setContactStage(save.contactStage);
@@ -867,7 +911,7 @@ export default function GameApp() {
       setScreen('playing');
       startSequence('p0');
     },
-    [cancelActiveSequence, scheduleSequence, startSequence, storyNodeMap, t],
+    [cancelActiveSequence, memoryAnchorLabels, scheduleSequence, startSequence, storyNodeMap, t],
   );
 
   const applyChoiceEffects = useCallback((choice: Choice) => {
@@ -942,6 +986,11 @@ export default function GameApp() {
         window.clearTimeout(choiceTimeoutRef.current);
         choiceTimeoutRef.current = null;
       }
+      const fromNodeId = choiceNodeId;
+      const choiceIndex =
+        fromNodeId && choices
+          ? choices.findIndex(item => item === choice || (item.text === choice.text && item.nextId === choice.nextId))
+          : -1;
       setChoices(null);
       setChoiceNodeId(null);
       const nextStats = applyChoiceEffects(choice);
@@ -950,10 +999,12 @@ export default function GameApp() {
       const playerMsg: DisplayMessage = {
         id: `player_${Date.now()}`,
         speaker: 'player',
-      type: 'text',
-      content: formatChoiceText(choice.text),
-      contactStage: contactStageRef.current,
-      isNew: true,
+        type: 'text',
+        content: formatChoiceText(choice.text),
+        contactStage: contactStageRef.current,
+        isNew: true,
+        sourceNodeId: fromNodeId ?? undefined,
+        sourceChoiceIndex: choiceIndex >= 0 ? choiceIndex : undefined,
       };
       const updated = [...messagesRef.current, playerMsg];
       messagesRef.current = updated;
@@ -962,7 +1013,7 @@ export default function GameApp() {
       scrollToBottom();
       scheduleSequence(nextId, 550);
     },
-    [applyChoiceEffects, persistState, scheduleSequence, scrollToBottom],
+    [applyChoiceEffects, choiceNodeId, choices, persistState, scheduleSequence, scrollToBottom],
   );
 
   const handleChoiceTimeout = useCallback(
@@ -992,6 +1043,8 @@ export default function GameApp() {
           content: t('game.choiceTimeout'),
           contactStage: contactStageRef.current,
           isNew: true,
+          uiKind: 'choiceTimeout',
+          sourceNodeId: node.id,
         })
         : messagesRef.current;
       persistState(node.timeoutNextId, updated);
