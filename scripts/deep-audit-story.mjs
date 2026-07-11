@@ -133,7 +133,7 @@ function compare(srcNodes, locale, label) {
   return { label, contentDiff, choiceDiff, missing, samples };
 }
 
-const zhScript = path.join(root, '..', '第七次重启_剧情文本_V1_0_时相核心逻辑整合版.txt');
+const zhScript = path.join(root, '..', '第七次重启_剧情文本_V1_0_特殊互动正式整合版.txt');
 const enScript = 'C:\\Users\\YYC\\Desktop\\The_Seventh_Reboot_V1.0_Full_English_Script.txt';
 const zhLoc = JSON.parse(fs.readFileSync(path.join(root, 'src/i18n/locales/zh-CN/story.json'), 'utf8'));
 const enLoc = JSON.parse(fs.readFileSync(path.join(root, 'src/i18n/locales/en-US/story.json'), 'utf8'));

@@ -204,7 +204,7 @@ function compareLocale(label, sourceNodes, localeNodes, { compareChoices = true 
   return { label, mismatches, missingInLocale, extraInLocale, sourceCount: sourceNodes.length, localeCount: localeIds.size };
 }
 
-const zhScript = path.join(root, '..', '第七次重启_剧情文本_V1_0_时相核心逻辑整合版.txt');
+const zhScript = path.join(root, '..', '第七次重启_剧情文本_V1_0_特殊互动正式整合版.txt');
 const enScript = 'C:\\Users\\YYC\\Desktop\\The_Seventh_Reboot_V1.0_Full_English_Script.txt';
 
 if (!fs.existsSync(zhScript)) throw new Error(`Missing ZH script: ${zhScript}`);

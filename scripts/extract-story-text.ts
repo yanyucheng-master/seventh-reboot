@@ -3,10 +3,12 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { storyNodes } from '../src/game/story.ts';
 import type { StoryNode } from '../src/game/story.ts';
+import { getSpecialInteractionCopy } from '../src/game/interactions/copy.ts';
 
 const VERSION = 'V1.0';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const outPath = path.join(__dirname, '..', '第七次重启-剧情文本.txt');
+const projectOutPath = path.join(__dirname, '..', '..', '第七次重启_剧情文本_V1_0_特殊互动正式整合版.txt');
 
 const speakerLabel: Record<string, string> = {
   nova: 'Nova',
@@ -197,13 +199,92 @@ for (const node of storyNodes) {
 bodyLines.push('[MENU] (系统/菜单)');
 bodyLines.push('返回主菜单');
 
+const interactionNodes = storyNodes.filter(node => node.type === 'interaction');
+const zhCopy = getSpecialInteractionCopy('zh-CN');
+
+function formatInteractionAppendix(): string[] {
+  const lines: string[] = [
+    '',
+    '---',
+    '',
+    '# 附录：特殊互动模块（运行时 UI 文案）',
+    '',
+    '说明：以下文案对应互动界面本身，不改变剧情节点拓扑；完成结果通过 interactionNextIds 回到对应剧情分支。',
+    '',
+    '## 互动挂点一览',
+    '',
+  ];
+
+  for (const node of interactionNodes) {
+    const routes = node.interactionNextIds
+      ? Object.entries(node.interactionNextIds).map(([key, nextId]) => `${key}→${nextId}`).join('；')
+      : (node.nextId ? `默认→${node.nextId}` : '无');
+    lines.push(`- [${node.id}] ${node.interactionKind ?? 'unknown'} · ${node.content || '(无标题)'} · 结果：${routes}`);
+  }
+
+  lines.push('');
+  lines.push('## 1. 联合授权密钥验证（critical-log-password）');
+  lines.push(`标题：${zhCopy.password.title}`);
+  lines.push(`任务：${zhCopy.password.mission}`);
+  lines.push(`成功：${zhCopy.password.successDetail}`);
+  lines.push('提示：');
+  zhCopy.password.hints.forEach(hint => lines.push(`- ${hint}`));
+
+  lines.push('');
+  lines.push('## 2. 三层信号复原（signal-separation）');
+  lines.push(`标题：${zhCopy.signal.title}`);
+  lines.push(`任务：${zhCopy.signal.mission}`);
+  lines.push('信号层：');
+  zhCopy.signal.layers.forEach(layer => lines.push(`- ${layer.name}：${layer.detail}`));
+  lines.push('阶段：');
+  zhCopy.signal.stageTitles.forEach((title, index) => {
+    lines.push(`- ${index + 1}. ${title} — ${zhCopy.signal.stageOrders[index] ?? ''}`);
+  });
+  lines.push(`结果 clean：${zhCopy.signal.cleanTitle} / ${zhCopy.signal.cleanDetail}`);
+  lines.push(`结果 assisted：${zhCopy.signal.assistedTitle} / ${zhCopy.signal.assistedDetail}`);
+
+  lines.push('');
+  lines.push('## 3. 应急供能路由（power-routing）');
+  lines.push(`标题：${zhCopy.power.title}`);
+  lines.push(`任务：${zhCopy.power.mission}`);
+  lines.push('通道：');
+  (Object.entries(zhCopy.power.channels) as Array<[string, string]>).forEach(([key, label]) => {
+    lines.push(`- ${key}：${label}`);
+  });
+  lines.push('阶段：');
+  zhCopy.power.phases.forEach((phase, index) => {
+    lines.push(`- ${index + 1}. ${phase.title} — ${phase.order}`);
+  });
+  lines.push(`结果 excellent：${zhCopy.power.excellentTitle} / ${zhCopy.power.excellentDetail}`);
+  lines.push(`结果 stable：${zhCopy.power.stableTitle} / ${zhCopy.power.stableDetail}`);
+  lines.push(`结果 emergency_assist：${zhCopy.power.emergencyTitle} / ${zhCopy.power.emergencyDetail}`);
+
+  lines.push('');
+  lines.push('## 4. 临时记忆容量管理（memory-seal / memory-restore）');
+  lines.push(`封存标题：${zhCopy.memory.sealTitle}`);
+  lines.push(`封存说明：${zhCopy.memory.sealMission}`);
+  lines.push(`恢复标题：${zhCopy.memory.restoreTitle}`);
+  lines.push(`恢复说明：${zhCopy.memory.restoreMission}`);
+  lines.push('可选锚点：');
+  (Object.entries(zhCopy.memory.memories) as Array<[string, { title: string; summary: string; warning: string; restored: string }]>).forEach(([id, memory]) => {
+    lines.push(`- ${id}：${memory.title}`);
+    lines.push(`  摘要：${memory.summary}`);
+    lines.push(`  封存影响：${memory.warning}`);
+    lines.push(`  终章恢复：${memory.restored}`);
+  });
+
+  lines.push('');
+  return lines;
+}
+
 const output = [
   `# 第七次重启 · 剧情文本导出`,
   `版本：${VERSION}`,
   `节点数：${storyNodes.length + 1}`,
+  `特殊互动节点：${interactionNodes.length}`,
   `生成时间：${new Date().toISOString().replace(/\.\d{3}Z$/, '')}`,
   ``,
-  `说明：本文档由 story.ts 自动导出格式整理，包含全部节点、选项分支、系统消息、章节、后记、结局、记忆锚点、文件与图片说明。`,
+  `说明：本文档由运行时 story.ts 自动导出，包含全部剧情节点、选项分支、系统消息、章节、后记、结局、记忆锚点、文件与图片说明，以及特殊互动模块附录。`,
   `修订说明：本版在格式统一校对版基础上，重点强化第五章真相揭露阶段的玩家参与感，新增多选项与限时选项，压缩部分连续解释段，让系统文件负责证据、Nova负责情绪、玩家负责回应。`,
   `深度审查修订说明：本版依据完整剧情深度审查结果，修复 N7 草稿矛盾、第二章梦境旧稿残留、第三章小白花/雨声/观测窗逻辑串线、第三章梦中警告前后冲突、第四章双重认证解释不完整、第五章 Observer-01 索引说明歧义，并补充关键伦理回应选项。`,
   `逻辑闭环修订说明：本版进一步修复断链、媒介跳跃、玩家遗忘机制、NOVA-06 残影能力、导航连续性签名、外部索引释放权限、终章记忆范围及三类结局交互矛盾。`,
@@ -214,12 +295,16 @@ const output = [
   `---`,
   ``,
   ...bodyLines,
+  ...formatInteractionAppendix(),
 ].join('\n') + '\n';
 
 fs.writeFileSync(outPath, output, 'utf8');
+fs.writeFileSync(projectOutPath, output, 'utf8');
 
 const lineCount = output.split('\n').length;
 const choiceCount = storyNodes.filter(n => n.choices?.length).length;
 const branchCount = storyNodes.reduce((sum, n) => sum + (n.choices?.length ?? 0), 0);
 
-console.log(`Wrote ${storyNodes.length} nodes (${lineCount} lines, ${choiceCount} choice nodes, ${branchCount} branches) to ${outPath}`);
+console.log(`Wrote ${storyNodes.length} nodes (${lineCount} lines, ${choiceCount} choice nodes, ${branchCount} branches, ${interactionNodes.length} interactions)`);
+console.log(`- ${outPath}`);
+console.log(`- ${projectOutPath}`);

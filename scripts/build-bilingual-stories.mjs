@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const zhScript = path.join(root, '..', '第七次重启_剧情文本_V1_0_时相核心逻辑整合版.txt');
+const zhScript = path.join(root, '..', '第七次重启_剧情文本_V1_0_特殊互动正式整合版.txt');
 const enScript = 'C:\\Users\\YYC\\Desktop\\The_Seventh_Reboot_V1.0_Full_English_Script.txt';
 const localeDir = path.join(root, 'src', 'i18n', 'locales');
 
