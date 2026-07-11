@@ -74,6 +74,9 @@ function formatMeta(node: StoryNode): string[] {
   if (node.memoryAnchor) meta.push(`记忆锚点=${node.memoryAnchor}`);
   if (node.requiresAnchor) meta.push(`需要锚点=${node.requiresAnchor}`);
   if (node.contactStage) meta.push(`联系人阶段=${node.contactStage}`);
+  if (node.displayOptionContext) meta.push(`显示选项=${node.displayOptionContext}`);
+  if (node.archiveEntry) meta.push(`归档入口=${node.archiveEntry}`);
+  if (node.externalEntry) meta.push(`外部入口=${node.externalEntry}`);
   if (node.archiveUnlock) {
     const archives = Array.isArray(node.archiveUnlock) ? node.archiveUnlock.join(', ') : node.archiveUnlock;
     meta.push(`档案解锁=${archives}`);
@@ -194,8 +197,10 @@ const output = [
   `生成时间：${new Date().toISOString().replace(/\.\d{3}Z$/, '')}`,
   ``,
   `说明：本文档由 story.ts 自动导出格式整理，包含全部节点、选项分支、系统消息、章节、后记、结局、记忆锚点、文件与图片说明。`,
-  `修订说明：本版完成主题级结构重写。情感层保留“被记住的幸福”，价值层调整为“记忆必须经过双方同意”；前置外部通讯覆盖规则，强化Nova-06对选项与锚点的主动操控，并将终章改为记忆授权、索引释放与限时姓名输入。`,
-  `核心规则：玩家以现实身份接入疑似平行世界。第七协议仅回溯Aurora号；每次循环会覆盖同一外部时间窗口中的旧通讯历史。Observer-01位于通讯夹层，只保存被覆盖的记录残片，不能修改玩家意识。协议关闭后玩家不会被强制失忆，但失去一切外部证据，只能依靠普通人的记忆与双方自愿留下的检索钥匙。`,
+  `修订说明：本版在格式统一校对版基础上，重点强化第五章真相揭露阶段的玩家参与感，新增多选项与限时选项，压缩部分连续解释段，让系统文件负责证据、Nova负责情绪、玩家负责回应。`,
+  `深度审查修订说明：本版依据完整剧情深度审查结果，修复 N7 草稿矛盾、第二章梦境旧稿残留、第三章小白花/雨声/观测窗逻辑串线、第三章梦中警告前后冲突、第四章双重认证解释不完整、第五章 Observer-01 索引说明歧义，并补充关键伦理回应选项。`,
+  `逻辑闭环修订说明：本版进一步修复断链、媒介跳跃、玩家遗忘机制、NOVA-06 残影能力、导航连续性签名、外部索引释放权限、终章记忆范围及三类结局交互矛盾。`,
+  `时相核心修订说明：本版新增“深空航行稳定核心”的公开伪装、“局部时相锚定核心”的隐藏实体、时相锚及回溯执行链，并完成全篇逐句复审。`,
   `分支格式：[选项字母] → 选项文本 → 下一节点ID`,
   ``,
   `---`,

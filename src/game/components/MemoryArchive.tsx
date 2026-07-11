@@ -1,38 +1,38 @@
 import { useMemo, useState } from 'react';
-import { getArchiveCategoryLabel, getArchiveEntries } from '../archive';
+import { ARCHIVE_ENTRIES } from '../archive';
 import type { ArchiveCategory, ArchiveEntry, ContactStage, GameStats } from '../types';
+import { useI18n } from '../../i18n';
+import {
+  getArchiveCategoryLabel,
+  getLocalizedArchiveEntries,
+  getLockedArchiveCopy,
+} from '../../i18n/archiveResolver';
 
-const TABS: Array<{ id: ArchiveCategory; label: string; en: string }> = [
-  { id: 'anchor', label: '记忆锚点', en: 'ANCHOR' },
-  { id: 'photo', label: '剧情照片', en: 'PHOTO' },
-  { id: 'anomaly', label: '异常记录', en: 'ANOMALY' },
-  { id: 'profile', label: 'Nova档案', en: 'PROFILE' },
-  { id: 'ending', label: '结局记录', en: 'ENDING' },
-];
-
-function getLockedTitle(category: ArchiveCategory) {
-  if (category === 'photo') return '[图像未恢复]';
-  if (category === 'ending') return '[未观测到的结局]';
-  if (category === 'anchor') return '[加密记忆]';
-  return '[加密记录]';
-}
-
-function getLockedDescription(category: ArchiveCategory) {
-  if (category === 'photo') return '图像残留尚未进入 Observer-01 记忆模块';
-  if (category === 'ending') return '尚未完成对应结局观测';
-  return '尚未恢复';
-}
+const TAB_IDS: ArchiveCategory[] = ['anchor', 'photo', 'anomaly', 'profile', 'ending'];
+const TAB_EN: Record<ArchiveCategory, string> = {
+  anchor: 'ANCHOR',
+  photo: 'PHOTO',
+  anomaly: 'ANOMALY',
+  profile: 'PROFILE',
+  ending: 'ENDING',
+};
 
 function ArchiveCard({
   entry,
   onSelect,
+  lockedLabel,
+  categoryLabel,
+  lockedCopy,
 }: {
   entry: ArchiveEntry;
   onSelect: (entry: ArchiveEntry) => void;
+  lockedLabel: string;
+  categoryLabel: string;
+  lockedCopy: { title: string; description: string };
 }) {
   const locked = !entry.unlocked;
-  const title = locked ? getLockedTitle(entry.category) : entry.title;
-  const description = locked ? getLockedDescription(entry.category) : entry.description;
+  const title = locked ? lockedCopy.title : entry.title;
+  const description = locked ? lockedCopy.description : entry.description;
   const subtitle = locked ? undefined : entry.subtitle;
   const quote = locked ? undefined : entry.quote;
 
@@ -53,7 +53,7 @@ function ArchiveCard({
         </div>
       )}
       <div className="archive-card-body">
-        <div className="archive-card-kicker">{locked ? 'LOCKED' : getArchiveCategoryLabel(entry.category)}</div>
+        <div className="archive-card-kicker">{locked ? lockedLabel : categoryLabel}</div>
         <h3>{title}</h3>
         {subtitle && <p className="archive-card-subtitle">{subtitle}</p>}
         {quote && <p className="archive-card-quote">“{quote}”</p>}
@@ -67,16 +67,20 @@ function ArchiveCard({
 function ArchiveDetail({
   entry,
   onClose,
+  backLabel,
+  categoryLabel,
 }: {
   entry: ArchiveEntry;
   onClose: () => void;
+  backLabel: string;
+  categoryLabel: string;
 }) {
   return (
     <div className="archive-detail-panel">
       <button type="button" className="archive-detail-close" onClick={onClose}>
-        返回列表
+        {backLabel}
       </button>
-      <p className="archive-detail-kicker">{getArchiveCategoryLabel(entry.category)}</p>
+      <p className="archive-detail-kicker">{categoryLabel}</p>
       <h3>{entry.title}</h3>
       {entry.subtitle && <p className="archive-detail-subtitle">{entry.subtitle}</p>}
       {entry.image && (
@@ -98,56 +102,76 @@ export function MemoryArchiveOverlay({
   contactStage: ContactStage;
   onClose: () => void;
 }) {
+  const { t, locale } = useI18n();
   const [activeTab, setActiveTab] = useState<ArchiveCategory>('anchor');
   const [selectedEntry, setSelectedEntry] = useState<ArchiveEntry | null>(null);
-  const entries = useMemo(() => getArchiveEntries(stats, contactStage), [contactStage, stats]);
+  const entries = useMemo(
+    () => getLocalizedArchiveEntries(ARCHIVE_ENTRIES, stats, contactStage, locale),
+    [contactStage, locale, stats],
+  );
+  const selectedLocalized = useMemo(() => {
+    if (!selectedEntry) return null;
+    return entries.find(entry => entry.id === selectedEntry.id) ?? null;
+  }, [entries, selectedEntry]);
   const tabEntries = entries.filter(entry => entry.category === activeTab);
   const unlockedCount = entries.filter(entry => entry.unlocked).length;
 
   return (
-    <div className="archive-overlay" role="dialog" aria-modal="true" aria-label="记忆档案">
+    <div className="archive-overlay" role="dialog" aria-modal="true" aria-label={t('archiveOverlay.title')}>
       <div className="archive-shell">
         <header className="archive-header">
           <div>
-            <p className="archive-kicker">Observer-01 Memory Archive</p>
-            <h2>记忆档案</h2>
-            <p>已记录的通讯残留、图像与记忆锚点</p>
+            <p className="archive-kicker">Observer-01</p>
+            <h2>{t('archiveOverlay.title')}</h2>
+            <p>{t('archiveOverlay.subtitle')}</p>
           </div>
           <button type="button" className="archive-close-btn" onClick={onClose}>
-            返回通讯
+            {t('archiveOverlay.backToChat')}
           </button>
         </header>
 
         <div className="archive-status-row">
-          <span>记录条目：{unlockedCount}/{entries.length}</span>
-          <span>锚点：{stats.memoryAnchors.length}</span>
-          <span>结局：{stats.endingsUnlocked.length}</span>
+          <span>{t('archiveOverlay.entryCount', { unlocked: unlockedCount, total: entries.length })}</span>
+          <span>{t('archiveOverlay.anchorCount', { count: stats.memoryAnchors.length })}</span>
+          <span>{t('archiveOverlay.endingCount', { count: stats.endingsUnlocked.length })}</span>
         </div>
 
-        <nav className="archive-tabs" aria-label="档案栏目">
-          {TABS.map(tab => (
+        <nav className="archive-tabs" aria-label="Archive sections">
+          {TAB_IDS.map(id => (
             <button
-              key={tab.id}
+              key={id}
               type="button"
               onClick={() => {
-                setActiveTab(tab.id);
+                setActiveTab(id);
                 setSelectedEntry(null);
               }}
-              className={activeTab === tab.id ? 'archive-tab-active' : ''}
+              className={activeTab === id ? 'archive-tab-active' : ''}
             >
-              <span>{tab.label}</span>
-              <small>{tab.en}</small>
+              <span>{t(`archiveOverlay.tabs.${id}`)}</span>
+              <small>{TAB_EN[id]}</small>
             </button>
           ))}
         </nav>
 
         <main className="archive-content">
-          {selectedEntry ? (
-            <ArchiveDetail entry={selectedEntry} onClose={() => setSelectedEntry(null)} />
+          {selectedLocalized ? (
+            <ArchiveDetail
+              entry={selectedLocalized}
+              onClose={() => setSelectedEntry(null)}
+              backLabel={t('archiveOverlay.backToList')}
+              categoryLabel={getArchiveCategoryLabel(selectedLocalized.category, locale)}
+            />
           ) : (
             <div className="archive-grid">
               {tabEntries.map(entry => (
-                <ArchiveCard key={entry.id} entry={entry} onSelect={setSelectedEntry} />
+                <ArchiveCard
+                  key={entry.id}
+                  entry={entry}
+                  onSelect={setSelectedEntry}
+                  lockedLabel={t('archiveOverlay.locked')}
+                  categoryLabel={getArchiveCategoryLabel(entry.category, locale)}
+                  lockedCopy={getLockedArchiveCopy(entry.category, locale)}
+                />
               ))}
             </div>
           )}

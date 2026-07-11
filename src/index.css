@@ -1485,6 +1485,10 @@ html, body, #root {
   color: #C8D6E5;
 }
 
+.menu-settings-item-active {
+  color: #F0A030;
+}
+
 .comm-overlay {
   position: fixed;
   inset: 0;

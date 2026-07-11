@@ -18,7 +18,7 @@ import type {
 export const SAVE_KEY = 'seventh_reboot_save';
 /** 剧情分支拓扑版本；变更选项 nextId 后递增，使旧 localStorage 存档失效 */
 export const STORY_VERSION = 'V1.0';
-export const STORY_CONTENT_VERSION = 'v1.0-theme-rebuild-20260628';
+export const STORY_CONTENT_VERSION = 'v1.0-bilingual-20260711';
 export const defaultContactStage: ContactStage = 'unknown';
 
 export const defaultStats: GameStats = {
@@ -40,8 +40,6 @@ const MEMORY_ANCHOR_IDS = new Set<MemoryAnchorId>([
   'observatory',
   'maintenance_board',
   'steak',
-  'shared_phrase',
-  'chosen_name',
 ]);
 
 const CONTACT_STAGES = new Set<ContactStage>(['unknown', 'named', 'verified']);
@@ -147,8 +145,6 @@ export function normalizeGameStats(value: unknown): GameStats {
   if (finalFarewellTone) normalized.finalFarewellTone = finalFarewellTone;
   if (timedResponse) normalized.timedResponse = timedResponse;
   if (timedProof) normalized.timedProof = timedProof;
-  if (typeof stats.sharedAnchorPhrase === 'string') normalized.sharedAnchorPhrase = stats.sharedAnchorPhrase;
-  if (typeof stats.playerName === 'string') normalized.playerName = stats.playerName;
   if (ending) normalized.ending = ending;
   return normalized;
 }
@@ -191,8 +187,6 @@ function isValidSaveData(data: unknown): data is SaveData {
   if (stats.finalFarewellTone !== undefined && typeof stats.finalFarewellTone !== 'string') return false;
   if (stats.timedResponse !== undefined && typeof stats.timedResponse !== 'string') return false;
   if (stats.timedProof !== undefined && typeof stats.timedProof !== 'string') return false;
-  if (stats.sharedAnchorPhrase !== undefined && typeof stats.sharedAnchorPhrase !== 'string') return false;
-  if (stats.playerName !== undefined && typeof stats.playerName !== 'string') return false;
   if (stats.ending !== undefined && typeof stats.ending !== 'string') return false;
   if (stats.unlockedArchives !== undefined && !Array.isArray(stats.unlockedArchives)) return false;
   if (stats.endingsUnlocked !== undefined && !Array.isArray(stats.endingsUnlocked)) return false;
@@ -233,16 +227,23 @@ export function clearSave() {
   localStorage.removeItem(SAVE_KEY);
 }
 
-export function getSaveTimeString(): string {
+export function getSaveTimeString(
+  t?: (key: string, params?: Record<string, string | number>) => string,
+): string {
   const data = loadGame();
   if (!data) return '';
   const diffMs = Date.now() - data.timestamp;
   const mins = Math.floor(diffMs / 60000);
-  if (mins < 1) return '刚刚';
-  if (mins < 60) return `${mins}分钟前`;
+  if (mins < 1) return t ? t('saveTime.justNow') : '刚刚';
+  if (mins < 60) {
+    return t ? t('saveTime.minutesAgo', { minutes: mins }) : `${mins}分钟前`;
+  }
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}小时前`;
-  return `${Math.floor(hours / 24)}天前`;
+  if (hours < 24) {
+    return t ? t('saveTime.hoursAgo', { hours }) : `${hours}小时前`;
+  }
+  const days = Math.floor(hours / 24);
+  return t ? t('saveTime.daysAgo', { days }) : `${days}天前`;
 }
 
 /** 节点处理完毕后，下次应从哪个节点继续 */

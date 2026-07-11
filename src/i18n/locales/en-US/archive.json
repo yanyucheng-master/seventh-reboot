@@ -1,0 +1,177 @@
+{
+  "categories": {
+    "anchor": "Memory Anchors",
+    "photo": "Story Photos",
+    "anomaly": "Anomaly Records",
+    "profile": "Nova Profile",
+    "ending": "Ending Records"
+  },
+  "locked": {
+    "title": {
+      "photo": "[Image not restored]",
+      "ending": "[Unobserved ending]",
+      "anchor": "[Encrypted memory]",
+      "default": "[Encrypted record]"
+    },
+    "description": {
+      "photo": "Image residue has not yet entered the Observer-01 memory module",
+      "ending": "Corresponding ending not yet observed",
+      "default": "Not yet restored"
+    }
+  },
+  "entries": {
+    "anchor_first_message": {
+      "title": "First Transmission",
+      "quote": "Did someone really get this?",
+      "description": "The first valid response record preserved by Observer-01.",
+      "chapter": "Prologue: Observer-01 Recovery"
+    },
+    "anchor_n7": {
+      "title": "N7",
+      "quote": "He was so fat he looked like a building code violation.",
+      "description": "The orange cat Nova found when she was seven. She says her naming sense was never any good.",
+      "chapter": "Chapter One: Connection"
+    },
+    "anchor_goodnight": {
+      "title": "Good Night",
+      "quote": "I'm glad I met you",
+      "description": "The first real farewell — not the end of a transmission, but the beginning of a connection.",
+      "chapter": "Chapter One: Connection"
+    },
+    "anchor_observatory": {
+      "title": "Observation Room",
+      "quote": "No matter how vast the universe is, it will never answer you",
+      "description": "The place Nova stays most often — and the place she feels most alone.",
+      "chapter": "Chapter Two: Ordinary Days"
+    },
+    "anchor_white_flower": {
+      "title": "Little White Flower",
+      "quote": "It shouldn't have survived. But it still bloomed.",
+      "description": "A flower that grew inside a maintenance air duct. Nova never reported it, because it was “trying very hard.”",
+      "chapter": "Chapter Three: Anomaly"
+    },
+    "anchor_milk_candy": {
+      "title": "Milk Candy",
+      "quote": "Thinking about it still feels warm",
+      "description": "A piece of Nova's childhood memory — later an anchor that could reawaken residual feeling.",
+      "chapter": "Chapter Two: Ordinary Days"
+    },
+    "anchor_maintenance_board": {
+      "title": "Cosmic-Level Threat",
+      "quote": "Behold — a threat of cosmic proportions",
+      "description": "A maintenance board the engineering team lost. Someone stuck two eyes on it.",
+      "chapter": "Chapter One: Connection"
+    },
+    "anchor_steak": {
+      "title": "Research Incident",
+      "quote": "Don't ask. Let's just call it a research incident.",
+      "description": "Synthetic steak from the Aurora mess hall. Nova suspects it is closer to building material.",
+      "chapter": "Chapter Three: Anomaly"
+    },
+    "photo_maintenance_board": {
+      "title": "Floating Maintenance Board",
+      "subtitle": "Behold — a threat of cosmic proportions",
+      "chapter": "Chapter One: Connection"
+    },
+    "photo_steak": {
+      "title": "Synthetic Steak",
+      "subtitle": "Don't ask. Let's just call it a research incident.",
+      "chapter": "Chapter Three: Anomaly"
+    },
+    "photo_candy": {
+      "title": "Milk Candy",
+      "subtitle": "They handed out candy on the ship. It suddenly reminded me of when I was little",
+      "chapter": "Daily events / Memory anchors"
+    },
+    "photo_little_flower": {
+      "title": "Little White Flower",
+      "subtitle": "In theory, nothing should grow here",
+      "chapter": "Chapter Three: Anomaly"
+    },
+    "photo_nova_n7": {
+      "title": "Nova & N7",
+      "subtitle": "Every day I spent with N7",
+      "chapter": "N7 memories"
+    },
+    "photo_observatory": {
+      "title": "Observation Window",
+      "subtitle": "This is my favorite place",
+      "chapter": "Chapter Two: Ordinary Days"
+    },
+    "photo_observation_room_back": {
+      "title": "Observation Room",
+      "subtitle": "When people are lonely, they want to look at something larger than themselves",
+      "chapter": "Finale: The Seventh Reboot"
+    },
+    "photo_nova_id": {
+      "title": "NOVA ARLEN",
+      "subtitle": "Communications archive restored",
+      "chapter": "Identity confirmed"
+    },
+    "anomaly_unsent_n7_draft": {
+      "title": "Unsent Draft / 02:17",
+      "description": "No\nThat was definitely the first time I ever told them about N7",
+      "chapter": "Chapter-end anomaly draft"
+    },
+    "anomaly_encrypted_observatory_draft": {
+      "title": "Encrypted Draft / 03:07",
+      "description": "I saw that shadow again\nIt's still in the observation room",
+      "chapter": "Chapter Three: Anomaly"
+    },
+    "anomaly_hidden_log_nova07": {
+      "title": "Hidden Log: NOVA-07",
+      "description": "Do not attempt to restore the memory\nDo not look for me in the observation room\nDo not open the Seventh Protocol\nMost of all, do not trust me",
+      "chapter": "Chapter Four: Memory"
+    },
+    "anomaly_nova06_warning": {
+      "title": "UNKNOWN-06 / Residual Message",
+      "description": "Do not trust her completely\nNot because she will lie to you\nBecause she truly will forget\nThe one truly trapped is not Nova\nIt's you",
+      "chapter": "Chapter Five: The Truth (Part I)"
+    },
+    "anomaly_observer_file": {
+      "title": "OBSERVER-01",
+      "description": "Index type: External memory index\nHost type: External consciousness\nHost location: Inaccessible\nPermissions: Store / read / return memory anchors",
+      "chapter": "Chapter Five: The Truth (Part II)"
+    },
+    "anomaly_seventh_reboot_file": {
+      "title": "SEVENTH_REBOOT",
+      "description": "Completed primary cycles: 6\nCurrent cycle: 7\nLocal rollback fragments: 6412\nFinal shutdown requirements: Current navigator authorization + external memory index release",
+      "chapter": "Chapter Five: The Truth (Part II)"
+    },
+    "profile_unknown": {
+      "title": "Identity: Unknown",
+      "subtitle": "Signal: Encrypted",
+      "description": "Source: Seventh Protocol\nNote: Identity confirmation incomplete"
+    },
+    "profile_named": {
+      "title": "Name: Nova",
+      "subtitle": "Affiliation: Aurora",
+      "description": "Position: Navigator\nIdentity status: Unverified"
+    },
+    "profile_verified": {
+      "title": "Name: NOVA ARLEN",
+      "subtitle": "Identity status: Confirmed",
+      "description": "Age: 20\nPosition: Aurora Navigator\nObserver link: Confirmed\nNote: Subject linked to the Seventh Protocol"
+    },
+    "profile_truth": {
+      "title": "Observer Link: Deep Confirmation",
+      "subtitle": "Sixth-cycle authorization request: Confirmed",
+      "description": "Observer-01 creation reason: Memory retention\nCycle exemption subject: Observer-01"
+    },
+    "ending_true": {
+      "title": "Seventh Reboot",
+      "subtitle": "True Ending",
+      "description": "If memory will eventually fade\nThen companionship itself is the meaning"
+    },
+    "ending_normal": {
+      "title": "Beyond the Cycle",
+      "subtitle": "Normal Ending",
+      "description": "She survived\nBut some companionship never left a name"
+    },
+    "ending_bad": {
+      "title": "Eighth Reboot",
+      "subtitle": "Bad Ending",
+      "description": "If obsession refuses farewell\nThe reboot will never end"
+    }
+  }
+}

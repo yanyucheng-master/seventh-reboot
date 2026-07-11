@@ -1,0 +1,114 @@
+{
+  "menu": {
+    "title": "第七次重启",
+    "subtitle": "SEVENTH REBOOT",
+    "continue": "继续接入",
+    "connect": "接入通讯",
+    "restart": "重新开始",
+    "lastConnection": "上次连接：{time}",
+    "currentProgress": "当前进度：{progress}",
+    "memoryStandby": "Observer-01 记忆模块待命",
+    "protocolTagline": "第七协议残留通讯 · 重启编号 07",
+    "settings": "设置",
+    "settingsAria": "设置",
+    "close": "关闭",
+    "language": "语言",
+    "languageZh": "简体中文",
+    "languageEn": "English",
+    "system": "系统"
+  },
+  "game": {
+    "archive": "档案",
+    "disconnect": "断开通讯",
+    "back": "返回",
+    "epilogueTitle": "后记 / Epilogue",
+    "epilogueSubtitle": "Observer-01 已关闭 · 非通讯记录",
+    "send": "发送",
+    "choicePrompt": "你可以回复：",
+    "commEnded": "通讯结束",
+    "backToMenu": "返回主菜单",
+    "channelReady": "信道已建立 · 等待消息",
+    "waitingProtocol": "等待 Observer-01 接入第七协议……",
+    "commConnectHint": "接入可能触发记忆偏移",
+    "inputPlaceholder": "输入你想说的话...",
+    "skip": "跳过",
+    "skipping": "快进中",
+    "syncWaiting": "通讯同步中，请等待",
+    "finishedArchived": "通讯已结束 · 记录已归档",
+    "syncNext": "【同步至下一条信号】",
+    "choiceTimeout": "【Observer-01 记忆索引正在脱离】\n【回答超时】",
+    "memoryRecorded": "【Observer-01 已记录：{label}】"
+  },
+  "wait": {
+    "novaOfflineLabel": "Nova 离线中 · 等待消息",
+    "chapterSyncLabel": "章节信号同步中 · 等待消息",
+    "nightChannelLabel": "信道保持中 · 等待夜间信号",
+    "channelHoldLabel": "信道保持中 · 等待消息",
+    "mediaLabel": "图像信号稳定中 · 等待回复",
+    "hint": "点击以推进时间",
+    "mediaHint": "点击查看回复"
+  },
+  "contact": {
+    "unknownName": "？？？",
+    "unknownSubtitle": "在线 · 信号微弱 · 未知通讯链路",
+    "novaSubtitle": "在线 · 信号微弱 · Aurora 通讯链路"
+  },
+  "memoryAnchors": {
+    "n7": "N7",
+    "milk_candy": "牛奶糖",
+    "white_flower": "小白花",
+    "first_message": "第一次通讯",
+    "goodnight": "晚安",
+    "observatory": "观测室",
+    "maintenance_board": "维修板",
+    "steak": "合成牛排"
+  },
+  "progress": {
+    "prologue": "序章 · Observer-01 恢复",
+    "chapter1": "第一章 · 连接",
+    "chapter2": "第二章 · 日常",
+    "chapter3": "第三章 · 异常",
+    "chapter4": "第四章 · 记忆",
+    "chapter5a": "第五章 · 真相（上）",
+    "chapter5b": "第五章 · 真相（下）",
+    "finale": "终章 · 第七次重启",
+    "normalEnd": "普通结局 · 循环之外",
+    "badEnd": "坏结局 · 第八次重启"
+  },
+  "saveTime": {
+    "justNow": "刚刚",
+    "minutesAgo": "{minutes}分钟前",
+    "hoursAgo": "{hours}小时前",
+    "daysAgo": "{days}天前"
+  },
+  "restartDialog": {
+    "title": "确认重新开始？",
+    "body": "这将删除所有存档数据，从头开始游戏。你确定要遗忘 Nova 吗？",
+    "cancel": "取消",
+    "confirm": "确认"
+  },
+  "archiveOverlay": {
+    "title": "记忆档案",
+    "subtitle": "已记录的通讯残留、图像与记忆锚点",
+    "backToChat": "返回通讯",
+    "backToList": "返回列表",
+    "entryCount": "记录条目：{unlocked}/{total}",
+    "anchorCount": "锚点：{count}",
+    "endingCount": "结局：{count}",
+    "locked": "LOCKED",
+    "tabs": {
+      "anchor": "记忆锚点",
+      "photo": "剧情照片",
+      "anomaly": "异常记录",
+      "profile": "Nova档案",
+      "ending": "结局记录"
+    }
+  },
+  "chat": {
+    "typing": "对方正在输入……",
+    "draftFallbackTitle": "未发送草稿",
+    "anomalyFallback": "异常记录",
+    "systemFile": "系统文件",
+    "tapToClose": "点击任意处关闭"
+  }
+}

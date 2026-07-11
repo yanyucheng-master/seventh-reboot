@@ -1,0 +1,114 @@
+{
+  "menu": {
+    "title": "Seventh Reboot",
+    "subtitle": "SEVENTH REBOOT",
+    "continue": "Resume Link",
+    "connect": "Connect",
+    "restart": "Restart",
+    "lastConnection": "Last connection: {time}",
+    "currentProgress": "Progress: {progress}",
+    "memoryStandby": "Observer-01 memory module standby",
+    "protocolTagline": "Seventh Protocol residual link · Reboot 07",
+    "settings": "Settings",
+    "settingsAria": "Settings",
+    "close": "Close",
+    "language": "Language",
+    "languageZh": "简体中文",
+    "languageEn": "English",
+    "system": "System"
+  },
+  "game": {
+    "archive": "Archive",
+    "disconnect": "Disconnect",
+    "back": "Back",
+    "epilogueTitle": "Epilogue",
+    "epilogueSubtitle": "Observer-01 offline · Not a live comm log",
+    "send": "Send",
+    "choicePrompt": "You can reply:",
+    "commEnded": "Link closed",
+    "backToMenu": "Back to menu",
+    "channelReady": "Channel open · Waiting for signal",
+    "waitingProtocol": "Waiting for Observer-01 to join the Seventh Protocol…",
+    "commConnectHint": "Connecting may trigger memory drift",
+    "inputPlaceholder": "Type a message...",
+    "skip": "Skip",
+    "skipping": "Skipping",
+    "syncWaiting": "Syncing communications…",
+    "finishedArchived": "Link closed · Record archived",
+    "syncNext": "[Synced to next signal]",
+    "choiceTimeout": "[Observer-01 memory index detaching]\n[Response timed out]",
+    "memoryRecorded": "[Observer-01 recorded: {label}]"
+  },
+  "wait": {
+    "novaOfflineLabel": "Nova offline · Waiting for signal",
+    "chapterSyncLabel": "Syncing chapter signal · Waiting",
+    "nightChannelLabel": "Channel holding · Waiting for night signal",
+    "channelHoldLabel": "Channel holding · Waiting for signal",
+    "mediaLabel": "Image signal stabilizing · Waiting for reply",
+    "hint": "Tap to advance time",
+    "mediaHint": "Tap to view reply"
+  },
+  "contact": {
+    "unknownName": "???",
+    "unknownSubtitle": "Online · Weak signal · Unknown link",
+    "novaSubtitle": "Online · Weak signal · Aurora link"
+  },
+  "memoryAnchors": {
+    "n7": "N7",
+    "milk_candy": "Milk Candy",
+    "white_flower": "White Flower",
+    "first_message": "First Contact",
+    "goodnight": "Goodnight",
+    "observatory": "Observation Room",
+    "maintenance_board": "Maintenance Board",
+    "steak": "Synth Steak"
+  },
+  "progress": {
+    "prologue": "Prologue · Observer-01 Recovery",
+    "chapter1": "Chapter 1 · Connection",
+    "chapter2": "Chapter 2 · Routine",
+    "chapter3": "Chapter 3 · Anomaly",
+    "chapter4": "Chapter 4 · Memory",
+    "chapter5a": "Chapter 5 · Truth (Part 1)",
+    "chapter5b": "Chapter 5 · Truth (Part 2)",
+    "finale": "Finale · Seventh Reboot",
+    "normalEnd": "Normal Ending · Beyond the Cycle",
+    "badEnd": "Bad Ending · Eighth Reboot"
+  },
+  "saveTime": {
+    "justNow": "Just now",
+    "minutesAgo": "{minutes} min ago",
+    "hoursAgo": "{hours} hr ago",
+    "daysAgo": "{days} d ago"
+  },
+  "restartDialog": {
+    "title": "Restart from the beginning?",
+    "body": "This deletes all save data and starts over. Are you sure you want to forget Nova?",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
+  },
+  "archiveOverlay": {
+    "title": "Memory Archive",
+    "subtitle": "Recorded comm fragments, images, and memory anchors",
+    "backToChat": "Back to chat",
+    "backToList": "Back to list",
+    "entryCount": "Entries: {unlocked}/{total}",
+    "anchorCount": "Anchors: {count}",
+    "endingCount": "Endings: {count}",
+    "locked": "LOCKED",
+    "tabs": {
+      "anchor": "Memory Anchors",
+      "photo": "Story Photos",
+      "anomaly": "Anomaly Logs",
+      "profile": "Nova Profile",
+      "ending": "Ending Records"
+    }
+  },
+  "chat": {
+    "typing": "Nova is typing...",
+    "draftFallbackTitle": "Unsent draft",
+    "anomalyFallback": "Anomaly Record",
+    "systemFile": "System File",
+    "tapToClose": "Tap anywhere to close"
+  }
+}

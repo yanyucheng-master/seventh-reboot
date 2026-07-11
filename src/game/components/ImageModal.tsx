@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useI18n } from '../../i18n';
 
 export function ImageModal({
   image,
@@ -9,6 +10,8 @@ export function ImageModal({
   caption: string;
   onClose: () => void;
 }) {
+  const { t } = useI18n();
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -34,7 +37,7 @@ export function ImageModal({
           className="max-w-full max-h-[65dvh] object-contain rounded-lg shadow-2xl"
         />
         {caption && <p className="text-sm text-[#94A3B8] text-center font-light px-2">{caption}</p>}
-        <p className="text-xs text-[#4A5568] mt-1">点击任意处关闭</p>
+        <p className="text-xs text-[#4A5568] mt-1">{t('chat.tapToClose')}</p>
       </div>
     </div>
   );

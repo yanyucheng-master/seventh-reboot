@@ -27,6 +27,7 @@ dist-ssr
 scripts/missing-texts.json
 scripts/sync-patches.json
 scripts/compare-diff-report.json
+scripts/data/
 *_output.txt
 build-output.txt
 extract-output.txt

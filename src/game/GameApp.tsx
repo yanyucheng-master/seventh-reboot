@@ -1,5 +1,7 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { storyNodeMap, type Choice, type StoryNode } from './story';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { type Choice, type StoryNode } from './story';
+import { useI18n } from '../i18n';
+import type { Locale } from '../i18n';
 import { resolveContactAvatar } from './assets';
 import {
   clearSave,
@@ -26,33 +28,7 @@ import { formatChoiceText, shouldShowNovaAvatar, shouldShowTypingAvatar } from '
 import { determineEnding, resolveEndingStart } from './endings';
 import { ANCHOR_ARCHIVE_IDS, getArchiveUnlocksForNode } from './archive';
 
-const MEMORY_ANCHOR_LABELS: Record<MemoryAnchorId, string> = {
-  n7: 'N7',
-  milk_candy: '牛奶糖',
-  white_flower: '小白花',
-  first_message: '第一次通讯',
-  goodnight: '晚安',
-  observatory: '观测室',
-  maintenance_board: '维修板',
-  steak: '合成牛排',
-  shared_phrase: '共同暗号',
-  chosen_name: '玩家姓名',
-};
-
-const CONTACT_META: Record<ContactStage, { name: string; subtitle: string }> = {
-  unknown: {
-    name: '？？？',
-    subtitle: '在线 · 信号微弱 · 未知通讯链路',
-  },
-  named: {
-    name: 'Nova',
-    subtitle: '在线 · 信号微弱 · Aurora 通讯链路',
-  },
-  verified: {
-    name: 'Nova',
-    subtitle: '在线 · 信号微弱 · Aurora 通讯链路',
-  },
-};
+type Translate = (key: string, params?: Record<string, string | number>) => string;
 
 // INTERNAL TEST ONLY: set to false or remove this block before public release.
 const INTERNAL_TEST_SKIP_ENABLED = true;
@@ -96,42 +72,43 @@ function clampStat(value: number): number {
 function getFinalFarewellVariant(choice: Choice): FinalFarewellVariant | undefined {
   if (choice.nextId === 'fin_correct1') return 'remembered_until_end';
   if (/^fin_wrong_/.test(choice.nextId)) return 'remembered_wrong';
+  if (choice.nextId === 'fin_timeout1' || /^fin_timeout/.test(choice.nextId)) return 'forgetting_started';
   return undefined;
 }
 
-function getWaitConfig(node: StoryNode): WaitConfig | null {
+function getWaitConfig(node: StoryNode, t: Translate): WaitConfig | null {
   if (!node.nextId) return null;
   if (/^fin_|^normal_|^bad_/.test(node.id)) return null;
 
-  if (node.type === 'status' && /Nova 已离线/.test(node.content)) {
+  if (node.type === 'status' && /Nova is offline|Nova 已离线/i.test(node.content)) {
     return {
       duration: 15000,
-      label: 'Nova 离线中 · 等待消息',
-      hint: '点击以推进时间',
+      label: t('wait.novaOfflineLabel'),
+      hint: t('wait.hint'),
     };
   }
 
   if (node.type === 'chapter') {
     return {
       duration: 12000,
-      label: '章节信号同步中 · 等待消息',
-      hint: '点击以推进时间',
+      label: t('wait.chapterSyncLabel'),
+      hint: t('wait.hint'),
     };
   }
 
-  if (node.type === 'timestamp' && /深夜|凌晨/.test(node.content)) {
+  if (node.type === 'timestamp' && /Late night|Early morning|深夜|凌晨/i.test(node.content)) {
     return {
       duration: 10000,
-      label: '信道保持中 · 等待夜间信号',
-      hint: '点击以推进时间',
+      label: t('wait.nightChannelLabel'),
+      hint: t('wait.hint'),
     };
   }
 
   if (node.type === 'delay' && (node.delay ?? 0) >= 5000) {
     return {
       duration: Math.min(node.delay ?? 10000, 15000),
-      label: '信道保持中 · 等待消息',
-      hint: '点击以推进时间',
+      label: t('wait.channelHoldLabel'),
+      hint: t('wait.hint'),
     };
   }
 
@@ -152,34 +129,24 @@ function hasRecentMediaMessage(messages: DisplayMessage[]): boolean {
   return false;
 }
 
-function getMediaChoiceWaitConfig(): WaitConfig {
+function getMediaChoiceWaitConfig(t: Translate): WaitConfig {
   return {
     duration: 5200,
-    label: '图像信号稳定中 · 等待回复',
-    hint: '点击查看回复',
+    label: t('wait.mediaLabel'),
+    hint: t('wait.mediaHint'),
   };
 }
 
-function renderStoryTemplate(content: string, stats: GameStats): string {
-  const playerName = stats.playerName?.trim() || 'Observer-01';
-  const sharedAnchorPhrase = stats.sharedAnchorPhrase?.trim() || '共同暗号';
-  return content
-    .replace(/\$\{playerName\|Observer-01\}/g, playerName)
-    .replace(/\$\{playerName\}/g, playerName)
-    .replace(/\$\{sharedAnchorPhrase\}/g, sharedAnchorPhrase);
-}
-
-function getInputPlaceholder(node: StoryNode): string {
+function getInputPlaceholder(node: StoryNode, t: Translate): string {
   if (node.content) return node.content;
-  if (node.inputVariable === 'playerName') return '输入你希望 Nova 怎么叫你';
-  return '输入你想说的话...';
+  return t('game.inputPlaceholder');
 }
 
-function createActiveInputNode(node: StoryNode): ActiveInputNode {
+function createActiveInputNode(node: StoryNode, t: Translate): ActiveInputNode {
   return {
     id: node.id,
     nextId: node.nextId,
-    placeholder: getInputPlaceholder(node),
+    placeholder: getInputPlaceholder(node, t),
     timeoutMs: node.choiceTimeoutMs,
     timeoutNextId: node.timeoutNextId,
     inputVariable: node.inputVariable,
@@ -193,11 +160,10 @@ function createActiveInputNode(node: StoryNode): ActiveInputNode {
 function getSignalGlitchLevel(node: StoryNode): GlitchLevel | null {
   if (node.glitchLevel) return node.glitchLevel;
   if (node.type === 'disconnect' || node.type === 'reconnectFailed' || node.type === 'signalError') return 2;
-  if (/信号衰减|连接即将终止|通讯同步断开|文字传输不稳定|通讯丢包|回答超时|第八次重启/.test(node.content)) return 3;
-  if (/第七协议关闭请求未完成|第七协议维持|第七协议关闭序列|UNKNOWN-06 信号中断/.test(node.content)) return 3;
-  if (/通讯中断|信号中断|尝试重连|重连失败|请求被拒绝|倒计时/.test(node.content)) return 2;
-  if (/第七协议/.test(node.content) && (node.type === 'status' || node.type === 'glitch')) return 2;
-  if (/重连成功/.test(node.content)) return 1;
+  if (/Signal fading|Connection about to terminate|Communications sync disconnected|Text transmission unstable|Packet loss|Response timed out|Eighth Reboot|shutdown request incomplete|Protocol maintained|shutdown sequence|UNKNOWN-06 signal lost|信号衰减|连接即将终止|通讯同步断开|文字传输不稳定|丢包|回答超时|第八次重启|关闭请求未完成|协议维持|关闭序列|UNKNOWN-06 信号/i.test(node.content)) return 3;
+  if (/Communications interrupted|Signal interrupted|Attempting reconnection|Reconnection failed|request denied|countdown|通讯中断|信号中断|尝试重连|重连失败|请求被拒|倒计时/i.test(node.content)) return 2;
+  if (/(Seventh Protocol|第七协议)/i.test(node.content) && (node.type === 'status' || node.type === 'glitch')) return 2;
+  if (/Reconnected|Reconnection successful|重连成功/i.test(node.content)) return 1;
   if (node.type === 'glitch' || node.isGlitch) {
     return /^fin_|^bad_/.test(node.id) ? 3 : 1;
   }
@@ -205,26 +171,25 @@ function getSignalGlitchLevel(node: StoryNode): GlitchLevel | null {
 }
 
 function getSignalGlitchTone(content: string): SignalGlitchTone {
-  if (/重连成功|连接恢复|恢复正常/.test(content)) return 'success';
-  if (/通讯中断|重连失败|信号衰减|连接即将终止|倒计时|请求被拒绝/.test(content)) return 'error';
+  if (/Reconnected|link restored|back to normal|重连成功|链路恢复|恢复正常/i.test(content)) return 'success';
+  if (/interrupted|Reconnection failed|Signal fading|about to terminate|countdown|denied|中断|重连失败|信号衰减|即将终止|倒计时|拒绝|被拒/i.test(content)) return 'error';
   return 'neutral';
 }
 
 function getSignalGlitchDuration(level: GlitchLevel, tone: SignalGlitchTone, content: string): number {
   if (tone === 'success') return 980;
-  if (/重连失败/.test(content)) return 1650;
+  if (/Reconnection failed|重连失败/i.test(content)) return 1650;
   if (level === 3) return 2450;
   if (level === 2) return 1850;
   return 980;
 }
 
 function isNovaSilentBeat(content: string): boolean {
-  const compact = content.trim().replace(/\s+/g, '');
-  return /^(…+|。+|\.{2,}|▇+)$/.test(compact);
+  return /\.\.\.|silence|don't know|just |unless|seems|so |actually|maybe|perhaps|right\?|myself|remember/i.test(content);
 }
 
 function isNovaHesitationBeat(content: string): boolean {
-  return /……|沉默|不知道|只是|除非|像是|所以|其实|可能|也许|对吗|我自己|记不/.test(content);
+  return /\.\.\.|silence|don't know|just |unless|seems|so |actually|maybe|perhaps|right\?|myself|remember/i.test(content);
 }
 
 function getNovaTypingLeadDelay(node: StoryNode): number {
@@ -266,6 +231,7 @@ function getNovaPostMessageDelay(node: StoryNode): number {
 }
 
 export default function GameApp() {
+  const { locale, setLocale, t, storyNodeMap } = useI18n();
   const [screen, setScreen] = useState<GameScreen>('menu');
   const [messages, setMessages] = useState<DisplayMessage[]>([]);
   const [choices, setChoices] = useState<Choice[] | null>(null);
@@ -289,6 +255,38 @@ export default function GameApp() {
   const [waitPrompt, setWaitPrompt] = useState<WaitPrompt | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isSkippingToChoice, setIsSkippingToChoice] = useState(false);
+
+  const memoryAnchorLabels = useMemo<Record<MemoryAnchorId, string>>(
+    () => ({
+      n7: t('memoryAnchors.n7'),
+      milk_candy: t('memoryAnchors.milk_candy'),
+      white_flower: t('memoryAnchors.white_flower'),
+      first_message: t('memoryAnchors.first_message'),
+      goodnight: t('memoryAnchors.goodnight'),
+      observatory: t('memoryAnchors.observatory'),
+      maintenance_board: t('memoryAnchors.maintenance_board'),
+      steak: t('memoryAnchors.steak'),
+    }),
+    [t],
+  );
+
+  const contactMetaByStage = useMemo<Record<ContactStage, { name: string; subtitle: string }>>(
+    () => ({
+      unknown: {
+        name: t('contact.unknownName'),
+        subtitle: t('contact.unknownSubtitle'),
+      },
+      named: {
+        name: 'Nova',
+        subtitle: t('contact.novaSubtitle'),
+      },
+      verified: {
+        name: 'Nova',
+        subtitle: t('contact.novaSubtitle'),
+      },
+    }),
+    [t],
+  );
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const nodeQueueRef = useRef<string[]>([]);
@@ -321,6 +319,10 @@ export default function GameApp() {
   useEffect(() => {
     contactStageRef.current = contactStage;
   }, [contactStage]);
+
+  useEffect(() => {
+    setSaveTime(getSaveTimeString(t));
+  }, [locale, t]);
 
   const cancelActiveSequence = useCallback(() => {
     queueRunIdRef.current += 1;
@@ -361,9 +363,9 @@ export default function GameApp() {
     setPlayerInput('');
     setWaitPrompt(null);
     setHasSave(hasSaveFile());
-    setSaveTime(getSaveTimeString());
+    setSaveTime(getSaveTimeString(t));
     setScreen('menu');
-  }, [cancelActiveSequence]);
+  }, [cancelActiveSequence, t]);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -378,8 +380,8 @@ export default function GameApp() {
   const persistState = useCallback((pendingNodeId: string, msgs: DisplayMessage[]) => {
     saveGame(createSaveData(pendingNodeId, msgs, emotionRef.current, contactStageRef.current, statsRef.current));
     setHasSave(true);
-    setSaveTime('刚刚');
-  }, []);
+    setSaveTime(t('saveTime.justNow'));
+  }, [t]);
 
   const waitForPlayback = useCallback((duration: number): Promise<void> => {
     if (duration <= 0 || skipToChoiceRef.current) return Promise.resolve();
@@ -535,13 +537,13 @@ export default function GameApp() {
         id: `memory_anchor_${anchor}_${Date.now()}`,
         speaker: 'system',
         type: 'memory-anchor',
-        content: `【Observer-01 已记录：${MEMORY_ANCHOR_LABELS[anchor]}】`,
+        content: t('game.memoryRecorded', { label: memoryAnchorLabels[anchor] }),
         contactStage: contactStageRef.current,
         isNew: true,
       });
       persistState(pendingNodeId, nextMessages);
     },
-    [addMessage, persistState],
+    [addMessage, memoryAnchorLabels, persistState, t],
   );
 
   const processSingleNode = useCallback(
@@ -574,7 +576,7 @@ export default function GameApp() {
       }
 
       if (node.type === 'delay') {
-        const waitConfig = getWaitConfig(node);
+        const waitConfig = getWaitConfig(node, t);
         if (waitConfig) {
           const result = await waitForSignal(waitConfig, runId);
           if (!isCurrentRun()) return false;
@@ -583,7 +585,7 @@ export default function GameApp() {
               id: `time_sync_${node.id}_${Date.now()}`,
               speaker: 'system',
               type: 'status',
-              content: '【同步至下一条信号】',
+              content: t('game.syncNext'),
               contactStage: contactStageRef.current,
               isNew: true,
             });
@@ -608,7 +610,7 @@ export default function GameApp() {
 
       if (node.type === 'input') {
         stopFastForwardAtInteraction();
-        setInputNode(createActiveInputNode(node));
+        setInputNode(createActiveInputNode(node, t));
         setPlayerInput('');
         setIsTyping(false);
         persistState(nodeId, messagesRef.current);
@@ -617,7 +619,7 @@ export default function GameApp() {
 
       if (node.type === 'choice' && node.choices) {
         if (hasRecentMediaMessage(messagesRef.current)) {
-          await waitForSignal(getMediaChoiceWaitConfig(), runId);
+          await waitForSignal(getMediaChoiceWaitConfig(t), runId);
           if (!isCurrentRun()) return false;
         }
         stopFastForwardAtInteraction();
@@ -644,7 +646,7 @@ export default function GameApp() {
         id: `${node.id}_${Date.now()}`,
         speaker: node.speaker,
         type: node.type,
-        content: renderStoryTemplate(node.content, statsRef.current),
+        content: node.content,
         emotion: node.emotion,
         image: node.image,
         contactStage: contactStageRef.current,
@@ -730,7 +732,7 @@ export default function GameApp() {
         persistState(getPendingNodeIdAfterNode(nodeId), messagesRef.current);
       }
 
-      const waitConfig = getWaitConfig(node);
+      const waitConfig = getWaitConfig(node, t);
       if (waitConfig) {
         const result = await waitForSignal(waitConfig, runId);
         if (!isCurrentRun()) return false;
@@ -739,7 +741,7 @@ export default function GameApp() {
             id: `time_sync_${node.id}_${Date.now()}`,
             speaker: 'system',
             type: 'status',
-            content: '【同步至下一条信号】',
+            content: t('game.syncNext'),
             contactStage: contactStageRef.current,
             isNew: true,
           });
@@ -752,7 +754,7 @@ export default function GameApp() {
       }
       return true;
     },
-    [addMessage, persistState, saveMemoryAnchor, stopFastForwardAtInteraction, triggerSignalGlitch, unlockArchives, waitForPlayback, waitForSignal],
+    [addMessage, persistState, saveMemoryAnchor, stopFastForwardAtInteraction, storyNodeMap, t, triggerSignalGlitch, unlockArchives, waitForPlayback, waitForSignal],
   );
 
   const processQueue = useCallback(async (runId: number) => {
@@ -839,7 +841,7 @@ export default function GameApp() {
           }
 
           if (resumeNode?.type === 'input') {
-            setInputNode(createActiveInputNode(resumeNode));
+            setInputNode(createActiveInputNode(resumeNode, t));
             setPlayerInput('');
             return;
           }
@@ -865,10 +867,10 @@ export default function GameApp() {
       setScreen('playing');
       startSequence('p0');
     },
-    [cancelActiveSequence, scheduleSequence, startSequence],
+    [cancelActiveSequence, scheduleSequence, startSequence, storyNodeMap, t],
   );
 
-  const applyChoiceEffects = useCallback((choice: Choice, choiceNode?: StoryNode) => {
+  const applyChoiceEffects = useCallback((choice: Choice) => {
     const current = statsRef.current;
     const next: GameStats = {
       trust: current.trust,
@@ -881,8 +883,6 @@ export default function GameApp() {
       finalFarewellTone: current.finalFarewellTone,
       timedResponse: current.timedResponse,
       timedProof: current.timedProof,
-      sharedAnchorPhrase: current.sharedAnchorPhrase,
-      playerName: current.playerName,
       ending: current.ending,
       unlockedArchives: [...current.unlockedArchives],
       endingsUnlocked: [...current.endingsUnlocked],
@@ -922,10 +922,6 @@ export default function GameApp() {
     if (choice.timedProof) {
       next.timedProof = choice.timedProof;
     }
-    if (choiceNode?.recordVariable === 'sharedAnchorPhrase') {
-      next.sharedAnchorPhrase = formatChoiceText(choice.text);
-    }
-
     const isFinalDecision =
       choice.nextId === 'FINALE_DECISION_END' ||
       choice.nextId === 'BAD_END_START' ||
@@ -942,14 +938,13 @@ export default function GameApp() {
 
   const handleChoice = useCallback(
     (choice: Choice) => {
-      const sourceChoiceNode = choiceNodeId ? storyNodeMap.get(choiceNodeId) : undefined;
       if (choiceTimeoutRef.current !== null) {
         window.clearTimeout(choiceTimeoutRef.current);
         choiceTimeoutRef.current = null;
       }
       setChoices(null);
       setChoiceNodeId(null);
-      const nextStats = applyChoiceEffects(choice, sourceChoiceNode);
+      const nextStats = applyChoiceEffects(choice);
       const nextId = resolveEndingStart(choice.nextId, nextStats);
 
       const playerMsg: DisplayMessage = {
@@ -967,7 +962,7 @@ export default function GameApp() {
       scrollToBottom();
       scheduleSequence(nextId, 550);
     },
-    [applyChoiceEffects, choiceNodeId, persistState, scheduleSequence, scrollToBottom],
+    [applyChoiceEffects, persistState, scheduleSequence, scrollToBottom],
   );
 
   const handleChoiceTimeout = useCallback(
@@ -994,7 +989,7 @@ export default function GameApp() {
           id: `choice_timeout_${node.id}_${Date.now()}`,
           speaker: 'system',
           type: 'status',
-          content: '【Observer-01 记忆索引正在脱离】\n【回答超时】',
+          content: t('game.choiceTimeout'),
           contactStage: contactStageRef.current,
           isNew: true,
         })
@@ -1003,7 +998,7 @@ export default function GameApp() {
       scrollToBottom();
       scheduleSequence(node.timeoutNextId, 550);
     },
-    [addMessage, persistState, scheduleSequence, scrollToBottom],
+    [addMessage, persistState, scheduleSequence, scrollToBottom, t],
   );
 
   useEffect(() => {
@@ -1025,7 +1020,7 @@ export default function GameApp() {
         choiceTimeoutRef.current = null;
       }
     };
-  }, [choiceNodeId, choices, handleChoiceTimeout]);
+  }, [choiceNodeId, choices, handleChoiceTimeout, storyNodeMap]);
 
   const handleInputTimeout = useCallback(
     (node: ActiveInputNode) => {
@@ -1067,17 +1062,6 @@ export default function GameApp() {
       window.clearTimeout(choiceTimeoutRef.current);
       choiceTimeoutRef.current = null;
     }
-    if (inputNode.inputVariable === 'playerName') {
-      const nextStats: GameStats = {
-        ...statsRef.current,
-        memoryAnchors: [...statsRef.current.memoryAnchors],
-        unlockedArchives: [...statsRef.current.unlockedArchives],
-        endingsUnlocked: [...statsRef.current.endingsUnlocked],
-        playerName: text,
-      };
-      statsRef.current = nextStats;
-      setStats(nextStats);
-    }
     const nextId = inputNode.specialInputNextIds?.[text] ?? inputNode.nextId ?? inputNode.id;
     const playerMsg: DisplayMessage = {
       id: `player_${Date.now()}`,
@@ -1103,11 +1087,11 @@ export default function GameApp() {
 
   const saveSnapshot = hasSave ? loadGame() : null;
   const saveProgress = saveSnapshot
-    ? getSaveProgressLabel(saveSnapshot.pendingNodeId, saveSnapshot.messages)
-    : '序章 · Observer-01 恢复';
+    ? getSaveProgressLabel(saveSnapshot.pendingNodeId, saveSnapshot.messages, t)
+    : t('progress.prologue');
   const menuNovaEmotion = saveSnapshot?.novaEmotion ?? 'normal';
   const menuContactStage = saveSnapshot?.contactStage ?? defaultContactStage;
-  const contactMeta = CONTACT_META[contactStage];
+  const contactMeta = contactMetaByStage[contactStage];
   const contactAvatar = resolveContactAvatar(contactStage, novaEmotion);
   const isEpilogueMode = messages.some(message => message.type === 'epilogue');
   const isFinished = messages.some(message => message.type === 'end');
@@ -1122,7 +1106,7 @@ export default function GameApp() {
           type="button"
           onClick={() => setShowSettings(v => !v)}
           className="menu-settings-btn absolute z-20"
-          aria-label="设置"
+          aria-label={t('menu.settingsAria')}
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
             <path
@@ -1136,7 +1120,20 @@ export default function GameApp() {
         </button>
         {showSettings && (
           <div className="menu-settings-panel absolute z-20">
-            <p className="text-[#6B7A8F] text-[10px] tracking-widest uppercase mb-2">系统</p>
+            <p className="text-[#6B7A8F] text-[10px] tracking-widest uppercase mb-2">{t('menu.system')}</p>
+            <p className="text-[#6B7A8F] text-[10px] tracking-widest uppercase mb-1">{t('menu.language')}</p>
+            <div className="flex gap-1 mb-2">
+              {(['zh-CN', 'en-US'] as Locale[]).map(code => (
+                <button
+                  key={code}
+                  type="button"
+                  onClick={() => setLocale(code)}
+                  className={`menu-settings-item flex-1 ${locale === code ? 'menu-settings-item-active' : ''}`}
+                >
+                  {code === 'zh-CN' ? t('menu.languageZh') : t('menu.languageEn')}
+                </button>
+              ))}
+            </div>
             {hasSave && (
               <button
                 type="button"
@@ -1146,21 +1143,33 @@ export default function GameApp() {
                 }}
                 className="menu-settings-item"
               >
-                重新开始
+                {t('menu.restart')}
               </button>
             )}
             <button type="button" onClick={() => setShowSettings(false)} className="menu-settings-item">
-              关闭
+              {t('menu.close')}
             </button>
           </div>
         )}
         <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 min-h-0 w-full">
           <div className="flex flex-col items-center gap-7 animate-fade-in w-full max-w-xs">
             <div className="flex flex-col items-center gap-2.5 menu-title-block">
-              <h1 className="menu-title text-[#E2E8F0]">第七次重启</h1>
-              <p className="text-[#7A8FA8] text-xs sm:text-sm tracking-[0.35em] font-light">SEVENTH REBOOT</p>
+              <h1 className="menu-title text-[#E2E8F0]">{t('menu.title')}</h1>
+              <p className="text-[#7A8FA8] text-xs sm:text-sm tracking-[0.35em] font-light">{t('menu.subtitle')}</p>
             </div>
             <div className="w-20 h-px bg-gradient-to-r from-transparent via-[#3D7A9E]/60 to-transparent" />
+            <div className="flex gap-2 w-full mb-1">
+              {(['zh-CN', 'en-US'] as Locale[]).map(code => (
+                <button
+                  type="button"
+                  key={code}
+                  onClick={() => setLocale(code)}
+                  className={`menu-btn menu-btn-secondary flex-1 py-2 text-xs tracking-wider ${locale === code ? 'menu-settings-item-active' : ''}`}
+                >
+                  {code === 'zh-CN' ? t('menu.languageZh') : t('menu.languageEn')}
+                </button>
+              ))}
+            </div>
             <div className="flex flex-col gap-2.5 w-full">
               {hasSave ? (
                 <>
@@ -1169,18 +1178,18 @@ export default function GameApp() {
                     onClick={() => startGame('continue')}
                     className="menu-btn menu-btn-primary w-full px-6 py-3 rounded-lg text-[#E8F4FF] text-base tracking-widest"
                   >
-                    继续接入
+                    {t('menu.continue')}
                   </button>
                   <div className="flex flex-col items-center gap-0.5 py-1">
-                    <span className="text-[#6B7A8F] text-xs">上次连接：{saveTime}</span>
-                    <span className="text-[#8B9CB0] text-xs">当前进度：{saveProgress}</span>
+                    <span className="text-[#6B7A8F] text-xs">{t('menu.lastConnection', { time: saveTime })}</span>
+                    <span className="text-[#8B9CB0] text-xs">{t('menu.currentProgress', { progress: saveProgress })}</span>
                   </div>
                   <button
                     type="button"
                     onClick={() => setShowRestartConfirm(true)}
                     className="menu-btn menu-btn-secondary w-full px-6 py-2.5 rounded-lg text-sm tracking-wider"
                   >
-                    重新开始
+                    {t('menu.restart')}
                   </button>
                 </>
               ) : (
@@ -1189,7 +1198,7 @@ export default function GameApp() {
                   onClick={() => startGame('new')}
                   className="menu-btn menu-btn-primary w-full px-6 py-3 rounded-lg text-[#E8F4FF] text-base tracking-widest"
                 >
-                  接入通讯
+                  {t('menu.connect')}
                 </button>
               )}
             </div>
@@ -1202,9 +1211,9 @@ export default function GameApp() {
                 />
               )}
               <div className="flex flex-col items-center gap-1 text-center">
-                <span className="text-[#9AABB8] text-xs tracking-wide">Observer-01 记忆模块待命</span>
+                <span className="text-[#9AABB8] text-xs tracking-wide">{t('menu.memoryStandby')}</span>
                 <p className="text-[#5E6E82] text-[11px] font-light tracking-wide">
-                  第七协议残留通讯 · 重启编号 07
+                  {t('menu.protocolTagline')}
                 </p>
               </div>
             </div>
@@ -1280,8 +1289,8 @@ export default function GameApp() {
               <>
                 <div className="epilogue-header-mark" aria-hidden />
                 <div className="flex flex-col min-w-0 flex-1">
-                  <span className="text-[#E8EEF4] text-[15px] font-medium leading-tight">后记 / Epilogue</span>
-                  <span className="text-[#6E8498] text-[11px] leading-snug truncate">Observer-01 已关闭 · 非通讯记录</span>
+                  <span className="text-[#E8EEF4] text-[15px] font-medium leading-tight">{t('game.epilogueTitle')}</span>
+                  <span className="text-[#6E8498] text-[11px] leading-snug truncate">{t('game.epilogueSubtitle')}</span>
                 </div>
               </>
             ) : (
@@ -1307,9 +1316,9 @@ export default function GameApp() {
                   onClick={skipToNextChoice}
                   className={`internal-skip-btn text-[11px] px-2.5 py-1.5 rounded transition-colors ${isSkippingToChoice ? 'internal-skip-btn-active' : ''}`}
                   disabled={Boolean(choices || inputNode || isFinished)}
-                  title="内测限定：快进到下一个选项/交互节点"
+                  title="Internal test: skip to next choice/input"
                 >
-                  {isSkippingToChoice ? '快进中' : '跳过'}
+                  {isSkippingToChoice ? t('game.skipping') : t('game.skip')}
                 </button>
               )}
               <button
@@ -1317,14 +1326,14 @@ export default function GameApp() {
                 onClick={() => setShowArchive(true)}
                 className="header-archive-btn text-[11px] px-2.5 py-1.5 rounded transition-colors"
               >
-                档案
+                {t('game.archive')}
               </button>
               <button
                 type="button"
                 onClick={goToMenu}
                 className="header-disconnect-btn text-[11px] px-2.5 py-1.5 rounded transition-colors"
               >
-                {isEpilogueMode ? '返回' : '断开通讯'}
+                {isEpilogueMode ? t('game.back') : t('game.disconnect')}
               </button>
             </div>
           </header>
@@ -1364,7 +1373,7 @@ export default function GameApp() {
                     </button>
                   ))}
                 </div>
-                <p className="comm-risk-hint text-right mt-2 pr-1">接入可能触发记忆偏移</p>
+                <p className="comm-risk-hint text-right mt-2 pr-1">{t('game.commConnectHint')}</p>
               </div>
             )}
 
@@ -1379,9 +1388,9 @@ export default function GameApp() {
               <div className="flex justify-center py-8">
                 <div className="flex flex-col items-center gap-2">
                   <div className="w-12 h-px bg-[#4A6C8C]/40" />
-                  <span className="text-[#8B949E] text-xs tracking-wider">通讯结束</span>
+                  <span className="text-[#8B949E] text-xs tracking-wider">{t('game.commEnded')}</span>
                   <button type="button" onClick={goToMenu} className="mt-4 text-sm text-[#F0A030] hover:underline">
-                    返回主菜单
+                    {t('game.backToMenu')}
                   </button>
                 </div>
               </div>
@@ -1419,7 +1428,7 @@ export default function GameApp() {
                   disabled={!isInputReady}
                   className={`menu-btn shrink-0 px-4 py-2.5 rounded-lg bg-[#F0A030]/20 border border-[#F0A030]/50 text-[#F0A030] text-sm transition-colors ${isInputReady ? 'hover:bg-[#F0A030]/30' : 'opacity-50 cursor-not-allowed'}`}
                 >
-                  发送
+                  {t('game.send')}
                 </button>
               </div>
             ) : waitPrompt ? (
@@ -1441,7 +1450,7 @@ export default function GameApp() {
               </button>
             ) : choices && choiceNodeId !== 'p4' ? (
                 <div className="choice-panel flex flex-col gap-1.5">
-                  <p className="choice-prompt">你可以回复：</p>
+                  <p className="choice-prompt">{t('game.choicePrompt')}</p>
                   {choices.map((choice, i) => (
                     <button
                       key={i}
@@ -1456,13 +1465,13 @@ export default function GameApp() {
             ) : choiceNodeId === 'p4' && choices ? (
               <div className="chat-idle-bar flex items-center gap-3 px-3 py-2 rounded-lg">
                 <div className="flex-1">
-                  <span className="chat-idle-text text-xs">等待 Observer-01 接入第七协议……</span>
+                  <span className="chat-idle-text text-xs">{t('game.waitingProtocol')}</span>
                 </div>
               </div>
             ) : isFinished ? (
               <div className="chat-idle-bar chat-finished-bar flex items-center gap-3 px-3 py-2 rounded-lg">
                 <div className="flex-1">
-                  <span className="chat-idle-text text-xs">通讯已结束 · 记录已归档</span>
+                  <span className="chat-idle-text text-xs">{t('game.finishedArchived')}</span>
                 </div>
               </div>
             ) : isSignalActive ? (
@@ -1473,14 +1482,14 @@ export default function GameApp() {
                   <span />
                 </span>
                 <div className="flex-1">
-                  <span className="chat-idle-text text-xs">通讯同步中，请等待</span>
+                  <span className="chat-idle-text text-xs">{t('game.syncWaiting')}</span>
                   <span className="chat-sync-progress" aria-hidden />
                 </div>
               </div>
             ) : (
               <div className="chat-idle-bar flex items-center gap-3 px-3 py-2 rounded-lg">
                 <div className="flex-1">
-                  <span className="chat-idle-text text-xs">信道已建立 · 等待消息</span>
+                  <span className="chat-idle-text text-xs">{t('game.channelReady')}</span>
                 </div>
               </div>
             )}

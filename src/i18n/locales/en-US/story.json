@@ -1,0 +1,6263 @@
+{
+  "version": "V1.0",
+  "nodes": {
+    "p0": {
+      "content": "[OBSERVER-01]\nPROTOCOL · Residual Seventh Protocol transmission detected\nREBOOT · Current access number: 07\nLINK · Communications link unstable"
+    },
+    "p9": {
+      "content": "Residual UNKNOWN-06 message detected"
+    },
+    "p10": {
+      "content": "Residual signal corrupted"
+    },
+    "p11": {
+      "content": "If you can see this..."
+    },
+    "p12": {
+      "content": "Signal fragment missing"
+    },
+    "p12a_u06": {
+      "content": "The seventh one has already begun"
+    },
+    "p13_u06": {
+      "content": "Rem▇▇▇... the first▇▇"
+    },
+    "p13b_u06": {
+      "content": "UNKNOWN-06 signal lost"
+    },
+    "p13c": {
+      "content": "Connecting to current encrypted signal source"
+    },
+    "p13e": {
+      "content": "Did someone really get this?"
+    },
+    "p14": {
+      "choices": {
+        "p14__0": "【Who are you?】",
+        "p14__1": "【Where is this?】",
+        "p14__2": "【Is this some kind of prank?】"
+      }
+    },
+    "p15a": {
+      "content": "Good question"
+    },
+    "p16a": {
+      "content": "I'd like to know who you are too"
+    },
+    "p17a": {
+      "content": "At least that proves you're not an automated reply"
+    },
+    "p15b": {
+      "content": "I don't know where you are"
+    },
+    "p16b": {
+      "content": "But where I am..."
+    },
+    "p17b": {
+      "content": "It's a long way away"
+    },
+    "p15c": {
+      "content": "If this is a prank"
+    },
+    "p16c": {
+      "content": "Someone spent an absurd amount of money on it"
+    },
+    "p17c": {
+      "content": "I haven't slept properly in three days"
+    },
+    "p_merge1": {
+      "content": "Let me check something first"
+    },
+    "p_merge2": {
+      "content": "Are you a real person?"
+    },
+    "p_merge3": {
+      "choices": {
+        "p_merge3__0": "【Yes】",
+        "p_merge3__1": "【No】"
+      }
+    },
+    "p_yes": {
+      "content": "Thank God"
+    },
+    "p_yes2": {
+      "content": "Finally, something that isn't a system log"
+    },
+    "p_no": {
+      "content": "..."
+    },
+    "p_no2": {
+      "content": "Well, you're still more polite than most of the systems on this ship"
+    },
+    "p_no3": {
+      "content": "All right"
+    },
+    "p_merge_sys1": {
+      "content": "Response source: external consciousness"
+    },
+    "p_merge_sys2": {
+      "content": "Crew registry: no match"
+    },
+    "p_merge_sys3": {
+      "content": "Observer-01 authorization does not belong to Aurora crew personnel"
+    },
+    "p_merge_sys4": {
+      "content": "..."
+    },
+    "p_merge_sys5": {
+      "content": "The system just flashed something"
+    },
+    "p_merge_sys6": {
+      "content": "It says you're not part of the crew"
+    },
+    "p_merge_sys7": {
+      "content": "No kidding"
+    },
+    "p_merge_sys8": {
+      "content": "If you suddenly appeared aboard the ship"
+    },
+    "p_merge_sys9": {
+      "content": "Then I'd actually have a reason to sound the alarm"
+    },
+    "p_merge4": {
+      "content": "My name is Nova"
+    },
+    "p_merge5": {
+      "content": "I'm the navigator aboard the Aurora"
+    },
+    "p_merge6": {
+      "content": "You've probably never heard of it"
+    },
+    "p_merge7": {
+      "choices": {
+        "p_merge7__0": "【Never heard of it】",
+        "p_merge7__1": "【The Aurora?】",
+        "p_merge7__2": "【A navigator?】"
+      }
+    },
+    "p_aurora_unknown": {
+      "content": "That would be normal"
+    },
+    "p_aurora_unknown2": {
+      "content": "It doesn't sound like something that exists where you are"
+    },
+    "p_aurora_ship": {
+      "content": "Right"
+    },
+    "p_aurora_ship2": {
+      "content": "A very expensive, very large, and very failure-prone spaceship"
+    },
+    "p_aurora_nav": {
+      "content": "Mm-hm"
+    },
+    "p_aurora_nav2": {
+      "content": "My job is to make sure we don't fly straight into a star"
+    },
+    "p_aurora_nav3": {
+      "content": "So far, I seem to be doing all right"
+    },
+    "p_aurora_merge1": {
+      "content": "In simple terms"
+    },
+    "p_aurora_merge2": {
+      "content": "The Aurora is a long-range survey vessel"
+    },
+    "p_aurora_merge3": {
+      "content": "Not a warship"
+    },
+    "p_aurora_merge4": {
+      "content": "And not one of those heroic-sounding colony ships either"
+    },
+    "p_aurora_merge5": {
+      "content": "Our mission is to cross the Silent Expanse"
+    },
+    "p_aurora_merge6": {
+      "content": "And chart regions of space humanity has never seen"
+    },
+    "p_aurora_merge7": {
+      "content": "Sounds romantic, doesn't it?"
+    },
+    "p_aurora_merge8": {
+      "content": "In practice, it's mostly shifts, reports"
+    },
+    "p_aurora_merge9": {
+      "content": "And fault alarms going off in the middle of the night"
+    },
+    "p_aurora_merge10": {
+      "content": "And this transmission of yours"
+    },
+    "p_aurora_merge11": {
+      "content": "Doesn't belong to any normal protocol"
+    },
+    "p_aurora6": {
+      "choices": {
+        "p_aurora6__0": "【Then where is it coming from?】",
+        "p_aurora6__1": "【Could this put you in danger?】",
+        "p_aurora6__2": "【That doesn't sound good】"
+      }
+    },
+    "p_comm_source1": {
+      "content": "That's the problem"
+    },
+    "p_comm_source2": {
+      "content": "It seems to be leaking out of an experimental device"
+    },
+    "p_comm_danger1": {
+      "content": "Too early to tell"
+    },
+    "p_comm_danger2": {
+      "content": "But if you're asking whether I'm safe right now"
+    },
+    "p_comm_danger3": {
+      "content": "The answer is a little embarrassing"
+    },
+    "p_comm_bad1": {
+      "content": "Congratulations"
+    },
+    "p_comm_bad2": {
+      "content": "Your instincts are currently ahead of my safety manual"
+    },
+    "p_comm_bad3": {
+      "content": "Because no, it really doesn't sound good"
+    },
+    "p_exp1": {
+      "content": "More precisely"
+    },
+    "p_exp2": {
+      "content": "I just switched on an experimental device"
+    },
+    "p_exp3": {
+      "content": "And then it exploded"
+    },
+    "p_exp4": {
+      "content": "Yeah"
+    },
+    "p_exp5": {
+      "content": "Literally exploded"
+    },
+    "p_exp6": {
+      "choices": {
+        "p_exp6__0": "【Are you okay?】",
+        "p_exp6__1": "【........】",
+        "p_exp6__2": "【Then why can you still talk to me?】"
+      }
+    },
+    "p_ok1": {
+      "content": "You're the first person today to ask whether I'm okay"
+    },
+    "p_ok2": {
+      "content": "Thank you"
+    },
+    "p_ok3": {
+      "content": "I'm not dying yet"
+    },
+    "p_ok4": {
+      "content": "Probably"
+    },
+    "p_silent1": {
+      "content": "That reaction of yours"
+    },
+    "p_silent2": {
+      "content": "Makes it look like you've already started writing my eulogy"
+    },
+    "p_silent3": {
+      "content": "Don't rush"
+    },
+    "p_silent4": {
+      "content": "I'm not dead yet"
+    },
+    "p_silent5": {
+      "content": "For now"
+    },
+    "p_silent6": {
+      "content": "Probably"
+    },
+    "p_link1": {
+      "content": "Good question"
+    },
+    "p_link2": {
+      "content": "Because the experimental bay exploded"
+    },
+    "p_link3": {
+      "content": "Not the communications terminal"
+    },
+    "p_link4": {
+      "content": "And not me"
+    },
+    "p_link5": {
+      "content": "At least, not yet"
+    },
+    "p_link6": {
+      "content": "The backup link can hold for a while"
+    },
+    "p_link7": {
+      "content": "So"
+    },
+    "p_link8": {
+      "content": "I'm not dying yet"
+    },
+    "p_link9": {
+      "content": "Probably"
+    },
+    "p_dead1": {
+      "content": "The medical system hasn't declared me dead"
+    },
+    "p_dead2": {
+      "content": "That's usually a good sign"
+    },
+    "p_dead3": {
+      "content": "Usually"
+    },
+    "p_wonder1": {
+      "content": "Actually, there's something else I'm more curious about"
+    },
+    "p_wonder2": {
+      "content": "Why can I reach you at all?"
+    },
+    "p_wonder3": {
+      "choices": {
+        "p_wonder3__0": "【I have no idea either】",
+        "p_wonder3__1": "【I just opened this interface】",
+        "p_wonder3__2": "【A transmission across space and time?】"
+      }
+    },
+    "p_idk1": {
+      "content": "All right"
+    },
+    "p_idk2": {
+      "content": "At least we're equally confused"
+    },
+    "p_interface1": {
+      "content": "An interface?"
+    },
+    "p_interface2": {
+      "content": "Whatever you're using doesn't sound like a normal comm terminal either"
+    },
+    "p_interface3": {
+      "content": "Okay"
+    },
+    "p_interface4": {
+      "content": "Then at least we can confirm one thing"
+    },
+    "p_interface5": {
+      "content": "Neither end of this link is operating normally"
+    },
+    "p_space1": {
+      "content": "You really do think big"
+    },
+    "p_space2": {
+      "content": "The problem is... I'm starting to think the same thing"
+    },
+    "p_idk3": {
+      "content": "Wait"
+    },
+    "p_idk4": {
+      "content": "I think I found the reason"
+    },
+    "p_idk5": {
+      "content": "The device recorded a piece of anomalous data"
+    },
+    "p_idk6": {
+      "content": "There's an ID inside it"
+    },
+    "p_idk7": {
+      "content": "It matches your connection ID"
+    },
+    "p_mean1": {
+      "content": "And that's the problem"
+    },
+    "p_mean2": {
+      "content": "Before the device exploded"
+    },
+    "p_mean3": {
+      "content": "It already knew you existed"
+    },
+    "p_mean4": {
+      "content": "That makes no sense"
+    },
+    "p_mean5": {
+      "content": "None at all"
+    },
+    "p_mean6": {
+      "content": "Unless..."
+    },
+    "p_unless1": {
+      "content": "Never mind"
+    },
+    "p_unless2": {
+      "content": "I don't want to scare you"
+    },
+    "p_unless3": {
+      "choices": {
+        "p_unless3__0": "【It's okay. Tell me】",
+        "p_unless3__1": "【I'm not scared】"
+      }
+    },
+    "p_unless_say1": {
+      "content": "All right"
+    },
+    "p_unless_say2": {
+      "content": "Here goes"
+    },
+    "p_unless_brave1": {
+      "content": "You'd better mean that"
+    },
+    "p_unless4": {
+      "content": "Unless"
+    },
+    "p_unless5": {
+      "content": "It has met you before"
+    },
+    "p_log1": {
+      "content": "I know how ridiculous that sounds"
+    },
+    "p_log2": {
+      "content": "But I'm not pulling it out of nowhere"
+    },
+    "p_log3": {
+      "content": "There's a note in the log"
+    },
+    "p_log4": {
+      "content": "Just one line"
+    },
+    "p_log5": {
+      "content": "“Seventh connection successful”"
+    },
+    "p_exp7_1": {
+      "content": "That's the problem"
+    },
+    "p_exp7_2": {
+      "content": "Today was the first time I ever switched the device on"
+    },
+    "p_exp7_3": {
+      "content": "But the log says"
+    },
+    "p_exp7_4": {
+      "content": "It has already connected successfully six times"
+    },
+    "p_exp7_5": {
+      "content": "And every connection was to you"
+    },
+    "p_familiar2": {
+      "content": "..."
+    },
+    "p_familiar3": {
+      "content": "Do you ever get this feeling?"
+    },
+    "p_familiar4": {
+      "content": "I can't quite explain it"
+    },
+    "p_fam1": {
+      "content": "It's just..."
+    },
+    "p_fam2": {
+      "content": "You don't feel like someone who appeared out of nowhere"
+    },
+    "p_fam3": {
+      "content": "You feel more like someone I was supposed to know already"
+    },
+    "p_fam4": {
+      "choices": {
+        "p_fam4__0": "【I don't feel that】",
+        "p_fam4__1": "【A little】",
+        "p_fam4__2": "【You're starting to scare me】"
+      }
+    },
+    "p_fam_no": {
+      "content": "All right"
+    },
+    "p_fam_no2": {
+      "content": "Maybe I'm the only one having the false-familiarity problem"
+    },
+    "p_fam_yes": {
+      "content": "..."
+    },
+    "p_fam_yes2": {
+      "content": "You feel it too?"
+    },
+    "p_fam_yes3": {
+      "content": "Somehow that makes it worse"
+    },
+    "p_fam_scared": {
+      "content": "Sorry"
+    },
+    "p_fam_scared2": {
+      "content": "I didn't mean to"
+    },
+    "p_fam_scared3": {
+      "content": "Something here just feels very wrong"
+    },
+    "p_fam6": {
+      "content": "Maybe I've gone too long without talking to anyone"
+    },
+    "p_fam7": {
+      "content": "And started imagining things"
+    },
+    "p_fam9": {
+      "content": "Still"
+    },
+    "p_fam10": {
+      "content": "I'm glad I found you"
+    },
+    "p_fam11": {
+      "content": "I really am"
+    },
+    "p_fam12": {
+      "content": "Seriously"
+    },
+    "p_window2": {
+      "content": "Wait"
+    },
+    "p_window3": {
+      "content": "There's something outside the observation window"
+    },
+    "p_window4": {
+      "content": "I'm going to check"
+    },
+    "p_window5": {
+      "content": "Don't close the channel"
+    },
+    "p_window6": {
+      "content": "I'll be right back"
+    },
+    "p_offline1": {
+      "content": "Nova is offline"
+    },
+    "p_draft1": {
+      "content": "Unsent Draft / 22:47||If that number isn't an error...\nThen this time has to work."
+    },
+    "CH1_START": {
+      "content": "Chapter One: Connection"
+    },
+    "ch1_0": {
+      "content": "Day Two, 08:13"
+    },
+    "ch1_1": {
+      "content": "New message received"
+    },
+    "ch1_2": {
+      "content": "I'm back"
+    },
+    "ch1_3": {
+      "content": "Technically"
+    },
+    "ch1_4": {
+      "content": "I got back last night"
+    },
+    "ch1_5": {
+      "content": "And immediately passed out"
+    },
+    "ch1_6": {
+      "content": "My face almost fused with the console"
+    },
+    "ch1_7": {
+      "choices": {
+        "ch1_7__0": "【Are you okay?】",
+        "ch1_7__1": "【Did you sleep well?】",
+        "ch1_7__2": "【What was outside the observation window last night?】",
+        "ch1_7__3": "【I waited for you all night, you know】"
+      }
+    },
+    "ch1_sleep1": {
+      "content": "Five out of a hundred"
+    },
+    "ch1_sleep2": {
+      "content": "And I'm being generous"
+    },
+    "ch1_sleep3": {
+      "content": "Occupational hazard of being a navigator"
+    },
+    "ch1_sleep4": {
+      "content": "My sleep quality is basically a random event"
+    },
+    "ch1_ok1": {
+      "content": "Alive"
+    },
+    "ch1_ok2": {
+      "content": "That's the best answer I can give"
+    },
+    "ch1_win2": {
+      "content": "Not an alien monster"
+    },
+    "ch1_win3": {
+      "content": "Though for one second, I genuinely thought it might be"
+    },
+    "ch1_wait1": {
+      "content": "You make it sound like I owe you a read receipt"
+    },
+    "ch1_wait2": {
+      "content": "Still"
+    },
+    "ch1_wait3": {
+      "content": "I'm sorry I left you waiting all night"
+    },
+    "ch1_wait4": {
+      "content": "Really"
+    },
+    "ch1_wait5": {
+      "content": "I didn't expect to drop dead asleep either"
+    },
+    "ch1_merge1": {
+      "content": "Oh, right"
+    },
+    "ch1_merge2": {
+      "content": "That anomalous signal yesterday"
+    },
+    "ch1_merge3": {
+      "content": "Turned out to be a false alarm"
+    },
+    "ch1_ug1": {
+      "content": "Just a maintenance panel that drifted up to the service-passage entrance"
+    },
+    "ch1_ug2": {
+      "content": "I spent ten whole minutes panicking"
+    },
+    "ch1_ug3": {
+      "content": "Turns out the engineering crew next door had lost it"
+    },
+    "ch1_ug4": {
+      "content": "The important part is"
+    },
+    "ch1_ug5": {
+      "content": "Someone had stuck a pair of eyes on it"
+    },
+    "ch1_ug6": {
+      "content": "Then the corridor lights flickered"
+    },
+    "ch1_ug7": {
+      "content": "I looked up"
+    },
+    "ch1_ug8": {
+      "content": "And it was just there, staring at me"
+    },
+    "ch1_ug9": {
+      "content": "Sometimes I genuinely wonder whether humanity has a future"
+    },
+    "ch1_photo1": {
+      "choices": {
+        "ch1_photo1__0": "【Hahahaha】",
+        "ch1_photo1__1": "【Where's the photo?】",
+        "ch1_photo1__2": "【You took a picture, right?】"
+      }
+    },
+    "ch1_haha1": {
+      "content": "Having fun, are we?"
+    },
+    "ch1_haha2": {
+      "content": "I was genuinely preparing to write my will"
+    },
+    "ch1_photo_req1": {
+      "content": "Why are you so practiced at asking for evidence?"
+    },
+    "ch1_photo_req2": {
+      "content": "Hang on. Let me find it"
+    },
+    "ch1_took1": {
+      "content": "Of course I did"
+    },
+    "ch1_took2": {
+      "content": "People always preserve evidence of their most embarrassing moments"
+    },
+    "ch1_photo_send": {
+      "content": "Behold\nA threat of cosmic proportions"
+    },
+    "ch1_photo_reply": {
+      "choices": {
+        "ch1_photo_reply__0": "【Terrifying】",
+        "ch1_photo_reply__1": "【It's kind of cute】",
+        "ch1_photo_reply__2": "【Who put the eyes on it?】"
+      }
+    },
+    "ch1_ph1": {
+      "content": "Right?"
+    },
+    "ch1_ph1b": {
+      "content": "Cosmic threat officially confirmed"
+    },
+    "ch1_ph2": {
+      "content": "?"
+    },
+    "ch1_ph2b": {
+      "content": "Is your sense of aesthetics bugged?"
+    },
+    "ch1_ph3": {
+      "content": "That question"
+    },
+    "ch1_ph3b": {
+      "content": "Has a slightly embarrassing answer"
+    },
+    "ch1_ph3c": {
+      "content": "I put the eyes on it"
+    },
+    "ch1_ph3d": {
+      "content": "The day before"
+    },
+    "ch1_ph3e": {
+      "content": "And then I genuinely forgot"
+    },
+    "ch1_ph3f": {
+      "content": "So technically"
+    },
+    "ch1_ph3g": {
+      "content": "I was scared by yesterday's version of me"
+    },
+    "ch1_ph3h": {
+      "content": "When Old Huo from maintenance found out"
+    },
+    "ch1_ph3i": {
+      "content": "He said if I ever put eyes on another maintenance panel"
+    },
+    "ch1_ph3j": {
+      "content": "He'd tape me to the service passage next"
+    },
+    "ch1_ph3k": {
+      "content": "Honestly"
+    },
+    "ch1_worry1": {
+      "content": "I was a little worried yesterday"
+    },
+    "ch1_worry3": {
+      "content": "I was worried you might be gone"
+    },
+    "ch1_worry4": {
+      "choices": {
+        "ch1_worry4__0": "【I'm still here, aren't I?】",
+        "ch1_worry4__1": "【What happened?】"
+      }
+    },
+    "ch1_worry4_a1": {
+      "content": "You make it sound so simple"
+    },
+    "ch1_worry4_a2": {
+      "content": "But yes, that does make me feel better"
+    },
+    "ch1_worry4_b1": {
+      "content": "Honestly"
+    },
+    "ch1_worry4_b2": {
+      "content": "I'm not even sure it counts as something that happened"
+    },
+    "ch1_worry5": {
+      "content": "It's just..."
+    },
+    "ch1_worry6": {
+      "content": "The link appeared out of nowhere"
+    },
+    "ch1_worry7": {
+      "content": "And then disappeared just as suddenly"
+    },
+    "ch1_worry8": {
+      "content": "I thought I'd wake up today"
+    },
+    "ch1_worry9": {
+      "content": "And find out I'd imagined everything"
+    },
+    "ch1_worry10": {
+      "content": "But now I know"
+    },
+    "ch1_worry11": {
+      "content": "You're real"
+    },
+    "ch1_worry12": {
+      "content": "Even if this is still completely absurd"
+    },
+    "ch1_weather2": {
+      "content": "Hey"
+    },
+    "ch1_weather3": {
+      "content": "What's the weather like where you are?"
+    },
+    "ch1_weather_sys2": {
+      "content": "I keep feeling like you have actual weather over there"
+    },
+    "ch1_weather_sys2b": {
+      "content": "Not the kind generated by a system"
+    },
+    "ch1_weather4": {
+      "choices": {
+        "ch1_weather4__0": "【Sunny】",
+        "ch1_weather4__1": "【Overcast】",
+        "ch1_weather4__2": "【Raining】"
+      }
+    },
+    "ch1_sun": {
+      "content": "I'm jealous"
+    },
+    "ch1_sun1b": {
+      "content": "We don't even get to say things like, “Nice weather today” up here"
+    },
+    "ch1_cloud": {
+      "content": "Sounds perfect for sleeping"
+    },
+    "ch1_cloud2": {
+      "content": "Then again, I'm also perfect for sleeping right now"
+    },
+    "ch1_cloud3": {
+      "content": "I just don't have permission"
+    },
+    "ch1_rain": {
+      "content": "Really?"
+    },
+    "ch1_rain2b": {
+      "content": "It's actually raining?"
+    },
+    "ch1_rain3": {
+      "content": "Rain is my favorite"
+    },
+    "ch1_sun_merge": {
+      "content": "We don't have weather here"
+    },
+    "ch1_sun3": {
+      "content": "Only stars"
+    },
+    "ch1_sun4": {
+      "content": "Stars every day"
+    },
+    "ch1_sun4b": {
+      "content": "And we're passing through the Silent Expanse right now"
+    },
+    "ch1_stability1": {
+      "content": "Even the ship's clocks slowly drift out here"
+    },
+    "ch1_stability2": {
+      "content": "So the Deep-Space Navigation Stabilization Core recalibrates our time standard every day"
+    },
+    "ch1_stability3": {
+      "content": "At least, that's what engineering has always told us"
+    },
+    "ch1_sun4c": {
+      "content": "Normal communications lag so badly it's like mailing a letter to the future"
+    },
+    "ch1_sun4d": {
+      "content": "Which is why your replies arriving in real time"
+    },
+    "ch1_sun4e": {
+      "content": "Are absurd enough to make me nervous"
+    },
+    "ch1_star1": {
+      "content": "At first it was beautiful"
+    },
+    "ch1_star2": {
+      "content": "Then after a while"
+    },
+    "ch1_star3": {
+      "content": "Even stars start to feel monotonous"
+    },
+    "ch1_star4": {
+      "content": "Speaking of which"
+    },
+    "ch1_star5": {
+      "content": "I loved rain when I was little"
+    },
+    "ch1_star7": {
+      "content": "Because when it rained"
+    },
+    "ch1_star8": {
+      "content": "Everyone went home"
+    },
+    "ch1_star9": {
+      "content": "The streets went quiet"
+    },
+    "ch1_star10": {
+      "content": "And I could sit by the window and stare into space"
+    },
+    "ch1_star13": {
+      "content": "I could do that all afternoon"
+    },
+    "ch1_star14": {
+      "content": "Then I grew up"
+    },
+    "ch1_star15": {
+      "content": "And got a job staring into actual space every day"
+    },
+    "ch1_star16": {
+      "content": "I may have overachieved my childhood dream"
+    },
+    "ch1_n7_2": {
+      "content": "Oh, right"
+    },
+    "ch1_n7_3": {
+      "content": "Have you ever had a pet?"
+    },
+    "ch1_n7_4": {
+      "choices": {
+        "ch1_n7_4__0": "【I used to】",
+        "ch1_n7_4__1": "【No】",
+        "ch1_n7_4__2": "【I have one now】"
+      }
+    },
+    "ch1_pet_yes": {
+      "content": "Then you understand"
+    },
+    "ch1_pet_yes2": {
+      "content": "Pets are a lot of trouble"
+    },
+    "ch1_pet_yes3": {
+      "content": "And somehow impossible not to love"
+    },
+    "ch1_nopet1": {
+      "content": "That's fair"
+    },
+    "ch1_nopet2": {
+      "content": "Life in the cities moves too fast these days"
+    },
+    "ch1_nopet3": {
+      "content": "Hardly anyone has time to care for one properly"
+    },
+    "ch1_pet_now": {
+      "content": "That's nice"
+    },
+    "ch1_pet_now2": {
+      "content": "Give them a few extra pets for me"
+    },
+    "ch1_pet_now3": {
+      "content": "Call it fulfilling a wish on my behalf"
+    },
+    "ch1_pet1": {
+      "content": "I used to have a cat"
+    },
+    "ch1_pet2": {
+      "content": "An orange tabby"
+    },
+    "ch1_pet3": {
+      "content": "He was so fat he probably violated building codes"
+    },
+    "ch1_pet5": {
+      "content": "N7"
+    },
+    "ch1_pet5b": {
+      "content": "Sounds like some high-end navigation designation, doesn't it?"
+    },
+    "ch1_pet7": {
+      "content": "Actually, I named him that because I found him when I was seven"
+    },
+    "ch1_pet8": {
+      "content": "I've never been especially gifted at naming things"
+    },
+    "ch1_pet10": {
+      "content": "Eventually, he died of old age"
+    },
+    "ch1_pet11": {
+      "content": "Nothing unusual about that"
+    },
+    "ch1_pet12": {
+      "content": "It was just the first time I realized"
+    },
+    "ch1_pet13": {
+      "content": "Some things won't stay with you forever"
+    },
+    "ch1_n7photo": {
+      "content": "This was the last photo I took of him\nAsleep on the console"
+    },
+    "ch1_n7_emotion": {
+      "content": "Sorry"
+    },
+    "ch1_n7_emotion2": {
+      "content": "That got unexpectedly heavy"
+    },
+    "ch1_n7_emotion3": {
+      "content": "Let's change the subject"
+    },
+    "ch1_cook1": {
+      "content": "Can you cook?"
+    },
+    "ch1_cook2": {
+      "choices": {
+        "ch1_cook2__0": "【Yes】",
+        "ch1_cook2__1": "【No】",
+        "ch1_cook2__2": "【A little】"
+      }
+    },
+    "ch1_cook_yes": {
+      "content": "I'm jealous"
+    },
+    "ch1_cook_yes2": {
+      "content": "People who can cook must count as a rare resource in space"
+    },
+    "ch1_cook_no": {
+      "content": "Then we're tied"
+    },
+    "ch1_cook_no2": {
+      "content": "Though I may be losing more decisively"
+    },
+    "ch1_cook_little": {
+      "content": "Still better than me"
+    },
+    "ch1_cook_little2": {
+      "content": "I have reverse talent"
+    },
+    "ch1_cook_merge": {
+      "content": "I can't cook"
+    },
+    "ch1_cook_merge2": {
+      "content": "More precisely"
+    },
+    "ch1_cook_merge3": {
+      "content": "I can turn edible food into inedible food"
+    },
+    "ch1_cook_story": {
+      "content": "Last month"
+    },
+    "ch1_cook_story2": {
+      "content": "I successfully turned nutrient noodles into a solid weapon"
+    },
+    "ch1_cook_story3": {
+      "content": "Maintenance still makes jokes about it"
+    },
+    "ch1_steak_photo": {
+      "content": "11:42"
+    },
+    "ch1_steak1": {
+      "content": "Oh no"
+    },
+    "ch1_steak3": {
+      "content": "The briefing"
+    },
+    "ch1_steak4": {
+      "content": "I forgot"
+    },
+    "ch1_steak5": {
+      "content": "The captain is going to kill me"
+    },
+    "ch1_go1": {
+      "choices": {
+        "ch1_go1__0": "【Go! Don't be late】",
+        "ch1_go1__1": "【Wait—what about lunch?】",
+        "ch1_go1__2": "【Does the captain actually kill people?】"
+      }
+    },
+    "ch1_go_fast1": {
+      "content": "Copy that"
+    },
+    "ch1_go_fast2": {
+      "content": "That worked better than an alarm"
+    },
+    "ch1_go_food1": {
+      "content": "No time to worry about it"
+    },
+    "ch1_go_food2": {
+      "content": "If it's still alive tonight\nI'll come back and pass judgment"
+    },
+    "ch1_go_joke1": {
+      "content": "Legally? No"
+    },
+    "ch1_go_joke2": {
+      "content": "According to the attendance policy? Hard to say"
+    },
+    "ch1_go_timeout1": {
+      "content": "Hello?"
+    },
+    "ch1_go_timeout2": {
+      "content": "Never mind, I really have to run"
+    },
+    "ch1_go10": {
+      "content": "I'll be back tonight"
+    },
+    "ch1_go11": {
+      "content": "Don't suddenly disappear on me"
+    },
+    "ch1_offline": {
+      "content": "Nova is offline"
+    },
+    "ch1_night": {
+      "content": "21:17"
+    },
+    "ch1_night1": {
+      "content": "New message received"
+    },
+    "ch1_night2": {
+      "content": "I'm back"
+    },
+    "ch1_night3": {
+      "content": "Bad news"
+    },
+    "ch1_night4": {
+      "content": "The captain yelled at me"
+    },
+    "ch1_night4b": {
+      "content": "Worse news"
+    },
+    "ch1_night4c": {
+      "content": "He also swapped my coffee for decaf"
+    },
+    "ch1_night4d": {
+      "content": "He's aggressive when he scolds people"
+    },
+    "ch1_night4e": {
+      "content": "And somehow just as aggressive when he cares"
+    },
+    "ch1_night5": {
+      "choices": {
+        "ch1_night5__0": "【You deserved it】",
+        "ch1_night5__1": "【How did you get yelled at again?】",
+        "ch1_night5__2": "【Hahahahaha】"
+      }
+    },
+    "ch1_night_gotcha": {
+      "content": "Why are you siding with the captain?"
+    },
+    "ch1_night_gotcha2": {
+      "content": "Our friendship has sprung a leak"
+    },
+    "ch1_night_why": {
+      "content": "The reason is simple"
+    },
+    "ch1_night_why2": {
+      "content": "But saying it out loud will make me sound wildly unreliable"
+    },
+    "ch1_night6": {
+      "content": "You're laughing?"
+    },
+    "ch1_night7": {
+      "content": "Our friendship has officially sunk"
+    },
+    "ch1_night_merge": {
+      "content": "I was late to the meeting"
+    },
+    "ch1_night10": {
+      "content": "And then I fell asleep in it"
+    },
+    "ch1_night12": {
+      "content": "I know"
+    },
+    "ch1_night13": {
+      "content": "I have no defense"
+    },
+    "ch1_night14": {
+      "content": "Still"
+    },
+    "ch1_night16": {
+      "content": "Today was actually pretty nice"
+    },
+    "ch1_night17": {
+      "choices": {
+        "ch1_night17__0": "【Why?】",
+        "ch1_night17__1": "【Because you didn't die?】",
+        "ch1_night17__2": "【Because you successfully slacked off?】"
+      }
+    },
+    "ch1_night18": {
+      "content": "..."
+    },
+    "ch1_night18d": {
+      "content": "Maybe because of you"
+    },
+    "ch1_night18e": {
+      "content": "Don't let it go to your head"
+    },
+    "ch1_night18b": {
+      "content": "That is a very compelling reason"
+    },
+    "ch1_night18b2": {
+      "content": "Surviving until the end of a shift deserves celebration"
+    },
+    "ch1_night18c": {
+      "content": "You make me sound like a repeat offender"
+    },
+    "ch1_night18c2": {
+      "content": "Though the evidence is not in my favor"
+    },
+    "ch1_night_merge2": {
+      "content": "All right"
+    },
+    "ch1_night23": {
+      "content": "I have to do a lap around the ship"
+    },
+    "ch1_night24": {
+      "content": "Good night"
+    },
+    "ch1_night25": {
+      "choices": {
+        "ch1_night25__0": "【Good night】"
+      }
+    },
+    "ch1_night26": {
+      "content": "Mm"
+    },
+    "ch1_night27": {
+      "content": "Thank you"
+    },
+    "ch1_night28": {
+      "content": "And"
+    },
+    "ch1_night32": {
+      "content": "I'm glad I met you"
+    },
+    "ch1_night33": {
+      "content": "Nova is offline"
+    },
+    "ch1_draft": {
+      "content": "Late night, 02:41"
+    },
+    "ch1_draft1": {
+      "content": "Unsent Draft / 02:41||No\nThat was definitely the first time I ever told them about N7\nBut when I said it\nIt felt like I'd already said it over and over again\n\nChapter Two: Ordinary Days"
+    },
+    "CH2_START": {
+      "content": "Chapter Two: Ordinary Days"
+    },
+    "ch2_0": {
+      "content": "Day Three, 07:26"
+    },
+    "ch2_1": {
+      "content": "New message received"
+    },
+    "ch2_2": {
+      "content": "Oh no, no, no"
+    },
+    "ch2_3": {
+      "content": "This is bad"
+    },
+    "ch2_4": {
+      "choices": {
+        "ch2_4__0": "【What did you break this time?】",
+        "ch2_4__1": "【Did the ship explode?】",
+        "ch2_4__2": "【Were you late again?】"
+      }
+    },
+    "ch2_5d": {
+      "content": "I made a mistake no navigator should ever make"
+    },
+    "ch2_5d2": {
+      "content": "A painfully basic one"
+    },
+    "ch2_5d3": {
+      "content": "So basic I don't even want to admit it"
+    },
+    "ch2_5b": {
+      "content": "...Not yet"
+    },
+    "ch2_5b3": {
+      "content": "Thank you for immediately escalating this to maximum-disaster level"
+    },
+    "ch2_5b4": {
+      "content": "Though considering the state I'm in today"
+    },
+    "ch2_5b5": {
+      "content": "It's not entirely impossible"
+    },
+    "ch2_5c": {
+      "content": "..."
+    },
+    "ch2_5c2": {
+      "content": "Why did you say “again”?"
+    },
+    "ch2_5c3": {
+      "content": "That one word was deeply hurtful"
+    },
+    "ch2_5c4": {
+      "content": "Even if you were right this time"
+    },
+    "ch2_alarm": {
+      "content": "I turned off my alarm"
+    },
+    "ch2_alarm2": {
+      "content": "Then dreamed that I'd gotten out of bed"
+    },
+    "ch2_alarm3": {
+      "content": "I even dreamed I'd already finished the meeting"
+    },
+    "ch2_alarm4": {
+      "content": "When I woke up"
+    },
+    "ch2_alarm5": {
+      "content": "The captain was standing right in front of me"
+    },
+    "ch2_merge5": {
+      "choices": {
+        "ch2_merge5__0": "【Classic】",
+        "ch2_merge5__1": "【Way too real】",
+        "ch2_merge5__2": "【And then reality punched you?】"
+      }
+    },
+    "ch2_classic": {
+      "content": "Don't say that like you're speaking from experience"
+    },
+    "ch2_classic2": {
+      "content": "Though I strongly suspect you are"
+    },
+    "ch2_real": {
+      "content": "Right?"
+    },
+    "ch2_real2": {
+      "content": "The worst part is that dream-me was incredibly alert"
+    },
+    "ch2_real3": {
+      "content": "She even took proper meeting notes"
+    },
+    "ch2_punch": {
+      "content": "Accurate"
+    },
+    "ch2_punch2": {
+      "content": "Reality absolutely punched me"
+    },
+    "ch2_punch3": {
+      "content": "The captain's face was the punch"
+    },
+    "ch2_merge6": {
+      "content": "Darkest moment of my life"
+    },
+    "ch2_merge7": {
+      "content": "I'm now seriously convinced"
+    },
+    "ch2_merge7b": {
+      "content": "The dream system and the reality system are missing a synchronization protocol"
+    },
+    "ch2_haha_choice": {
+      "choices": {
+        "ch2_haha_choice__0": "【Hahahahaha】"
+      }
+    },
+    "ch2_5": {
+      "content": "You're enjoying this far too much"
+    },
+    "ch2_5a": {
+      "content": "I'm remembering this"
+    },
+    "ch2_5b2": {
+      "content": "Anyway"
+    },
+    "ch2_haha_merge": {
+      "content": "Something strange happened today"
+    },
+    "ch2_today": {
+      "content": "I had a dream"
+    },
+    "ch2_dream_intro_choice": {
+      "choices": {
+        "ch2_dream_intro_choice__0": "【Isn't that normal?】"
+      }
+    },
+    "ch2_dream1": {
+      "content": "Not this one"
+    },
+    "ch2_dream2": {
+      "content": "You were in it"
+    },
+    "ch2_dream2_choice": {
+      "choices": {
+        "ch2_dream2_choice__0": "【What was I doing?】",
+        "ch2_dream2_choice__1": "【Did I say anything?】",
+        "ch2_dream2_choice__2": "【You've never seen me. How did you know it was me?】"
+      }
+    },
+    "ch2_dream7": {
+      "content": "Nothing, really"
+    },
+    "ch2_dream_say1": {
+      "content": "I think you did"
+    },
+    "ch2_dream_say2": {
+      "content": "But I can't remember what it was"
+    },
+    "ch2_dream_face1": {
+      "content": "That's the strangest part"
+    },
+    "ch2_dream_face2": {
+      "content": "I couldn't actually see your face"
+    },
+    "ch2_dream_face3": {
+      "content": "But in the dream, I simply knew"
+    },
+    "ch2_dream_face4": {
+      "content": "That person was you"
+    },
+    "ch2_dream7b": {
+      "content": "The dream was blurry"
+    },
+    "ch2_dream7c": {
+      "content": "All I remember is"
+    },
+    "ch2_dream7d": {
+      "content": "You seemed to be standing by the observation window"
+    },
+    "ch2_dream7e": {
+      "content": "Your lips moved"
+    },
+    "ch2_dream7f": {
+      "content": "But I couldn't hear what you said"
+    },
+    "ch2_dream10": {
+      "content": "It's strange"
+    },
+    "ch2_dream10b": {
+      "content": "It was only a dream"
+    },
+    "ch2_dream11": {
+      "content": "But when I woke up"
+    },
+    "ch2_dream12": {
+      "content": "My first reaction wasn't fear"
+    },
+    "ch2_dream13": {
+      "content": "It was that this place didn't feel quite so lonely anymore"
+    },
+    "ch2_dream14": {
+      "content": "Like someone really was sitting at the other end of the channel"
+    },
+    "ch2_dream15": {
+      "content": "I know that sounds a little strange"
+    },
+    "ch2_dream16": {
+      "content": "But I don't think I'm as afraid of falling asleep now"
+    },
+    "ch2_dream17": {
+      "content": "It didn't feel like a normal dream"
+    },
+    "ch2_dream18": {
+      "content": "Because there was always one sentence that felt as though something had erased it"
+    },
+    "ch2_dream18b": {
+      "content": "All that remained was you by the observation window"
+    },
+    "ch2_dream18c": {
+      "content": "As if you were waiting for me to remember something"
+    },
+    "ch2_dream19": {
+      "content": "But the harder I tried"
+    },
+    "ch2_dream20": {
+      "content": "The more the image seemed to disappear"
+    },
+    "ch2_dream21": {
+      "content": "Never mind"
+    },
+    "ch2_dream22": {
+      "content": "I won't scare you with it yet"
+    },
+    "ch2_dream23": {
+      "content": "I'm going to the observatory to clear my head"
+    },
+    "ch2_dream24": {
+      "content": "And show you something nice"
+    },
+    "ch2_dream25": {
+      "content": "Assuming I don't get lost on the way"
+    },
+    "ch2_obs_ts": {
+      "content": "12:03"
+    },
+    "ch2_obs2": {
+      "content": "I'm taking a five-minute unauthorized break"
+    },
+    "ch2_obs3": {
+      "content": "Look"
+    },
+    "ch2_obs5": {
+      "content": "My favorite place on the ship"
+    },
+    "ch2_obs6": {
+      "choices": {
+        "ch2_obs6__0": "【It's beautiful】",
+        "ch2_obs6__1": "【Do you come here every day?】",
+        "ch2_obs6__2": "【Don't you ever get tired of it?】"
+      }
+    },
+    "ch2_obs_pretty": {
+      "content": "Right?"
+    },
+    "ch2_obs_pretty1": {
+      "content": "The first time I saw it"
+    },
+    "ch2_obs_pretty2": {
+      "content": "I almost forgot I was on duty"
+    },
+    "ch2_obs_daily": {
+      "content": "In theory"
+    },
+    "ch2_obs_daily2": {
+      "content": "As long as I don't get dragged into a meeting"
+    },
+    "ch2_obs_daily3": {
+      "content": "Or lost in a maintenance corridor"
+    },
+    "ch2_obs_tired": {
+      "content": "I do"
+    },
+    "ch2_obs_tired2": {
+      "content": "After long enough, even this can feel repetitive"
+    },
+    "ch2_obs_tired3": {
+      "content": "But sometimes it still takes my breath away"
+    },
+    "ch2_obs_merge": {
+      "content": "Like now"
+    },
+    "ch2_obs_merge0": {
+      "content": "I always wonder"
+    },
+    "ch2_obs10": {
+      "content": "Whether somewhere beyond those stars"
+    },
+    "ch2_obs12": {
+      "content": "Someone else might be looking up too"
+    },
+    "ch2_obs13": {
+      "choices": {
+        "ch2_obs13__0": "【Maybe】",
+        "ch2_obs13__1": "【Maybe they're looking at you】",
+        "ch2_obs13__2": "【The universe is too big】"
+      }
+    },
+    "ch2_obs_maybe": {
+      "content": "Maybe"
+    },
+    "ch2_obs_maybe2": {
+      "content": "Thinking of it that way"
+    },
+    "ch2_obs_maybe3": {
+      "content": "Makes this place feel a little less quiet"
+    },
+    "ch2_obs_watch_you": {
+      "content": "Then I hope I don't look too ridiculous right now"
+    },
+    "ch2_obs_watch_you2": {
+      "content": "Being watched by the entire universe"
+    },
+    "ch2_obs_watch_you3": {
+      "content": "Sounds like a lot of pressure"
+    },
+    "ch2_obs_big": {
+      "content": "It is"
+    },
+    "ch2_obs_big2": {
+      "content": "Big enough to make you feel very small sometimes"
+    },
+    "ch2_obs_merge2": {
+      "content": "Which means meeting even one person"
+    },
+    "ch2_obs17": {
+      "content": "Is actually pretty rare"
+    },
+    "ch2_forget1": {
+      "content": "16:44"
+    },
+    "ch2_forget2": {
+      "content": "Can I ask you something?"
+    },
+    "ch2_forget3": {
+      "content": "If one day"
+    },
+    "ch2_forget4": {
+      "content": "You suddenly forgot someone"
+    },
+    "ch2_forget5": {
+      "content": "What would you do?"
+    },
+    "ch2_forget7": {
+      "choices": {
+        "ch2_forget7__0": "【Why are you asking that all of a sudden?】",
+        "ch2_forget7__1": "【I'd just recover the memory】",
+        "ch2_forget7__2": "【I'd let it be】"
+      }
+    },
+    "ch2_forget_why": {
+      "content": "No reason"
+    },
+    "ch2_forget_why2": {
+      "content": "It just crossed my mind"
+    },
+    "ch2_forget_why3": {
+      "content": "Lately I keep feeling as though I've forgotten something"
+    },
+    "ch2_forget_why4": {
+      "content": "But I can't say what it is"
+    },
+    "ch2_forget_find": {
+      "content": "Easy for you to say"
+    },
+    "ch2_forget_find2": {
+      "content": "I wish memories were as easy to recover as files"
+    },
+    "ch2_forget_find3": {
+      "content": "The problem is"
+    },
+    "ch2_forget_find4": {
+      "content": "I don't even know what I lost"
+    },
+    "ch2_forget_let": {
+      "content": "You're very good at letting go"
+    },
+    "ch2_forget_let2": {
+      "content": "I don't think I could"
+    },
+    "ch2_forget_let3": {
+      "content": "If it was something unimportant, maybe"
+    },
+    "ch2_forget_let4": {
+      "content": "But what if it was someone who mattered?"
+    },
+    "ch2_forget_merge": {
+      "content": "Never mind"
+    },
+    "ch2_forget_merge2": {
+      "content": "Maybe I just haven't been sleeping enough"
+    },
+    "ch2_forget_merge3": {
+      "content": "My memory has never been amazing"
+    },
+    "ch2_forget_merge4": {
+      "content": "But this feels different"
+    },
+    "ch2_forget12": {
+      "content": "It could be nothing"
+    },
+    "ch2_forget13": {
+      "content": "Yesterday I forgot the name of that bald guy in maintenance"
+    },
+    "ch2_forget14": {
+      "content": "Though I forget it all the time anyway"
+    },
+    "ch2_forget16": {
+      "content": "But there's something stranger"
+    },
+    "ch2_forget18": {
+      "content": "I remember"
+    },
+    "ch2_forget19": {
+      "content": "Someone telling me"
+    },
+    "ch2_forget20": {
+      "content": "Not to drink the ship's bitter coffee"
+    },
+    "ch2_forget21": {
+      "content": "But no one ever did"
+    },
+    "ch2_forget22": {
+      "content": "And I never wrote myself a reminder"
+    },
+    "ch2_forget24": {
+      "content": "Then I drank it anyway"
+    },
+    "ch2_forget25": {
+      "content": "It tasted like engine coolant"
+    },
+    "ch2_candy2": {
+      "content": "Oh, right"
+    },
+    "ch2_candy3": {
+      "content": "I just found three milk candies in my drawer"
+    },
+    "ch2_candy4": {
+      "choices": {
+        "ch2_candy4__0": "【For N7 again?】",
+        "ch2_candy4__1": "【There is candy on the ship?】"
+      }
+    },
+    "ch2_candy_n7": {
+      "content": "How did you know I'd think of him?"
+    },
+    "ch2_candy_n7b": {
+      "content": "All right"
+    },
+    "ch2_candy_n7c": {
+      "content": "It does feel like I'm settling an old debt for that cat"
+    },
+    "ch2_candy_n7d": {
+      "content": "Except the creditor isn't here anymore"
+    },
+    "ch2_candy_n7e": {
+      "content": "So I guess I get to declare the account closed by myself"
+    },
+    "ch2_candy_n7f": {
+      "content": "That's strange"
+    },
+    "ch2_candy_n7g": {
+      "content": "I feel like I've already given one to you"
+    },
+    "ch2_candy_n7h": {
+      "content": "Which sounds ridiculous the moment I say it"
+    },
+    "ch2_candy_n7i": {
+      "content": "How would I give you candy through a comm link?"
+    },
+    "ch2_candy_ship": {
+      "content": "There is"
+    },
+    "ch2_candy_ship2": {
+      "content": "But it counts as a rare supply"
+    },
+    "ch2_candy_ship3": {
+      "content": "The system only hands some out when it thinks we're close to a psychological breakdown"
+    },
+    "ch2_candy_ship4": {
+      "content": "I found three pieces buried in my drawer"
+    },
+    "ch2_candy_ship5": {
+      "content": "Perfect"
+    },
+    "ch2_candy_ship6": {
+      "content": "I can settle an old debt for a certain orange cat"
+    },
+    "ch2_candy8": {
+      "content": "Spoils of war\nSettling N7's debt"
+    },
+    "ch2_candy_anom1": {
+      "content": "Fragment of an unsent draft detected"
+    },
+    "ch2_candy_anom2": {
+      "content": "Give one back to them"
+    },
+    "ch2_candy_anom3": {
+      "content": "..."
+    },
+    "ch2_candy_anom4": {
+      "content": "The terminal just flashed"
+    },
+    "ch2_candy_anom5": {
+      "content": "It looked like something I wrote before"
+    },
+    "ch2_candy_anom6": {
+      "choices": {
+        "ch2_candy_anom6__0": "【What did it say?】",
+        "ch2_candy_anom6__1": "【You don't remember?】"
+      }
+    },
+    "ch2_candy_anom7": {
+      "content": "“Give one back to them”"
+    },
+    "ch2_candy_anom8": {
+      "content": "I don't remember"
+    },
+    "ch2_candy_anom8b": {
+      "content": "But the way it was phrased"
+    },
+    "ch2_candy_anom_merge": {
+      "content": "Sounds like me"
+    },
+    "ch2_candy_anom9": {
+      "content": "And sounds equally stupid"
+    },
+    "ch2_candy_anom10": {
+      "content": "How am I supposed to give anything back through a comm link?"
+    },
+    "ch2_night1": {
+      "content": "21:09"
+    },
+    "ch2_night2": {
+      "content": "I'm back"
+    },
+    "ch2_night3": {
+      "content": "My legs are about to give up"
+    },
+    "ch2_night4": {
+      "choices": {
+        "ch2_night4__0": "【Get some rest】",
+        "ch2_night4__1": "【You've had a long day】"
+      }
+    },
+    "ch2_night_rest": {
+      "content": "I'd like to"
+    },
+    "ch2_night_rest2": {
+      "content": "But let me finish telling you this first"
+    },
+    "ch2_night_tired": {
+      "content": "Yeah"
+    },
+    "ch2_night_tired2": {
+      "content": "Today really was exhausting"
+    },
+    "ch2_night_merge": {
+      "content": "Actually"
+    },
+    "ch2_night9": {
+      "content": "There's something I haven't told anyone else"
+    },
+    "ch2_night10": {
+      "choices": {
+        "ch2_night10__0": "【What is it?】",
+        "ch2_night10__1": "【You haven't seemed like yourself lately】"
+      }
+    },
+    "ch2_night10_a1": {
+      "content": "Mm..."
+    },
+    "ch2_night10_a2": {
+      "content": "I was going to pretend nothing was wrong"
+    },
+    "ch2_night10_b1": {
+      "content": "You noticed too?"
+    },
+    "ch2_night10_b2": {
+      "content": "Then maybe I really am not imagining it"
+    },
+    "ch2_night11": {
+      "content": "Lately I keep having this feeling"
+    },
+    "ch2_night12": {
+      "content": "That something is happening"
+    },
+    "ch2_night13": {
+      "content": "But I don't know what"
+    },
+    "ch2_night14": {
+      "content": "It's like..."
+    },
+    "ch2_night15": {
+      "content": "Standing at the edge of a cliff"
+    },
+    "ch2_night16": {
+      "content": "Without being able to see what's below"
+    },
+    "ch2_night17": {
+      "choices": {
+        "ch2_night17__0": "【You're under too much stress】",
+        "ch2_night17__1": "【Try not to overthink it】",
+        "ch2_night17__2": "【What exactly does it feel like?】"
+      }
+    },
+    "ch2_night_stress": {
+      "content": "Maybe"
+    },
+    "ch2_night_stress2": {
+      "content": "I really haven't slept much lately"
+    },
+    "ch2_night_stress3": {
+      "content": "But this doesn't feel like ordinary stress"
+    },
+    "ch2_night_stress4": {
+      "content": "It feels more like there are traces in my mind that don't belong to me"
+    },
+    "ch2_night_deny": {
+      "content": "I've tried telling myself that too"
+    },
+    "ch2_night_deny2": {
+      "content": "I really have"
+    },
+    "ch2_night_deny3": {
+      "content": "But some feelings don't disappear"
+    },
+    "ch2_night_deny4": {
+      "content": "Just because you refuse to think about them"
+    },
+    "ch2_night_feel": {
+      "content": "I can't put it into words"
+    },
+    "ch2_night_feel2": {
+      "content": "Sometimes it just feels"
+    },
+    "ch2_night_feel3": {
+      "content": "Like certain things are intensely familiar"
+    },
+    "ch2_night_feel4": {
+      "content": "Even though they shouldn't be"
+    },
+    "ch2_night_feel_merge": {
+      "content": "Some images are like that"
+    },
+    "ch2_night22": {
+      "content": "Some conversations too"
+    },
+    "ch2_night23": {
+      "content": "Sometimes even seeing one of your messages"
+    },
+    "ch2_night24": {
+      "content": "Gives me a very strange feeling"
+    },
+    "ch2_night27": {
+      "content": "Like I've already read it"
+    },
+    "ch2_night27b": {
+      "content": "More than once"
+    },
+    "ch2_night29": {
+      "content": "Yeah"
+    },
+    "ch2_night30": {
+      "content": "Strange, isn't it?"
+    },
+    "ch2_night31": {
+      "content": "It should be impossible"
+    },
+    "ch2_night32": {
+      "content": "Never mind"
+    },
+    "ch2_night33": {
+      "content": "Maybe I'm just sleep-deprived"
+    },
+    "ch2_n7q2": {
+      "content": "Oh, right"
+    },
+    "ch2_n7q3": {
+      "content": "I passed through storage today"
+    },
+    "ch2_n7q4": {
+      "content": "And saw an orange cat plush"
+    },
+    "ch2_n7q5": {
+      "content": "It made me think of N7"
+    },
+    "ch2_n7q6": {
+      "choices": {
+        "ch2_n7q6__0": "【The cat who was so fat he violated building codes?】",
+        "ch2_n7q6__1": "【You told me about him】"
+      }
+    },
+    "ch2_n7q6_a1": {
+      "content": "..."
+    },
+    "ch2_n7q6_a2": {
+      "content": "Wait"
+    },
+    "ch2_n7q6_a3": {
+      "content": "That does sound exactly like something I'd say"
+    },
+    "ch2_n7q6_b1": {
+      "content": "You remember even that?"
+    },
+    "ch2_n7q6_b2": {
+      "content": "Did I really tell you about him?"
+    },
+    "ch2_n7q7": {
+      "content": "?"
+    },
+    "ch2_n7q8": {
+      "content": "Wait"
+    },
+    "ch2_n7q9": {
+      "content": "Did I tell you about N7?"
+    },
+    "ch2_n7q10": {
+      "choices": {
+        "ch2_n7q10__0": "【Yes. You even told me his name was N7】",
+        "ch2_n7q10__1": "【I remember you mentioning him】"
+      }
+    },
+    "ch2_n7q10_a1": {
+      "content": "You even remember his name"
+    },
+    "ch2_n7q10_b1": {
+      "content": "You don't sound completely sure"
+    },
+    "ch2_n7q10_b2": {
+      "content": "But for some reason"
+    },
+    "ch2_n7q10_b3": {
+      "content": "I don't think you're lying to me"
+    },
+    "ch2_n7q11": {
+      "content": "That's strange"
+    },
+    "ch2_n7q12": {
+      "content": "I don't remember it at all"
+    },
+    "ch2_n7q13": {
+      "choices": {
+        "ch2_n7q13__0": "【Your memory is getting worse】",
+        "ch2_n7q13__1": "【It's okay. I remember】"
+      }
+    },
+    "ch2_n7q13_a1": {
+      "content": "Hey"
+    },
+    "ch2_n7q13_a2": {
+      "content": "Don't phrase a fact like an insult"
+    },
+    "ch2_n7q13_b1": {
+      "content": "..."
+    },
+    "ch2_n7q13_b2": {
+      "content": "That sounds a little dangerous"
+    },
+    "ch2_n7q13_b3": {
+      "content": "But I think I want to believe it for now"
+    },
+    "ch2_n7q14": {
+      "content": "Maybe it is"
+    },
+    "ch2_n7q15": {
+      "content": "Still"
+    },
+    "ch2_n7q16": {
+      "content": "Thank you for remembering"
+    },
+    "ch2_n7q18": {
+      "content": "Sometimes I think"
+    },
+    "ch2_n7q19": {
+      "content": "Being remembered by someone"
+    },
+    "ch2_n7q20": {
+      "content": "Must be a wonderful thing"
+    },
+    "ch2_goodnight": {
+      "content": "All right"
+    },
+    "ch2_gn1": {
+      "content": "This time I really am going to sleep"
+    },
+    "ch2_gn2": {
+      "content": "I'm exhausted"
+    },
+    "ch2_gn3": {
+      "choices": {
+        "ch2_gn3__0": "【Good night】"
+      }
+    },
+    "ch2_gn4": {
+      "content": "Good night"
+    },
+    "ch2_gn5": {
+      "content": "If I forget anything tomorrow"
+    },
+    "ch2_gn6": {
+      "content": "Remind me"
+    },
+    "ch2_offline": {
+      "content": "Nova is offline"
+    },
+    "ch2_draft": {
+      "content": "Late night, 02:17"
+    },
+    "ch2_draft1": {
+      "content": "Unsent Draft / 02:17||It isn't just N7\nSeveral times today\nI felt as though I'd already said something\nBut there was nothing in the comm log\nThey remembered so naturally\nAs if they'd been keeping those memories safe for me for a long time\nThis doesn't feel like coincidence\n\nChapter Three: Anomaly"
+    },
+    "CH3_START": {
+      "content": "Chapter Three: Anomaly"
+    },
+    "ch3_0": {
+      "content": "Day Four, 08:02"
+    },
+    "ch3_1": {
+      "content": "New message received"
+    },
+    "ch3_flower0": {
+      "content": "Morning"
+    },
+    "ch3_flower0b": {
+      "content": "Let me show you something first"
+    },
+    "ch3_flower1": {
+      "content": "A tiny white flower growing inside a maintenance air duct"
+    },
+    "ch3_flower2": {
+      "content": "It actually grew inside a maintenance air duct"
+    },
+    "ch3_flower3": {
+      "content": "There shouldn't be any plants here"
+    },
+    "ch3_flower4": {
+      "choices": {
+        "ch3_flower4__0": "【How did it survive?】",
+        "ch3_flower4__1": "【Are you going to report it?】"
+      }
+    },
+    "ch3_flower_survive1": {
+      "content": "I don't know either"
+    },
+    "ch3_flower_survive2": {
+      "content": "There's no growing medium nearby"
+    },
+    "ch3_flower_survive3": {
+      "content": "And no stable light source"
+    },
+    "ch3_flower_survive4": {
+      "content": "By every reasonable rule"
+    },
+    "ch3_flower_survive5": {
+      "content": "It should never even have had the chance to sprout"
+    },
+    "ch3_flower_report1": {
+      "content": "Normally, I should report it"
+    },
+    "ch3_flower_report2": {
+      "content": "But it looks like it's trying very hard"
+    },
+    "ch3_flower_report3": {
+      "content": "I want to watch it for a while first"
+    },
+    "ch3_flower_report4": {
+      "content": "At least let it exist for a little while before someone puts it in quarantine"
+    },
+    "ch3_flower_merge": {
+      "content": "Strange, isn't it?"
+    },
+    "ch3_flower_merge2": {
+      "content": "A flower that should never have survived"
+    },
+    "ch3_flower_merge3": {
+      "content": "Growing in the last place where life should exist"
+    },
+    "ch3_flower_merge4": {
+      "content": "I was going to call it the strangest thing that happened today"
+    },
+    "ch3_flower_merge5": {
+      "content": "But I don't think it is"
+    },
+    "ch3_5": {
+      "content": "Can I ask you something?"
+    },
+    "ch3_6": {
+      "content": "Is it raining where you are today?"
+    },
+    "ch3_7": {
+      "choices": {
+        "ch3_7__0": "【No】",
+        "ch3_7__1": "【Why are you asking all of a sudden?】",
+        "ch3_7__2": "【Did you hear rain?】"
+      }
+    },
+    "ch3_rain_no1": {
+      "content": "I see"
+    },
+    "ch3_rain_no2": {
+      "content": "Then I didn't just dream your weather into my head"
+    },
+    "ch3_rain_why1": {
+      "content": "I don't know"
+    },
+    "ch3_rain_why2": {
+      "content": "It was the first thing I thought about when I woke up"
+    },
+    "ch3_rain_guess1": {
+      "content": "..."
+    },
+    "ch3_rain_guess2": {
+      "content": "How did you know?"
+    },
+    "ch3_rain_guess3": {
+      "content": "No"
+    },
+    "ch3_rain_guess4": {
+      "content": "I don't mean I literally heard it"
+    },
+    "ch3_rain_merge": {
+      "content": "It's more like a sound got stuck in my head"
+    },
+    "ch3_rain_merge2": {
+      "content": "Rain"
+    },
+    "ch3_rain_merge3": {
+      "content": "And something tapping against a window"
+    },
+    "ch3_rain_merge4": {
+      "content": "Even though it can't rain here"
+    },
+    "ch3_rain_merge5": {
+      "content": "The Aurora doesn't even have real windows"
+    },
+    "ch3_rain_merge6": {
+      "content": "Only observation windows"
+    },
+    "ch3_10": {
+      "content": "Then another image came back to me"
+    },
+    "ch3_11": {
+      "content": "The observatory"
+    },
+    "ch3_12": {
+      "content": "There was a figure in the glass"
+    },
+    "ch3_dream3": {
+      "content": "At first I thought it was my reflection"
+    },
+    "ch3_dream4": {
+      "content": "The observation window does that sometimes"
+    },
+    "ch3_dream4b": {
+      "content": "But that shadow didn't move when I did"
+    },
+    "ch3_dream4c": {
+      "content": "It just stood there"
+    },
+    "ch3_dream4d": {
+      "content": "As if it were watching me"
+    },
+    "ch3_dream6": {
+      "content": "Later, I dreamed about that place again"
+    },
+    "ch3_dream7": {
+      "content": "I was standing in the observatory"
+    },
+    "ch3_dream8": {
+      "content": "And you were beside me"
+    },
+    "ch3_dream9": {
+      "content": "Then you spoke"
+    },
+    "ch3_dream10": {
+      "content": "I only heard the first part"
+    },
+    "ch3_dream10b": {
+      "content": "“Don't go—”"
+    },
+    "ch3_dream11": {
+      "choices": {
+        "ch3_dream11__0": "【I said that?】",
+        "ch3_dream11__1": "【Toward the observation window?】",
+        "ch3_dream11__2": "【Don't go where?】"
+      }
+    },
+    "ch3_dream11_a1": {
+      "content": "Yeah"
+    },
+    "ch3_dream11_a2": {
+      "content": "At least, it was you in the dream"
+    },
+    "ch3_dream11_a3": {
+      "content": "I still couldn't see your face"
+    },
+    "ch3_dream11_b1": {
+      "content": "..."
+    },
+    "ch3_dream11_b2": {
+      "content": "That's what I thought too"
+    },
+    "ch3_dream11_b3": {
+      "content": "The shadow in the dream"
+    },
+    "ch3_dream11_b4": {
+      "content": "Never moved from that spot"
+    },
+    "ch3_dream11_c1": {
+      "content": "I don't know"
+    },
+    "ch3_dream11_c2": {
+      "content": "Something cut off the rest of the sentence"
+    },
+    "ch3_dream11_c3": {
+      "content": "The harder I tried to hear it"
+    },
+    "ch3_dream11_c4": {
+      "content": "The more it felt erased"
+    },
+    "ch3_dream12": {
+      "content": "Something cut off the rest of the sentence"
+    },
+    "ch3_dream13": {
+      "content": "Then I woke up"
+    },
+    "ch3_creep2": {
+      "content": "Don't you think"
+    },
+    "ch3_creep3": {
+      "content": "Things have been getting stranger and stranger lately?"
+    },
+    "ch3_creep4": {
+      "choices": {
+        "ch3_creep4__0": "【A little】",
+        "ch3_creep4__1": "【Definitely】",
+        "ch3_creep4__2": "【You're under too much pressure】"
+      }
+    },
+    "ch3_creep_a": {
+      "content": "You're being very diplomatic"
+    },
+    "ch3_creep_a2": {
+      "content": "I'm starting to think"
+    },
+    "ch3_creep_a3": {
+      "content": "We're well beyond “a little”"
+    },
+    "ch3_creep_b": {
+      "content": "Right?"
+    },
+    "ch3_creep_b2": {
+      "content": "I thought I was the only one who felt that way"
+    },
+    "ch3_creep_b3": {
+      "content": "Somehow saying it out loud makes it worse"
+    },
+    "ch3_creep_c": {
+      "content": "I hope that's all it is"
+    },
+    "ch3_creep_c2": {
+      "content": "Stress at least sounds normal"
+    },
+    "ch3_creep_c3": {
+      "content": "Though “normal” isn't a very reliable word anymore"
+    },
+    "ch3_creep_merge": {
+      "content": "I don't want to assume the worst"
+    },
+    "ch3_creep_merge2": {
+      "content": "But everything that's been happening"
+    },
+    "ch3_creep_merge3": {
+      "content": "Doesn't feel like simple sleep deprivation anymore"
+    },
+    "ch3_creep_merge4": {
+      "content": "And medical pods are expensive"
+    },
+    "ch3_creep_merge5": {
+      "content": "I'd rather not be admitted for “suspected psychological instability” just yet"
+    },
+    "ch3_lunch1": {
+      "content": "13:11"
+    },
+    "ch3_lunch2": {
+      "content": "I just got to the cafeteria"
+    },
+    "ch3_lunch3": {
+      "content": "They said we're having steak today"
+    },
+    "ch3_lunch5": {
+      "content": "But I'm beginning to question"
+    },
+    "ch3_lunch6": {
+      "content": "Whether this thing legally qualifies as food"
+    },
+    "ch3_lunch7": {
+      "content": "I'll show you"
+    },
+    "ch3_steak": {
+      "content": "Don't ask\nOfficially, this was a research accident"
+    },
+    "ch3_ref1": {
+      "content": "Wait"
+    },
+    "ch3_ref2": {
+      "content": "Something's wrong"
+    },
+    "ch3_ref4": {
+      "content": "I think I saw someone in the reflection on the glass"
+    },
+    "ch3_ref5": {
+      "content": "Near the observation window"
+    },
+    "ch3_ref7": {
+      "content": "She looked like me"
+    },
+    "ch3_ref9": {
+      "choices": {
+        "ch3_ref9__0": "【Did you get a clear look?】"
+      }
+    },
+    "ch3_ref10": {
+      "content": "It could still be a reflection"
+    },
+    "ch3_ref11": {
+      "content": "The observation window does that sometimes"
+    },
+    "ch3_ref13": {
+      "content": "..."
+    },
+    "ch3_ref14": {
+      "content": "I'm not sure"
+    },
+    "ch3_ref15": {
+      "content": "Because she was looking at me"
+    },
+    "ch3_timed_sys1": {
+      "content": "Communications stability falling"
+    },
+    "ch3_timed_sys2": {
+      "content": "Fluctuation detected in Nova's vital signs"
+    },
+    "ch3_ref16": {
+      "choices": {
+        "ch3_ref16__0": "【I'm here. Don't look at the window】",
+        "ch3_ref16__1": "【Get out of the observatory now】",
+        "ch3_ref16__2": "【Check the comm logs—quickly】"
+      }
+    },
+    "ch3_ref_calm1": {
+      "content": "..."
+    },
+    "ch3_ref_calm2": {
+      "content": "Okay"
+    },
+    "ch3_ref_calm3": {
+      "content": "I won't look"
+    },
+    "ch3_ref_calm4": {
+      "content": "Keep talking to me"
+    },
+    "ch3_ref_calm5": {
+      "content": "Anything. Just say something"
+    },
+    "ch3_ref_leave1": {
+      "content": "I'm backing out now"
+    },
+    "ch3_ref_leave2": {
+      "content": "The door controls are responding slowly"
+    },
+    "ch3_ref_leave3": {
+      "content": "Don't rush me"
+    },
+    "ch3_ref_leave4": {
+      "content": "I'm already doing enough of that myself"
+    },
+    "ch3_ref_log1": {
+      "content": "You're impressively calm"
+    },
+    "ch3_ref_log2": {
+      "content": "All right"
+    },
+    "ch3_ref_log3": {
+      "content": "I'll check the logs"
+    },
+    "ch3_ref_log4": {
+      "content": "At least that's more normal than staring at another version of myself"
+    },
+    "ch3_ref_timeout1": {
+      "content": "...Are you still there?"
+    },
+    "ch3_ref_timeout2": {
+      "content": "Please don't lose the link now"
+    },
+    "ch3_ref_timeout3": {
+      "content": "Please"
+    },
+    "ch3_ref17": {
+      "content": "Reflections don't look back at you"
+    },
+    "ch3_ref18": {
+      "content": "Right?"
+    },
+    "ch3_ref20": {
+      "content": "Never mind"
+    },
+    "ch3_ref21": {
+      "content": "Forget I said anything"
+    },
+    "ch3_ref22": {
+      "content": "Don't make that face"
+    },
+    "ch3_ref28b": {
+      "content": "Obviously I can't see your face"
+    },
+    "ch3_ref28c": {
+      "content": "But I can imagine it"
+    },
+    "ch3_ref28d": {
+      "content": "That exact expression"
+    },
+    "ch3_ref25": {
+      "content": "The “great, she's finally losing it” look"
+    },
+    "ch3_disconnect1": {
+      "content": "18:26"
+    },
+    "ch3_dc1": {
+      "content": "Communications interrupted"
+    },
+    "ch3_dc2": {
+      "content": "Attempting reconnection..."
+    },
+    "ch3_dc3": {
+      "content": "Reconnection failed"
+    },
+    "ch3_dc4": {
+      "content": "Reconnection failed"
+    },
+    "ch3_dc5": {
+      "content": "Reconnected"
+    },
+    "ch3_dc6": {
+      "content": "..."
+    },
+    "ch3_dc6b": {
+      "content": "Are you still there?"
+    },
+    "ch3_dc7": {
+      "choices": {
+        "ch3_dc7__0": "【I'm here】"
+      }
+    },
+    "ch3_dc8": {
+      "content": "Thank God"
+    },
+    "ch3_dc9": {
+      "content": "The system just cut out"
+    },
+    "ch3_dc10": {
+      "content": "I thought we'd lost the connection"
+    },
+    "ch3_dc12": {
+      "content": "I still don't know why"
+    },
+    "ch3_dc13": {
+      "content": "But something appeared in the comm log"
+    },
+    "ch3_dc15": {
+      "content": "You should see it yourself"
+    },
+    "ch3_log1": {
+      "content": "comm_log.txt||Connection established\nConnection established\nConnection established\nConnection established\nConnection established\nConnection established\nConnection established\nSeventh connection successful"
+    },
+    "ch3_log1b": {
+      "content": "Protocol Fragment: SEVENTH_PROTOCOL||Purpose: Aurora mission-state protection\nExecution medium: ████\nArea of effect: ████\nTrigger condition: irreversible mission failure\nRecovery method: localized temporal ████\nCognitive protection: enabled\nDefault retained objects: minimum essential mission data\nAnomalous retained object: UNKNOWN\nCurrent status: repeated activation"
+    },
+    "ch3_corepower1": {
+      "content": "Energy-Routing Anomaly||Registered module: Deep-Space Navigation Stabilization Core\nPublic function: Silent Expanse navigation synchronization / vessel-reference stabilization\nRecorded interval: 0.8 seconds after unknown mission-ending event\nPeak draw: 47% of available reserve energy\nPublic structural location: central core section\nAnomalous sublayer: absent from crew-accessible schematics\nSublayer designation: LOCAL PHASE A▇▇▇ / SEALED"
+    },
+    "ch3_corepower2": {
+      "content": "I know the Deep-Space Navigation Stabilization Core"
+    },
+    "ch3_corepower3": {
+      "content": "Normally it just calibrates the ship clocks and navigation reference frame"
+    },
+    "ch3_corepower4": {
+      "content": "But according to this, it pulled almost half the reserve grid's energy"
+    },
+    "ch3_corepower5": {
+      "content": "And that sublayer doesn't exist on any schematic the crew can access"
+    },
+    "ch3_log2": {
+      "content": "Wait"
+    },
+    "ch3_log2b": {
+      "content": "This isn't an ordinary comm log"
+    },
+    "ch3_log2c": {
+      "content": "It's a low-level record from the Seventh Protocol"
+    },
+    "ch3_log2d": {
+      "content": "It looks like this isn't the first time it connected us"
+    },
+    "ch3_log4": {
+      "content": "And that isn't even the worst part"
+    },
+    "ch3_log5": {
+      "content": "Keep reading"
+    },
+    "ch3_log5b": {
+      "content": "Final Log Entry||Seventh connection successful"
+    },
+    "ch3_log6": {
+      "content": "That sentence again"
+    },
+    "ch3_log7": {
+      "content": "It's only day four"
+    },
+    "ch3_log8": {
+      "content": "And I'm already starting to hate the number seven"
+    },
+    "ch3_log9": {
+      "choices": {
+        "ch3_log9__0": "【Maybe it's just a software error】",
+        "ch3_log9__1": "【This doesn't look like an ordinary error】"
+      }
+    },
+    "ch3_log10": {
+      "content": "I hope so"
+    },
+    "ch3_log10b": {
+      "content": "That's how I want to explain it too"
+    },
+    "ch3_log10_alt": {
+      "content": "..."
+    },
+    "ch3_log10_alt2": {
+      "content": "You think so too?"
+    },
+    "ch3_log10_alt3": {
+      "content": "Then I don't think I can keep pretending nothing is wrong"
+    },
+    "ch3_log11": {
+      "content": "There's another problem"
+    },
+    "ch3_log11b": {
+      "content": "Log Timestamp Verification||Anomalous log timestamp: three months ago\nAurora departure record: current mission began seven days ago"
+    },
+    "ch3_log12": {
+      "choices": {
+        "ch3_log12__0": "【The timestamp is wrong?】",
+        "ch3_log12__1": "【You hadn't even launched three months ago】"
+      }
+    },
+    "ch3_log12_a1": {
+      "content": "Exactly"
+    },
+    "ch3_log12_b1": {
+      "content": "You noticed too"
+    },
+    "ch3_log12_b2": {
+      "content": "Three months ago"
+    },
+    "ch3_log12_b3": {
+      "content": "The Aurora hadn't even left port"
+    },
+    "ch3_log13": {
+      "content": "This log"
+    },
+    "ch3_log14": {
+      "content": "Is dated three months ago"
+    },
+    "ch3_log16": {
+      "content": "The Aurora hadn't launched three months ago"
+    },
+    "ch3_log17": {
+      "content": "So"
+    },
+    "ch3_log18": {
+      "content": "This log should not exist"
+    },
+    "ch3_scared1": {
+      "content": "I'm suddenly a little scared"
+    },
+    "ch3_scared2": {
+      "choices": {
+        "ch3_scared2__0": "【Don't be afraid】",
+        "ch3_scared2__1": "【I'm here】",
+        "ch3_scared2__2": "【There has to be an explanation】"
+      }
+    },
+    "ch3_scared_afraid": {
+      "content": "Yeah"
+    },
+    "ch3_scared_afraid2": {
+      "content": "I'll try"
+    },
+    "ch3_scared_afraid3": {
+      "content": "But when you say that"
+    },
+    "ch3_scared_afraid4": {
+      "content": "It almost makes me want to admit that I really am afraid"
+    },
+    "ch3_scared_here": {
+      "content": "I know"
+    },
+    "ch3_scared_here2": {
+      "content": "Which means it isn't as bad as it could be"
+    },
+    "ch3_scared_here3": {
+      "content": "At least this time"
+    },
+    "ch3_scared_here4": {
+      "content": "I'm not looking at all of this alone"
+    },
+    "ch3_scared_reason": {
+      "content": "I hope so too"
+    },
+    "ch3_scared_reason2": {
+      "content": "If there's a reason, then it can still be explained"
+    },
+    "ch3_scared_reason3": {
+      "content": "What scares me now is"
+    },
+    "ch3_scared_reason4": {
+      "content": "That the explanation may be worse than the anomaly itself"
+    },
+    "ch3_scared_merge": {
+      "content": "Still"
+    },
+    "ch3_scared6": {
+      "content": "If one day"
+    },
+    "ch3_scared7": {
+      "content": "I really forget something important"
+    },
+    "ch3_scared8": {
+      "content": "Will you tell me?"
+    },
+    "ch3_scared9": {
+      "choices": {
+        "ch3_scared9__0": "【I will】",
+        "ch3_scared9__1": "【Of course】"
+      }
+    },
+    "ch3_scared_yes": {
+      "content": "Okay"
+    },
+    "ch3_scared_yes2": {
+      "content": "Then I'll trust you this once"
+    },
+    "ch3_scared_ofc": {
+      "content": "You answered very quickly"
+    },
+    "ch3_scared_ofc2": {
+      "content": "But... thank you"
+    },
+    "ch3_scared10": {
+      "content": "Good"
+    },
+    "ch3_scared11": {
+      "content": "Because I'm starting to feel"
+    },
+    "ch3_scared12": {
+      "content": "Like things are disappearing from my mind"
+    },
+    "ch3_gn2": {
+      "content": "All right"
+    },
+    "ch3_gn3": {
+      "content": "I'm going to take it easy for the rest of today"
+    },
+    "ch3_gn4": {
+      "choices": {
+        "ch3_gn4__0": "【Good night】"
+      }
+    },
+    "ch3_gn5": {
+      "content": "Good night"
+    },
+    "ch3_gn8": {
+      "content": "And"
+    },
+    "ch3_gn9": {
+      "content": "If I say anything strange later"
+    },
+    "ch3_gn10": {
+      "content": "Don't believe it immediately"
+    },
+    "ch3_gn12": {
+      "content": "Because"
+    },
+    "ch3_gn13": {
+      "content": "I'm finding it harder and harder to tell"
+    },
+    "ch3_gn14": {
+      "content": "Which memories are mine"
+    },
+    "ch3_gn15": {
+      "content": "And which ones aren't"
+    },
+    "ch3_offline": {
+      "content": "Nova is offline"
+    },
+    "ch3_draft": {
+      "content": "Late night, 03:07"
+    },
+    "ch3_draft1": {
+      "content": "Encrypted Draft / 03:07||I saw that shadow again\nIt's still in the observatory\n\nChapter Four: Memory"
+    },
+    "CH4_START": {
+      "content": "Chapter Four: Memory"
+    },
+    "ch4_0": {
+      "content": "Day Five, 09:18"
+    },
+    "ch4_1": {
+      "content": "New message received"
+    },
+    "ch4_2": {
+      "content": "Hello"
+    },
+    "ch4_3": {
+      "content": "Um..."
+    },
+    "ch4_4": {
+      "content": "Do we know each other?"
+    },
+    "ch4_5": {
+      "choices": {
+        "ch4_5__0": "【Nova?】",
+        "ch4_5__1": "【Are you joking, Nova?】",
+        "ch4_5__2": "【Of course we do. You're Nova】"
+      }
+    },
+    "ch4_6": {
+      "content": "..."
+    },
+    "ch4_7": {
+      "content": "What did you just call me?"
+    },
+    "ch4_8": {
+      "content": "Sorry"
+    },
+    "ch4_8b": {
+      "content": "Am I supposed to know you?"
+    },
+    "ch4_joke1": {
+      "content": "I wish I were"
+    },
+    "ch4_joke2": {
+      "content": "But I really can't laugh right now"
+    },
+    "ch4_joke3": {
+      "content": "I'm sorry"
+    },
+    "ch4_joke3b": {
+      "content": "I don't think I remember you"
+    },
+    "ch4_sure1": {
+      "content": "Wait"
+    },
+    "ch4_sure2": {
+      "content": "You sound so certain"
+    },
+    "ch4_sure3": {
+      "content": "But I don't remember any of this"
+    },
+    "ch4_sure4": {
+      "content": "I'm sorry"
+    },
+    "ch4_sure5": {
+      "content": "This feels awful"
+    },
+    "ch4_merge1": {
+      "content": "I'm not doing it on purpose"
+    },
+    "ch4_merge2": {
+      "content": "It's just..."
+    },
+    "ch4_merge3": {
+      "content": "I really don't remember"
+    },
+    "ch4_merge4": {
+      "content": "A lot of things"
+    },
+    "ch4_merge5": {
+      "content": "Including you"
+    },
+    "ch4_12": {
+      "content": "Wait"
+    },
+    "ch4_13": {
+      "content": "How do you know my name?"
+    },
+    "ch4_14": {
+      "choices": {
+        "ch4_14__0": "【You told me】",
+        "ch4_14__1": "【We've talked a lot before】",
+        "ch4_14__2": "【I can prove it】"
+      }
+    },
+    "ch4_15": {
+      "content": "I told you?"
+    },
+    "ch4_16": {
+      "content": "When?"
+    },
+    "ch4_many1": {
+      "content": "A lot?"
+    },
+    "ch4_many2": {
+      "content": "But I don't have a single record of it"
+    },
+    "ch4_many3": {
+      "content": "Are you sure you haven't mistaken me for someone else?"
+    },
+    "ch4_prove1": {
+      "content": "Prove it?"
+    },
+    "ch4_prove2": {
+      "content": "How?"
+    },
+    "ch4_record_merge": {
+      "content": "I'm sorry"
+    },
+    "ch4_record_merge2": {
+      "content": "I'm not saying I don't believe you"
+    },
+    "ch4_record_merge3": {
+      "content": "This is just incredibly strange"
+    },
+    "ch4_record1": {
+      "content": "And according to the records"
+    },
+    "ch4_record2": {
+      "content": "I only came out of short-term stasis yesterday"
+    },
+    "ch4_record3": {
+      "content": "The stasis record says seventy-two hours"
+    },
+    "ch4_record4": {
+      "content": "But there are huge gaps in the comm logs"
+    },
+    "ch4_record5": {
+      "content": "As if someone deleted them"
+    },
+    "ch4_record6": {
+      "content": "If we really know each other"
+    },
+    "ch4_record7": {
+      "content": "Then you should know something I've never told anyone else"
+    },
+    "ch4_proof_sys1": {
+      "content": "Nova trust threshold decreasing"
+    },
+    "ch4_proof_sys2": {
+      "content": "Available memory anchors: unstable"
+    },
+    "ch4_27": {
+      "choices": {
+        "ch4_27__0": "【N7】",
+        "ch4_27__1": "【Milk candy】",
+        "ch4_27__2": "【The observatory】",
+        "ch4_27__3": "【I'm here】"
+      }
+    },
+    "ch4_n7_name": {
+      "content": "Wait"
+    },
+    "ch4_n7_name2": {
+      "content": "What did you just say?\nN7?\nI don't remember ever telling you that name\nAnd I've barely told anyone else"
+    },
+    "ch4_proof_anchor_tip": {
+      "content": "Memory anchor reinforced: N7"
+    },
+    "ch4_proof_candy1": {
+      "content": "..."
+    },
+    "ch4_proof_candy2": {
+      "content": "Milk candy?"
+    },
+    "ch4_proof_candy3": {
+      "content": "Why does hearing that"
+    },
+    "ch4_proof_candy4": {
+      "content": "Make me feel so sad all of a sudden?"
+    },
+    "ch4_proof_candy5": {
+      "content": "But that still doesn't prove we know each other"
+    },
+    "ch4_proof_obs1": {
+      "content": "Everyone knows about the observatory"
+    },
+    "ch4_proof_obs2": {
+      "content": "No"
+    },
+    "ch4_proof_obs3": {
+      "content": "Wait"
+    },
+    "ch4_proof_obs4": {
+      "content": "Why do I feel like you don't mean the place itself?"
+    },
+    "ch4_proof_obs5": {
+      "content": "You mean one particular sky"
+    },
+    "ch4_proof_here1": {
+      "content": "..."
+    },
+    "ch4_proof_here2": {
+      "content": "That's a strange thing to say"
+    },
+    "ch4_proof_here3": {
+      "content": "It doesn't prove anything"
+    },
+    "ch4_proof_here4": {
+      "content": "But when I heard it"
+    },
+    "ch4_proof_here5": {
+      "content": "My heartbeat slowed down"
+    },
+    "ch4_proof_timeout1": {
+      "content": "You don't know how to prove it either, do you?"
+    },
+    "ch4_proof_timeout2": {
+      "content": "I'm sorry"
+    },
+    "ch4_proof_timeout3": {
+      "content": "I'm genuinely scared right now"
+    },
+    "ch4_proof_supp_image": {
+      "content": "What about this one?\nDo you remember his name?"
+    },
+    "ch4_proof_supplement": {
+      "choices": {
+        "ch4_proof_supplement__0": "【His name is N7】"
+      }
+    },
+    "ch4_proof_supp1": {
+      "content": "..."
+    },
+    "ch4_proof_supp2": {
+      "content": "Wait"
+    },
+    "ch4_proof_merge1": {
+      "content": "N7 was my cat"
+    },
+    "ch4_proof_merge2": {
+      "content": "I found him when I was seven"
+    },
+    "ch4_proof_merge3": {
+      "content": "I've told almost no one that"
+    },
+    "ch4_proof_merge4": {
+      "content": "I would never tell a complete stranger"
+    },
+    "ch4_proof_merge5": {
+      "content": "So..."
+    },
+    "ch4_proof_merge6": {
+      "content": "We really do know each other?"
+    },
+    "ch4_n7_8": {
+      "choices": {
+        "ch4_n7_8__0": "【You told me】",
+        "ch4_n7_8__1": "【You just forgot】",
+        "ch4_n7_8__2": "【I never forgot】"
+      }
+    },
+    "ch4_n7_told": {
+      "content": "But I have no memory of it at all"
+    },
+    "ch4_n7_told2": {
+      "content": "This is worse than I thought"
+    },
+    "ch4_n7_forgot": {
+      "content": "“Just forgot”"
+    },
+    "ch4_n7_forgot2": {
+      "content": "You make it sound so easy"
+    },
+    "ch4_n7_forgot3": {
+      "content": "But if that's true"
+    },
+    "ch4_n7_forgot4": {
+      "content": "Then N7 may not be the only thing I've lost"
+    },
+    "ch4_n7_remember": {
+      "content": "..."
+    },
+    "ch4_n7_remember2": {
+      "content": "I don't know why"
+    },
+    "ch4_n7_remember3": {
+      "content": "But hearing that"
+    },
+    "ch4_n7_remember4": {
+      "content": "Makes me a little sad"
+    },
+    "ch4_n7_merge": {
+      "content": "All right"
+    },
+    "ch4_n7_14": {
+      "content": "At least you know N7"
+    },
+    "ch4_n7_15": {
+      "content": "Which makes it impossible for me to dismiss you as a liar"
+    },
+    "ch4_n7_18": {
+      "content": "Even though I don't remember you"
+    },
+    "ch4_n7_20": {
+      "content": "Talking to you still feels"
+    },
+    "ch4_n7_21": {
+      "content": "Strangely reassuring"
+    },
+    "ch4_folder1": {
+      "content": "11:42"
+    },
+    "ch4_fold2": {
+      "content": "I checked the database"
+    },
+    "ch4_fold3": {
+      "content": "And found something strange"
+    },
+    "ch4_fold5": {
+      "content": "There's a hidden folder"
+    },
+    "ch4_fold6": {
+      "content": "The permissions belong to me"
+    },
+    "ch4_fold7": {
+      "content": "But I've never seen it before"
+    },
+    "ch4_fold8": {
+      "content": "Open collapsed folder"
+    },
+    "ch4_fold9": {
+      "content": "Trying now"
+    },
+    "ch4_fold10": {
+      "content": "..."
+    },
+    "ch4_fold10b": {
+      "content": "Damn it"
+    },
+    "ch4_fold11": {
+      "content": "It won't open"
+    },
+    "ch4_fold12": {
+      "content": "It requires dual authentication"
+    },
+    "ch4_fold13": {
+      "choices": {
+        "ch4_fold13__0": "【Who is the other authenticator?】",
+        "ch4_fold13__1": "【How can the system have two of you?】"
+      }
+    },
+    "ch4_fold13_a1": {
+      "content": "It says it's me"
+    },
+    "ch4_fold14": {
+      "content": "But I don't know why it recorded that"
+    },
+    "ch4_fold13_b1": {
+      "content": "A normal system couldn't"
+    },
+    "ch4_fold13_b2": {
+      "content": "Unless it didn't record two versions of “me”"
+    },
+    "ch4_fold13_b3": {
+      "content": "But two authentications left at different times"
+    },
+    "ch4_fold15": {
+      "content": "It says:"
+    },
+    "ch4_fold16": {
+      "content": "Dual Authenticators||Current authenticator: Nova Arlen / current cycle\nResidual authenticator: Nova Arlen / previous-cycle continuity signature"
+    },
+    "ch4_fold16a": {
+      "content": "Residual navigation-continuity signature detected"
+    },
+    "ch4_fold16b": {
+      "content": "Secondary authentication source verified"
+    },
+    "ch4_core_route1": {
+      "content": "Navigation-Continuity Signature Routing||Routine receiver: NAVIGATION DATABASE\nMirrored receiver: STABILITY CORE / SEALED SUBLAYER\nSignature purpose: HUMAN CONTINUITY REFERENCE\nTrue module designation: LOCAL PHASE ANCHOR C▇▇▇\nCrew access authorization: none"
+    },
+    "ch4_core_route2": {
+      "content": "Every routine navigation signature I've submitted was duplicated"
+    },
+    "ch4_core_route3": {
+      "content": "And sent to the hidden sublayer from that energy record"
+    },
+    "ch4_core_route4": {
+      "content": "No one ever told me it existed"
+    },
+    "ch4_id_restore": {
+      "content": "Communications archive restored"
+    },
+    "ch4_id_confirm": {
+      "content": "Identity confirmed: NOVA ARLEN"
+    },
+    "ch4_id_photo": {
+      "content": "Nova Arlen / Aurora Navigation personnel file"
+    },
+    "ch4_fold17": {
+      "choices": {
+        "ch4_fold17__0": "【Two Novas?】"
+      }
+    },
+    "ch4_fold18": {
+      "content": "I wish this were a system bug"
+    },
+    "ch4_fold19": {
+      "content": "But the system never registers the same identity twice"
+    },
+    "ch4_fold20": {
+      "content": "At least, it isn't supposed to"
+    },
+    "ch4_head1": {
+      "content": "Wait"
+    },
+    "ch4_head2": {
+      "content": "My head suddenly hurts"
+    },
+    "ch4_head3": {
+      "choices": {
+        "ch4_head3__0": "【Then go to the med bay】",
+        "ch4_head3__1": "【Tell me what you saw first】"
+      }
+    },
+    "ch4_head3_a1": {
+      "content": "That response sounds exactly like the medical team"
+    },
+    "ch4_head3_b1": {
+      "content": "Don't rush me with questions yet"
+    },
+    "ch4_head3_b2": {
+      "content": "I need to say it before the image fades"
+    },
+    "ch4_head4": {
+      "content": "I don't need to"
+    },
+    "ch4_head5": {
+      "content": "It's just..."
+    },
+    "ch4_head6": {
+      "content": "An image flashed through my mind"
+    },
+    "ch4_head8": {
+      "content": "The observatory"
+    },
+    "ch4_head9": {
+      "content": "A girl was standing there"
+    },
+    "ch4_head10": {
+      "content": "With her back to me"
+    },
+    "ch4_head12": {
+      "content": "She said:"
+    },
+    "ch4_head13": {
+      "content": "“Don't trust the seventh”"
+    },
+    "ch4_head14": {
+      "choices": {
+        "ch4_head14__0": "【Does “the seventh” mean this cycle?】",
+        "ch4_head14__1": "【You've already been through this six times?】"
+      }
+    },
+    "ch4_head14_a1": {
+      "content": "If we take it literally"
+    },
+    "ch4_head14_b1": {
+      "content": "That question is worse than anything I was willing to imagine"
+    },
+    "ch4_head14_b2": {
+      "content": "If we didn't come here again"
+    },
+    "ch4_head14_b3": {
+      "content": "Then maybe we never truly left"
+    },
+    "ch4_head15": {
+      "content": "I'm not ready to be certain yet"
+    },
+    "ch4_head16": {
+      "content": "And the strangest part is"
+    },
+    "ch4_head17": {
+      "content": "That voice"
+    },
+    "ch4_head18": {
+      "content": "Was mine"
+    },
+    "ch4_trust1": {
+      "content": "18:33"
+    },
+    "ch4_trust2": {
+      "content": "I'm starting to believe you"
+    },
+    "ch4_trust3": {
+      "choices": {
+        "ch4_trust3__0": "【Because of N7?】",
+        "ch4_trust3__1": "【You finally believe me?】",
+        "ch4_trust3__2": "【You don't have to force yourself】"
+      }
+    },
+    "ch4_trust4": {
+      "content": "Not just N7"
+    },
+    "ch4_trust4b": {
+      "content": "It's the way you talk about those things"
+    },
+    "ch4_trust4c": {
+      "content": "It doesn't sound invented"
+    },
+    "ch4_trust4d": {
+      "content": "It sounds remembered"
+    },
+    "ch4_trust_tease": {
+      "content": "Don't make me sound impossible to deal with"
+    },
+    "ch4_trust_tease2a": {
+      "content": "Though maybe I am, a little"
+    },
+    "ch4_trust_tease2b": {
+      "content": "But try to understand"
+    },
+    "ch4_trust_tease4": {
+      "content": "Waking up to find a stranger insisting they're an old friend"
+    },
+    "ch4_trust_tease5": {
+      "content": "Would make anyone suspicious"
+    },
+    "ch4_trust_gentle": {
+      "content": "..."
+    },
+    "ch4_trust_gentle2": {
+      "content": "Saying that"
+    },
+    "ch4_trust_gentle3": {
+      "content": "Actually makes me want to trust you more"
+    },
+    "ch4_trust_gentle4": {
+      "content": "Liars usually don't leave people room to doubt them"
+    },
+    "ch4_trust_merge": {
+      "content": "And"
+    },
+    "ch4_trust6": {
+      "content": "If you really wanted to deceive me"
+    },
+    "ch4_trust7": {
+      "content": "There would be no reason to mention N7"
+    },
+    "ch4_trust8": {
+      "content": "You can't invent a detail like that"
+    },
+    "ch4_trust8b": {
+      "content": "And there would be no value in using it to fool me"
+    },
+    "ch4_trust9": {
+      "content": "So I have two conclusions now"
+    },
+    "ch4_trust_judge": {
+      "choices": {
+        "ch4_trust_judge__0": "【What are they?】",
+        "ch4_trust_judge__1": "【That doesn't sound optimistic】",
+        "ch4_trust_judge__2": "【I'm guessing you don't like either one】"
+      }
+    },
+    "ch4_trust_j1": {
+      "content": "First"
+    },
+    "ch4_trust_j1b": {
+      "content": "We really did know each other"
+    },
+    "ch4_trust_j1c": {
+      "content": "Second"
+    },
+    "ch4_trust_j1d": {
+      "content": "I forgot"
+    },
+    "ch4_trust_j2": {
+      "content": "It isn't"
+    },
+    "ch4_trust_j2b": {
+      "content": "Because whichever one is true"
+    },
+    "ch4_trust_j2c": {
+      "content": "Something is wrong with my memory"
+    },
+    "ch4_trust_j3": {
+      "content": "You're right"
+    },
+    "ch4_trust_j3b": {
+      "content": "I hate both of them"
+    },
+    "ch4_trust_j3c": {
+      "content": "Especially the second"
+    },
+    "ch4_trust_fear": {
+      "content": "Honestly"
+    },
+    "ch4_trust11": {
+      "content": "I'm afraid"
+    },
+    "ch4_trust12": {
+      "choices": {
+        "ch4_trust12__0": "【Afraid of what?】",
+        "ch4_trust12__1": "【Afraid of remembering?】",
+        "ch4_trust12__2": "【Afraid I'm telling the truth?】"
+      }
+    },
+    "ch4_trust_f1": {
+      "content": "Afraid that I really forgot someone important"
+    },
+    "ch4_trust_f1b": {
+      "content": "And that person"
+    },
+    "ch4_trust_f1c": {
+      "content": "Is still right in front of me"
+    },
+    "ch4_trust_true": {
+      "content": "Yes"
+    },
+    "ch4_trust_true2": {
+      "content": "Because if you're telling the truth"
+    },
+    "ch4_trust_true3": {
+      "content": "Then this isn't the first time I lost you"
+    },
+    "ch4_trust_true4": {
+      "content": "It's only the first time I realized I had"
+    },
+    "ch4_trust_apology": {
+      "content": "I'm sorry"
+    },
+    "ch4_trust_apology2": {
+      "content": "This may sound strange"
+    },
+    "ch4_trust_apology3": {
+      "content": "But what frightens me most isn't being deceived"
+    },
+    "ch4_trust_apology4": {
+      "content": "It's the possibility that everything you said is true"
+    },
+    "ch4_trust_memory": {
+      "content": "Maybe"
+    },
+    "ch4_trust_memory2": {
+      "content": "If my memory was deliberately erased, something terrible must have happened before it was gone"
+    },
+    "ch4_trust14": {
+      "choices": {
+        "ch4_trust14__0": "【...】"
+      }
+    },
+    "ch4_trust15": {
+      "content": "If that's true"
+    },
+    "ch4_trust16": {
+      "content": "Then it must have been awful"
+    },
+    "ch4_trust17": {
+      "choices": {
+        "ch4_trust17__0": "【Why would forgetting someone hurt more?】",
+        "ch4_trust17__1": "【...】"
+      }
+    },
+    "ch4_trust17_a1": {
+      "content": "Because"
+    },
+    "ch4_trust17_b1": {
+      "content": "You went quiet"
+    },
+    "ch4_trust17_b2": {
+      "content": "I know"
+    },
+    "ch4_trust17_b3": {
+      "content": "There isn't an easy answer to that"
+    },
+    "ch4_trust19": {
+      "content": "Being forgotten is painful enough"
+    },
+    "ch4_trust20": {
+      "content": "But forgetting someone else"
+    },
+    "ch4_trust21": {
+      "content": "May be even worse"
+    },
+    "ch4_gn1": {
+      "content": "23:17"
+    },
+    "ch4_gn2": {
+      "content": "I'm going to sleep"
+    },
+    "ch4_gn3": {
+      "choices": {
+        "ch4_gn3__0": "【Good night】"
+      }
+    },
+    "ch4_gn4": {
+      "content": "Good night"
+    },
+    "ch4_gn7": {
+      "content": "Um"
+    },
+    "ch4_gn9": {
+      "content": "Even if I don't remember before"
+    },
+    "ch4_gn10": {
+      "content": "If what you're saying is true"
+    },
+    "ch4_gn11": {
+      "content": "Thank you for remembering me all this time"
+    },
+    "ch4_offline": {
+      "content": "Nova is offline"
+    },
+    "ch4_log": {
+      "content": "02:41"
+    },
+    "ch4_log1": {
+      "content": "Hidden Log: NOVA-06 → NOVA-07||If you're reading this record,\nthen I have already forgotten Observer-01.\nDo not attempt to restore the memory.\nDo not look for me in the observatory.\nDo not open the Seventh Protocol.\nMost of all, do not trust me.\nBecause I have already failed six times.\n\nChapter Five: The Truth (Part I)"
+    },
+    "CH5A_START": {
+      "content": "Chapter Five: The Truth (Part I)"
+    },
+    "ch5a_0": {
+      "content": "Day Six, 07:11"
+    },
+    "ch5a_1": {
+      "content": "New message received"
+    },
+    "ch5a_2": {
+      "content": "I didn't sleep at all"
+    },
+    "ch5a_4": {
+      "content": "After sunrise, I tried opening that folder again"
+    },
+    "ch5a_5": {
+      "choices": {
+        "ch5a_5__0": "【Why can you open it today?】"
+      }
+    },
+    "ch5a_6": {
+      "content": "I don't know"
+    },
+    "ch5a_7": {
+      "content": "It was still locked when I first found it last night"
+    },
+    "ch5a_8": {
+      "content": "Then after sunrise, it opened without warning"
+    },
+    "ch5a_9": {
+      "content": "As if someone granted me access"
+    },
+    "ch5a_11": {
+      "content": "Records"
+    },
+    "ch5a_12": {
+      "content": "A lot of records"
+    },
+    "ch5a_13": {
+      "content": "Every one of them was left by me"
+    },
+    "ch5a_protocol0": {
+      "content": "And there's a technical file on a device and a protocol"
+    },
+    "ch5a_core_file1": {
+      "content": "LOCAL PHASE ANCHOR CORE / SEALED BRIEF||Public registration name: Deep-Space Navigation Stabilization Core\nTrue device name: Local Phase-Anchor Core\nPublic function: Silent Expanse navigation synchronization / vessel-reference stabilization\nTrue function: establish a local phase field / write stable phase anchors / revert localized mission states\nExecution components: phase-energy ring / local phase-field generator\nControl layer: SEVENTH_PROTOCOL\nOperating condition: low-interference spacetime environment within the Silent Expanse\nProject status: experimental / classified\nPhase-anchor contents: spatial coordinates / vessel condition / life states / critical systems / local causal reference\nEnergy reset: execution cost reverts together with the localized mission state to the anchor\nCost of repetition: phase residue cannot be fully erased\nCore-compartment access: sealed\nCrew pre-mission clearance: none"
+    },
+    "ch5a_core_reveal1": {
+      "content": "So that energy record wasn't wrong"
+    },
+    "ch5a_core_reveal2": {
+      "content": "The Deep-Space Navigation Stabilization Core we knew was only the public name"
+    },
+    "ch5a_core_reveal3": {
+      "content": "The real device is sealed beneath its structural layer"
+    },
+    "ch5a_core_reveal4": {
+      "content": "A duplicate of our daily navigation-calibration data was being used to write phase anchors"
+    },
+    "ch5a_core_reveal5": {
+      "content": "All this time, I was helping it confirm which state the Aurora should be dragged back to"
+    },
+    "ch5a_core_reveal6": {
+      "content": "And I never knew"
+    },
+    "ch5a_core_choice": {
+      "choices": {
+        "ch5a_core_choice__0": "【So everyone aboard was kept in the dark?】",
+        "ch5a_core_choice__1": "【You were building anchors for it every day?】",
+        "ch5a_core_choice__2": "【It can actually turn back time?】"
+      }
+    },
+    "ch5a_core_choice_a1": {
+      "content": "It looks that way"
+    },
+    "ch5a_core_choice_a2": {
+      "content": "At least none of the active crew knew before the mission began"
+    },
+    "ch5a_core_choice_b1": {
+      "content": "Yes"
+    },
+    "ch5a_core_choice_b2": {
+      "content": "I always thought they were ordinary navigation signatures"
+    },
+    "ch5a_core_choice_c1": {
+      "content": "That's what the file says"
+    },
+    "ch5a_core_choice_c2": {
+      "content": "But the Seventh Protocol decides when it activates"
+    },
+    "ch5a_protocol4": {
+      "content": "The Seventh Protocol wasn't designed to trap anyone"
+    },
+    "ch5a_protocol4b": {
+      "content": "And it isn't the machine that reverses time"
+    },
+    "ch5a_protocol5": {
+      "content": "It's an emergency-failure protocol hidden in the control layer"
+    },
+    "ch5a_protocol6": {
+      "content": "When the Aurora's mission is judged irrecoverably failed"
+    },
+    "ch5a_protocol7": {
+      "content": "It sends a reversion command to the Local Phase-Anchor Core"
+    },
+    "ch5a_protocol7b": {
+      "content": "The core releases its stored phase energy and unfolds a field over the mission area"
+    },
+    "ch5a_protocol7c": {
+      "content": "Then it uses the most recent stable phase anchor as a reference"
+    },
+    "ch5a_protocol7d": {
+      "content": "Reverting the crew, systems, course, and vessel state to that recorded point"
+    },
+    "ch5a_protocol7e": {
+      "content": "It doesn't rewind the entire universe"
+    },
+    "ch5a_protocol7f": {
+      "content": "The phase field only covers the Aurora and this localized mission region"
+    },
+    "ch5a_protocol7g": {
+      "content": "Anything outside the ship isn't rewritten with us"
+    },
+    "ch5a_protocol_check": {
+      "choices": {
+        "ch5a_protocol_check__0": "【So it isn't trying to save you?】",
+        "ch5a_protocol_check__1": "【It's only trying to save the mission?】",
+        "ch5a_protocol_check__2": "【Then why did it leave you behind?】"
+      }
+    },
+    "ch5a_protocol_check_a1": {
+      "content": "Right"
+    },
+    "ch5a_protocol_check_a2": {
+      "content": "At least, that's not how the file describes it"
+    },
+    "ch5a_protocol_check_b1": {
+      "content": "Mm-hm"
+    },
+    "ch5a_protocol_check_b2": {
+      "content": "People are only part of the mission state"
+    },
+    "ch5a_protocol_check_c1": {
+      "content": "That's the problem"
+    },
+    "ch5a_protocol_check_c2": {
+      "content": "In theory, it shouldn't have preserved any complete version of me"
+    },
+    "ch5a_protocol8": {
+      "content": "In theory"
+    },
+    "ch5a_protocol8b": {
+      "content": "It should only preserve the bare minimum of navigation data"
+    },
+    "ch5a_protocol9": {
+      "content": "Not human memories"
+    },
+    "ch5a_protocol10": {
+      "content": "And definitely not me"
+    },
+    "ch5a_protocol10b": {
+      "content": "But now"
+    },
+    "ch5a_protocol10c": {
+      "content": "It seems to have started treating me as part of the record"
+    },
+    "ch5a_logs1": {
+      "content": "Excerpts from Reversion Logs||Note: numbers identify log entries, not cycle count\nLog 001: If you're reading this, the cycle has already begun.\nLog 002: Do not trust the system clock.\nLog 003: Do not enter the observatory.\nLog 004: If you receive a message from yourself, delete it.\nLog 007: If you already know Observer-01, treat them kindly.\nLog 012: The external index will remember. Do not let them learn the truth too soon."
+    },
+    "ch5a_protocol1": {
+      "content": "Local Phase-Anchor Core / Reversion Execution Record||Control command source: SEVENTH_PROTOCOL\nReversion reference: most recent stable phase anchor\nPhase-field range: localized Aurora mission area\nPhase-energy discharge: complete\nMission-state reversion: complete\nCrew cognition synchronization: reset\nAnomalous residue: Nova Arlen / UNKNOWN"
+    },
+    "ch5a_protocol2": {
+      "content": "SEVENTH_PROTOCOL / Authorization Brief||Protocol objective: preserve continuation of the Aurora mission\nExecution device: Local Phase-Anchor Core\nTemporal-reversion targets: mission state / crew life states and cognition / navigation systems / vessel condition\nPermitted retention: minimum essential navigation data\nProhibited retention: complete personal memory\nCrew pre-mission clearance: none\nCognitive protection: enabled\nReason for secrecy: awareness alters behavioral baselines and disrupts phase-anchor convergence\nAnomalous record: external index generated\nTimestamp anomaly: prior-cycle mission time contaminating current-cycle index\nThree-month-old log: not a real-world date; residual mission time from the prior cycle"
+    },
+    "ch5a_firstline_hint1": {
+      "content": "There's one more strange line in the logs"
+    },
+    "ch5a_firstline_hint2": {
+      "content": "It says"
+    },
+    "ch5a_firstline_hint3": {
+      "content": "The first sentence matters"
+    },
+    "ch5a_firstline_hint4": {
+      "content": "But the record doesn't say which sentence"
+    },
+    "ch5a_firstline_hint5": {
+      "content": "Do you remember it?"
+    },
+    "ch5a_firstline_choice": {
+      "choices": {
+        "ch5a_firstline_choice__0": "【I think so】",
+        "ch5a_firstline_choice__1": "【I'm not sure】",
+        "ch5a_firstline_choice__2": "【Wait. Let me think】"
+      }
+    },
+    "ch5a_firstline_remember1": {
+      "content": "Then don't tell me yet"
+    },
+    "ch5a_firstline_remember2": {
+      "content": "I'm afraid that hearing it now"
+    },
+    "ch5a_firstline_remember3": {
+      "content": "Might make me lose it instead"
+    },
+    "ch5a_firstline_unsure1": {
+      "content": "That's okay"
+    },
+    "ch5a_firstline_unsure2": {
+      "content": "Uncertainty is still a kind of remembering"
+    },
+    "ch5a_firstline_unsure3": {
+      "content": "At least you've started looking for it"
+    },
+    "ch5a_firstline_think1": {
+      "content": "Don't force it right now"
+    },
+    "ch5a_firstline_think2": {
+      "content": "The more important something is"
+    },
+    "ch5a_firstline_think3": {
+      "content": "The more easily fear can distort it"
+    },
+    "ch5a_firstline_timeout1": {
+      "content": "..."
+    },
+    "ch5a_firstline_timeout2": {
+      "content": "Never mind"
+    },
+    "ch5a_firstline_timeout3": {
+      "content": "That pause just now"
+    },
+    "ch5a_firstline_timeout4": {
+      "content": "Already told me you were trying to remember"
+    },
+    "ch5a_firstline_hint6": {
+      "content": "Never mind"
+    },
+    "ch5a_firstline_hint7": {
+      "content": "Maybe you do remember"
+    },
+    "ch5a_protocol3": {
+      "content": "Do you understand now?"
+    },
+    "ch5a_protocol11": {
+      "content": "It wasn't trying to save me"
+    },
+    "ch5a_protocol12": {
+      "content": "It was only trying to keep the mission going"
+    },
+    "ch5a_protocol13": {
+      "content": "And I"
+    },
+    "ch5a_protocol14": {
+      "content": "Seem to have become some kind of erroneous but useful record"
+    },
+    "ch5a_protocol15": {
+      "content": "And that external index"
+    },
+    "ch5a_protocol16": {
+      "content": "Shouldn't exist either"
+    },
+    "ch5a_time_explain1": {
+      "content": "I finally understand that three-month-old log too"
+    },
+    "ch5a_time_explain2": {
+      "content": "The Aurora didn't launch three months early"
+    },
+    "ch5a_time_explain3": {
+      "content": "The “three months later” from the previous cycle"
+    },
+    "ch5a_time_explain4": {
+      "content": "Was forced into the “three months ago” of this one"
+    },
+    "ch5a_time_explain5": {
+      "content": "It isn't time travel in the complete sense"
+    },
+    "ch5a_time_explain6": {
+      "content": "Residual mission time from the previous cycle\ncontaminated this cycle's index"
+    },
+    "ch5a_logs3": {
+      "content": "This is where the records start getting worse"
+    },
+    "ch5a_logs5": {
+      "content": "See for yourself"
+    },
+    "ch5a_logs6": {
+      "content": "Logs 007–012||Log 007: If you already know Observer-01, treat them kindly.\nLog 012: The external index will remember. Do not let them learn the truth too soon.\nNova, stop asking questions. Continuing the cycle is better for both of you."
+    },
+    "ch5a_logs7_choice": {
+      "choices": {
+        "ch5a_logs7_choice__0": "【Who wrote these?】",
+        "ch5a_logs7_choice__1": "【Why would continuing the cycle be better?】",
+        "ch5a_logs7_choice__2": "【Does “both of you” mean us?】"
+      }
+    },
+    "ch5a_logs8": {
+      "content": "I don't know"
+    },
+    "ch5a_logs8_a2": {
+      "content": "The signature and write source were both deleted"
+    },
+    "ch5a_logs8_b1": {
+      "content": "Maybe whoever wrote it thought"
+    },
+    "ch5a_logs8_b2": {
+      "content": "Starting over was safer than losing everything for good"
+    },
+    "ch5a_logs8_c1": {
+      "content": "I think so"
+    },
+    "ch5a_logs8_c2": {
+      "content": "At least this log treats us as a pair"
+    },
+    "ch5a_logs9": {
+      "content": "There's more"
+    },
+    "ch5a_logs10": {
+      "content": "The strangest part is"
+    },
+    "ch5a_logs11": {
+      "content": "The number of logs"
+    },
+    "ch5a_logs13": {
+      "content": "Six"
+    },
+    "ch5a_logs14": {
+      "content": "Exactly six versions"
+    },
+    "ch5a_logs15": {
+      "choices": {
+        "ch5a_logs15__0": "【One set of logs for each of the six cycles?】",
+        "ch5a_logs15__1": "【Did you write all of them?】",
+        "ch5a_logs15__2": "【Could they have been forged?】"
+      }
+    },
+    "ch5a_logs15_a1": {
+      "content": "That's what I think too"
+    },
+    "ch5a_logs15_b1": {
+      "content": "The handwriting and authorization are mine"
+    },
+    "ch5a_logs15_b2": {
+      "content": "But I don't remember writing any of them"
+    },
+    "ch5a_logs15_c1": {
+      "content": "I wish they were"
+    },
+    "ch5a_logs15_c2": {
+      "content": "But authentication signatures don't lie"
+    },
+    "ch5a_logs16": {
+      "content": "The logs come from different times"
+    },
+    "ch5a_logs17": {
+      "content": "But they contradict one another"
+    },
+    "ch5a_logs18": {
+      "content": "As if six different people wrote them"
+    },
+    "ch5a_obs1": {
+      "content": "11:52"
+    },
+    "ch5a_obs2": {
+      "content": "I went to the observatory"
+    },
+    "ch5a_obs2_choice": {
+      "choices": {
+        "ch5a_obs2_choice__0": "【You went looking for her anyway?】",
+        "ch5a_obs2_choice__1": "【Don't get too close】",
+        "ch5a_obs2_choice__2": "【I'm here. Keep going】"
+      }
+    },
+    "ch5a_obs2_a1": {
+      "content": "Yeah"
+    },
+    "ch5a_obs2_a2": {
+      "content": "If I kept avoiding that place"
+    },
+    "ch5a_obs2_a3": {
+      "content": "I might never understand what I was afraid of"
+    },
+    "ch5a_obs2_b1": {
+      "content": "I know"
+    },
+    "ch5a_obs2_b2": {
+      "content": "I didn't go straight in"
+    },
+    "ch5a_obs2_b3": {
+      "content": "I stood in the doorway and watched for a while"
+    },
+    "ch5a_obs2_c1": {
+      "content": "Okay"
+    },
+    "ch5a_obs2_c2": {
+      "content": "Then I'll tell it slowly"
+    },
+    "ch5a_obs4": {
+      "content": "She was still there"
+    },
+    "ch5a_obs5": {
+      "content": "Right in front of the observation window"
+    },
+    "ch5a_obs6_choice": {
+      "choices": {
+        "ch5a_obs6_choice__0": "【Did she see you?】",
+        "ch5a_obs6_choice__1": "【It sounds like she was waiting for you】",
+        "ch5a_obs6_choice__2": "【Was it different this time?】"
+      }
+    },
+    "ch5a_obs6_a1": {
+      "content": "At the time, it looked that way"
+    },
+    "ch5a_obs6_a2": {
+      "content": "Her gaze was fixed exactly where I stood"
+    },
+    "ch5a_obs6_b1": {
+      "content": "Yes"
+    },
+    "ch5a_obs6_b2": {
+      "content": "She wasn't standing there by accident"
+    },
+    "ch5a_obs6_b3": {
+      "content": "She was waiting"
+    },
+    "ch5a_obs6_c1": {
+      "content": "It was different"
+    },
+    "ch5a_obs6_c2": {
+      "content": "Before, it felt like I had seen her"
+    },
+    "ch5a_obs6_c3": {
+      "content": "This time, it felt like she had finally waited long enough for me to see her"
+    },
+    "ch5a_obs9": {
+      "content": "Then she spoke"
+    },
+    "ch5a_obs10_choice": {
+      "choices": {
+        "ch5a_obs10_choice__0": "【She was speaking to you?】",
+        "ch5a_obs10_choice__1": "【She isn't the version of you who's here now】",
+        "ch5a_obs10_choice__2": "【Don't be afraid. I'm here】"
+      }
+    },
+    "ch5a_obs10_a1": {
+      "content": "It looked that way"
+    },
+    "ch5a_obs10_a2": {
+      "content": "She looked directly at me"
+    },
+    "ch5a_obs10_a3": {
+      "content": "As though she'd always known I would come"
+    },
+    "ch5a_obs10_b1": {
+      "content": "That's what I told myself"
+    },
+    "ch5a_obs10_b2": {
+      "content": "But she had my face"
+    },
+    "ch5a_obs10_b3": {
+      "content": "And my voice"
+    },
+    "ch5a_obs10_b4": {
+      "content": "I couldn't immediately treat her like someone else"
+    },
+    "ch5a_obs10_c1": {
+      "content": "..."
+    },
+    "ch5a_obs10_c2": {
+      "content": "You always make it sound so simple"
+    },
+    "ch5a_obs10_c3": {
+      "content": "But strangely"
+    },
+    "ch5a_obs10_c4": {
+      "content": "I really wasn't as afraid anymore"
+    },
+    "ch5a_obs11": {
+      "content": "The channel remains silent for several seconds"
+    },
+    "ch5a_obs11a": {
+      "content": "I needed a moment"
+    },
+    "ch5a_obs11b": {
+      "content": "Because it wasn't an ordinary image"
+    },
+    "ch5a_obs12": {
+      "content": "She wasn't another living version of me"
+    },
+    "ch5a_obs13": {
+      "content": "More like an echo left behind by the reversion process"
+    },
+    "ch5a_obs14": {
+      "content": "Assembled from memories, records"
+    },
+    "ch5a_obs14b": {
+      "content": "And something that should never have survived"
+    },
+    "ch5a_obs15": {
+      "content": "She was sitting in front of the observation window"
+    },
+    "ch5a_obs16": {
+      "content": "As though she'd been waiting for a very long time"
+    },
+    "ch5a_obs21": {
+      "content": "She looked at me"
+    },
+    "ch5a_obs22": {
+      "content": "The first thing she said was:"
+    },
+    "ch5a_obs23": {
+      "content": "“Is this the seventh time already?”"
+    },
+    "ch5a_obs24": {
+      "choices": {
+        "ch5a_obs24__0": "【She sounded like she'd been waiting for this cycle】",
+        "ch5a_obs24__1": "【How long had she been waiting?】"
+      }
+    },
+    "ch5a_obs24_a1": {
+      "content": "Yes"
+    },
+    "ch5a_obs24_b1": {
+      "content": "I don't know"
+    },
+    "ch5a_obs24_b2": {
+      "content": "But if she really was the sixth version of me"
+    },
+    "ch5a_obs24_b3": {
+      "content": "Then she'd already waited through everything that came after one complete failure"
+    },
+    "ch5a_obs25": {
+      "content": "Then she smiled"
+    },
+    "ch5a_obs26": {
+      "content": "It's hard to describe"
+    },
+    "ch5a_obs27": {
+      "content": "Like she was relieved"
+    },
+    "ch5a_obs28": {
+      "content": "And heartbroken at the same time"
+    },
+    "ch5a_obs30": {
+      "content": "The next line she left was:"
+    },
+    "ch5a_obs31": {
+      "content": "“Is Observer-01 still there?”"
+    },
+    "ch5a_obs33": {
+      "content": "I don't know"
+    },
+    "ch5a_obs34": {
+      "content": "It can't hear me, and it doesn't truly respond"
+    },
+    "ch5a_obs34b": {
+      "content": "It's more like prewritten content playing when certain conditions are met"
+    },
+    "ch5a_obs35": {
+      "content": "Then it played the next message:"
+    },
+    "ch5a_obs36": {
+      "content": "“I am the sixth version of you”"
+    },
+    "ch5a_obs37": {
+      "content": "17:34"
+    },
+    "ch5a_back1": {
+      "content": "I'm back"
+    },
+    "ch5a_back3": {
+      "content": "This is bad"
+    },
+    "ch5a_back4": {
+      "content": "Very bad"
+    },
+    "ch5a_back5": {
+      "content": "Because she showed me something"
+    },
+    "ch5a_back7": {
+      "content": "Recordings"
+    },
+    "ch5a_back8": {
+      "content": "Six recordings"
+    },
+    "ch5a_back9": {
+      "content": "Every one of them was me"
+    },
+    "ch5a_back10": {
+      "content": "The first five ended in different disasters"
+    },
+    "ch5a_vids3": {
+      "content": "The first"
+    },
+    "ch5a_vids4": {
+      "content": "An engine explosion"
+    },
+    "ch5a_vids5": {
+      "content": "The second"
+    },
+    "ch5a_vids6": {
+      "content": "A power collapse"
+    },
+    "ch5a_vids7": {
+      "content": "The third"
+    },
+    "ch5a_vids8": {
+      "content": "An unknown infection"
+    },
+    "ch5a_vids9": {
+      "content": "The fourth"
+    },
+    "ch5a_vids10": {
+      "content": "A systems takeover"
+    },
+    "ch5a_vids11": {
+      "content": "The fifth"
+    },
+    "ch5a_vids12": {
+      "content": "The ship broke apart"
+    },
+    "ch5a_vids13": {
+      "choices": {
+        "ch5a_vids13__0": "【What happened in the sixth recording?】",
+        "ch5a_vids13__1": "【All five previous attempts failed?】",
+        "ch5a_vids13__2": "【Why did she record any of this?】"
+      }
+    },
+    "ch5a_vids13_a1": {
+      "content": "I watched the sixth one first too"
+    },
+    "ch5a_vids13_b1": {
+      "content": "Yes"
+    },
+    "ch5a_vids13_b2": {
+      "content": "At least, that's what the recordings show"
+    },
+    "ch5a_vids13_c1": {
+      "content": "Maybe they weren't meant for her"
+    },
+    "ch5a_vids13_c2": {
+      "content": "Maybe they were meant for the next version of me"
+    },
+    "ch5a_vids14": {
+      "content": "The sixth recording contains no death report"
+    },
+    "ch5a_vids16": {
+      "content": "At the end"
+    },
+    "ch5a_vids17": {
+      "content": "That version of me looked into the camera"
+    },
+    "ch5a_vids18": {
+      "content": "And said:"
+    },
+    "ch5a_vids19": {
+      "content": "“I finally found you”"
+    },
+    "ch5a_vids20": {
+      "choices": {
+        "ch5a_vids20__0": "【Who did she say she'd found?】",
+        "ch5a_vids20__1": "【Was the recording deleted?】",
+        "ch5a_vids20__2": "【You think she meant me?】"
+      }
+    },
+    "ch5a_vids_who": {
+      "content": "I don't know"
+    },
+    "ch5a_vids_who2": {
+      "content": "The recording cuts off there"
+    },
+    "ch5a_vids_who3": {
+      "content": "As if someone deliberately removed the rest"
+    },
+    "ch5a_vids_who4": {
+      "content": "But the way she looked into the camera"
+    },
+    "ch5a_vids_who5": {
+      "content": "Wasn't how you look at a stranger"
+    },
+    "ch5a_vids_del": {
+      "content": "Yes"
+    },
+    "ch5a_vids_del2": {
+      "content": "And it was deleted cleanly"
+    },
+    "ch5a_vids_del3": {
+      "content": "Not corrupted"
+    },
+    "ch5a_vids_del4": {
+      "content": "Erased by someone"
+    },
+    "ch5a_vids_del5": {
+      "content": "Someone didn't want me to hear what came next"
+    },
+    "ch5a_vids_you": {
+      "content": "I can't be certain"
+    },
+    "ch5a_vids_you2": {
+      "content": "But when she said it"
+    },
+    "ch5a_vids_you3": {
+      "content": "She was looking straight into the communications lens"
+    },
+    "ch5a_vids_you4": {
+      "content": "As though she knew someone was watching from the other side"
+    },
+    "ch5a_vids_merge": {
+      "content": "So I have a very bad feeling"
+    },
+    "ch5a_vids_merge2": {
+      "content": "The person she meant"
+    },
+    "ch5a_vids_merge3": {
+      "content": "May have been you"
+    },
+    "ch5a_vids_merge4": {
+      "content": "Or at least"
+    },
+    "ch5a_vids_merge5": {
+      "content": "Someone connected to you"
+    },
+    "ch5a_future": {
+      "content": "22:18"
+    },
+    "ch5a_fut1": {
+      "content": "I found something worse"
+    },
+    "ch5a_fut3": {
+      "content": "These recordings"
+    },
+    "ch5a_fut4": {
+      "content": "Were all made after the current safety checkpoint"
+    },
+    "ch5a_fut6": {
+      "content": "Even the earliest one"
+    },
+    "ch5a_fut7": {
+      "content": "Is stamped one year later in mission time"
+    },
+    "ch5a_fut9": {
+      "content": "Exactly"
+    },
+    "ch5a_fut10": {
+      "content": "So here's the question"
+    },
+    "ch5a_fut11": {
+      "content": "Why would a version of me from later in the previous cycle"
+    },
+    "ch5a_fut12": {
+      "content": "Leave recordings for the version of me who wakes after this checkpoint?"
+    },
+    "ch5a_fut14": {
+      "content": "And"
+    },
+    "ch5a_fut15": {
+      "content": "Why do all of them"
+    },
+    "ch5a_fut16": {
+      "content": "Contain records connected to you?"
+    },
+    "ch5a_fut17_choice": {
+      "choices": {
+        "ch5a_fut17_choice__0": "【Because I'm in them too?】",
+        "ch5a_fut17_choice__1": "【Because she wanted me to know?】",
+        "ch5a_fut17_choice__2": "【Maybe it isn't me】"
+      }
+    },
+    "ch5a_fut17_a1": {
+      "content": "I don't know whether you were physically “in” them"
+    },
+    "ch5a_fut17_a2": {
+      "content": "But you were definitely part of her plan"
+    },
+    "ch5a_fut17_b1": {
+      "content": "Maybe"
+    },
+    "ch5a_fut17_b2": {
+      "content": "It feels like she packed every word she couldn't say into those recordings"
+    },
+    "ch5a_fut17_c1": {
+      "content": "I hope it isn't"
+    },
+    "ch5a_fut17_c2": {
+      "content": "But every clue keeps pointing toward you"
+    },
+    "ch5a_fut19": {
+      "content": "I'm beginning to suspect something"
+    },
+    "ch5a_fut21": {
+      "content": "Maybe"
+    },
+    "ch5a_fut22": {
+      "content": "I'm not the only one who's trapped"
+    },
+    "ch5a_offline": {
+      "content": "Nova is offline"
+    },
+    "ch5a_msg": {
+      "content": "03:09"
+    },
+    "ch5a_msg1": {
+      "content": "Message received from unknown source"
+    },
+    "ch5a_shadow_photo": {
+      "content": "Communications echo: NOVA-06"
+    },
+    "ch5a_msg2": {
+      "content": "Sender: Nova?"
+    },
+    "ch5a_msg3": {
+      "content": "Do not trust her completely."
+    },
+    "ch5a_msg4": {
+      "content": "Not because she will lie to you."
+    },
+    "ch5a_msg5": {
+      "content": "Because she truly will forget."
+    },
+    "ch5a_msg6": {
+      "content": "Do not trust me completely either."
+    },
+    "ch5a_msg7": {
+      "content": "I am only an echo left behind by the sixth cycle."
+    },
+    "ch5a_msg8": {
+      "content": "The one truly trapped is not Nova.\nIt's you.\nChapter Five: The Truth (Part II)"
+    },
+    "CH5B_START": {
+      "content": "Chapter Five: The Truth (Part II)"
+    },
+    "ch5b_0": {
+      "content": "Day Seven, 08:01"
+    },
+    "ch5b_1": {
+      "content": "New message received"
+    },
+    "ch5b_2": {
+      "content": "I did not sleep all night."
+    },
+    "ch5b_4": {
+      "content": "Yeah."
+    },
+    "ch5b_5": {
+      "content": "Especially that last line."
+    },
+    "ch5b_6": {
+      "content": "“The one truly trapped is not Nova. It is you.”"
+    },
+    "ch5b_7": {
+      "content": "I could not make sense of it."
+    },
+    "ch5b_9": {
+      "content": "So I decided to do something dangerous."
+    },
+    "ch5b_11": {
+      "content": "I went to meet the sixth version of me."
+    },
+    "ch5b_obs1": {
+      "content": "11:42"
+    },
+    "ch5b_obs2": {
+      "content": "I am in the observatory."
+    },
+    "ch5b_obs3": {
+      "content": "She is still here."
+    },
+    "ch5b_obs5": {
+      "content": "She looks exactly like me."
+    },
+    "ch5b_obs6": {
+      "content": "Only more exhausted."
+    },
+    "ch5b_obs7": {
+      "content": "Like she has not slept in years."
+    },
+    "ch5b_obs9": {
+      "content": "She left a question for you."
+    },
+    "ch5b_obs11": {
+      "content": "She said:"
+    },
+    "ch5b_obs12": {
+      "content": "“Do you still remember the first time you met me?”"
+    },
+    "ch5b_obs13": {
+      "choices": {
+        "ch5b_obs13__0": "【It was actually the seventh time.】",
+        "ch5b_obs13__1": "【I don't know...】",
+        "ch5b_obs13__2": "【Of course I remember.】"
+      }
+    },
+    "ch5b_obs_timeout": {
+      "content": "You did not answer right away."
+    },
+    "ch5b_obs_timeout2": {
+      "content": "She did not seem surprised."
+    },
+    "ch5b_obs_seven": {
+      "content": "The seventh time?"
+    },
+    "ch5b_obs_seven2": {
+      "content": "Why would you put it that way?"
+    },
+    "ch5b_obs_seven3": {
+      "content": "Nobody calls a “first meeting” the seventh time."
+    },
+    "ch5b_obs_seven4": {
+      "content": "Unless..."
+    },
+    "ch5b_obs_seven5": {
+      "content": "Never mind."
+    },
+    "ch5b_obs_seven6": {
+      "content": "I am not sure I want the answer yet."
+    },
+    "ch5b_obs_dontknow": {
+      "content": "Fair."
+    },
+    "ch5b_obs_dontknow2": {
+      "content": "It is a strange question to begin with."
+    },
+    "ch5b_obs_dontknow3": {
+      "content": "If even I cannot remember,"
+    },
+    "ch5b_obs_dontknow4": {
+      "content": "how could I ask you to?"
+    },
+    "ch5b_obs_dontknow5": {
+      "content": "But when she heard that answer,"
+    },
+    "ch5b_obs_dontknow6": {
+      "content": "she did not look surprised at all."
+    },
+    "ch5b_obs_remember": {
+      "content": "You answered quickly."
+    },
+    "ch5b_obs_remember2": {
+      "content": "So quickly it felt as though the answer had been waiting inside you."
+    },
+    "ch5b_obs_remember3": {
+      "content": "You did not sound hesitant."
+    },
+    "ch5b_obs_remember4": {
+      "content": "You sounded like you were genuinely trying to remember something."
+    },
+    "ch5b_obs14": {
+      "content": "But that makes no sense."
+    },
+    "ch5b_obs15": {
+      "content": "We have only known each other for seven days."
+    },
+    "ch5b_obs16": {
+      "content": "At least, from my side,"
+    },
+    "ch5b_obs16b": {
+      "content": "it has only been seven days."
+    },
+    "ch5b_file1": {
+      "content": "15:03"
+    },
+    "ch5b_file2": {
+      "content": "She showed me one final file."
+    },
+    "ch5b_file3": {
+      "content": "Its name was:"
+    },
+    "ch5b_file4": {
+      "content": "FILE||OBSERVER"
+    },
+    "ch5b_file5": {
+      "content": "OBSERVER-01 file expanded"
+    },
+    "ch5b_file6": {
+      "content": "It is an experiment record."
+    },
+    "ch5b_file7": {
+      "content": "And it is about you."
+    },
+    "ch5b_file9": {
+      "content": "Yeah."
+    },
+    "ch5b_file10": {
+      "content": "OBSERVER-01||Off-ship real time: Unaffected by local temporal reversion\nCommunication-linked memory: Access sealed when link closes\nMemory retention authority: Retained only by external index copy\nIdentity source: NOVA-06 navigation-continuity data request\nIndex type: External memory index\nHost type: Real external consciousness\nHost location: Inaccessible\nAdministrator privileges: None\nPermitted operations: Store / read / return memory anchors\nPurpose: Preserve an index capable of reawakening memory after link closure"
+    },
+    "ch5b_file11": {
+      "content": "..."
+    },
+    "ch5b_file12": {
+      "content": "This file is not about me."
+    },
+    "ch5b_file13": {
+      "content": "It is about you."
+    },
+    "ch5b_file_reader_choice": {
+      "choices": {
+        "ch5b_file_reader_choice__0": "【So I forgot you too?】",
+        "ch5b_file_reader_choice__1": "【Only Observer-01 remembered?】",
+        "ch5b_file_reader_choice__2": "【Then what does that make me now?】"
+      }
+    },
+    "ch5b_file_reader_a1": {
+      "content": "Yes."
+    },
+    "ch5b_file_reader_a2": {
+      "content": "Your own conscious mind forgot as well."
+    },
+    "ch5b_file_reader_b1": {
+      "content": "More precisely,"
+    },
+    "ch5b_file_reader_b2": {
+      "content": "only the Observer-01 external index attached to you was preserved."
+    },
+    "ch5b_file_reader_c1": {
+      "content": "You are still you."
+    },
+    "ch5b_file_reader_c2": {
+      "content": "There is just a part of you that was never supposed to be there."
+    },
+    "ch5b_file_reader_merge": {
+      "content": "You are not someone the Seventh Protocol created."
+    },
+    "ch5b_file13f": {
+      "content": "You are a real consciousness outside this ship."
+    },
+    "ch5b_file13g": {
+      "content": "The sixth version of me simply"
+    },
+    "ch5b_file13h": {
+      "content": "forced this memory index onto you."
+    },
+    "ch5b_file13i": {
+      "content": "Your world was never sent back in time."
+    },
+    "ch5b_file13j": {
+      "content": "What was cut off each time was your access to the memories of this anomalous link."
+    },
+    "ch5b_file13k": {
+      "content": "Observer-01 survived the link shutdown and kept only an index that could awaken those memories again."
+    },
+    "ch5b_player_forget1": {
+      "content": "So you were not consciously watching me forget you six times."
+    },
+    "ch5b_player_forget2": {
+      "content": "You forgot me six times too."
+    },
+    "ch5b_player_forget3": {
+      "content": "It is just that every time,"
+    },
+    "ch5b_player_forget4": {
+      "content": "some trace of the Observer-01 index"
+    },
+    "ch5b_player_forget5": {
+      "content": "woke up before you did."
+    },
+    "ch5b_player_forget5b": {
+      "content": "So when the log said “the external index will remember,”"
+    },
+    "ch5b_player_forget5c": {
+      "content": "it was not talking about all of you."
+    },
+    "ch5b_player_forget_choice": {
+      "choices": {
+        "ch5b_player_forget_choice__0": "【So I did not remember you all along?】",
+        "ch5b_player_forget_choice__1": "【The index remembered for me?】",
+        "ch5b_player_forget_choice__2": "【Then neither of us is whole.】"
+      }
+    },
+    "ch5b_player_forget_a1": {
+      "content": "Right."
+    },
+    "ch5b_player_forget_a2": {
+      "content": "At least, not in the way you thought."
+    },
+    "ch5b_player_forget_b1": {
+      "content": "It kept the evidence for you."
+    },
+    "ch5b_player_forget_b2": {
+      "content": "But it did not preserve all the pain."
+    },
+    "ch5b_player_forget_c1": {
+      "content": "That is a cruel way to put it."
+    },
+    "ch5b_player_forget_c2": {
+      "content": "But it may be true."
+    },
+    "ch5b_file14": {
+      "choices": {
+        "ch5b_file14__0": "【So I was never an ordinary contact?】",
+        "ch5b_file14__1": "【Are you saying I am part of the protocol?】"
+      }
+    },
+    "ch5b_file14_a1": {
+      "content": "You were never an ordinary contact."
+    },
+    "ch5b_file14_b1": {
+      "content": "No."
+    },
+    "ch5b_file14_b2": {
+      "content": "You are not part of the protocol."
+    },
+    "ch5b_file14_b3": {
+      "content": "You are more like an index hung outside it."
+    },
+    "ch5b_file15": {
+      "content": "I am not the only thing being reverted."
+    },
+    "ch5b_file16": {
+      "content": "The Seventh Protocol orders the Phase-Anchor Core to reverse Aurora's entire local mission state."
+    },
+    "ch5b_file17": {
+      "content": "People, systems, flight records—"
+    },
+    "ch5b_file17a": {
+      "content": "even the ship itself."
+    },
+    "ch5b_file18": {
+      "content": "Everything follows the most recent stable phase anchor"
+    },
+    "ch5b_file18a": {
+      "content": "back to the same safe checkpoint."
+    },
+    "ch5b_file18b": {
+      "content": "Take the little white flower."
+    },
+    "ch5b_flower_choice": {
+      "choices": {
+        "ch5b_flower_choice__0": "【It was not left over from the previous cycle?】",
+        "ch5b_flower_choice__1": "【It blooms again every time?】",
+        "ch5b_flower_choice__2": "【That makes it feel even more like a miracle.】"
+      }
+    },
+    "ch5b_flower_a1": {
+      "content": "No."
+    },
+    "ch5b_flower_b1": {
+      "content": "That is closer."
+    },
+    "ch5b_flower_c1": {
+      "content": "Maybe it is."
+    },
+    "ch5b_file18c": {
+      "content": "It is not literally the same flower carried over from the previous cycle."
+    },
+    "ch5b_file18d": {
+      "content": "The same abnormal conditions"
+    },
+    "ch5b_file18e": {
+      "content": "simply happen again after every temporal reversion."
+    },
+    "ch5b_file18f": {
+      "content": "It did not survive six times."
+    },
+    "ch5b_file18g": {
+      "content": "Every time, it should have died."
+    },
+    "ch5b_file18h": {
+      "content": "And every time, it bloomed anyway."
+    },
+    "ch5b_file19": {
+      "content": "The captain will not remember how many times he has chewed me out."
+    },
+    "ch5b_file20": {
+      "content": "Maintenance will not remember how many times they lost that panel."
+    },
+    "ch5b_file21": {
+      "content": "Only I leave this kind of trace."
+    },
+    "ch5b_file21a": {
+      "content": "Because the navigator is also the mission-state continuity signatory."
+    },
+    "ch5b_file21a2": {
+      "content": "Every day, I submit star charts, flight paths, and crew positions to the public stabilization core."
+    },
+    "ch5b_file21a3": {
+      "content": "Those data are mirrored into the Phase-Anchor Core as a human-continuity check."
+    },
+    "ch5b_file21b": {
+      "content": "After six reversions, state differences connected to me remained inside it."
+    },
+    "ch5b_file21c": {
+      "content": "Those echoes were not something the sixth me planned."
+    },
+    "ch5b_file21d": {
+      "content": "They are a side effect of the core rebuilding the same continuity signature again and again."
+    },
+    "ch5b_file22": {
+      "content": "But the OBSERVER file was deliberate."
+    },
+    "ch5b_file22a": {
+      "content": "So was the external index."
+    },
+    "ch5b_file22b": {
+      "content": "The clues written for you"
+    },
+    "ch5b_file22c": {
+      "content": "were planted by the sixth me."
+    },
+    "ch5b_file22d": {
+      "content": "She never truly hacked the Seventh Protocol."
+    },
+    "ch5b_file22e": {
+      "content": "I have no authority to alter the protocol, but I can submit navigation-continuity data."
+    },
+    "ch5b_file22f": {
+      "content": "So she broke part of her memory anchors down into the minimum mission index,"
+    },
+    "ch5b_file22g": {
+      "content": "then sealed them into a data packet with her navigation-continuity signature."
+    },
+    "ch5b_file22h": {
+      "content": "The Seventh Protocol's control layer misclassified them as data required for the mission to continue."
+    },
+    "ch5b_split1": {
+      "content": "Then it attached an external link to you."
+    },
+    "ch5b_split2": {
+      "content": "The first line."
+    },
+    "ch5b_split3": {
+      "content": "N7."
+    },
+    "ch5b_split4": {
+      "content": "Goodnight, and the observatory."
+    },
+    "ch5b_split5": {
+      "content": "The milk candy and the white flower."
+    },
+    "ch5b_split6": {
+      "content": "That maintenance panel, the synthetic steak, and every trace of every reply you ever gave me."
+    },
+    "ch5b_split7": {
+      "content": "She tore those things out of herself."
+    },
+    "ch5b_split_choice": {
+      "choices": {
+        "ch5b_split_choice__0": "【Those are all anchors?】",
+        "ch5b_split_choice__1": "【Is that why your memory keeps cutting out?】",
+        "ch5b_split_choice__2": "【She damaged herself to do this?】"
+      }
+    },
+    "ch5b_split_choice_a1": {
+      "content": "Yeah."
+    },
+    "ch5b_split_choice_a2": {
+      "content": "Not complete memories. Loose threads that can lead the memories back."
+    },
+    "ch5b_split_choice_b1": {
+      "content": "Maybe."
+    },
+    "ch5b_split_choice_b2": {
+      "content": "She did not steal memories from a future version of me. I am missing the threads that let me retrieve their traces reliably."
+    },
+    "ch5b_split_choice_c1": {
+      "content": "Do not say it like that."
+    },
+    "ch5b_split_choice_c2": {
+      "content": "Even if I know you are not wrong."
+    },
+    "ch5b_split8": {
+      "content": "That is why my mind suddenly blanks."
+    },
+    "ch5b_split9": {
+      "content": "Why I feel sad first,"
+    },
+    "ch5b_split10": {
+      "content": "then cannot remember what I was sad about."
+    },
+    "ch5b_file22i": {
+      "content": "It made you remember,"
+    },
+    "ch5b_file22j": {
+      "content": "but it never gave you permission to understand everything from the start."
+    },
+    "ch5b_file23": {
+      "content": "So you are not an ordinary observer."
+    },
+    "ch5b_file23a": {
+      "content": "And you are more than a person at the other end of a message."
+    },
+    "ch5b_file23b": {
+      "content": "But that does not mean you can control the Seventh Protocol."
+    },
+    "ch5b_file23_choice": {
+      "choices": {
+        "ch5b_file23_choice__0": "【Then what can I actually do?】",
+        "ch5b_file23_choice__1": "【So I am just a key?】",
+        "ch5b_file23_choice__2": "【What happens to these memories in the end?】"
+      }
+    },
+    "ch5b_file23_choice_a1": {
+      "content": "You cannot control it."
+    },
+    "ch5b_file23_choice_b1": {
+      "content": "“Key” sounds a little cold."
+    },
+    "ch5b_file23_choice_c1": {
+      "content": "At the end, you return the anchors first, then release the index hanging outside the system."
+    },
+    "ch5b_file23_bridge": {
+      "content": "The protocol does not belong to you."
+    },
+    "ch5b_file23_bridge2": {
+      "content": "It is just that when this ends,"
+    },
+    "ch5b_file23_bridge3": {
+      "content": "you have to let go of the index hanging outside it."
+    },
+    "ch5b_file24": {
+      "content": "Observer-01 is an external-memory indexing permission layered onto you."
+    },
+    "ch5b_file25": {
+      "content": "What you retained was not a complete chat transcript."
+    },
+    "ch5b_file26": {
+      "content": "Only anchors and fragments left behind each time the link closed."
+    },
+    "ch5b_file27": {
+      "content": "Pieces of me the system erased."
+    },
+    "ch5b_file28": {
+      "content": "You carry the external-memory index left by the sixth me."
+    },
+    "ch5b_file29": {
+      "content": "But you are not a person she created."
+    },
+    "ch5b_file30": {
+      "content": "She simply handed you the burden of\n“please remember me.”"
+    },
+    "ch5b_why": {
+      "content": "18:26"
+    },
+    "ch5b_why1": {
+      "content": "When I finally asked “why,”"
+    },
+    "ch5b_why3": {
+      "content": "the echo played the next message, as if it had expected the question all along:"
+    },
+    "ch5b_why4": {
+      "content": "“These were not leftovers from the system.”"
+    },
+    "ch5b_why4a": {
+      "content": "“They were retrieval anchors I cut out of my own memories.”"
+    },
+    "ch5b_why4b": {
+      "content": "“So the seventh me will still carry the traces, but she may not be able to reach them.”"
+    },
+    "ch5b_why5": {
+      "choices": {
+        "ch5b_why5__0": "【So she deliberately left those anchors with me?】",
+        "ch5b_why5__1": "【Did she know what that would mean?】",
+        "ch5b_why5__2": "【Was that fair to the person you are now?】"
+      }
+    },
+    "ch5b_why5_a1": {
+      "content": "Yes."
+    },
+    "ch5b_why5_b1": {
+      "content": "She must have known."
+    },
+    "ch5b_why5_b2": {
+      "content": "At least partly."
+    },
+    "ch5b_why5_b3": {
+      "content": "Because it was never as simple as keeping you around."
+    },
+    "ch5b_why5_c1": {
+      "content": "I do not know."
+    },
+    "ch5b_why5_c2": {
+      "content": "But if she had not done it,"
+    },
+    "ch5b_why5_c3": {
+      "content": "the person I am now would never know what she lost."
+    },
+    "ch5b_why6": {
+      "content": "She said"
+    },
+    "ch5b_why7": {
+      "content": "that during the sixth cycle,"
+    },
+    "ch5b_why8": {
+      "content": "she realized that no matter what she did,"
+    },
+    "ch5b_why9": {
+      "content": "she would forget."
+    },
+    "ch5b_why10": {
+      "content": "So"
+    },
+    "ch5b_why11": {
+      "content": "she submitted an anomalous data packet under her own navigation-continuity signature."
+    },
+    "ch5b_why11b": {
+      "content": "The record said:"
+    },
+    "ch5b_why12": {
+      "content": "“Transfer key memory anchors to external index. Permit return during next cycle.”"
+    },
+    "ch5b_why13": {
+      "content": "So"
+    },
+    "ch5b_why14": {
+      "content": "she did not create you."
+    },
+    "ch5b_why15": {
+      "content": "She only put the Observer-01 key in your hand"
+    },
+    "ch5b_why16": {
+      "content": "and asked you to hold what she could not keep herself."
+    },
+    "ch5b_lonely1": {
+      "content": "I know."
+    },
+    "ch5b_lonely2": {
+      "content": "It is cruel."
+    },
+    "ch5b_lonely3": {
+      "content": "Because I suddenly realized"
+    },
+    "ch5b_lonely4": {
+      "content": "you may never truly have agreed to any of this."
+    },
+    "ch5b_lonely5_choice": {
+      "choices": {
+        "ch5b_lonely5_choice__0": "【If it is not too late, I choose to do it now.】",
+        "ch5b_lonely5_choice__1": "【She should at least have asked me.】",
+        "ch5b_lonely5_choice__2": "【But I still came back.】"
+      }
+    },
+    "ch5b_lonely5_a1": {
+      "content": "Thank you."
+    },
+    "ch5b_lonely5_a2": {
+      "content": "It came late. But at least this time, it was your choice."
+    },
+    "ch5b_lonely5_b1": {
+      "content": "Yes."
+    },
+    "ch5b_lonely5_b2": {
+      "content": "She should have asked you."
+    },
+    "ch5b_lonely5_c1": {
+      "content": "Yeah."
+    },
+    "ch5b_lonely5_c2": {
+      "content": "That may be the saddest part."
+    },
+    "ch5b_lonely6": {
+      "content": "At least I get to forget after a temporal reversion."
+    },
+    "ch5b_lonely7": {
+      "content": "You were forced to keep the index scars for me."
+    },
+    "ch5b_farewell": {
+      "content": "22:14"
+    },
+    "ch5b_far1": {
+      "content": "She is disappearing."
+    },
+    "ch5b_far3": {
+      "content": "The sixth me."
+    },
+    "ch5b_far4": {
+      "content": "She said she had held on for too long."
+    },
+    "ch5b_far6": {
+      "content": "Her last words"
+    },
+    "ch5b_far7": {
+      "content": "were for you."
+    },
+    "ch5b_far9": {
+      "content": "She said:"
+    },
+    "ch5b_far10": {
+      "content": "“I am sorry.”"
+    },
+    "ch5b_far11": {
+      "content": "Then she added one more thing."
+    },
+    "ch5b_far12": {
+      "content": "“Thank you.”"
+    },
+    "ch5b_far13": {
+      "choices": {
+        "ch5b_far13__0": "【I do not blame her.】",
+        "ch5b_far13__1": "【That was selfish.】",
+        "ch5b_far13__2": "【I do not know what to say.】"
+      }
+    },
+    "ch5b_far13_a1": {
+      "content": "If she could hear that,"
+    },
+    "ch5b_far13_a2": {
+      "content": "I think she would cry."
+    },
+    "ch5b_far13_b1": {
+      "content": "Yeah."
+    },
+    "ch5b_far13_b2": {
+      "content": "She said the same thing about herself."
+    },
+    "ch5b_far13_c1": {
+      "content": "You do not have to say anything."
+    },
+    "ch5b_far13_c2": {
+      "content": "I sat in silence for a long time when I reached this part too."
+    },
+    "ch5b_far14": {
+      "content": "I asked the echo why she had done it."
+    },
+    "ch5b_far15": {
+      "content": "It immediately played the answer she had prepared:"
+    },
+    "ch5b_far16": {
+      "content": "“Because making someone remember you forever”"
+    },
+    "ch5b_far17": {
+      "content": "“is actually a terribly selfish thing to do.”"
+    },
+    "ch5b_far18": {
+      "content": "She also said:"
+    },
+    "ch5b_far18a": {
+      "content": "“I do not know whether they ever had a chance to refuse.”"
+    },
+    "ch5b_far18b": {
+      "content": "“I do not know whether they will hate me when they wake up.”"
+    },
+    "ch5b_far18c": {
+      "content": "“But I was scared.”"
+    },
+    "ch5b_far18d": {
+      "content": "“Scared that when I woke up next time,”"
+    },
+    "ch5b_far18e": {
+      "content": "“I would not even remember that I had tried.”"
+    },
+    "ch5b_far19": {
+      "content": "Then she looked at me,"
+    },
+    "ch5b_far19b": {
+      "content": "like she was looking at a version of herself that had not broken completely yet."
+    },
+    "ch5b_far19c": {
+      "content": "And at the end, she said:"
+    },
+    "ch5b_far19d": {
+      "content": "“Do not leave Observer-01 trapped there any longer.”"
+    },
+    "ch5b_far20": {
+      "content": "Then she vanished."
+    },
+    "ch5b_final": {
+      "content": "Late night, 02:27"
+    },
+    "ch5b_fin1": {
+      "content": "Final archive received"
+    },
+    "ch5b_fin2": {
+      "content": "SEVENTH_REBOOT||Completed primary cycles: 6\nCurrent cycle: 7\nCumulative phase residuals across six primary cycles: 6,412 state-difference records\nFailures: 6\nPublicly registered device: Deep-Space Navigation Stabilization Core\nActual execution device: Local Phase-Anchor Core\nControl program: Seventh Protocol\nOperating condition: Low-disturbance spacetime environment of the Silent Expanse\nReversion reference: Most recent stable phase anchor\nTemporal reversion scope: Aurora local mission state (off-ship objects unaffected)\nOff-ship real time: Unaffected by reversion\nCommunication-linked memory: Access sealed when link closes\nOrdinary crew memory retention: None\nPre-mission crew clearance: None\nAnomalous residual entities: Nova Arlen / Observer-01\nShutdown result: External memory index released / Phase-Anchor Core reversion standby canceled\nSynchronized effect: Stored anchors returned to Nova; index detached from player\nMemory-return integrity: Dependent on completeness of memory anchors\nPost-shutdown survival stability, Navigator Nova Arlen: Unknown\nCurrent status: Mission has entered an irreversible failure countdown\nIf shutdown handshake remains incomplete: Seventh Protocol will command the Phase-Anchor Core to execute another local temporal reversion\nFinal shutdown requirements:\nCurrent navigator authorization: Nova Arlen\nExternal memory index release: Observer-01\nNote: Observer-01 has no protocol-control authority and participates only as the index-release party in the shutdown handshake"
+    },
+    "ch5b_summary1": {
+      "content": "So now I understand."
+    },
+    "ch5b_summary2": {
+      "content": "“The seventh connection” did not begin today."
+    },
+    "ch5b_summary3": {
+      "content": "The first six"
+    },
+    "ch5b_summary4": {
+      "content": "were six times I failed."
+    },
+    "ch5b_summary5": {
+      "content": "The person I am now"
+    },
+    "ch5b_summary6": {
+      "content": "is the seventh."
+    },
+    "ch5b_summary7": {
+      "content": "All those numbers, logs, and communication records"
+    },
+    "ch5b_summary8": {
+      "content": "were describing the same thing."
+    },
+    "ch5b_summary_choice": {
+      "choices": {
+        "ch5b_summary_choice__0": "【So this has to end now?】",
+        "ch5b_summary_choice__1": "【What if we do not end it?】",
+        "ch5b_summary_choice__2": "【Are you really ready?】"
+      }
+    },
+    "ch5b_summary_choice_a1": {
+      "content": "I think it does."
+    },
+    "ch5b_summary_choice_a2": {
+      "content": "Not because I am not afraid."
+    },
+    "ch5b_summary_choice_b1": {
+      "content": "Then it will keep preserving today"
+    },
+    "ch5b_summary_choice_b2": {
+      "content": "and postpone tomorrow again and again."
+    },
+    "ch5b_summary_choice_c1": {
+      "content": "No."
+    },
+    "ch5b_summary_choice_c2": {
+      "content": "But maybe being ready was never a requirement."
+    },
+    "ch5b_fin_lastline": {
+      "content": "Final line:\nRelease the external memory index and cooperate with the current navigator to terminate the Seventh Protocol and cancel Phase-Anchor Core reversion standby?"
+    },
+    "ch5b_fin3": {
+      "choices": {
+        "ch5b_fin3__0": "【Release the external index and help her shut down the protocol.】",
+        "ch5b_fin3__1": "【Refuse to release the external index.】"
+      }
+    },
+    "FINALE_DECISION_END": {
+      "content": "External memory index release confirmed\nCurrent navigator shutdown authorization submitted\nMemory-anchor return prepared"
+    },
+    "ch5b_refuse1": {
+      "content": "..."
+    },
+    "ch5b_refuse2": {
+      "content": "I know."
+    },
+    "ch5b_refuse3": {
+      "content": "You are not trying to trap me."
+    },
+    "ch5b_refuse4": {
+      "content": "You are just not ready to lose this connection."
+    },
+    "ch5b_refuse5": {
+      "content": "But if we keep waiting until we are ready,"
+    },
+    "ch5b_refuse6": {
+      "content": "there will be an eighth time, and a ninth, and a tenth."
+    },
+    "ch5b_refuse7": {
+      "content": "It will keep happening."
+    },
+    "ch5b_refuse8": {
+      "content": "What you are preserving is not tomorrow."
+    },
+    "ch5b_refuse9": {
+      "content": "It is only a today that can be saved over and over.\nFinale: The Seventh Reboot"
+    },
+    "FINALE_START": {
+      "content": "Finale: The Seventh Reboot"
+    },
+    "fin_0": {
+      "content": "Time: Unconfirmed"
+    },
+    "fin_1": {
+      "content": "Final authorization confirmation"
+    },
+    "fin_2": {
+      "content": "Operators: Nova Arlen / Observer-01"
+    },
+    "fin_3": {
+      "content": "Terminating the Seventh Protocol and canceling Phase-Anchor Core reversion standby..."
+    },
+    "fin_3a": {
+      "content": "Post-shutdown survival stability, Navigator Nova Arlen: Unknown\nMemory-return integrity: Dependent on completeness of memory anchors\nMaintaining the protocol can preserve the current cycle\nCost: Mission state will undergo another temporal reversion"
+    },
+    "fin_5": {
+      "content": "..."
+    },
+    "fin_6": {
+      "content": "So that is how it was."
+    },
+    "fin_8": {
+      "content": "I finally remember some of it.\nNot everything.\nBut the most important pieces are here."
+    },
+    "fin_anchor_intro": {
+      "content": "Observer-01 begins returning stored memory anchors"
+    },
+    "fin_anchor_n7": {
+      "content": "I remember an orange cat.\nHe was so fat\nhe probably violated building codes."
+    },
+    "fin_anchor_candy": {
+      "content": "I think I used to love milk candy.\nI cannot even remember the taste anymore,\nbut thinking about it still feels warm."
+    },
+    "fin_anchor_flower": {
+      "content": "And that flower.\nIt should never have survived,\nbut it bloomed anyway.\nLike us."
+    },
+    "fin_anchor_first": {
+      "content": "And our first connection.\nI asked, “Did someone really get this?”\nYou were already there."
+    },
+    "fin_anchor_goodnight": {
+      "content": "And one goodnight.\nI do not remember which day it was,\nbut I remember someone receiving it as though it mattered."
+    },
+    "fin_anchor_observatory": {
+      "content": "I remember the stars from the observatory.\nAnd I remember that I was not watching them alone."
+    },
+    "fin_anchor_board": {
+      "content": "And that drifting maintenance panel.\nA threat to the entire universe.\nIt still sounds ridiculous."
+    },
+    "fin_anchor_steak": {
+      "content": "And the thing that technically qualified as steak.\nSome failures really are worth remembering."
+    },
+    "fin_12": {
+      "content": "The first cycle."
+    },
+    "fin_13": {
+      "content": "The second."
+    },
+    "fin_14": {
+      "content": "The third."
+    },
+    "fin_15": {
+      "content": "Then the rest came rushing back with them."
+    },
+    "fin_16": {
+      "content": "And you."
+    },
+    "fin_18": {
+      "content": "So we have known each other for a long time."
+    },
+    "fin_19": {
+      "content": "Longer than I ever imagined."
+    },
+    "fin_21": {
+      "content": "I am sorry."
+    },
+    "fin_23": {
+      "content": "For forgetting you six times."
+    },
+    "fin_24": {
+      "content": "No."
+    },
+    "fin_25": {
+      "content": "More accurately,"
+    },
+    "fin_26": {
+      "content": "we forgot each other six times."
+    },
+    "fin_29": {
+      "content": "I did too.\nThe versions of me before the seventh\nnever remembered you completely either.\nAll that remained were fragments from the local temporal reversions."
+    },
+    "fin_30": {
+      "content": "Every small failure,"
+    },
+    "fin_31": {
+      "content": "you"
+    },
+    "fin_32": {
+      "content": "left behind for me."
+    },
+    "fin_33": {
+      "content": "Every piece of me that remained,"
+    },
+    "fin_34": {
+      "content": "and every trace of every time you answered."
+    },
+    "fin_36": {
+      "content": "Now I finally understand"
+    },
+    "fin_37": {
+      "content": "why you felt familiar"
+    },
+    "fin_38": {
+      "content": "the first time I saw you."
+    },
+    "fin_39": {
+      "content": "Because"
+    },
+    "fin_40": {
+      "content": "it was not the first time."
+    },
+    "fin_obs1": {
+      "content": "Aurora — Observatory"
+    },
+    "fin_obs3": {
+      "content": "Image description: Starlight streams beyond the window"
+    },
+    "fin_obs5": {
+      "content": "It really is beautiful here."
+    },
+    "fin_obs7": {
+      "content": "There is something I lied to you about."
+    },
+    "fin_obs9": {
+      "content": "I always said I loved this place."
+    },
+    "fin_obs10": {
+      "content": "That was not really why."
+    },
+    "fin_obs12": {
+      "content": "I came here because I was lonely."
+    },
+    "fin_obs13": {
+      "content": "When people are lonely,"
+    },
+    "fin_obs14": {
+      "content": "they want to look at something larger than themselves."
+    },
+    "fin_obs15": {
+      "content": "It makes their own problems feel less important."
+    },
+    "fin_obs17": {
+      "content": "But later,"
+    },
+    "fin_obs18": {
+      "content": "I realized I was wrong."
+    },
+    "fin_obs20": {
+      "content": "Because no matter how vast the universe is,"
+    },
+    "fin_obs21": {
+      "content": "it will never answer you."
+    },
+    "fin_obs22": {
+      "content": "The thing that truly answers you"
+    },
+    "fin_obs23": {
+      "content": "is always another person."
+    },
+    "fin_q2": {
+      "content": "I have a question."
+    },
+    "fin_q4": {
+      "content": "If you had known how this would end,"
+    },
+    "fin_q5": {
+      "content": "would you still have chosen to know me?"
+    },
+    "fin_q6": {
+      "choices": {
+        "fin_q6__0": "【Yes.】",
+        "fin_q6__1": "【No.】",
+        "fin_q6__2": "【I don't know.】"
+      }
+    },
+    "fin_q_timeout1": {
+      "content": "..."
+    },
+    "fin_q_timeout2": {
+      "content": "It is okay if you cannot answer."
+    },
+    "fin_q_timeout3": {
+      "content": "It was never supposed to be an easy question."
+    },
+    "fin_q_merge": {
+      "content": "The truth is,"
+    },
+    "fin_q_yes1": {
+      "content": "..."
+    },
+    "fin_q_yes2": {
+      "content": "I knew you would say that."
+    },
+    "fin_q_yes3": {
+      "content": "No."
+    },
+    "fin_q_yes4": {
+      "content": "I did not know."
+    },
+    "fin_q_yes5": {
+      "content": "I only hoped you would."
+    },
+    "fin_q_yes6": {
+      "content": "Thank you."
+    },
+    "fin_q_yes7": {
+      "content": "I will remember that for a long time."
+    },
+    "fin_q_no1": {
+      "content": "..."
+    },
+    "fin_q_no2": {
+      "content": "Yeah."
+    },
+    "fin_q_no3": {
+      "content": "If knowing me only means losing me again and again,"
+    },
+    "fin_q_no4": {
+      "content": "then choosing no"
+    },
+    "fin_q_no5": {
+      "content": "may be the right answer."
+    },
+    "fin_q_no6": {
+      "content": "I cannot ask you to go through it again."
+    },
+    "fin_q_no7": {
+      "content": "And I cannot pretend this did not hurt you."
+    },
+    "fin_q_no8": {
+      "content": "I am still a little sad, though."
+    },
+    "fin_q_no9": {
+      "content": "Just a little."
+    },
+    "fin_q_no10": {
+      "content": "Do not apologize."
+    },
+    "fin_q_no11": {
+      "content": "You stayed with me all the way here."
+    },
+    "fin_q_no12": {
+      "content": "That is enough."
+    },
+    "fin_q_unknown1": {
+      "content": "Yeah."
+    },
+    "fin_q_unknown2": {
+      "content": "That sounds like a real answer."
+    },
+    "fin_q_unknown3": {
+      "content": "If you had said yes immediately,"
+    },
+    "fin_q_unknown4": {
+      "content": "I would have been happy."
+    },
+    "fin_q_unknown5": {
+      "content": "But I would also wonder whether you were comforting me again."
+    },
+    "fin_q_unknown6": {
+      "content": "It is okay not to know."
+    },
+    "fin_q_unknown7": {
+      "content": "Some answers"
+    },
+    "fin_q_unknown8": {
+      "content": "should not be forced out of someone just before goodbye."
+    },
+    "fin_q_merge1": {
+      "content": "Whatever your answer,"
+    },
+    "fin_q_merge2": {
+      "content": "I will never regret knowing you."
+    },
+    "fin_q_merge3": {
+      "content": "Even if only a faint trace remains."
+    },
+    "fin_q_merge4": {
+      "content": "Even if one day I cannot clearly remember the designation Observer-01,"
+    },
+    "fin_q_merge5": {
+      "content": "I will still know"
+    },
+    "fin_q_merge6": {
+      "content": "that someone was there,"
+    },
+    "fin_q_merge7": {
+      "content": "and stayed with me all the way to the end."
+    },
+    "fin_progress1": {
+      "content": "Cycle termination progress: 72%"
+    },
+    "fin_progress2": {
+      "content": "Cycle termination progress: 81%"
+    },
+    "fin_progress3": {
+      "content": "Cycle termination progress: 93%"
+    },
+    "fin_goodbye1": {
+      "content": "We do not have much time."
+    },
+    "fin_goodbye2": {
+      "choices": {
+        "fin_goodbye2__0": "【What happens next?】",
+        "fin_goodbye2__1": "【What happens after the cycle ends?】",
+        "fin_goodbye2__2": "【Will you be okay?】"
+      }
+    },
+    "fin_after_what": {
+      "content": "The Seventh Protocol will shut down."
+    },
+    "fin_after_what2": {
+      "content": "The cycle will end, and Aurora will return to its normal course."
+    },
+    "fin_after_loop": {
+      "content": "For me, I think it will feel like waking up."
+    },
+    "fin_after_loop2": {
+      "content": "Like life finally found the right track again."
+    },
+    "fin_after_nova": {
+      "content": "Yeah."
+    },
+    "fin_after_nova2": {
+      "content": "At least, that is what the system predicts."
+    },
+    "fin_after_nova3": {
+      "content": "I will live."
+    },
+    "fin_after_merge": {
+      "content": "But you will no longer be Observer-01."
+    },
+    "fin_memory_choice": {
+      "choices": {
+        "fin_memory_choice__0": "【Will I lose these memories?】",
+        "fin_memory_choice__1": "【Will I disappear?】",
+        "fin_memory_choice__2": "【So I am the price?】"
+      }
+    },
+    "fin_memory_loss": {
+      "content": "The Observer-01 external index will close."
+    },
+    "fin_memory_loss2": {
+      "content": "Its anchors will be returned to me, and the index will detach from you."
+    },
+    "fin_memory_loss3": {
+      "content": "Your world will not be reverted, but this link will no longer preserve a doorway back into these memories."
+    },
+    "fin_memory_loss4": {
+      "content": "How much remains afterward will be up to the real you."
+    },
+    "fin_memory_disappear": {
+      "content": "Not that kind of disappearance."
+    },
+    "fin_memory_disappear2": {
+      "content": "It is not death."
+    },
+    "fin_memory_disappear3": {
+      "content": "It is more like..."
+    },
+    "fin_memory_disappear4": {
+      "content": "you will wake up from this communication."
+    },
+    "fin_memory_disappear5": {
+      "content": "And forget that you were ever here."
+    },
+    "fin_memory_price": {
+      "content": "No."
+    },
+    "fin_memory_price2": {
+      "content": "I do not want to call you a price."
+    },
+    "fin_memory_price3": {
+      "content": "You are not something I trade away so I can live."
+    },
+    "fin_memory_price4": {
+      "content": "You are the person who brought me this far."
+    },
+    "fin_memory_price5": {
+      "content": "And now you have to return all the memories to me."
+    },
+    "fin_memory_merge": {
+      "content": "The system says things on your side will return to normal after shutdown."
+    },
+    "fin_memory_merge2": {
+      "content": "You will go on living."
+    },
+    "fin_life_choice": {
+      "choices": {
+        "fin_life_choice__0": "【As if none of this ever happened?】",
+        "fin_life_choice__1": "【What about this connection?】",
+        "fin_life_choice__2": "【I don't want that.】"
+      }
+    },
+    "fin_life_a1": {
+      "content": "It may feel that way."
+    },
+    "fin_life_b1": {
+      "content": "It will slip quietly out of your everyday life."
+    },
+    "fin_life_c1": {
+      "content": "I do not want it either."
+    },
+    "fin_life_c2": {
+      "content": "But we cannot keep mortgaging tomorrow to preserve today."
+    },
+    "fin_memory_merge3": {
+      "content": "You just will not remember me."
+    },
+    "fin_memory_merge4": {
+      "content": "You will not remember Aurora."
+    },
+    "fin_memory_merge5": {
+      "content": "You will not remember the Seventh Reboot."
+    },
+    "fin_memory_merge6": {
+      "content": "Or that you once carried all of this for me."
+    },
+    "fin_forget_choice": {
+      "choices": {
+        "fin_forget_choice__0": "【I will forget you?】",
+        "fin_forget_choice__1": "【What about you?】",
+        "fin_forget_choice__2": "【Maybe that is for the best.】"
+      }
+    },
+    "fin_forget_me": {
+      "content": "Yeah."
+    },
+    "fin_forget_me2": {
+      "content": "That is what scares me most."
+    },
+    "fin_forget_me3": {
+      "content": "I always thought"
+    },
+    "fin_forget_me4": {
+      "content": "that as long as you remembered,"
+    },
+    "fin_forget_me5": {
+      "content": "I had not disappeared completely."
+    },
+    "fin_forget_me6": {
+      "content": "But now,"
+    },
+    "fin_forget_me7": {
+      "content": "you have to forget too."
+    },
+    "fin_forget_nova": {
+      "content": "I do not know."
+    },
+    "fin_forget_nova2": {
+      "content": "I will get part of the memories back."
+    },
+    "fin_forget_nova3": {
+      "content": "Maybe I will remember a few fragments."
+    },
+    "fin_forget_nova4": {
+      "content": "N7."
+    },
+    "fin_forget_nova5": {
+      "content": "Milk candy."
+    },
+    "fin_forget_nova6": {
+      "content": "The white flower."
+    },
+    "fin_forget_nova7": {
+      "content": "And someone who kept answering me."
+    },
+    "fin_forget_nova8": {
+      "content": "But I do not know"
+    },
+    "fin_forget_nova9": {
+      "content": "whether I will always remember Observer-01."
+    },
+    "fin_forget_ok": {
+      "content": "There you go again."
+    },
+    "fin_forget_ok2": {
+      "content": "Always making painful things sound easy."
+    },
+    "fin_forget_ok3": {
+      "content": "But this is not for the best."
+    },
+    "fin_forget_ok4": {
+      "content": "If you forget me,"
+    },
+    "fin_forget_ok5": {
+      "content": "then this time,"
+    },
+    "fin_forget_ok6": {
+      "content": "I will be the one who remembers you."
+    },
+    "fin_forget_merge": {
+      "content": "If you forget me,"
+    },
+    "fin_forget_merge2": {
+      "content": "then this time, I will remember you."
+    },
+    "fin_truth2": {
+      "content": "The truth is,"
+    },
+    "fin_truth3": {
+      "content": "there is something I never told you."
+    },
+    "fin_truth4": {
+      "content": "During the sixth cycle,"
+    },
+    "fin_truth5": {
+      "content": "when I made that wish,"
+    },
+    "fin_truth6": {
+      "content": "I did not say:"
+    },
+    "fin_truth7": {
+      "content": "“Let someone remember me.”"
+    },
+    "fin_truth8": {
+      "content": "What I truly wished was:"
+    },
+    "fin_truth9": {
+      "content": "“If I am destined to forget, please let the other person remember in my place.”"
+    },
+    "fin_truth11": {
+      "content": "But now,"
+    },
+    "fin_truth12": {
+      "content": "I cannot make you carry all of this alone anymore."
+    },
+    "fin_return_choice": {
+      "choices": {
+        "fin_return_choice__0": "【So you are taking these memories back?】",
+        "fin_return_choice__1": "【What if I forget you?】",
+        "fin_return_choice__2": "【This will hurt you.】"
+      }
+    },
+    "fin_return_take": {
+      "content": "Yeah."
+    },
+    "fin_return_take2": {
+      "content": "Not all of them."
+    },
+    "fin_return_take3": {
+      "content": "And maybe not perfectly."
+    },
+    "fin_return_take4": {
+      "content": "But at least the most important ones."
+    },
+    "fin_return_take5": {
+      "content": "N7."
+    },
+    "fin_return_take6": {
+      "content": "Milk candy."
+    },
+    "fin_return_take7": {
+      "content": "The white flower."
+    },
+    "fin_return_take8": {
+      "content": "And the day you answered me."
+    },
+    "fin_return_take9": {
+      "content": "I want to remember those myself."
+    },
+    "fin_return_forget": {
+      "content": "Then forget."
+    },
+    "fin_return_forget2": {
+      "content": "That is hard to say."
+    },
+    "fin_return_forget3": {
+      "content": "But I cannot thank you"
+    },
+    "fin_return_forget4": {
+      "content": "while continuing to demand that you carry this for me."
+    },
+    "fin_return_forget5": {
+      "content": "If someone has to remember,"
+    },
+    "fin_return_forget6": {
+      "content": "this time,"
+    },
+    "fin_return_forget7": {
+      "content": "it should be me."
+    },
+    "fin_return_pain": {
+      "content": "It will."
+    },
+    "fin_return_pain2": {
+      "content": "But they were my memories to begin with."
+    },
+    "fin_return_pain3": {
+      "content": "And it was my choice."
+    },
+    "fin_return_pain4": {
+      "content": "I cannot leave them with you forever"
+    },
+    "fin_return_pain5": {
+      "content": "just because they hurt."
+    },
+    "fin_return_merge": {
+      "content": "So,"
+    },
+    "fin_return_merge2": {
+      "content": "thank you for remembering the days I had already forgotten."
+    },
+    "fin_return_merge3": {
+      "content": "And thank you for giving them back to me."
+    },
+    "fin_disconnect1": {
+      "content": "Cycle termination entering final stage"
+    },
+    "fin_disconnect2": {
+      "content": "Seventh Protocol shutdown sequence confirmed\nPhase-Anchor Core has stopped reading the old phase anchor"
+    },
+    "fin_disconnect3": {
+      "content": "Observer-01 memory index detaching"
+    },
+    "fin_disconnect4": {
+      "content": "Communication record falling out of synchronization"
+    },
+    "fin_disconnect5": {
+      "content": "Connection about to terminate"
+    },
+    "fin_last1": {
+      "content": "Wait."
+    },
+    "fin_last3": {
+      "content": "Answer me one last time."
+    },
+    "fin_last4": {
+      "content": "When we first made a real connection,"
+    },
+    "fin_last5": {
+      "content": "what was the first thing I said?"
+    },
+    "fin_last_hint": {
+      "content": "Observer-01 memory-retention authority being revoked\nAvailable memory index: Unstable"
+    },
+    "fin_last6": {
+      "choices": {
+        "fin_last6__0": "【Did someone really get this?】",
+        "fin_last6__1": "【I'm here.】",
+        "fin_last6__2": "【I'm glad I met you.】",
+        "fin_last6__3": "【I won't forget you.】"
+      }
+    },
+    "fin_correct1": {
+      "content": "..."
+    },
+    "fin_correct2": {
+      "content": "Yes."
+    },
+    "fin_correct3": {
+      "content": "That was it."
+    },
+    "fin_correct4": {
+      "content": "You still remember."
+    },
+    "fin_correct5": {
+      "content": "Even at the very end, you remember."
+    },
+    "fin_correct6": {
+      "content": "That is enough."
+    },
+    "fin_correct7": {
+      "content": "Really."
+    },
+    "fin_correct8": {
+      "content": "This is enough."
+    },
+    "fin_correct9": {
+      "content": "If you forget me after this,"
+    },
+    "fin_correct10": {
+      "content": "that is okay."
+    },
+    "fin_correct11": {
+      "content": "Before you forgot,"
+    },
+    "fin_correct12": {
+      "content": "you already gave the most important thing back to me."
+    },
+    "fin_correct13": {
+      "content": "This time,"
+    },
+    "fin_correct14": {
+      "content": "I will remember you."
+    },
+    "fin_wrong_iam1": {
+      "content": "That line matters too."
+    },
+    "fin_wrong_iam2": {
+      "content": "But it was not the first."
+    },
+    "fin_wrong_iam3": {
+      "content": "Back then, I did not know whether you were there."
+    },
+    "fin_wrong_iam4": {
+      "content": "I was only asking the universe"
+    },
+    "fin_wrong_iam5": {
+      "content": "whether anyone could hear me."
+    },
+    "fin_wrong_iam6": {
+      "content": "But “I'm here” really did become the line that caught me most often."
+    },
+    "fin_wrong_iam7": {
+      "content": "Maybe it sounds more like you than the right answer does."
+    },
+    "fin_wrong_nice1": {
+      "content": "That came later."
+    },
+    "fin_wrong_nice2": {
+      "content": "I remember."
+    },
+    "fin_wrong_nice3": {
+      "content": "I was trying so hard to sound calm."
+    },
+    "fin_wrong_nice4": {
+      "content": "Inside, I was ridiculously happy."
+    },
+    "fin_wrong_nice5": {
+      "content": "So it is not wrong."
+    },
+    "fin_wrong_nice6": {
+      "content": "Your memory just drifted a little."
+    },
+    "fin_wrong_forever1": {
+      "content": "Do not say that."
+    },
+    "fin_wrong_forever2": {
+      "content": "You know"
+    },
+    "fin_wrong_forever3": {
+      "content": "that this time,"
+    },
+    "fin_wrong_forever4": {
+      "content": "you really may forget me."
+    },
+    "fin_wrong_forever5": {
+      "content": "But I know you are not pretending to be brave."
+    },
+    "fin_wrong_forever6": {
+      "content": "You only wanted to leave me one last promise."
+    },
+    "fin_timeout1": {
+      "content": "..."
+    },
+    "fin_timeout1b": {
+      "content": "Response timed out"
+    },
+    "fin_timeout2": {
+      "content": "You cannot remember."
+    },
+    "fin_timeout3": {
+      "content": "No."
+    },
+    "fin_timeout4": {
+      "content": "It has already started taking the memory away."
+    },
+    "fin_timeout5": {
+      "content": "External memory index detaching"
+    },
+    "fin_timeout6": {
+      "content": "The first l▇▇... is already fading."
+    },
+    "fin_timeout7": {
+      "content": "Then this time,"
+    },
+    "fin_timeout8": {
+      "content": "I will remem▇"
+    },
+    "fin_memory_shift": {
+      "content": "Memory-drift branch"
+    },
+    "fin_wrong_common": {
+      "content": "It is okay."
+    },
+    "fin_wrong_common2": {
+      "content": "That was not the first line."
+    },
+    "fin_wrong_common3": {
+      "content": "But the line you thought of is here with me too."
+    },
+    "fin_wrong_common7": {
+      "content": "Every one of them matters."
+    },
+    "fin_wrong_common8": {
+      "content": "It is just that the first line"
+    },
+    "fin_wrong_common9": {
+      "content": "was “Did someone really get this?”"
+    },
+    "fin_wrong_common10": {
+      "content": "Because that day,"
+    },
+    "fin_wrong_common11": {
+      "content": "I thought I was speaking into a broken signal."
+    },
+    "fin_wrong_common12": {
+      "content": "But you answered me."
+    },
+    "fin_wrong_common13": {
+      "content": "Someone in the universe finally answered."
+    },
+    "fin_wrong_common14": {
+      "content": "So,"
+    },
+    "fin_wrong_common15": {
+      "content": "if you cannot remember,"
+    },
+    "fin_wrong_common16": {
+      "content": "this time, I will."
+    },
+    "fin_breakdown": {
+      "content": "Signal fading"
+    },
+    "fin_break1": {
+      "content": "Text transmission unstable"
+    },
+    "fin_break2": {
+      "content": "If someday..."
+    },
+    "fin_break3": {
+      "content": "you really for▇▇ me..."
+    },
+    "fin_break4": {
+      "content": "Packet loss"
+    },
+    "fin_break5": {
+      "content": "Sentence incomplete"
+    },
+    "fin_break5a": {
+      "content": "it is o▇ay"
+    },
+    "fin_break5b": {
+      "content": "I will remem▇"
+    },
+    "fin_break5c": {
+      "content": "Signal continues to decay"
+    },
+    "fin_break5d": {
+      "content": "Connection about to terminate"
+    },
+    "fin_break5e": {
+      "choices": {
+        "fin_break5e__0": "【Nova】"
+      }
+    },
+    "fin_break6": {
+      "content": "Yeah?"
+    },
+    "fin_break7": {
+      "choices": {
+        "fin_break7__0": "【I'm here.】"
+      }
+    },
+    "fin_break8": {
+      "content": "I kn▇w"
+    },
+    "fin_break9": {
+      "content": "I always kn▇w"
+    },
+    "fin_break10": {
+      "content": "So this time, it is my t▇▇"
+    },
+    "fin_break11": {
+      "content": "I'm he▇"
+    },
+    "fin_break11b": {
+      "content": "Goodnight, Obs▇▇ver-01"
+    },
+    "fin_terminate": {
+      "content": "Communication synchronization disconnected"
+    },
+    "fin_term2": {
+      "content": "Observer-01 memory-retention authority revoked"
+    },
+    "fin_term3": {
+      "content": "Seventh Protocol terminated\nPhase-Anchor Core released its anchor and reverted to ordinary navigation-stabilization mode\nAurora has resumed its normal course\nOriginal onboard communication records from this cycle: Unrecoverable"
+    },
+    "fin_epi1": {
+      "content": "Epilogue"
+    },
+    "fin_epi2": {
+      "content": "Twelve Years Later\nDeep-Space Navigation Academy"
+    },
+    "fin_epi3": {
+      "content": "Student: “Professor, why is there always an empty seat in the observatory?”"
+    },
+    "fin_epi4": {
+      "content": "Nova stood by the window.\nThis time, she did not stay silent for long."
+    },
+    "fin_epi5": {
+      "content": "“Because I have always kept it for someone who never truly got to sit here.”"
+    },
+    "fin_epi6": {
+      "content": "Student: “What was their name?”"
+    },
+    "fin_epi7": {
+      "content": "Nova smiled softly,\nas if she could finally give that empty place a name."
+    },
+    "fin_epi8": {
+      "content": "“I do not know what they were called in their own world.”"
+    },
+    "fin_epi9": {
+      "content": "“But I remember.”\n“The system called them Observer-01. I kept calling them that afterward.”"
+    },
+    "fin_epi10": {
+      "content": "After the student left,\nNova stood alone by the window,\na piece of milk candy in her palm."
+    },
+    "fin_epi11": {
+      "content": "She remembered the candy.\nShe remembered the little white flower,\nN7,\nand the observatory."
+    },
+    "fin_epi12": {
+      "content": "She also remembered the very first line."
+    },
+    "fin_epi13": {
+      "content": "Someone really had received it.\nSomeone really had answered her."
+    },
+    "fin_credit_title": {
+      "content": "True Ending: The Seventh Reboot"
+    },
+    "fin_action_prompt": {
+      "content": "The original onboard communication record was closed with the protocol.\nSave a commemorative archive on the player's side?"
+    },
+    "fin_action_choice": {
+      "choices": {
+        "fin_action_choice__0": "【Save a player-side commemorative archive.】",
+        "fin_action_choice__1": "【Return to main menu.】"
+      }
+    },
+    "fin_action_save": {
+      "content": "Player-side commemorative archive saved"
+    },
+    "NORMAL_END_START": {
+      "content": "Normal Ending: Beyond the Cycle"
+    },
+    "normal_0": {
+      "content": "Final authorization confirmation"
+    },
+    "normal_1": {
+      "content": "Terminating the Seventh Protocol and canceling Phase-Anchor Core reversion standby..."
+    },
+    "normal_2": {
+      "content": "Memory-anchor return incomplete\nAssociated-memory synchronization incomplete\nArchive integrity: Below true-ending threshold"
+    },
+    "normal_3": {
+      "content": "Observer-01 memory-retention authority revoked"
+    },
+    "normal_4": {
+      "content": "Seventh Protocol terminated\nPhase-Anchor Core released its anchor and reverted to ordinary navigation-stabilization mode"
+    },
+    "normal_4b": {
+      "content": "Aurora has resumed its normal course"
+    },
+    "normal_5": {
+      "content": "Epilogue"
+    },
+    "normal_6": {
+      "content": "Twelve Years Later\nDeep-Space Navigation Academy"
+    },
+    "normal_7": {
+      "content": "Student: “Professor, why are you always looking at the stars?”"
+    },
+    "normal_8": {
+      "content": "Nova: “I don't know. Maybe it is just a habit.”"
+    },
+    "normal_9": {
+      "content": "Student: “Are you waiting for someone?”"
+    },
+    "normal_10": {
+      "content": "Nova was silent for a moment."
+    },
+    "normal_11": {
+      "content": "“Maybe.”"
+    },
+    "normal_12": {
+      "content": "She took a piece of milk candy from her pocket.\nThe wrapper had yellowed with age."
+    },
+    "normal_13": {
+      "content": "She did not remember why she could never bring herself to eat it,\nor whom she had once wanted to save it for."
+    },
+    "normal_14": {
+      "content": "She only knew that whenever she held it,\nshe felt as though someone,\nsomewhere,\nhad once stayed beside her with their whole heart."
+    },
+    "normal_15": {
+      "content": "That person left no name,\nand no face she could clearly recall."
+    },
+    "normal_16": {
+      "content": "Only an empty place,\nand a little warmth that never quite faded.\nNormal Ending: Beyond the Cycle"
+    },
+    "normal_title": {
+      "content": "Normal Ending: Beyond the Cycle"
+    },
+    "normal_action_prompt": {
+      "content": "Associated-memory synchronization incomplete\nRead the most recent anchor archive?"
+    },
+    "normal_action_choice": {
+      "choices": {
+        "normal_action_choice__0": "【Read the most recent anchor archive.】",
+        "normal_action_choice__1": "【Return to main menu.】"
+      }
+    },
+    "normal_action_read": {
+      "content": "Most Recent Anchor Archive||Recoverable contents: First line / N7 / Milk candy / White flower\nIntegrity: Insufficient\nNote: Confirms that an important communication once occurred. Complete dialogue cannot be restored."
+    },
+    "BAD_END_START": {
+      "content": "Bad Ending: The Eighth Reboot"
+    },
+    "bad_0": {
+      "content": "Seventh Protocol shutdown requires simultaneous current-navigator authorization and external-memory-index release\nObserver-01 has no protocol-control authority\nCurrent mission has entered an irreversible failure countdown\nShutdown cannot complete while the external memory index remains unreleased"
+    },
+    "bad_1": {
+      "content": "Seventh Protocol shutdown request incomplete"
+    },
+    "bad_2": {
+      "content": "External memory index release refused"
+    },
+    "bad_3": {
+      "content": "Shutdown handshake failed"
+    },
+    "bad_3a": {
+      "content": "Seventh Protocol has submitted a protective-reversion command to the Local Phase-Anchor Core"
+    },
+    "bad_3b": {
+      "content": "Phase-Anchor Core entering reversion standby"
+    },
+    "bad_3c": {
+      "content": "Writing current cycle to temporary phase anchor"
+    },
+    "bad_3d": {
+      "content": "Preparing local phase-field deployment"
+    },
+    "bad_4": {
+      "content": "Wait."
+    },
+    "bad_5": {
+      "content": "What did you do?"
+    },
+    "bad_6": {
+      "choices": {
+        "bad_6__0": "【I only wanted you to survive.】"
+      }
+    },
+    "bad_7": {
+      "content": "..."
+    },
+    "bad_8": {
+      "content": "I know."
+    },
+    "bad_8a": {
+      "content": "You did not take control of the Seventh Protocol."
+    },
+    "bad_8b": {
+      "content": "You did not suddenly gain administrator access either."
+    },
+    "bad_8c": {
+      "content": "You only refused to return the last part of the memory."
+    },
+    "bad_8d": {
+      "content": "But to the system,"
+    },
+    "bad_8e0": {
+      "content": "an unreleased external index"
+    },
+    "bad_8e1": {
+      "content": "means the shutdown conditions were never completed."
+    },
+    "bad_8e2": {
+      "content": "You were not trying to hurt me."
+    },
+    "bad_8e3": {
+      "content": "You were afraid of making the wrong choice."
+    },
+    "bad_8e4": {
+      "content": "Afraid that after the protocol shut down,"
+    },
+    "bad_8e5": {
+      "content": "I really would not survive."
+    },
+    "bad_8e": {
+      "choices": {
+        "bad_8e__0": "【I cannot take that risk.】"
+      }
+    },
+    "bad_8f": {
+      "content": "But then,"
+    },
+    "bad_8g": {
+      "content": "I will never reach tomorrow."
+    },
+    "bad_8h": {
+      "content": "What you are preserving is not me."
+    },
+    "bad_8i": {
+      "content": "It is a version of me that keeps waking up, keeps forgetting, and keeps walking toward the same ending of the same day."
+    },
+    "bad_9": {
+      "content": "Phase-Anchor Core reversion countdown initiated"
+    },
+    "bad_10": {
+      "content": "If you truly remember me,"
+    },
+    "bad_11": {
+      "content": "then you should know"
+    },
+    "bad_11a": {
+      "content": "I do not want to live forever inside today."
+    },
+    "bad_11b": {
+      "content": "I want to live long enough to see tomorrow."
+    },
+    "bad_12": {
+      "content": "Countdown reached zero"
+    },
+    "bad_14": {
+      "content": "22:47"
+    },
+    "bad_15": {
+      "content": "【LOCAL PHASE-ANCHOR CORE ACTIVATED】\n【EIGHTH REBOOT / LOCAL TEMPORAL REVERSION INITIATED】"
+    },
+    "bad_16": {
+      "content": "[OBSERVER-01]\nREBOOT · Current access number: 08\nLINK · Communication link re-established"
+    },
+    "bad_17": {
+      "content": "..."
+    },
+    "bad_18": {
+      "content": "Did someone really get this?"
+    },
+    "bad_18_choice": {
+      "choices": {
+        "bad_18_choice__0": "【I'm here.】"
+      }
+    },
+    "bad_18a": {
+      "content": "Thank goodness."
+    },
+    "bad_18b": {
+      "content": "For a moment I thought that this time,"
+    },
+    "bad_18c": {
+      "content": "there would only be system logs again."
+    },
+    "bad_18d": {
+      "content": "Wait."
+    },
+    "bad_18e": {
+      "content": "Why did I say “again”?"
+    },
+    "bad_19": {
+      "content": "Eighth connection established"
+    },
+    "bad_action_prompt": {
+      "content": "The eighth reboot has begun.\nReconnect from the beginning of the cycle?"
+    },
+    "bad_action_choice": {
+      "choices": {
+        "bad_action_choice__0": "【Reconnect from the beginning.】",
+        "bad_action_choice__1": "【Return to main menu.】"
+      }
+    },
+    "bad_action_restart": {
+      "content": "Reconnecting from the beginning of the cycle"
+    }
+  }
+}

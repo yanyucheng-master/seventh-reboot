@@ -1,0 +1,177 @@
+{
+  "categories": {
+    "anchor": "记忆锚点",
+    "photo": "剧情照片",
+    "anomaly": "异常记录",
+    "profile": "Nova档案",
+    "ending": "结局记录"
+  },
+  "locked": {
+    "title": {
+      "photo": "[图像未恢复]",
+      "ending": "[未观测结局]",
+      "anchor": "[加密记忆]",
+      "default": "[加密记录]"
+    },
+    "description": {
+      "photo": "图像残片尚未进入 Observer-01 记忆模块",
+      "ending": "对应结局尚未观测",
+      "default": "尚未恢复"
+    }
+  },
+  "entries": {
+    "anchor_first_message": {
+      "title": "第一句通讯",
+      "quote": "真的有人收到了？",
+      "description": "Observer-01 保存的第一条有效回应记录。",
+      "chapter": "序章：Observer-01 接入"
+    },
+    "anchor_n7": {
+      "title": "N7",
+      "quote": "胖得像违法建筑",
+      "description": "Nova 七岁那年捡到的橘猫。她说自己的取名能力从小就不怎么样。",
+      "chapter": "第一章：连接"
+    },
+    "anchor_goodnight": {
+      "title": "晚安",
+      "quote": "很高兴认识你",
+      "description": "第一次真正的告别——不是通讯的结束，而是连接的开始。",
+      "chapter": "第一章：连接"
+    },
+    "anchor_observatory": {
+      "title": "观测室",
+      "quote": "因为宇宙再大，也不会回答你",
+      "description": "Nova 待得最久的地方——也是她最孤独的地方。",
+      "chapter": "第二章：日常"
+    },
+    "anchor_white_flower": {
+      "title": "小白花",
+      "quote": "明明不该活下来，却还是开了",
+      "description": "长在维修通风管里的一朵花。Nova 没有上报，因为它“看起来挺努力的”。",
+      "chapter": "第三章：异常"
+    },
+    "anchor_milk_candy": {
+      "title": "牛奶糖",
+      "quote": "想到它的时候，还是会觉得温暖",
+      "description": "Nova 童年记忆的碎片——后来成为能重新唤起残留情感的锚点。",
+      "chapter": "第二章：日常"
+    },
+    "anchor_maintenance_board": {
+      "title": "宇宙级威胁",
+      "quote": "看——宇宙级威胁",
+      "description": "工程组弄丢的维修板。有人给它贴了两只眼睛。",
+      "chapter": "第一章：连接"
+    },
+    "anchor_steak": {
+      "title": "科研事故",
+      "quote": "别问，问就是科研事故",
+      "description": "Aurora 食堂的合成牛排。Nova 怀疑它更接近建筑材料。",
+      "chapter": "第三章：异常"
+    },
+    "photo_maintenance_board": {
+      "title": "漂浮维修板",
+      "subtitle": "看——宇宙级威胁",
+      "chapter": "第一章：连接"
+    },
+    "photo_steak": {
+      "title": "合成牛排",
+      "subtitle": "别问，问就是科研事故",
+      "chapter": "第三章：异常"
+    },
+    "photo_candy": {
+      "title": "牛奶糖",
+      "subtitle": "舰上发了糖。突然想起小时候",
+      "chapter": "日常事件 / 记忆锚点"
+    },
+    "photo_little_flower": {
+      "title": "小白花",
+      "subtitle": "理论上这里不该有植物",
+      "chapter": "第三章：异常"
+    },
+    "photo_nova_n7": {
+      "title": "Nova 与 N7",
+      "subtitle": "和 N7 在一起的每一天",
+      "chapter": "N7 的记忆"
+    },
+    "photo_observatory": {
+      "title": "观测窗",
+      "subtitle": "这是我最喜欢的地方",
+      "chapter": "第二章：日常"
+    },
+    "photo_observation_room_back": {
+      "title": "观测室",
+      "subtitle": "人孤独的时候，会想看比自己更大的东西",
+      "chapter": "终章：第七次重启"
+    },
+    "photo_nova_id": {
+      "title": "NOVA ARLEN",
+      "subtitle": "通讯档案已恢复",
+      "chapter": "身份已确认"
+    },
+    "anomaly_unsent_n7_draft": {
+      "title": "未发送草稿 / 02:17",
+      "description": "不对\n我明明是第一次和对方说起 N7",
+      "chapter": "章末异常草稿"
+    },
+    "anomaly_encrypted_observatory_draft": {
+      "title": "加密草稿 / 03:07",
+      "description": "我又看见那个影子了\n它还在观测室",
+      "chapter": "第三章：异常"
+    },
+    "anomaly_hidden_log_nova07": {
+      "title": "隐藏日志：NOVA-07",
+      "description": "请不要尝试恢复记忆\n不要寻找观测室中的我\n不要打开第七协议\n尤其不要相信我",
+      "chapter": "第四章：记忆"
+    },
+    "anomaly_nova06_warning": {
+      "title": "UNKNOWN-06 / 残留留言",
+      "description": "不要完全相信她\n不是因为她会对你说谎\n而是因为她真的会忘记\n真正被困住的不是 Nova\n是你",
+      "chapter": "第五章：真相（上）"
+    },
+    "anomaly_observer_file": {
+      "title": "OBSERVER-01",
+      "description": "索引类型：外部记忆索引\n本体类型：外部意识\n本体定位：不可访问\n权限：保存 / 读取 / 返还记忆锚点",
+      "chapter": "第五章：真相（下）"
+    },
+    "anomaly_seventh_reboot_file": {
+      "title": "SEVENTH_REBOOT",
+      "description": "已完成主循环：6\n当前循环：7\n局部回溯碎片：6412\n最终关闭条件：当前导航员授权 + 外部记忆索引释放",
+      "chapter": "第五章：真相（下）"
+    },
+    "profile_unknown": {
+      "title": "身份：未知",
+      "subtitle": "信号：加密",
+      "description": "来源：第七协议\n备注：身份确认未完成"
+    },
+    "profile_named": {
+      "title": "姓名：Nova",
+      "subtitle": "所属：Aurora",
+      "description": "职位：导航员\n身份状态：未验证"
+    },
+    "profile_verified": {
+      "title": "姓名：NOVA ARLEN",
+      "subtitle": "身份状态：已确认",
+      "description": "年龄：20\n职位：Aurora 导航员\nObserver 链路：已确认\n备注：对象与第七协议关联"
+    },
+    "profile_truth": {
+      "title": "Observer 链路：深度确认",
+      "subtitle": "第六循环授权请求：已确认",
+      "description": "Observer-01 创建原因：记忆保留\n循环豁免对象：Observer-01"
+    },
+    "ending_true": {
+      "title": "《第七次重启》",
+      "subtitle": "真结局",
+      "description": "如果记忆终将消散\n那么陪伴本身，就是意义"
+    },
+    "ending_normal": {
+      "title": "《循环之外》",
+      "subtitle": "普通结局",
+      "description": "她活了下来\n可有些陪伴，从未留下名字"
+    },
+    "ending_bad": {
+      "title": "《第八次重启》",
+      "subtitle": "坏结局",
+      "description": "如果执念拒绝告别\n重启便永无尽头"
+    }
+  }
+}

@@ -14,13 +14,13 @@ import {
 } from './ChatPrimitives';
 
 function isSignalSystemMessage(msg: DisplayMessage): boolean {
-  return /通讯中断|尝试重连|重连失败|重连成功/.test(msg.content);
+  return /Communications interrupted|Attempting reconnection|Reconnection failed|Reconnected/i.test(msg.content);
 }
 
 function getMessageGlitchLevel(msg: DisplayMessage) {
   if (msg.glitchLevel) return msg.glitchLevel;
-  if (/通讯中断|尝试重连|重连失败/.test(msg.content)) return 2;
-  if (/重连成功/.test(msg.content)) return 1;
+  if (/Communications interrupted|Attempting reconnection|Reconnection failed/i.test(msg.content)) return 2;
+  if (/Reconnected/i.test(msg.content)) return 1;
   return 1;
 }
 
@@ -69,7 +69,7 @@ export function ChatMessage({
       return <EpilogueText content={msg.content} />;
     }
     if (msg.type === 'draft') {
-      return <AnomalyRecordCard content={msg.content} fallbackTitle="未发送草稿" tone="amber" />;
+      return <AnomalyRecordCard content={msg.content} fallbackTitle="Unsent Draft" tone="amber" />;
     }
     if (msg.type === 'end') {
       return null;
@@ -82,7 +82,7 @@ export function ChatMessage({
   const avatarSrc = msg.avatarProfile
     ? resolveAvatarProfile(msg.avatarProfile, msg.emotion, msg.isGlitch)
     : resolveContactAvatar(messageContactStage, msg.emotion, msg.isGlitch);
-  const senderName = msg.displayName ?? (messageContactStage === 'unknown' ? '？？？' : 'Nova');
+  const senderName = msg.displayName ?? (messageContactStage === 'unknown' ? '???' : 'Nova');
 
   if (msg.type === 'image') {
     return (
@@ -96,7 +96,7 @@ export function ChatMessage({
             <div className="media-message-frame relative overflow-hidden rounded-xl">
               <img
                 src={msg.image}
-                alt={cleanChatText(msg.content) || '通讯图像'}
+                alt={cleanChatText(msg.content) || 'Comm image'}
                 loading="lazy"
                 decoding="async"
                 className="media-message-img w-full object-contain rounded-xl group-hover:brightness-110 transition-all"

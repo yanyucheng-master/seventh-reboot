@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import type { GlitchLevel } from '../types';
+import { useI18n } from '../../i18n';
 
 export function TypingIndicator() {
   return (
@@ -22,11 +23,13 @@ export function RemoteTypingRow({
   avatarSrc: string;
   showAvatar?: boolean;
 }) {
+  const { t } = useI18n();
+
   return (
     <div className={`flex items-end gap-2.5 py-1 animate-fade-in ${showAvatar ? '' : 'pl-[46px]'}`}>
       {showAvatar && <img src={avatarSrc} alt="" className="nova-chat-avatar shrink-0" />}
       <div className="flex flex-col gap-0.5 items-start">
-        <span className="remote-typing-label">对方正在输入……</span>
+        <span className="remote-typing-label">{t('chat.typing')}</span>
         <TypingIndicator />
       </div>
     </div>
@@ -54,8 +57,8 @@ export function EpilogueText({ content }: { content: string }) {
 }
 
 function getGlitchTextTone(content: string) {
-  if (/重连成功|连接恢复|恢复正常/.test(content)) return 'success';
-  if (/通讯中断|重连失败|信号衰减|倒计时|请求被拒绝/.test(content)) return 'danger';
+  if (/Reconnected|Connection restored|restored to normal|Communications restored|重连成功|链路恢复|恢复正常|通讯恢复/i.test(content)) return 'success';
+  if (/Communications interrupted|Reconnection failed|Signal fading|Signal continues to decay|Countdown|refused|Request denied|Connection about to terminate|通讯中断|重连失败|信号衰减|信号继续衰减|倒计时|拒绝|请求被拒|连接即将终止/i.test(content)) return 'danger';
   return 'neutral';
 }
 
@@ -157,12 +160,13 @@ type FileLineEntry =
 function normalizeFileLines(title: string, body: string): string[] {
   const rawLines = body.split('\n');
   const meaningfulLines = rawLines.map(line => line.trim()).filter(Boolean);
+  const isDualAuth = /^Dual Authenticators$/i.test(title.trim());
 
-  if (title.trim() === '双重认证者' && meaningfulLines.length >= 2 && meaningfulLines.every(line => line === 'Nova Arlen')) {
+  if (isDualAuth && meaningfulLines.length >= 2 && meaningfulLines.every(line => line === 'Nova Arlen')) {
     return [
-      '当前认证者：Nova Arlen / 本轮',
-      '残留认证者：Nova Arlen / 第六次残留',
-      '认证状态：当前信号与残留信号并存',
+      'Current authenticator: Nova Arlen / current cycle',
+      'Residual authenticator: Nova Arlen / sixth-cycle residual',
+      'Authentication status: current signal coexists with residual signal',
     ];
   }
 
@@ -186,27 +190,27 @@ function parseFileLine(line: string): FileLineEntry {
 }
 
 function getFileType(title: string): string {
-  if (/SEVENTH|PROTOCOL|协议/.test(title)) return 'PROTOCOL RECORD';
-  if (/日志|LOG|NOVA-07/.test(title)) return 'MEMORY LOG';
-  if (/认证|身份/.test(title)) return 'IDENTITY FILE';
+  if (/SEVENTH|PROTOCOL/i.test(title)) return 'PROTOCOL RECORD';
+  if (/LOG|NOVA-07|Hidden Log/i.test(title)) return 'MEMORY LOG';
+  if (/Auth|Identity|Dual Authenticator/i.test(title)) return 'IDENTITY FILE';
   return 'DECRYPTED RECORD';
 }
 
 function getFileSummary(title: string, entries: FileLineEntry[]): string[] {
-  if (title.trim() === '双重认证者') {
-    return ['当前 Nova 与第六次残留同时存在'];
+  if (/^Dual Authenticators$/i.test(title.trim())) {
+    return ['Current Nova and sixth-cycle residual coexist'];
   }
 
   return entries
     .filter(entry => entry.kind !== 'spacer')
     .slice(0, 2)
-    .map(entry => (entry.kind === 'row' ? `${entry.label}：${entry.value}` : entry.text.trim()))
+    .map(entry => (entry.kind === 'row' ? `${entry.label}: ${entry.value}` : entry.text.trim()))
     .filter(Boolean);
 }
 
 export function AnomalyRecordCard({
   content,
-  fallbackTitle = '异常记录',
+  fallbackTitle = 'Anomaly Record',
   tone = 'amber',
 }: {
   content: string;
@@ -229,7 +233,7 @@ export function AnomalyRecordCard({
 }
 
 export function FileDisplay({ content }: { content: string }) {
-  const { title, body } = splitRecordContent(content, '系统文件');
+  const { title, body } = splitRecordContent(content, 'System File');
   const lines = useMemo(() => normalizeFileLines(title, body), [body, title]);
   const entries = useMemo(() => lines.map(parseFileLine), [lines]);
   const summary = useMemo(() => getFileSummary(title, entries), [entries, title]);
@@ -282,7 +286,7 @@ export function FileDisplay({ content }: { content: string }) {
               </p>
             ))
           ) : (
-            <p className="file-record-summary-line">记录摘要不可用</p>
+            <p className="file-record-summary-line">Summary unavailable</p>
           )}
         </div>
         <button
@@ -291,7 +295,7 @@ export function FileDisplay({ content }: { content: string }) {
           onClick={() => setIsExpanded(value => !value)}
           aria-expanded={isExpanded}
         >
-          {isExpanded ? '收起详情' : '展开详情'}
+          {isExpanded ? 'Collapse details' : 'Expand details'}
         </button>
         {isExpanded && <div className="file-record-body">{entries.map(renderEntry)}</div>}
       </div>

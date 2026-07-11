@@ -82,9 +82,7 @@ export type MemoryAnchorId =
   | 'goodnight'
   | 'observatory'
   | 'maintenance_board'
-  | 'steak'
-  | 'shared_phrase'
-  | 'chosen_name';
+  | 'steak';
 
 export interface GameStats {
   trust: number;
@@ -97,8 +95,6 @@ export interface GameStats {
   finalFarewellTone?: FinalFarewellTone;
   timedResponse?: TimedResponse;
   timedProof?: TimedProof;
-  sharedAnchorPhrase?: string;
-  playerName?: string;
   ending?: EndingType;
   unlockedArchives: string[];
   endingsUnlocked: EndingId[];
