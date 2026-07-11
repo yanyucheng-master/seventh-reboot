@@ -69,6 +69,8 @@ type ActiveSignalGlitch = {
   level: GlitchLevel;
   tone: SignalGlitchTone;
   pulse: number;
+  /** 短时间内重复触发时进入柔化模式：无雪花噪点，仅保留轻量扫线 */
+  soft: boolean;
 };
 
 type ActiveInputNode = {
@@ -196,12 +198,15 @@ function getSignalGlitchTone(content: string): SignalGlitchTone {
 }
 
 function getSignalGlitchDuration(level: GlitchLevel, tone: SignalGlitchTone, content: string): number {
-  if (tone === 'success') return 980;
-  if (/Reconnection failed|重连失败/i.test(content)) return 1650;
-  if (level === 3) return 2450;
-  if (level === 2) return 1850;
-  return 980;
+  if (tone === 'success') return 880;
+  if (/Reconnection failed|重连失败/i.test(content)) return 1300;
+  if (level === 3) return 1600;
+  if (level === 2) return 1250;
+  return 880;
 }
+
+/** 两次全屏故障特效之间的最小间隔；期间的重复触发会被跳过或柔化 */
+const SIGNAL_GLITCH_COOLDOWN_MS = 9000;
 
 function isNovaSilentBeat(content: string): boolean {
   return /\.\.\.|silence|don't know|just |unless|seems|so |actually|maybe|perhaps|right\?|myself|remember/i.test(content);
@@ -318,6 +323,7 @@ export default function GameApp() {
   const choiceTimeoutRef = useRef<number | null>(null);
   const signalGlitchTimeoutRef = useRef<number | null>(null);
   const signalGlitchPulseRef = useRef(0);
+  const lastSignalGlitchRef = useRef({ at: 0, level: 0 });
   const skipToChoiceRef = useRef(false);
   const messagesRef = useRef(messages);
   const emotionRef = useRef(novaEmotion);
@@ -519,6 +525,14 @@ export default function GameApp() {
     const level = getSignalGlitchLevel(node);
     if (!level) return;
 
+    // 冷却窗口内：同级/更低级的重复故障直接跳过，避免连续花屏刺眼
+    const now = Date.now();
+    const sinceLast = now - lastSignalGlitchRef.current.at;
+    const inCooldown = sinceLast < SIGNAL_GLITCH_COOLDOWN_MS;
+    if (inCooldown && level <= lastSignalGlitchRef.current.level) return;
+    const soft = inCooldown;
+    lastSignalGlitchRef.current = { at: now, level };
+
     if (signalGlitchTimeoutRef.current !== null) {
       window.clearTimeout(signalGlitchTimeoutRef.current);
       signalGlitchTimeoutRef.current = null;
@@ -526,8 +540,8 @@ export default function GameApp() {
 
     const tone = getSignalGlitchTone(node.content);
     signalGlitchPulseRef.current += 1;
-    setSignalGlitch({ level, tone, pulse: signalGlitchPulseRef.current });
-    if (tone === 'error' && 'vibrate' in navigator) {
+    setSignalGlitch({ level, tone, pulse: signalGlitchPulseRef.current, soft });
+    if (!soft && tone === 'error' && 'vibrate' in navigator) {
       navigator.vibrate(level === 3 ? [18, 28, 24] : 18);
     }
 
@@ -1388,7 +1402,9 @@ export default function GameApp() {
       {signalGlitch && (
         <div
           key={signalGlitch.pulse}
-          className={`signal-glitch-layer signal-glitch-level-${signalGlitch.level} signal-glitch-${signalGlitch.tone}`}
+          className={`signal-glitch-layer signal-glitch-level-${signalGlitch.level} signal-glitch-${signalGlitch.tone} ${
+            signalGlitch.soft ? 'signal-glitch-soft' : ''
+          }`}
           aria-hidden
         >
           <div className="signal-glitch-flash" />
@@ -1396,13 +1412,9 @@ export default function GameApp() {
           <div className="signal-glitch-noise" />
           <div className="signal-glitch-snow" />
           <div className="signal-glitch-scanlines" />
-          <div className="signal-glitch-bands" />
           <div className="signal-glitch-ripple signal-glitch-ripple-a" />
-          <div className="signal-glitch-ripple signal-glitch-ripple-b" />
-          <div className="signal-glitch-line signal-glitch-line-a" />
           <div className="signal-glitch-line signal-glitch-line-b" />
           <div className="signal-glitch-line signal-glitch-line-c" />
-          <div className="signal-glitch-line signal-glitch-line-d" />
         </div>
       )}
       {showChapterBanner && (
