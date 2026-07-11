@@ -8,7 +8,7 @@ import { getSpecialInteractionCopy } from '../src/game/interactions/copy.ts';
 const VERSION = 'V1.0';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const outPath = path.join(__dirname, '..', '第七次重启-剧情文本.txt');
-const projectOutPath = path.join(__dirname, '..', '..', '第七次重启_剧情文本_V1_0_特殊互动正式整合版.txt');
+const projectOutPath = path.join(__dirname, '..', '..', '第七次重启_剧情文本_V1_0_航线因果闭环与自然语言精修版.txt');
 
 const speakerLabel: Record<string, string> = {
   nova: 'Nova',

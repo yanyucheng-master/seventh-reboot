@@ -2,6 +2,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -48,6 +49,10 @@ type I18nProviderProps = {
 
 export function I18nProvider({ children }: I18nProviderProps) {
   const [locale, setLocaleState] = useState<Locale>(() => getStoredLocale());
+
+  useEffect(() => {
+    document.documentElement.lang = locale;
+  }, [locale]);
 
   const setLocale = useCallback((next: Locale) => {
     setStoredLocale(next);

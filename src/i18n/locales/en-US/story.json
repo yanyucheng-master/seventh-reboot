@@ -539,7 +539,7 @@
       "content": "I'm back"
     },
     "ch1_3": {
-      "content": "Technically"
+      "content": "Actually"
     },
     "ch1_4": {
       "content": "I got back last night"
@@ -696,7 +696,7 @@
       "content": "And then I genuinely forgot"
     },
     "ch1_ph3f": {
-      "content": "So technically"
+      "content": "In other words"
     },
     "ch1_ph3g": {
       "content": "I was scared by yesterday's version of me"
@@ -2507,7 +2507,7 @@
       "content": "It looks like this isn't the first time it connected us"
     },
     "ch3_log4": {
-      "content": "And that isn't even the worst part"
+      "content": "Maybe I should stop a little sooner."
     },
     "ch3_log5": {
       "content": "Keep reading"
@@ -3485,7 +3485,7 @@
       "content": "The Deep-Space Navigation Stabilization Core we knew was only the public name"
     },
     "ch5a_core_reveal3": {
-      "content": "The real device is sealed beneath its structural layer"
+      "content": "That hidden package has always nested inside the public core's structure."
     },
     "ch5a_core_reveal4": {
       "content": "A duplicate of our daily navigation-calibration data was being used to write phase anchors"
@@ -3519,40 +3519,40 @@
       "content": "That's what the file says"
     },
     "ch5a_core_choice_c2": {
-      "content": "But the Seventh Protocol decides when it activates"
+      "content": "When did it start locking us — when the Seventh Protocol said so?"
     },
     "ch5a_protocol4": {
-      "content": "The Seventh Protocol wasn't designed to trap anyone"
+      "content": "The Seventh Protocol was only a failsafe from the start."
     },
     "ch5a_protocol4b": {
-      "content": "And it isn't the machine that reverses time"
+      "content": "It doesn't reverse time by itself."
     },
     "ch5a_protocol5": {
-      "content": "It's an emergency-failure protocol hidden in the control layer"
+      "content": "It hides in the core's control layer and decides when to roll back."
     },
     "ch5a_protocol6": {
-      "content": "When the Aurora's mission is judged irrecoverably failed"
+      "content": "As soon as the system decides Aurora can no longer be saved"
     },
     "ch5a_protocol7": {
-      "content": "It sends a reversion command to the Local Phase-Anchor Core"
+      "content": "it sends a rollback order to the phase core."
     },
     "ch5a_protocol7b": {
-      "content": "The core releases its stored phase energy and unfolds a field over the mission area"
+      "content": "Then the core releases its charge and spreads the phase field."
     },
     "ch5a_protocol7c": {
-      "content": "Then it uses the most recent stable phase anchor as a reference"
+      "content": "It locks onto the nearest stable anchor."
     },
     "ch5a_protocol7d": {
-      "content": "Reverting the crew, systems, course, and vessel state to that recorded point"
+      "content": "Then it pulls us and the whole ship back to that state."
     },
     "ch5a_protocol7e": {
-      "content": "It doesn't rewind the entire universe"
+      "content": "The outside universe doesn't go with it."
     },
     "ch5a_protocol7f": {
-      "content": "The phase field only covers the Aurora and this localized mission region"
+      "content": "The phase field only wraps Aurora and this local mission zone."
     },
     "ch5a_protocol7g": {
-      "content": "Anything outside the ship isn't rewritten with us"
+      "content": "People and events beyond the field are never rewritten."
     },
     "ch5a_protocol_check": {
       "choices": {
@@ -3580,7 +3580,7 @@
       "content": "In theory, it shouldn't have preserved any complete version of me"
     },
     "ch5a_protocol8": {
-      "content": "In theory"
+      "content": "The record spells it out."
     },
     "ch5a_protocol8b": {
       "content": "It should only preserve the bare minimum of navigation data"
@@ -4176,7 +4176,7 @@
       "content": "Exactly"
     },
     "ch5a_fut10": {
-      "content": "So here's the question"
+      "content": "I can't get through."
     },
     "ch5a_fut11": {
       "content": "Why would a version of me from later in the previous cycle"
@@ -4574,22 +4574,22 @@
       "content": "Maybe it is."
     },
     "ch5b_file18c": {
-      "content": "It is not literally the same flower carried over from the previous cycle."
+      "content": "Last cycle's flower didn't survive to now."
     },
     "ch5b_file18d": {
-      "content": "The same abnormal conditions"
+      "content": "After every rollback, the same anomaly begins again."
     },
     "ch5b_file18e": {
-      "content": "simply happen again after every temporal reversion."
+      "content": "So each cycle grows a new one."
     },
     "ch5b_file18f": {
-      "content": "It did not survive six times."
+      "content": "It didn't live through six times."
     },
     "ch5b_file18g": {
-      "content": "Every time, it should have died."
+      "content": "It only bloomed six times where it shouldn't."
     },
     "ch5b_file18h": {
-      "content": "And every time, it bloomed anyway."
+      "content": "Not once did it fail to appear."
     },
     "ch5b_file19": {
       "content": "The captain will not remember how many times he has chewed me out."
@@ -4993,68 +4993,68 @@
       "content": "Final archive received"
     },
     "ch5b_fin2": {
-      "content": "SEVENTH_REBOOT||Completed primary cycles: 6\nCurrent cycle: 7\nCumulative phase residuals across six primary cycles: 6,412 state-difference records\nFailures: 6\nPublicly registered device: Deep-Space Navigation Stabilization Core\nActual execution device: Local Phase-Anchor Core\nControl program: Seventh Protocol\nOperating condition: Low-disturbance spacetime environment of the Silent Expanse\nReversion reference: Most recent stable phase anchor\nTemporal reversion scope: Aurora local mission state (off-ship objects unaffected)\nOff-ship real time: Unaffected by reversion\nCommunication-linked memory: Access sealed when link closes\nOrdinary crew memory retention: None\nPre-mission crew clearance: None\nAnomalous residual entities: Nova Arlen / Observer-01\nShutdown result: External memory index released / Phase-Anchor Core reversion standby canceled\nSynchronized effect: Stored anchors returned to Nova; index detached from player\nMemory-return integrity: Dependent on completeness of memory anchors\nPost-shutdown survival stability, Navigator Nova Arlen: Unknown\nCurrent status: Mission has entered an irreversible failure countdown\nIf shutdown handshake remains incomplete: Seventh Protocol will command the Phase-Anchor Core to execute another local temporal reversion\nFinal shutdown requirements:\nCurrent navigator authorization: Nova Arlen\nExternal memory index release: Observer-01\nNote: Observer-01 has no protocol-control authority and participates only as the index-release party in the shutdown handshake"
+      "content": "SEVENTH_REBOOT||Complete primary loops: 6\nCurrent loop: 7\nAccumulated phase residual across six primary loops: 6412 state-difference records\nFailure count: 6 (mission failures — not six complete hull losses)\nShared failure coordinates: planned route / Silent Sector S-7 phase-resonance zone\nShared root cause: hidden phase core resonating with local spacetime\nAccident variance: propulsion / power / environment / control / hull systems fail first in turn\nLoop 06: emergency course correction submitted\nLoop 06 failure cause: route deviation judged as mission failure by the Seventh Protocol; protective rollback overwrote the new route\nLoop 07 survival condition: divert around the resonance zone first, then terminate the Seventh Protocol and cancel phase-core rollback standby\nPublic registry device: Deep-Space Navigation Stability Core\nActual executive device: Local Phase-Anchor Core\nControl program: Seventh Protocol\nOperating condition: low-disturbance spacetime in the Silent Sector\nRollback reference: most recent stable phase anchor\nRollback scope: Aurora local mission state (objects outside the ship unaffected)\nExterior realtime: unaffected by rollback\nLink-bound memory: sealed when the channel closes\nOrdinary crew memory retention: none\nPre-mission crew awareness: none\nAnomalous residual subjects: Nova Arlen / Observer-01\nShutdown result: write new route into current mission state / release external memory index / cancel phase-core rollback standby\nSync effect: saved anchors returned to Nova; index unbound from the player\nMemory-return integrity: depends on memory-anchor completeness\nPost-shutdown navigator Nova Arlen survival stability: unknown\nCurrent status: planned-route accident countdown and protocol rollback countdown running together\nIf shutdown handshake incomplete: new route judged invalid; Seventh Protocol orders the phase core to restore planned-route state\nFinal shutdown conditions:\nCurrent navigator authorization: Nova Arlen\nEmergency course correction: divert around S-7 phase-resonance zone\nExternal memory index release: Observer-01\nNote: Observer-01 holds no protocol control authority and only participates as the handshake party for index release"
     },
     "ch5b_summary1": {
-      "content": "So now I understand."
+      "content": "I finally see it now."
     },
     "ch5b_summary2": {
-      "content": "“The seventh connection” did not begin today."
+      "content": "Those six weren't six unrelated accidents."
     },
     "ch5b_summary3": {
-      "content": "The first six"
+      "content": "They all begin on the same stretch of route."
     },
     "ch5b_summary4": {
-      "content": "were six times I failed."
+      "content": "Every time, we fly into the same phase-resonance zone."
     },
     "ch5b_summary5": {
-      "content": "The person I am now"
+      "content": "The sixth me already tried to divert."
     },
     "ch5b_summary6": {
-      "content": "is the seventh."
+      "content": "But the protocol treated the off-course turn as mission failure and dragged the whole ship back to the old anchor."
     },
     "ch5b_summary7": {
-      "content": "All those numbers, logs, and communication records"
+      "content": "This time, shutting the protocol alone is not enough."
     },
     "ch5b_summary8": {
-      "content": "were describing the same thing."
+      "content": "I have to take Aurora off that route first."
     },
     "ch5b_summary_choice": {
       "choices": {
-        "ch5b_summary_choice__0": "【So this has to end now?】",
-        "ch5b_summary_choice__1": "【What if we do not end it?】",
-        "ch5b_summary_choice__2": "【Are you really ready?】"
+        "ch5b_summary_choice__0": "【So we divert first, then shut the protocol?】",
+        "ch5b_summary_choice__1": "【What if we only divert?】",
+        "ch5b_summary_choice__2": "【Are you really ready to leave?】"
       }
     },
     "ch5b_summary_choice_a1": {
-      "content": "I think it does."
+      "content": "Yes."
     },
     "ch5b_summary_choice_a2": {
-      "content": "Not because I am not afraid."
+      "content": "The new route has to stay, and the protocol can't pull us back again."
     },
     "ch5b_summary_choice_b1": {
-      "content": "Then it will keep preserving today"
+      "content": "It will judge the diversion as mission deviation."
     },
     "ch5b_summary_choice_b2": {
-      "content": "and postpone tomorrow again and again."
+      "content": "Then it will restart the rollback and send us back to the old route."
     },
     "ch5b_summary_choice_c1": {
       "content": "No."
     },
     "ch5b_summary_choice_c2": {
-      "content": "But maybe being ready was never a requirement."
+      "content": "But I know we can't take the old path again."
     },
     "ch5b_fin_lastline": {
-      "content": "Final line:\nRelease the external memory index and cooperate with the current navigator to terminate the Seventh Protocol and cancel Phase-Anchor Core reversion standby?"
+      "content": "Last line:\nRelease the external memory index, confirm the current navigator's emergency course correction, terminate the Seventh Protocol, and cancel phase-core rollback standby?"
     },
     "ch5b_fin3": {
       "choices": {
-        "ch5b_fin3__0": "【Release the external index and help her shut down the protocol.】",
+        "ch5b_fin3__0": "【Release the index, keep the new route, and shut the protocol.】",
         "ch5b_fin3__1": "【Refuse to release the external index.】"
       }
     },
     "FINALE_DECISION_END": {
-      "content": "External memory index release confirmed\nCurrent navigator shutdown authorization submitted\nMemory-anchor return prepared"
+      "content": "External memory index release confirmed\nCurrent navigator emergency course correction submitted\nNew route target: divert around S-7 phase-resonance zone\nCurrent navigator shutdown authorization submitted\nMemory-anchor return prepared"
     },
     "ch5b_refuse1": {
       "content": "..."
@@ -5090,16 +5090,16 @@
       "content": "Time: Unconfirmed"
     },
     "fin_1": {
-      "content": "Final authorization confirmation"
+      "content": "Emergency course correction confirmed"
     },
     "fin_2": {
-      "content": "Operators: Nova Arlen / Observer-01"
+      "content": "Current navigator: Nova Arlen\nExternal index: Observer-01\nNew route: divert around S-7 phase-resonance zone"
     },
     "fin_3": {
-      "content": "Terminating the Seventh Protocol and canceling Phase-Anchor Core reversion standby..."
+      "content": "Unlocking the planned-route lock, shutting the Seventh Protocol, and canceling phase-core rollback standby…"
     },
     "fin_3a": {
-      "content": "Post-shutdown survival stability, Navigator Nova Arlen: Unknown\nMemory-return integrity: Dependent on completeness of memory anchors\nMaintaining the protocol can preserve the current cycle\nCost: Mission state will undergo another temporal reversion"
+      "content": "Emergency course correction: waiting to write into current mission state\nAfter Seventh Protocol shutdown, navigator Nova Arlen survival stability: unknown\nMemory-return integrity: depends on memory-anchor completeness\nMaintaining the protocol will restore the planned route and run another local rollback"
     },
     "fin_5": {
       "content": "..."
@@ -5407,7 +5407,7 @@
       "content": "The Seventh Protocol will shut down."
     },
     "fin_after_what2": {
-      "content": "The cycle will end, and Aurora will return to its normal course."
+      "content": "Aurora will follow the new route around the resonance zone and will not be pulled back to the old record point."
     },
     "fin_after_loop": {
       "content": "For me, I think it will feel like waking up."
@@ -5972,7 +5972,7 @@
       "content": "Observer-01 memory-retention authority revoked"
     },
     "fin_term3": {
-      "content": "Seventh Protocol terminated\nPhase-Anchor Core released its anchor and reverted to ordinary navigation-stabilization mode\nAurora has resumed its normal course\nOriginal onboard communication records from this cycle: Unrecoverable"
+      "content": "Emergency course correction confirmed\nPlanned-route lock released\nAurora is diverting around the S-7 phase-resonance zone\nSeventh Protocol shut down\nPhase core unanchored and reduced to ordinary navigation stability mode\nNew route status: stable\nOriginal shipboard communication record for this cycle: unrecoverable"
     },
     "fin_epi1": {
       "content": "Epilogue"
@@ -6047,7 +6047,7 @@
       "content": "Seventh Protocol terminated\nPhase-Anchor Core released its anchor and reverted to ordinary navigation-stabilization mode"
     },
     "normal_4b": {
-      "content": "Aurora has resumed its normal course"
+      "content": "Emergency course correction confirmed\nAurora is diverting around the S-7 phase-resonance zone\nNew route status: stable"
     },
     "normal_5": {
       "content": "Epilogue"
@@ -6104,7 +6104,7 @@
       "content": "Bad Ending: The Eighth Reboot"
     },
     "bad_0": {
-      "content": "Seventh Protocol shutdown requires simultaneous current-navigator authorization and external-memory-index release\nObserver-01 has no protocol-control authority\nCurrent mission has entered an irreversible failure countdown\nShutdown cannot complete while the external memory index remains unreleased"
+      "content": "Seventh Protocol shutdown requires current-navigator authorization and external-index release together\nObserver-01 holds no protocol control authority\nEmergency course correction was submitted, but no stable mission state was written\nWhile the external index remains sealed, shutdown cannot proceed\nIncomplete result: the diversion is judged mission deviation, and the planned-route state will be restored"
     },
     "bad_1": {
       "content": "Seventh Protocol shutdown request incomplete"
@@ -6116,16 +6116,16 @@
       "content": "Shutdown handshake failed"
     },
     "bad_3a": {
-      "content": "Seventh Protocol has submitted a protective-reversion command to the Local Phase-Anchor Core"
+      "content": "Incomplete diversion judged as mission deviation"
     },
     "bad_3b": {
-      "content": "Phase-Anchor Core entering reversion standby"
+      "content": "Planned-route restoration command issued"
     },
     "bad_3c": {
-      "content": "Writing current cycle to temporary phase anchor"
+      "content": "Seventh Protocol submits protective rollback to the local phase core"
     },
     "bad_3d": {
-      "content": "Preparing local phase-field deployment"
+      "content": "New route write failed\nLocal phase field preparing to unfold"
     },
     "bad_4": {
       "content": "Wait."
@@ -6145,25 +6145,25 @@
       "content": "I know."
     },
     "bad_8a": {
-      "content": "You did not take control of the Seventh Protocol."
+      "content": "You know you never controlled the Seventh Protocol."
     },
     "bad_8b": {
-      "content": "You did not suddenly gain administrator access either."
+      "content": "And you never received any authority."
     },
     "bad_8c": {
-      "content": "You only refused to return the last part of the memory."
+      "content": "You only failed to help her finish the diversion."
     },
     "bad_8d": {
-      "content": "But to the system,"
+      "content": "Closing it would have taken one more step."
     },
     "bad_8e0": {
-      "content": "an unreleased external index"
+      "content": "The protocol and the navigator never submitted a new route."
     },
     "bad_8e1": {
-      "content": "means the shutdown conditions were never completed."
+      "content": "Or the diversion was judged as deviation."
     },
     "bad_8e2": {
-      "content": "You were not trying to hurt me."
+      "content": "Then everything snapped back to the old anchor."
     },
     "bad_8e3": {
       "content": "You were afraid of making the wrong choice."
@@ -6183,10 +6183,10 @@
       "content": "But then,"
     },
     "bad_8g": {
-      "content": "I will never reach tomorrow."
+      "content": "I'm just a fragment that couldn't divert in time."
     },
     "bad_8h": {
-      "content": "What you are preserving is not me."
+      "content": "Maybe that's me. Maybe that's this cycle."
     },
     "bad_8i": {
       "content": "It is a version of me that keeps waking up, keeps forgetting, and keeps walking toward the same ending of the same day."
@@ -6258,6 +6258,213 @@
     },
     "bad_action_restart": {
       "content": "Reconnecting from the beginning of the cycle"
+    },
+    "ch5a_auth1": {
+      "content": "外层索引旁边还有一道密封层"
+    },
+    "ch5a_auth2": {
+      "content": "标记是“NOVA-06 / SEALED”"
+    },
+    "ch5a_auth3": {
+      "content": "她在验证栏旁边留了一句提示"
+    },
+    "ch5a_auth4": {
+      "content": "“本次接入编号 / 外部索引编号”"
+    },
+    "ch5a_auth5": {
+      "content": "看来这一次，得由你来替我们输入"
+    },
+    "ch5a_auth_interaction": {
+      "content": "联合授权密钥验证"
+    },
+    "ch5a_auth_ok1": {
+      "content": "NOVA-06 密封记录已解锁"
+    },
+    "ch5a_auth_ok2": {
+      "content": "07 是第七次接入，也是这一次的我"
+    },
+    "ch5a_auth_ok3": {
+      "content": "01 是系统一直叫你的 Observer-01"
+    },
+    "ch5a_auth_ok4": {
+      "content": "这道密封从一开始就是留给我们两个共同打开的"
+    },
+    "ch5a_auth_file": {
+      "content": "NOVA-06 密封记录 / 索引头||AUTHORIZATION · 当前 Nova 外层授权 + Observer-01 索引密钥\nACCESS · 仅开放信号分层与只读记录\nRESIDUAL · NOVA-06 为条件触发残留，不是实时意识\nRESTRICTION · 不授予第七协议或时相核心控制权限"
+    },
+    "ch5a_vids_compare_file": {
+      "content": "Six Mission Failures / Cross-check||RECORD RANGE · LOOP-01 to LOOP-06\nSHARED COORDINATE · Planned route / Silent Sector S-7 phase-resonance zone\nSHARED PRECURSOR · Ship-clock drift / hidden-core load surge / navigation continuity signature rewritten\nLOOP-01 · Propulsion fails first / engine detonation\nLOOP-02 · Power grid fails first / shipwide blackout\nLOOP-03 · Life-support & medical fail first / unknown infection\nLOOP-04 · Control systems fail first / automation runaway\nLOOP-05 · Hull reference fails first / structural breakup\nLOOP-06 · Emergency course correction submitted / judged mission deviation / protective rollback initiated\nJUDGMENT · Six mission failures share one phase-resonance event; they are not six unrelated accidents\nNOTE · Failure is not the same as six complete hull losses"
+    },
+    "ch5a_vids_compare1": {
+      "content": "At first I thought they were five different accidents."
+    },
+    "ch5a_vids_compare2": {
+      "content": "Stacked together, though, every record starts from the same coordinates."
+    },
+    "ch5a_vids_compare3": {
+      "content": "Engines, power, environment, control, hull — only the first thing to fail changes."
+    },
+    "ch5a_vids_compare4": {
+      "content": "The planned route cuts through a phase-resonance zone."
+    },
+    "ch5a_vids_compare5": {
+      "content": "If we keep flying the original plan, the accident will find us sooner or later."
+    },
+    "ch5a_route_record1": {
+      "content": "LOOP-06 / Emergency Course Correction Log||PLANNED ROUTE · Through S-7 phase-resonance zone\nEMERGENCY CORRECTION · Submitted\nPURPOSE · Divert around the resonance zone\nSEVENTH PROTOCOL JUDGMENT · Deviation from assigned mission route\nRESULT · Protective rollback order submitted\nNEW ROUTE WRITTEN TO STABLE PHASE ANCHOR · Incomplete"
+    },
+    "ch5a_route_reveal1": {
+      "content": "The sixth me already found a way around — and really did change course."
+    },
+    "ch5a_route_reveal2": {
+      "content": "But the Seventh Protocol judged the diversion as mission failure."
+    },
+    "ch5a_route_reveal3": {
+      "content": "The new route never made it into the anchor. The phase core pulled everything back."
+    },
+    "ch5a_route_reveal4": {
+      "content": "So when I woke this time, I was still on the old route."
+    },
+    "ch5a_sep_intro1": {
+      "content": "检测到三层信号占用同一载波"
+    },
+    "ch5a_sep_intro2": {
+      "content": "待分离信号层||LAYER-01 · 当前 Nova 实时载波 / 弱信号 / 暂无回应\nLAYER-02 · NOVA-06 条件残留 / 第六次预设\nLAYER-03 · 局部时相锚定核心遥测 / 只读"
+    },
+    "ch5a_sep_intro3": {
+      "content": "密封记录中的信号分层接口已激活"
+    },
+    "ch5a_signal_separation": {
+      "content": "三层信号分离与联合时间线对齐"
+    },
+    "ch5a_sep_clean1": {
+      "content": "信号分离完成 / 原始数据完整"
+    },
+    "ch5a_sep_clean2": {
+      "content": "三层信号复原报告||当前 Nova · 实时载波已识别 / 链路微弱\nNOVA-06 · 条件残留已识别 / 非实时意识\n时相核心 · 遥测已识别 / 无控制通道\n联合时间线 · 已对齐"
+    },
+    "ch5a_sep_assisted1": {
+      "content": "信号分离完成 / 辅助校准补偿丢包"
+    },
+    "ch5a_sep_assisted2": {
+      "content": "三层信号复原报告||当前 Nova · 实时载波已识别 / 链路微弱\nNOVA-06 · 条件残留已识别 / 非实时意识\n时相核心 · 遥测已识别 / 无控制通道\n联合时间线 · 已由辅助校准对齐"
+    },
+    "ch5a_sep_conclusion": {
+      "content": "联合时间线 / 对齐结论||当前循环 · Nova 进入观测室 / 残影出现 / 通讯异常\n第六次循环 · 连续性签名写入 / 时相核心预启动 / UNKNOWN-06 留言封存\n结论 · 观测室残影并非随机出现，而是第六次 Nova 留下的连续性签名在相同条件下被重新触发"
+    },
+    "ch5b_power_intro1": {
+      "content": "不过观测室现在的主供能不够"
+    },
+    "ch5b_power_intro2": {
+      "content": "生命维持、通讯和核心扫描不能同时满载"
+    },
+    "ch5b_power_intro3": {
+      "content": "我可以给你开一次临时供能代理"
+    },
+    "ch5b_power_intro4": {
+      "content": "你只能分配这一次窗口里的电力"
+    },
+    "ch5b_power_intro5": {
+      "content": "你碰不到第七协议，也碰不到时相核心本身"
+    },
+    "ch5b_power_interaction": {
+      "content": "一次性供能代理 / 三阶段路由"
+    },
+    "ch5b_power_excellent1": {
+      "content": "一次性供能代理完成 / 三阶段快速稳定"
+    },
+    "ch5b_power_excellent2": {
+      "content": "干得漂亮，三个支路一次都没掉出安全窗"
+    },
+    "ch5b_power_excellent3": {
+      "content": "NOVA-06 预设残留：完整数据已送达。不要把我当成另一个活着的她。"
+    },
+    "ch5b_power_stable1": {
+      "content": "一次性供能代理完成 / 路由稳定"
+    },
+    "ch5b_power_stable2": {
+      "content": "稳定住了，这就够我们进去看一眼"
+    },
+    "ch5b_power_emergency1": {
+      "content": "一次性供能代理完成 / Nova 紧急配平已介入"
+    },
+    "ch5b_power_emergency_glitch": {
+      "content": "通讯丢包 0.8 秒 / 链路自动恢复"
+    },
+    "ch5b_power_emergency2": {
+      "content": "最后一点是我接手的，别紧张"
+    },
+    "ch5b_power_emergency3": {
+      "content": "人没事，链路也在，我们继续"
+    },
+    "ch5b_capacity1": {
+      "content": "OBSERVER-01 INDEX CAPACITY INSUFFICIENT\nADDITIONAL SPACE REQUIRED\n外部记忆索引容量：99.97%"
+    },
+    "ch5b_capacity2": {
+      "content": "还有一段核心扫描数据要写进来"
+    },
+    "ch5b_capacity3": {
+      "content": "得先把一个锚点放进临时封存区"
+    },
+    "ch5b_capacity4": {
+      "content": "只是暂时安静下来，不是删除"
+    },
+    "ch5b_capacity5": {
+      "content": "选哪一个都不会改变我们最后能走到哪里"
+    },
+    "ch5b_memory_seal": {
+      "content": "临时记忆容量管理"
+    },
+    "ch5b_seal_board1": {
+      "content": "这张图为什么让我有点想笑？"
+    },
+    "ch5b_seal_board2": {
+      "content": "可我想不起笑点在哪里"
+    },
+    "ch5b_seal_flower1": {
+      "content": "我知道它不该出现在那里"
+    },
+    "ch5b_seal_flower2": {
+      "content": "但我忘了为什么看到它的时候会那么高兴"
+    },
+    "ch5b_seal_goodnight1": {
+      "content": "我们以前是不是会在这个时候说点什么？"
+    },
+    "ch5b_seal_goodnight2": {
+      "content": "算了，可能只是我又忘了"
+    },
+    "ch5b_capacity_merge": {
+      "content": "临时位置记住了，我们继续"
+    },
+    "fin_temp_restore1": {
+      "content": "检测到一枚临时封存记忆锚点"
+    },
+    "fin_temp_restore2": {
+      "content": "等等，还有一个被我们暂时放在外面"
+    },
+    "fin_temp_restore3": {
+      "content": "先把它带回来吧"
+    },
+    "fin_memory_restore": {
+      "content": "临时封存锚点恢复"
+    },
+    "fin_restore_board1": {
+      "content": "临时锚点恢复完成 / maintenance_board"
+    },
+    "fin_restore_board2": {
+      "content": "等一下，那双眼睛是我自己贴的？\n我居然被昨天的自己吓到了"
+    },
+    "fin_restore_flower1": {
+      "content": "临时锚点恢复完成 / white_flower"
+    },
+    "fin_restore_flower2": {
+      "content": "我想起来了\n它明明不该活下来，可它还是开了"
+    },
+    "fin_restore_goodnight1": {
+      "content": "临时锚点恢复完成 / goodnight"
+    },
+    "fin_restore_goodnight2": {
+      "content": "原来是这句话\n难怪每次断开通讯以前，我都会觉得还少了什么"
     }
   }
 }

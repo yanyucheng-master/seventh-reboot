@@ -1,8 +1,8 @@
 # 第七次重启 · 剧情文本导出
 版本：V1.0
-节点数：2064
+节点数：2075
 特殊互动节点：7
-生成时间：2026-07-11T14:57:28
+生成时间：2026-07-11T16:55:40
 
 说明：本文档由运行时 story.ts 自动导出，包含全部剧情节点、选项分支、系统消息、章节、后记、结局、记忆锚点、文件与图片说明，以及特殊互动模块附录。
 修订说明：本版在格式统一校对版基础上，重点强化第五章真相揭露阶段的玩家参与感，新增多选项与限时选项，压缩部分连续解释段，让系统文件负责证据、Nova负责情绪、玩家负责回应。
@@ -119,7 +119,7 @@ UNKNOWN-06 信号中断
 
 [p_merge1] (Nova/文本)
   meta: 情绪=平常
-先确认一下
+先问一句
   next: p_merge2
 
 [p_merge2] (Nova/文本)
@@ -255,7 +255,7 @@ Aurora号导航员
 
 [p_aurora_merge1] (Nova/文本)
   meta: 情绪=平常
-简单说
+这么说吧
   next: p_aurora_merge2
 
 [p_aurora_merge2] (Nova/文本)
@@ -315,7 +315,7 @@ Aurora号是一艘远航观测船
 
 [p_comm_source1] (Nova/文本)
   meta: 情绪=平常
-这就是问题
+我也想知道
   next: p_comm_source2
 
 [p_comm_source2] (Nova/文本)
@@ -355,7 +355,7 @@ Aurora号是一艘远航观测船
 
 [p_exp1] (Nova/文本)
   meta: 情绪=平常
-准确来说
+说具体一点
   next: p_exp2
 
 [p_exp2] (Nova/文本)
@@ -535,7 +535,7 @@ Aurora号是一艘远航观测船
 
 [p_interface4] (Nova/文本)
   meta: 情绪=平常
-那我们现在至少可以确认一件事
+至少有一件事能确定
   next: p_interface5
 
 [p_interface5] (Nova/文本)
@@ -580,7 +580,7 @@ Aurora号是一艘远航观测船
 
 [p_mean1] (Nova/文本)
   meta: 情绪=平常
-问题就在这里
+怪就怪在这里
   next: p_mean2
 
 [p_mean2] (Nova/文本)
@@ -680,7 +680,7 @@ Aurora号是一艘远航观测船
 
 [p_exp7_1] (Nova/文本)
   meta: 情绪=平常
-问题就在这里
+可最奇怪的是
   next: p_exp7_2
 
 [p_exp7_2] (Nova/文本)
@@ -871,7 +871,7 @@ Nova 已离线
 
 [ch1_3] (Nova/文本)
   meta: 情绪=平常
-严格来说
+其实
   next: ch1_4
 
 [ch1_4] (Nova/文本)
@@ -1116,7 +1116,7 @@ Nova 已离线
 
 [ch1_ph3f] (Nova/文本)
   meta: 情绪=微笑
-所以严格来说
+所以说
   next: ch1_ph3g
 
 [ch1_ph3g] (Nova/文本)
@@ -1590,7 +1590,7 @@ N7
 
 [ch1_cook_merge2] (Nova/文本)
   meta: 情绪=平常
-准确来说
+甚至可以说
   next: ch1_cook_merge3
 
 [ch1_cook_merge3] (Nova/文本)
@@ -1900,6 +1900,7 @@ Nova 已离线
 可说出口的时候
 却像已经重复过很多次
 
+第二章：日常
 第二章：日常
   next: CH2_START
 
@@ -2790,7 +2791,7 @@ Nova 已离线
 
 [ch2_night10_a1] (Nova/文本)
   meta: 情绪=平常
-嗯.
+嗯
   next: ch2_night10_a2
 
 [ch2_night10_a2] (Nova/文本)
@@ -3166,6 +3167,7 @@ Nova 已离线
 像是替我保管过很久
 这不太像巧合
 
+第三章：异常
 第三章：异常
   next: CH3_START
 
@@ -3982,7 +3984,7 @@ Nova 生理指标波动
 
 [ch3_log4] (Nova/文本)
   meta: 情绪=平常
-重点还不止这个
+而且还不止这些
   next: ch3_log5
 
 [ch3_log5] (Nova/文本)
@@ -4294,6 +4296,7 @@ Nova 已离线
 我又看见那个影子了
 它还在观测室
 
+第四章：记忆
 第四章：记忆
   next: CH4_START
 
@@ -5403,6 +5406,7 @@ Nova 已离线
 因为我已经失败六次了。
 
 第五章：真相（上）
+第五章：真相（上）
   next: CH5A_START
 
 ## 第五章：真相（上）
@@ -5556,7 +5560,7 @@ RESTRICTION · 不授予第七协议或时相核心控制权限
 
 [ch5a_core_reveal3] (Nova/文本)
   meta: 情绪=平常
-真正的装置被封在公开核心的结构层下面
+负责回溯的装置，一直藏在公开核心的结构层下面
   next: ch5a_core_reveal4
 
 [ch5a_core_reveal4] (Nova/文本)
@@ -5606,62 +5610,62 @@ RESTRICTION · 不授予第七协议或时相核心控制权限
 
 [ch5a_core_choice_c2] (Nova/文本)
   meta: 情绪=平常
-但真正决定什么时候启动它的，是第七协议
+什么时候启动它，还是第七协议说了算
   next: ch5a_protocol4
 
 [ch5a_protocol4] (Nova/文本)
   meta: 情绪=平常
-第七协议原本不是用来困住人的
+第七协议一开始只是个故障保护程序
   next: ch5a_protocol4b
 
 [ch5a_protocol4b] (Nova/文本)
   meta: 情绪=平常
-它也不是让时间倒退的装置
+它自己不会让时间倒退
   next: ch5a_protocol5
 
 [ch5a_protocol5] (Nova/文本)
   meta: 情绪=平常
-它只是藏在控制层里的紧急故障协议
+它藏在核心的控制层里，负责判断什么时候回溯
   next: ch5a_protocol6
 
 [ch5a_protocol6] (Nova/文本)
   meta: 情绪=平常
-当 Aurora 号任务被判定为不可恢复失败
+只要系统认定 Aurora 已经救不回来了
   next: ch5a_protocol7
 
 [ch5a_protocol7] (Nova/文本)
   meta: 情绪=平常
-它会向局部时相锚定核心提交回溯指令
+它就会给时相核心发出回溯指令
   next: ch5a_protocol7b
 
 [ch5a_protocol7b] (Nova/文本)
   meta: 情绪=平常
-核心释放时相储能，展开覆盖任务区域的时相场
+然后核心会释放储能，把时相场铺开
   next: ch5a_protocol7c
 
 [ch5a_protocol7c] (Nova/文本)
   meta: 情绪=平常
-再以最近一次稳定时相锚为参照
+它会抓住最近一次稳定锚点
   next: ch5a_protocol7d
 
 [ch5a_protocol7d] (Nova/文本)
   meta: 情绪=平常
-把船员、系统、航线和舰体状态反演回那个记录点
+再把我们和整艘船一起拉回那个状态
   next: ch5a_protocol7e
 
 [ch5a_protocol7e] (Nova/文本)
   meta: 情绪=平常
-它不是把整个宇宙倒回去
+外面的宇宙不会跟着倒回去
   next: ch5a_protocol7f
 
 [ch5a_protocol7f] (Nova/文本)
   meta: 情绪=平常
-时相场只覆盖Aurora号和这段局部任务区域
+时相场只包住 Aurora 和附近这片任务区域
   next: ch5a_protocol7g
 
 [ch5a_protocol7g] (Nova/文本)
   meta: 情绪=平常
-舰外对象不会被一起重写
+场外的人和事都不会被改写
   next: ch5a_protocol_check
 
 [ch5a_protocol_check] (玩家/选项)
@@ -5676,7 +5680,7 @@ RESTRICTION · 不授予第七协议或时相核心控制权限
 
 [ch5a_protocol_check_a2] (Nova/文本)
   meta: 情绪=悲伤
-至少文件里不是这么写的
+文件里没有把救人写成目标
   next: ch5a_protocol8
 
 [ch5a_protocol_check_b1] (Nova/文本)
@@ -5686,22 +5690,22 @@ RESTRICTION · 不授予第七协议或时相核心控制权限
 
 [ch5a_protocol_check_b2] (Nova/文本)
   meta: 情绪=平常
-人只是任务状态的一部分
+对它来说，人也只是任务状态里的一部分
   next: ch5a_protocol8
 
 [ch5a_protocol_check_c1] (Nova/文本)
   meta: 情绪=平常
-这就是问题
+可它偏偏留下了我
   next: ch5a_protocol_check_c2
 
 [ch5a_protocol_check_c2] (Nova/文本)
   meta: 情绪=悲伤
-理论上，它不该留下任何完整的我
+按设计，这种事不该发生
   next: ch5a_protocol8
 
 [ch5a_protocol8] (Nova/文本)
   meta: 情绪=平常
-理论上
+记录里写得很清楚
   next: ch5a_protocol8b
 
 [ch5a_protocol8b] (Nova/文本)
@@ -6475,7 +6479,7 @@ Nova，不要再问了。继续循环下去，对你们都好。
 [ch5a_vids13_a1] (Nova/文本)
   meta: 情绪=平常
 我也是先看的第六段
-  next: ch5a_vids14
+  next: ch5a_vids_compare_file
 
 [ch5a_vids13_b1] (Nova/文本)
   meta: 情绪=悲伤
@@ -6485,7 +6489,7 @@ Nova，不要再问了。继续循环下去，对你们都好。
 [ch5a_vids13_b2] (Nova/文本)
   meta: 情绪=悲伤
 至少录像里是这样
-  next: ch5a_vids14
+  next: ch5a_vids_compare_file
 
 [ch5a_vids13_c1] (Nova/文本)
   meta: 情绪=平常
@@ -6495,6 +6499,46 @@ Nova，不要再问了。继续循环下去，对你们都好。
 [ch5a_vids13_c2] (Nova/文本)
   meta: 情绪=悲伤
 也许是给下一次的我看的
+  next: ch5a_vids_compare_file
+
+[ch5a_vids_compare_file] (系统/文件)
+  文件标题: 六次任务失败 / 交叉比对
+记录范围：LOOP-01 至 LOOP-06
+共同坐标：原定航线 / 静默航区 S-7 时相共振区
+共同前兆：舰钟漂移 / 隐藏核心负载激增 / 导航连续性签名重复写入
+LOOP-01：推进系统先失效 / 引擎爆炸
+LOOP-02：能源网络先失效 / 全舰能源崩溃
+LOOP-03：环境与医疗系统先失效 / 未知感染
+LOOP-04：控制系统先失效 / 自动系统失控
+LOOP-05：舰体参照先失效 / 船体解体
+LOOP-06：紧急航线修正提交 / 被判定为任务偏离 / 保护性回溯启动
+判定：六次任务失败源自同一时相共振事件，并非六次独立事故
+补充：失败不等同于六次完整舰体损毁
+  next: ch5a_vids_compare1
+
+[ch5a_vids_compare1] (Nova/文本)
+  meta: 情绪=平常
+我一开始也以为，那是五场不同的事故
+  next: ch5a_vids_compare2
+
+[ch5a_vids_compare2] (Nova/文本)
+  meta: 情绪=平常
+可把记录叠在一起，它们都从同一个坐标开始
+  next: ch5a_vids_compare3
+
+[ch5a_vids_compare3] (Nova/文本)
+  meta: 情绪=平常
+引擎、能源、环境、控制、船体，只是最先垮掉的地方不一样
+  next: ch5a_vids_compare4
+
+[ch5a_vids_compare4] (Nova/文本)
+  meta: 情绪=平常
+原定航线会穿过一片时相共振区
+  next: ch5a_vids_compare5
+
+[ch5a_vids_compare5] (Nova/文本)
+  meta: 情绪=平常
+只要我们照原计划继续飞，事故迟早都会发生
   next: ch5a_vids14
 
 [ch5a_vids14] (Nova/文本)
@@ -6564,12 +6608,12 @@ Nova，不要再问了。继续循环下去，对你们都好。
 
 [ch5a_vids_del3] (Nova/文本)
   meta: 情绪=平常
-不是损坏
+这不像文件损坏
   next: ch5a_vids_del4
 
 [ch5a_vids_del4] (Nova/文本)
   meta: 情绪=平常
-更像是被人为抹掉
+更像有人把后半段删掉了
   next: ch5a_vids_del5
 
 [ch5a_vids_del5] (Nova/文本)
@@ -6620,6 +6664,36 @@ Nova，不要再问了。继续循环下去，对你们都好。
 [ch5a_vids_merge5] (Nova/文本)
   meta: 情绪=平常
 是某个和你有关的人
+  next: ch5a_route_record1
+
+[ch5a_route_record1] (系统/文件)
+  文件标题: LOOP-06 / 紧急航线修正记录
+原定航线：穿过 S-7 时相共振区
+紧急修正：已提交
+修正目的：绕开共振区
+第七协议判定：偏离既定任务航线
+执行结果：保护性回溯指令已提交
+新航线写入稳定时相锚：未完成
+  next: ch5a_route_reveal1
+
+[ch5a_route_reveal1] (Nova/文本)
+  meta: 情绪=平常
+第六次的我已经找到绕开的路，也真的改过航线
+  next: ch5a_route_reveal2
+
+[ch5a_route_reveal2] (Nova/文本)
+  meta: 情绪=平常
+可第七协议把改道判成了任务失败
+  next: ch5a_route_reveal3
+
+[ch5a_route_reveal3] (Nova/文本)
+  meta: 情绪=平常
+新航线还没来得及写进锚点，时相核心就把一切拉回去了
+  next: ch5a_route_reveal4
+
+[ch5a_route_reveal4] (Nova/文本)
+  meta: 情绪=平常
+所以这一次醒来，我还在原来的航线上
   next: ch5a_future
 
 [ch5a_future] (系统/时间戳)
@@ -6658,7 +6732,7 @@ Nova，不要再问了。继续循环下去，对你们都好。
 
 [ch5a_fut10] (Nova/文本)
   meta: 情绪=平常
-所以问题来了
+可我想不通
   next: ch5a_fut11
 
 [ch5a_fut11] (Nova/文本)
@@ -6838,6 +6912,7 @@ NOVA-06 · 条件残留已识别 / 非实时意识
   meta: 故障效果
 真正被困住的不是 Nova，是你
 第五章：真相（下）
+第五章：真相（下）
   next: CH5B_START
 
 ## 第五章：真相（下）
@@ -6909,7 +6984,7 @@ NOVA-06 · 条件残留已识别 / 非实时意识
 
 [ch5b_power_intro5] (Nova/文本)
   meta: 情绪=平常
-不是在控制第七协议，也碰不到时相核心本身
+你碰不到第七协议，也碰不到时相核心本身
   next: ch5b_power_interaction
 
 [ch5b_power_interaction] (系统/交互)
@@ -7100,7 +7175,7 @@ NOVA-06 预设残留：完整数据已送达。不要把我当成另一个活着
 
 [ch5b_obs_remember4] (Nova/文本)
   meta: 情绪=平常
-更像是真的在回忆什么
+像是真的在想起什么
   next: ch5b_obs14
 
 [ch5b_obs14] (Nova/文本)
@@ -7361,7 +7436,7 @@ Observer-01 躲过了链路关闭，只留下能重新唤起记忆的索引
 
 [ch5b_file16] (Nova/文本)
   meta: 情绪=平常
-第七协议会命令时相核心反演整段Aurora号局部任务状态
+第七协议会让核心把 Aurora 这一段任务状态整个拉回去
   next: ch5b_file17
 
 [ch5b_file17] (Nova/文本)
@@ -7411,32 +7486,32 @@ Observer-01 躲过了链路关闭，只留下能重新唤起记忆的索引
 
 [ch5b_file18c] (Nova/文本)
   meta: 情绪=平常
-不是上一轮直接留下来的花
+上一轮的花没有留到现在
   next: ch5b_file18d
 
 [ch5b_file18d] (Nova/文本)
   meta: 情绪=平常
-更像是同一个异常条件
+每次回溯以后，同样的异常都会重新发生
   next: ch5b_file18e
 
 [ch5b_file18e] (Nova/文本)
   meta: 情绪=平常
-在每次时间回溯后都会重新发生
+所以每一轮都会长出一朵新的
   next: ch5b_file18f
 
 [ch5b_file18f] (Nova/文本)
   meta: 情绪=平常
-它不是活过了六次
+它没有活过六次
   next: ch5b_file18g
 
 [ch5b_file18g] (Nova/文本)
   meta: 情绪=悲伤
-是每一次都不该活下来
+它只是六次都开在不该开花的地方
   next: ch5b_file18h
 
 [ch5b_file18h] (Nova/文本)
   meta: 情绪=微笑
-却每一次都开了
+一次也没有缺席
   next: ch5b_file19
 
 [ch5b_file19] (Nova/文本)
@@ -7461,12 +7536,12 @@ Observer-01 躲过了链路关闭，只留下能重新唤起记忆的索引
 
 [ch5b_file21a2] (Nova/文本)
   meta: 情绪=平常
-我每天给公开的稳定核心提交星图、航线和人员位置
+我每天都会把星图、航线和人员位置交给公开的稳定核心
   next: ch5b_file21a3
 
 [ch5b_file21a3] (Nova/文本)
   meta: 情绪=平常
-这些数据又被镜像送进时相核心，作为人类连续性校验
+可它们同时被复制进时相核心，用来确认“现在的我还是不是原来的我”
   next: ch5b_file21b
 
 [ch5b_file21b] (Nova/文本)
@@ -7481,27 +7556,27 @@ Observer-01 躲过了链路关闭，只留下能重新唤起记忆的索引
 
 [ch5b_file21d] (Nova/文本)
   meta: 情绪=平常
-是时相核心反复重建同一份连续性签名后的副作用
+那些残影，就是核心一次次重建我的签名时留下的误差
   next: ch5b_file22
 
 [ch5b_file22] (Nova/文本)
   meta: 情绪=平常
-但 OBSERVER 文件不是
+可 OBSERVER 文件不一样
   next: ch5b_file22a
 
 [ch5b_file22a] (Nova/文本)
   meta: 情绪=平常
-外部索引也不是
+外部索引也是
   next: ch5b_file22b
 
 [ch5b_file22b] (Nova/文本)
   meta: 情绪=平常
-那些写给你的提示
+那些给你的提示
   next: ch5b_file22c
 
 [ch5b_file22c] (Nova/文本)
   meta: 情绪=平常
-是第六次的我故意塞进去的
+都是第六次的我故意留下的
   next: ch5b_file22d
 
 [ch5b_file22d] (Nova/文本)
@@ -7511,12 +7586,12 @@ Observer-01 躲过了链路关闭，只留下能重新唤起记忆的索引
 
 [ch5b_file22e] (Nova/文本)
   meta: 情绪=平常
-我没有修改协议的权限，但有提交导航连续性数据的权限
+我改不了协议，但导航连续性数据是我提交的
   next: ch5b_file22f
 
 [ch5b_file22f] (Nova/文本)
   meta: 情绪=平常
-所以她把一部分记忆锚点拆成最低限度任务索引
+她就把一部分记忆锚点伪装成最低限度的任务索引
   next: ch5b_file22g
 
 [ch5b_file22g] (Nova/文本)
@@ -7561,7 +7636,7 @@ N7
 
 [ch5b_split7] (Nova/文本)
   meta: 情绪=悲伤
-她把这些东西从自己身上拆了下来
+她把这些东西从自己的记忆里一点点拆了出来
   next: ch5b_split_choice
 
 [ch5b_split_choice] (玩家/选项)
@@ -7657,8 +7732,8 @@ N7
 
 [ch5b_file23_choice_c1] (Nova/文本)
   meta: 情绪=平常
-最后要先返还锚点，再由你释放挂在外侧的索引
-  next: ch5b_file23_bridge
+结束前，我会先拿回锚点，然后你再把外侧的索引放开
+  next: ch5b_file25
 
 [ch5b_file23_bridge] (Nova/文本)
   meta: 情绪=平常
@@ -7677,7 +7752,7 @@ N7
 
 [ch5b_file24] (Nova/文本)
   meta: 情绪=平常
-Observer-01 是叠加在你身上的外部记忆索引权限
+Observer-01 是挂在你身上的外部记忆索引
   next: ch5b_file25
 
 [ch5b_file25] (Nova/文本)
@@ -8149,7 +8224,13 @@ ADDITIONAL SPACE REQUIRED
 完整主循环次数：6
 当前循环：7
 六次主循环累计时相残差：6412条状态差异记录
-失败次数：6
+失败次数：6（任务失败，不等同于六次完整舰体损毁）
+共同失败坐标：原定航线 / 静默航区 S-7 时相共振区
+共同根源：隐藏时相核心与当地时空环境发生共振
+事故差异：推进 / 能源 / 环境 / 控制 / 舰体系统依次成为最先失效环节
+第六次循环：紧急航线修正已提交
+第六次失败原因：航线偏离被第七协议判定为任务失败，保护性回溯覆盖新航线
+第七次生存条件：先绕开共振区，再终止第七协议并撤销时相核心回溯待命
 公开登记装置：深空航行稳定核心
 真实执行装置：局部时相锚定核心
 控制程序：第七协议
@@ -8161,81 +8242,82 @@ ADDITIONAL SPACE REQUIRED
 普通船员记忆保留：无
 任务前船员知情权限：无
 异常残留对象：Nova Arlen / Observer-01
-关闭结果：外部记忆索引解除 / 时相核心回溯待命撤销
+关闭结果：新航线写入当前任务状态 / 外部记忆索引解除 / 时相核心回溯待命撤销
 同步影响：已保存锚点返还 Nova，索引与玩家解除绑定
 记忆返还完整性：取决于记忆锚点完整度
 关闭后导航员 Nova Arlen 存活稳定性：未知
-当前状态：任务已进入不可恢复失败倒计时
-关闭握手未完成结果：第七协议命令时相核心再次执行局部时间回溯
+当前状态：原定航线事故倒计时与协议回溯倒计时同时进行
+关闭握手未完成结果：新航线被判定无效，第七协议命令时相核心恢复原定航线状态
 最终关闭条件：
 当前导航员授权：Nova Arlen
+紧急航线修正：绕开 S-7 时相共振区
 外部记忆索引释放：Observer-01
 备注：Observer-01 不具备协议控制权限，仅作为关闭握手对象参与索引释放
   next: ch5b_summary1
 
 [ch5b_summary1] (Nova/文本)
   meta: 情绪=平常
-所以我明白了
+我现在总算看懂了
   next: ch5b_summary2
 
 [ch5b_summary2] (Nova/文本)
   meta: 情绪=平常
-“第七次连接”不是今天才开始算
+那六次不是六场互不相关的事故
   next: ch5b_summary3
 
 [ch5b_summary3] (Nova/文本)
   meta: 情绪=平常
-前六次
+它们都从同一段航线开始
   next: ch5b_summary4
 
 [ch5b_summary4] (Nova/文本)
   meta: 情绪=悲伤
-是我失败了六次
+我们每次都会驶进同一片时相共振区
   next: ch5b_summary5
 
 [ch5b_summary5] (Nova/文本)
   meta: 情绪=平常
-现在的我
+第六次的我已经试过改道
   next: ch5b_summary6
 
 [ch5b_summary6] (Nova/文本)
   meta: 情绪=平常
-就是第七次
+可协议把偏航当成任务失败，又把整艘船拉回了原来的锚点
   next: ch5b_summary7
 
 [ch5b_summary7] (Nova/文本)
   meta: 情绪=平常
-那些编号、日志、通讯记录
+这一次，光关掉协议还不够
   next: ch5b_summary8
 
 [ch5b_summary8] (Nova/文本)
   meta: 情绪=平常
-说的其实都是同一件事
+我得先把 Aurora 带离那条航线
   next: ch5b_summary_choice
 
 [ch5b_summary_choice] (玩家/选项)
-  [A] → 【所以这一次必须结束？】  →  ch5b_summary_choice_a1
-  [B] → 【如果我们不结束呢？】  →  ch5b_summary_choice_b1
+  [A] → 【所以要先改道，再关闭协议？】  →  ch5b_summary_choice_a1
+  [B] → 【如果只改道会怎样？】  →  ch5b_summary_choice_b1
   [C] → 【你真的准备好了吗？】  →  ch5b_summary_choice_c1
 
 [ch5b_summary_choice_a1] (Nova/文本)
   meta: 情绪=平常
-我想是的
+对
   next: ch5b_summary_choice_a2
 
 [ch5b_summary_choice_a2] (Nova/文本)
   meta: 情绪=悲伤
-不是因为我不害怕
+新航线必须留下来，协议也不能再把我们拉回去
   next: ch5b_fin_lastline
 
 [ch5b_summary_choice_b1] (Nova/文本)
   meta: 情绪=平常
-那它会继续保存今天
+它会把改道判成任务偏离
   next: ch5b_summary_choice_b2
 
 [ch5b_summary_choice_b2] (Nova/文本)
   meta: 情绪=悲伤
-然后把明天一次次推迟
+然后重新启动回溯，把我们送回原来的航线
   next: ch5b_fin_lastline
 
 [ch5b_summary_choice_c1] (Nova/文本)
@@ -8245,20 +8327,22 @@ ADDITIONAL SPACE REQUIRED
 
 [ch5b_summary_choice_c2] (Nova/文本)
   meta: 情绪=微笑
-但也许准备好本来就不是必要条件
+但我知道，原来的路不能再走了
   next: ch5b_fin_lastline
 
 [ch5b_fin_lastline] (系统/状态)
 最后一行：
-是否释放外部记忆索引，并配合当前导航员终止第七协议、撤销时相核心回溯待命？
+是否释放外部记忆索引，配合当前导航员确认紧急航线修正，并终止第七协议、撤销时相核心回溯待命？
   next: ch5b_fin3
 
 [ch5b_fin3] (玩家/选项)
-  [A] → 【释放外部索引，配合她关闭协议】  →  FINALE_DECISION_END
+  [A] → 【释放索引，保留新航线并关闭协议】  →  FINALE_DECISION_END
   [B] → 【拒绝释放外部索引】  →  ch5b_refuse1
 
 [FINALE_DECISION_END] (系统/状态)
 外部记忆索引释放确认
+当前导航员紧急航线修正已提交
+新航线目标：绕开 S-7 时相共振区
 当前导航员关闭授权已提交
 记忆锚点返还准备完成
   next: FINALE_START
@@ -8307,6 +8391,7 @@ ADDITIONAL SPACE REQUIRED
   meta: 情绪=悲伤
 只是一个可以反复保存的今天
 终章：第七次重启
+终章：第七次重启
   next: BAD_END_START
 
 ## 终章：第七次重启
@@ -8318,22 +8403,24 @@ ADDITIONAL SPACE REQUIRED
   next: fin_1
 
 [fin_1] (系统/文本)
-最终权限确认
+紧急航线修正确认
   next: fin_2
 
 [fin_2] (系统/文本)
-执行者：Nova Arlen / Observer-01
+当前导航员：Nova Arlen
+外部索引：Observer-01
+新航线：绕开 S-7 时相共振区
   next: fin_3
 
 [fin_3] (系统/文本)
-开始解除第七协议并撤销时相核心回溯待命……
+正在解除原定航线锁定，并关闭第七协议、撤销时相核心回溯待命……
   next: fin_3a
 
 [fin_3a] (系统/状态)
+紧急航线修正：等待写入当前任务状态
 第七协议关闭后，导航员 Nova Arlen 存活稳定性：未知
 记忆返还完整性：取决于记忆锚点完整度
-维持协议可继续保存当前循环
-代价：任务状态将再次时间回溯
+维持协议将恢复原定航线并再次执行局部时间回溯
   next: fin_4
 
 [fin_4] (系统/延迟)
@@ -8520,12 +8607,12 @@ Observer-01 开始返还已保存的记忆锚点
 
 [fin_24] (Nova/文本)
   meta: 情绪=平常
-不
+可这句话不太对
   next: fin_25
 
 [fin_25] (Nova/文本)
   meta: 情绪=平常
-准确来说
+因为
   next: fin_26
 
 [fin_26] (Nova/文本)
@@ -8629,12 +8716,12 @@ Aurora号 观测室
 
 [fin_obs10] (Nova/文本)
   meta: 情绪=平常
-其实不是
+可我喜欢这里的原因没那么浪漫
   next: fin_obs12
 
 [fin_obs12] (Nova/文本)
   meta: 情绪=悲伤
-因为孤独
+我只是太孤独了
   next: fin_obs13
 
 [fin_obs13] (Nova/文本)
@@ -8722,7 +8809,7 @@ Aurora号 观测室
 
 [fin_q_timeout3] (Nova/文本)
   meta: 情绪=平常
-这个问题本来就不该这么容易回答
+这种问题，本来就不可能几秒钟想清楚
   next: fin_q_merge
 
 [fin_q_merge] (Nova/文本)
@@ -8832,7 +8919,7 @@ Aurora号 观测室
 
 [fin_q_unknown2] (Nova/文本)
   meta: 情绪=微笑
-这才像真实答案
+这个答案反而最像真的
   next: fin_q_unknown3
 
 [fin_q_unknown3] (Nova/文本)
@@ -8862,7 +8949,7 @@ Aurora号 观测室
 
 [fin_q_unknown8] (Nova/文本)
   meta: 情绪=平常
-本来就不该在告别前强迫你说出来
+我不该趁着告别，逼你现在回答
   next: fin_q_merge1
 
 [fin_q_merge1] (Nova/文本)
@@ -8929,7 +9016,7 @@ Aurora号 观测室
 
 [fin_after_what2] (Nova/文本)
   meta: 情绪=平常
-循环会结束，Aurora 号会回到正常航线
+Aurora 号会沿新航线绕开共振区，不会再被拉回原来的记录点
   next: fin_after_merge
 
 [fin_after_loop] (Nova/文本)
@@ -8939,7 +9026,7 @@ Aurora号 观测室
 
 [fin_after_loop2] (Nova/文本)
   meta: 情绪=微笑
-继续活下去，像一切终于回到了正轨
+继续活下去，第一次走到原定航线之外
   next: fin_after_merge
 
 [fin_after_nova] (Nova/文本)
@@ -8974,7 +9061,7 @@ Observer-01 外部索引会关闭
 
 [fin_memory_loss2] (Nova/文本)
   meta: 情绪=平常
-它保存的锚点会返还给我，索引也会和你解除绑定
+它会把保存的锚点还给我，然后和你断开
   next: fin_memory_loss3
 
 [fin_memory_loss3] (Nova/文本)
@@ -8984,7 +9071,7 @@ Observer-01 外部索引会关闭
 
 [fin_memory_loss4] (Nova/文本)
   meta: 情绪=悲伤
-以后还能记得多少，只能交给真正的你
+以后还能记得多少，只能看你自己了
   next: fin_memory_merge
 
 [fin_memory_disappear] (Nova/文本)
@@ -9242,22 +9329,22 @@ N7
 
 [fin_truth6] (Nova/文本)
   meta: 情绪=平常
-说的不是：
+我当时没有说“让一个人记住我”
   next: fin_truth7
 
 [fin_truth7] (Nova/文本)
   meta: 情绪=平常
-“让一个人记住我”
+我说的是
   next: fin_truth8
 
 [fin_truth8] (Nova/文本)
   meta: 情绪=平常
-真正的愿望是：
+“如果我注定会忘”
   next: fin_truth9
 
 [fin_truth9] (Nova/文本)
   meta: 情绪=悲伤
-“如果我注定忘记，那请让对方代替我记住”
+“那就请你替我记住”
   next: fin_truth10
 
 [fin_truth10] (系统/延迟)
@@ -9828,9 +9915,12 @@ Observer-01 记忆保留权限已撤销
   next: fin_term3
 
 [fin_term3] (系统/文本)
+紧急航线修正已确认
+原定航线锁定已解除
+Aurora号正在绕开 S-7 时相共振区
 第七协议已关闭
 时相核心已解除锚定，并降为普通航行稳定模式
-Aurora号恢复正常航线
+新航线状态：稳定
 本次舰内原始通讯记录：不可恢复
   next: fin_epilogue
 
@@ -9840,50 +9930,59 @@ Aurora号恢复正常航线
 ### 后记
 [fin_epi1] (系统/后记)
 后记 / Epilogue
+后记
   next: fin_epi2
 
 ### 后记
 [fin_epi2] (系统/后记)
 12年后 · 后记
 深空航行学院
+后记
   next: fin_epi3
 
 ### 后记
 [fin_epi3] (系统/后记)
 学生："老师，为什么观测室总有一个空座位？"
+后记
   next: fin_epi4
 
 ### 后记
 [fin_epi4] (系统/后记)
 Nova站在窗前
 这一次，她没有沉默太久
+后记
   next: fin_epi5
 
 ### 后记
 [fin_epi5] (系统/后记)
 “因为我一直给一个没有真正坐过这里的人留着它。”
+后记
   next: fin_epi6
 
 ### 后记
 [fin_epi6] (系统/后记)
 学生：“那个人叫什么名字？”
+后记
   next: fin_epi7
 
 ### 后记
 [fin_epi7] (系统/后记)
 Nova轻轻笑了一下
 像是终于能把那个位置说出口
+后记
   next: fin_epi8
 
 ### 后记
 [fin_epi8] (系统/后记)
 “我不知道对方在自己的世界里叫什么。”
+后记
   next: fin_epi9
 
 ### 后记
 [fin_epi9] (系统/后记)
 “但我记得。”
 “系统叫对方Observer-01，我后来也一直这么叫。”
+后记
   next: fin_epi10
 
 ### 后记
@@ -9891,6 +9990,7 @@ Nova轻轻笑了一下
 学生离开后
 Nova独自站在窗前
 掌心里有一颗牛奶糖
+后记
   next: fin_epi11
 
 ### 后记
@@ -9899,11 +9999,13 @@ Nova独自站在窗前
 也记得那朵小白花
 记得 N7
 记得观测室
+后记
   next: fin_epi12
 
 ### 后记
 [fin_epi12] (系统/后记)
 她还记得最开始的那句话
+后记
   next: fin_epi13
 
 ### 后记
@@ -9933,6 +10035,7 @@ Nova独自站在窗前
 
 [fin_action_save] (系统/状态)
 玩家端纪念归档已保存
+结局节点
   next: fin_the_end
 
 ### 结局节点
@@ -9969,7 +10072,9 @@ Observer-01 记忆保留权限撤销
   next: normal_4b
 
 [normal_4b] (系统/文本)
-Aurora号恢复正常航线
+紧急航线修正已确认
+Aurora号正在绕开 S-7 时相共振区
+新航线状态：稳定
   next: normal_5_wait
 
 [normal_5_wait] (系统/延迟)
@@ -9978,49 +10083,58 @@ Aurora号恢复正常航线
 ### 后记
 [normal_5] (系统/后记)
 后记 / Epilogue
+后记
   next: normal_6
 
 ### 后记
 [normal_6] (系统/后记)
 12年后 · 后记
 深空航行学院
+后记
   next: normal_7
 
 ### 后记
 [normal_7] (系统/后记)
 学生："老师，你为什么总看星星？"
+后记
   next: normal_8
 
 ### 后记
 [normal_8] (系统/后记)
 Nova：“不知道，可能只是习惯”
+后记
   next: normal_9
 
 ### 后记
 [normal_9] (系统/后记)
 学生："你在等什么人吗？"
+后记
   next: normal_10
 
 ### 后记
 [normal_10] (系统/后记)
 Nova沉默了一会
+后记
   next: normal_11
 
 ### 后记
 [normal_11] (系统/后记)
 "也许吧"
+后记
   next: normal_12
 
 ### 后记
 [normal_12] (系统/后记)
 她从口袋里拿出一颗牛奶糖
 糖纸已经泛黄
+后记
   next: normal_13
 
 ### 后记
 [normal_13] (系统/后记)
 她不记得为什么一直舍不得吃
 也想不起自己曾经想把它留给谁
+后记
   next: normal_14
 
 ### 后记
@@ -10029,12 +10143,14 @@ Nova沉默了一会
 她都会觉得
 自己好像曾经被某个人
 很认真地陪过一段路
+后记
   next: normal_15
 
 ### 后记
 [normal_15] (系统/后记)
 那个人没有留下名字
 也没有留下清晰的脸
+后记
   next: normal_16
 
 ### 后记
@@ -10042,6 +10158,7 @@ Nova沉默了一会
 只留下一个空缺
 和一点怎么都散不掉的温暖
 普通结局：《循环之外》
+普通结局：循环之外
   next: normal_title
 
 ## 普通结局：循环之外
@@ -10062,6 +10179,7 @@ Nova沉默了一会
 可恢复内容：第一句话 / N7 / 牛奶糖 / 小白花
 完整度：不足
 备注：只能确认曾有一段重要通讯，无法恢复完整对话
+结局节点
   next: normal_end
 
 ### 结局节点
@@ -10076,8 +10194,9 @@ Nova沉默了一会
 [bad_0] (系统/状态)
 第七协议关闭需要当前导航员授权与外部记忆索引释放同时完成
 Observer-01 不具备协议控制权限
-当前任务已进入不可恢复失败倒计时
+紧急航线修正已提交，但尚未写入稳定任务状态
 外部记忆索引未释放时，关闭流程无法完成
+未完成结果：改道被判定为任务偏离，原定航线状态将被恢复
   next: bad_1
 
 [bad_1] (系统/故障)
@@ -10096,18 +10215,19 @@ Observer-01 不具备协议控制权限
   next: bad_3a
 
 [bad_3a] (系统/状态)
-第七协议已向局部时相锚定核心提交保护性回溯指令
+紧急航线修正被判定为任务偏离
   next: bad_3b
 
 [bad_3b] (系统/状态)
-时相核心进入回溯待命
+原定航线状态恢复指令已生成
   next: bad_3c
 
 [bad_3c] (系统/状态)
-当前循环写入临时时相锚
+第七协议已向局部时相锚定核心提交保护性回溯指令
   next: bad_3d
 
 [bad_3d] (系统/状态)
+新航线写入失败
 局部时相场准备展开
   next: bad_4
 
@@ -10136,37 +10256,37 @@ Observer-01 不具备协议控制权限
 
 [bad_8a] (Nova/文本)
   meta: 情绪=悲伤
-你不是在控制第七协议
+我知道你没有控制第七协议
   next: bad_8b
 
 [bad_8b] (Nova/文本)
   meta: 情绪=悲伤
-你也没有突然拿到什么管理员权限
+你也没有拿到任何权限
   next: bad_8c
 
 [bad_8c] (Nova/文本)
   meta: 情绪=悲伤
-你只是没有把最后那部分记忆交回来
+你只是没把最后那部分索引交回来
   next: bad_8d
 
 [bad_8d] (Nova/文本)
   meta: 情绪=平常
-可对它来说
+可关闭条件少了一项
   next: bad_8e0
 
 [bad_8e0] (Nova/文本)
   meta: 情绪=悲伤
-外部索引没有释放
+协议就不会接受我提交的新航线
   next: bad_8e1
 
 [bad_8e1] (Nova/文本)
   meta: 情绪=悲伤
-就等于关闭条件没有完成
+它会把改道当成任务偏离
   next: bad_8e2
 
 [bad_8e2] (Nova/文本)
   meta: 情绪=悲伤
-你不是想害我
+再把我们送回原来的锚点
   next: bad_8e3
 
 [bad_8e3] (Nova/文本)
@@ -10194,12 +10314,12 @@ Observer-01 不具备协议控制权限
 
 [bad_8g] (Nova/文本)
   meta: 情绪=悲伤
-我就永远到不了明天
+我就永远绕不开那片共振区
   next: bad_8h
 
 [bad_8h] (Nova/文本)
   meta: 情绪=悲伤
-你留下的不是我
+你留下来的，也不是现在的我
   next: bad_8i
 
 [bad_8i] (Nova/文本)
@@ -10308,6 +10428,7 @@ LINK · 通讯链路重新建立
 
 [bad_action_restart] (系统/状态)
 正在从循环起点重新接入
+结局节点
   next: p0
 
 ### 结局节点
@@ -10339,10 +10460,10 @@ LINK · 通讯链路重新建立
 任务：外层索引已开放。密封层只接受由“本次接入编号”和“外部索引编号”共同组成的密钥。
 成功：密封记录只开放信号分层接口，不授予第七协议或时相核心控制权限。
 提示：
-- 提示 01：密钥由两个两位编号组成。
-- 提示 02：Nova：这次已经是第七次接入。
-- 提示 03：Nova：系统一直称你为 Observer-01。
-- 提示 04：系统建议格式 07__；空格或分隔符不会影响验证。
+- 好像不太对……我想想。密钥应该是两组编号拼在一起的，两段，各两位。
+- 前面那组……和这次接入有关。我们已经是第七次了吧。
+- 后面那组是你。系统从一开始就叫你 Observer-01。
+- 空格或横线没关系，它只认那四个数字。试一下 07……还有你的编号。
 
 ## 2. 三层信号复原（signal-separation）
 标题：三层信号复原

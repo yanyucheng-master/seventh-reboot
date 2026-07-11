@@ -258,13 +258,14 @@ function parseExport(text) {
       pendingHeading = line.replace(/^##\s*/, '');
       continue;
     }
-    const nodeMatch = line.match(/^\[([^\]]+)\]\s+\(([^/]+)\/([^)]+)\)$/);
+    const nodeMatch = line.match(/^\[([^\]]+)\]\s+\(([^/]+)\/([^)]+)\)$/)
+      ?? line.match(/^\[([^\]]+)\]\s+([^/\n\[]+?)\s*\/\s*(.+)$/);
     if (nodeMatch) {
       finish();
       const [, id, speakerLabel, typeLabel] = nodeMatch;
       if (id === 'MENU') continue;
-      const speaker = SPEAKER.get(speakerLabel) ?? speakerLabel.toLowerCase();
-      const type = TYPE.get(typeLabel) ?? typeLabel;
+      const speaker = SPEAKER.get(speakerLabel.trim()) ?? speakerLabel.trim().toLowerCase();
+      const type = TYPE.get(typeLabel.trim()) ?? typeLabel.trim();
       if (type === 'menu' || id === 'MENU') {
         current = null;
         continue;

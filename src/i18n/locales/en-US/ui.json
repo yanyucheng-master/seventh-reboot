@@ -37,7 +37,8 @@
     "finishedArchived": "Link closed · Record archived",
     "syncNext": "[Synced to next signal]",
     "choiceTimeout": "[Observer-01 memory index detaching]\n[Response timed out]",
-    "memoryRecorded": "[Observer-01 recorded: {label}]"
+    "memoryRecorded": "[Observer-01 recorded: {label}]",
+    "jumpToLatest": "Jump to latest messages"
   },
   "wait": {
     "novaOfflineLabel": "Nova offline · Waiting for signal",

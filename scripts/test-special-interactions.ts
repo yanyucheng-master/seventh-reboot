@@ -33,7 +33,13 @@ for (const password of ['', '701', '0702', '0710', '07/02', 'NOVA0701']) {
 }
 assert.equal(normalizeAuthorizationKey(' ０７ - ０１ '), '0701');
 const zhInteractionCopy = getSpecialInteractionCopy('zh-CN');
+const enInteractionCopy = getSpecialInteractionCopy('en-US');
 assert.equal(zhInteractionCopy.password.hints.some(hint => hint.includes('第一句话') || hint.includes('第一次有人回答')), false);
+assert.equal(zhInteractionCopy.password.hints.some(hint => hint.includes('提示 0') || hint.includes('系统建议')), false);
+assert.equal(enInteractionCopy.password.hints.some(hint => /Hint\s*0|System format/i.test(hint)), false);
+assert.equal(enInteractionCopy.password.hints[0].includes("isn't quite right"), true);
+assert.equal(enInteractionCopy.password.hints[1].includes('seventh'), true);
+assert.equal(enInteractionCopy.password.hints[2].includes('Observer-01'), true);
 assert.equal(zhInteractionCopy.memory.memories.maintenance_board.title.includes('N7'), false);
 
 const channels: PowerChannel[] = ['lifeSupport', 'communications', 'coreScan'];

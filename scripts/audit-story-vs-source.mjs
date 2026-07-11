@@ -71,12 +71,13 @@ function parseExport(text) {
 
   for (const rawLine of lines) {
     const line = rawLine.trimEnd();
-    const nodeMatch = line.match(/^\[([^\]]+)\]\s+\(([^/]+)\/([^)]+)\)$/);
+    const nodeMatch = line.match(/^\[([^\]]+)\]\s+\(([^/]+)\/([^)]+)\)$/)
+      ?? line.match(/^\[([^\]]+)\]\s+([^/\n\[]+?)\s*\/\s*(.+)$/);
     if (nodeMatch) {
       finish();
       const [, id, speakerLabel, typeLabel] = nodeMatch;
-      const speaker = SPEAKER.get(speakerLabel) ?? speakerLabel.toLowerCase();
-      const type = TYPE.get(typeLabel) ?? typeLabel;
+      const speaker = SPEAKER.get(speakerLabel.trim()) ?? speakerLabel.trim().toLowerCase();
+      const type = TYPE.get(typeLabel.trim()) ?? typeLabel.trim();
       if (type === 'menu' || id === 'MENU') {
         current = null;
         continue;
@@ -90,7 +91,7 @@ function parseExport(text) {
       if ((current.type === 'file' || current.type === 'draft') && body.length > 0) body.push('');
       continue;
     }
-    if (trimmed.startsWith('meta:') || trimmed.startsWith('### ')) continue;
+    if (trimmed.startsWith('meta:') || trimmed.startsWith('### ') || trimmed.startsWith('##')) continue;
     if (trimmed.startsWith('next:')) {
       current.nextId = cleanNextId(trimmed.replace(/^next:\s*/, ''));
       continue;
@@ -204,7 +205,7 @@ function compareLocale(label, sourceNodes, localeNodes, { compareChoices = true 
   return { label, mismatches, missingInLocale, extraInLocale, sourceCount: sourceNodes.length, localeCount: localeIds.size };
 }
 
-const zhScript = path.join(root, '..', '第七次重启_剧情文本_V1_0_特殊互动正式整合版.txt');
+const zhScript = path.join(root, '..', '第七次重启_剧情文本_V1_0_航线因果闭环与自然语言精修版.txt');
 const enScript = 'C:\\Users\\YYC\\Desktop\\The_Seventh_Reboot_V1.0_Full_English_Script.txt';
 
 if (!fs.existsSync(zhScript)) throw new Error(`Missing ZH script: ${zhScript}`);

@@ -210,14 +210,13 @@ export function PowerRoutingInteraction({
     ]),
   ) as PowerThresholds;
   const lowChannel = CHANNELS.find(channel => allocation[channel] < (effectiveThresholds[channel] ?? 0));
-  const rawLiveMessage = lowChannel === 'lifeSupport'
+  const liveMessage = lowChannel === 'lifeSupport'
     ? copy.power.liveMessages.lowLifeSupport
     : lowChannel === 'communications'
       ? copy.power.liveMessages.lowCommunications
       : lowChannel === 'coreScan'
         ? copy.power.liveMessages.lowCoreScan
         : copy.power.liveMessages.stable[phaseIndex];
-  const liveMessage = rawLiveMessage.replace(/^Nova[:：]\s*/i, '');
 
   return (
     <section className="power-router" aria-labelledby="power-interaction-title" data-alert={lowChannel ?? 'stable'}>

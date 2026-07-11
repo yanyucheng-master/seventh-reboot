@@ -65,6 +65,8 @@ type WaitResult = 'elapsed' | 'skipped' | 'fast-forward';
 
 type SignalGlitchTone = 'error' | 'success' | 'neutral';
 
+const CHAT_NEAR_BOTTOM_PX = 112;
+
 type ActiveSignalGlitch = {
   level: GlitchLevel;
   tone: SignalGlitchTone;
@@ -313,7 +315,10 @@ export default function GameApp() {
     [t],
   );
 
+  const chatScrollRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const isNearBottomRef = useRef(true);
+  const [showJumpBottom, setShowJumpBottom] = useState(false);
   const nodeQueueRef = useRef<string[]>([]);
   const queueRunIdRef = useRef(0);
   const activeQueueRunIdRef = useRef<number | null>(null);
@@ -430,15 +435,46 @@ export default function GameApp() {
     setScreen('menu');
   }, [cancelActiveSequence, t]);
 
-  const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const updateNearBottomState = useCallback(() => {
+    const el = chatScrollRef.current;
+    if (!el) return;
+    const distance = el.scrollHeight - el.scrollTop - el.clientHeight;
+    const near = distance <= CHAT_NEAR_BOTTOM_PX;
+    isNearBottomRef.current = near;
+    setShowJumpBottom(!near);
   }, []);
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, isTyping, choices, choiceNodeId, scrollToBottom]);
+  const jumpToBottom = useCallback((smooth = true) => {
+    messagesEndRef.current?.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto' });
+    isNearBottomRef.current = true;
+    setShowJumpBottom(false);
+    window.requestAnimationFrame(updateNearBottomState);
+  }, [updateNearBottomState]);
 
-  useVisualViewport(scrollToBottom);
+  /** Follow Nova only while pinned near the bottom; otherwise show the jump affordance. */
+  const stickChatToBottom = useCallback(() => {
+    if (!isNearBottomRef.current) {
+      setShowJumpBottom(true);
+      return;
+    }
+    jumpToBottom(false);
+  }, [jumpToBottom]);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(stickChatToBottom);
+    return () => window.cancelAnimationFrame(frame);
+  }, [messages, isTyping, typewriterText, choices, choiceNodeId, stickChatToBottom]);
+
+  useEffect(() => {
+    if (screen !== 'playing') return undefined;
+    const frame = window.requestAnimationFrame(() => jumpToBottom(false));
+    return () => window.cancelAnimationFrame(frame);
+  }, [screen, jumpToBottom]);
+
+  useVisualViewport(() => {
+    if (isNearBottomRef.current) jumpToBottom(false);
+    else updateNearBottomState();
+  });
 
   const persistState = useCallback((pendingNodeId: string, msgs: DisplayMessage[]) => {
     saveGame(createSaveData(pendingNodeId, msgs, emotionRef.current, contactStageRef.current, statsRef.current));
@@ -1117,10 +1153,10 @@ export default function GameApp() {
       messagesRef.current = updated;
       setMessages(updated);
       persistState(nextId, updated);
-      scrollToBottom();
+      jumpToBottom();
       scheduleSequence(nextId, 550);
     },
-    [applyChoiceEffects, choiceNodeId, choices, persistState, scheduleSequence, scrollToBottom],
+    [applyChoiceEffects, choiceNodeId, choices, persistState, scheduleSequence, jumpToBottom],
   );
 
   const handleChoiceTimeout = useCallback(
@@ -1155,10 +1191,10 @@ export default function GameApp() {
         })
         : messagesRef.current;
       persistState(node.timeoutNextId, updated);
-      scrollToBottom();
+      jumpToBottom();
       scheduleSequence(node.timeoutNextId, 550);
     },
-    [addMessage, persistState, scheduleSequence, scrollToBottom, t],
+    [addMessage, persistState, scheduleSequence, jumpToBottom, t],
   );
 
   useEffect(() => {
@@ -1188,10 +1224,10 @@ export default function GameApp() {
       setInputNode(null);
       setPlayerInput('');
       persistState(node.timeoutNextId, messagesRef.current);
-      scrollToBottom();
+      jumpToBottom();
       scheduleSequence(node.timeoutNextId, 550);
     },
-    [persistState, scheduleSequence, scrollToBottom],
+    [persistState, scheduleSequence, jumpToBottom],
   );
 
   useEffect(() => {
@@ -1237,8 +1273,9 @@ export default function GameApp() {
     setInputNode(null);
     setPlayerInput('');
     persistState(nextId, updated);
+    jumpToBottom(true);
     scheduleSequence(nextId, 400);
-  }, [inputNode, persistState, playerInput, scheduleSequence]);
+  }, [inputNode, jumpToBottom, persistState, playerInput, scheduleSequence]);
 
   const lastMsg = messages[messages.length - 1];
   const isLastNovaTyping =
@@ -1505,11 +1542,14 @@ export default function GameApp() {
             </div>
           </header>
 
-          <div
-            className={`game-chat chat-scroll flex-1 min-h-0 overflow-y-auto px-3 sm:px-4 py-2 space-y-0 ${
-              signalGlitch ? `signal-glitch-chat signal-glitch-chat-level-${signalGlitch.level}` : ''
-            }`}
-          >
+          <div className="game-chat-shell">
+            <div
+              ref={chatScrollRef}
+              className={`game-chat chat-scroll flex-1 min-h-0 overflow-y-auto px-3 sm:px-4 py-2 space-y-0 ${
+                signalGlitch ? `signal-glitch-chat signal-glitch-chat-level-${signalGlitch.level}` : ''
+              }`}
+              onScroll={updateNearBottomState}
+            >
             {messages.map((msg, index) => (
               <ChatMessage
                 key={msg.id}
@@ -1565,6 +1605,18 @@ export default function GameApp() {
 
             {shouldShowMediaSafeSpace && <div className="media-choice-safe-space" aria-hidden />}
             <div ref={messagesEndRef} />
+            </div>
+
+            {showJumpBottom && (
+              <button
+                type="button"
+                className="chat-jump-bottom"
+                onClick={() => jumpToBottom(true)}
+                aria-label={t('game.jumpToLatest')}
+              >
+                <span className="chat-jump-bottom-icon" aria-hidden />
+              </button>
+            )}
           </div>
 
           <footer className="game-footer shrink-0 px-3 sm:px-4 pt-2 bg-[#151A26]/90 border-t border-[#1A2236]">
@@ -1578,7 +1630,7 @@ export default function GameApp() {
                       : e.target.value;
                     setPlayerInput(value);
                   }}
-                  onFocus={scrollToBottom}
+                  onFocus={() => jumpToBottom(true)}
                   onKeyDown={e => {
                     if (e.key === 'Enter' && isInputReady) handlePlayerInput();
                   }}

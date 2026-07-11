@@ -37,7 +37,8 @@
     "finishedArchived": "通讯已结束 · 记录已归档",
     "syncNext": "【同步至下一条信号】",
     "choiceTimeout": "【Observer-01 记忆索引正在脱离】\n【回答超时】",
-    "memoryRecorded": "【Observer-01 已记录：{label}】"
+    "memoryRecorded": "【Observer-01 已记录：{label}】",
+    "jumpToLatest": "跳转到最新消息"
   },
   "wait": {
     "novaOfflineLabel": "Nova 离线中 · 等待消息",

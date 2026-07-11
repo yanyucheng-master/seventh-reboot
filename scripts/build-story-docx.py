@@ -14,7 +14,7 @@ from docx.shared import Cm, Pt, RGBColor
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "app" / "第七次重启-剧情文本.txt"
-OUTPUT = ROOT / "第七次重启_剧情文本_V1_0_特殊互动正式整合版.docx"
+OUTPUT = ROOT / "第七次重启_剧情文本_V1_0_航线因果闭环与自然语言精修版.docx"
 
 FONT_CJK = "Microsoft YaHei"
 FONT_MONO = "Consolas"
@@ -131,7 +131,7 @@ def add_cover(doc: Document, header_lines: list[str]):
 
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = p.add_run("完整剧情文本  ·  特殊互动正式整合版")
+    r = p.add_run("完整剧情文本  ·  航线因果闭环与自然语言精修版")
     set_run_font(r, FONT_CJK, 13, TEAL, True)
 
     p = doc.add_paragraph()
@@ -234,7 +234,7 @@ def main():
     doc = Document()
     setup_styles(doc)
     configure_section(doc.sections[0])
-    doc.core_properties.title = "第七次重启 剧情文本 V1.0 特殊互动正式整合版"
+    doc.core_properties.title = "第七次重启 剧情文本 V1.0 航线因果闭环与自然语言精修版"
     doc.core_properties.subject = "2063 节点运行时剧情审校稿"
     doc.core_properties.author = "Seventh Reboot Project"
     doc.core_properties.keywords = "第七次重启, V1.0, 剧情, 特殊互动, Observer-01, Nova"

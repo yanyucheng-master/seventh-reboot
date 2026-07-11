@@ -428,31 +428,12 @@
   min-height: 52px;
 }
 
-.password-feedback,
 .interaction-feedback {
   min-height: 25px;
   margin-top: 10px;
   color: #f0a45c;
   font-size: 11px;
   line-height: 1.5;
-}
-
-.password-hints {
-  display: grid;
-  max-width: 690px;
-  gap: 6px;
-  margin: 10px 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.password-hints li {
-  border-left: 2px solid #4d7380;
-  padding: 7px 10px;
-  color: #9fadb9;
-  background: #0d1319;
-  font-size: 11px;
-  line-height: 1.55;
 }
 
 .authorization-output {
@@ -820,11 +801,19 @@
   margin: 0;
   padding: 11px 14px;
   color: #e8eef4;
-  font-family: "Microsoft YaHei", system-ui, sans-serif;
+  font-family: "Microsoft YaHei", "Segoe UI", system-ui, sans-serif;
   font-size: 13px;
   font-weight: 600;
   line-height: 1.45;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+}
+
+html[lang="en-US"] .nova-ticker-text {
+  font-family: "Segoe UI", "Helvetica Neue", system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
 }
 
 .nova-ticker[data-alert="lifeSupport"] {
@@ -1337,6 +1326,30 @@
     gap: 10px;
   }
 
+  .password-console {
+    max-width: 100%;
+  }
+
+  .password-console .interaction-mission {
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .password-index-strip span {
+    padding: 9px 10px;
+    font-size: 9px;
+  }
+
+  .password-entry-row input {
+    height: 48px;
+    font-size: 18px;
+  }
+
+  .password-entry-row .interaction-primary-btn {
+    width: 100%;
+    min-height: 48px;
+  }
+
   .nova-ticker {
     grid-template-columns: 1fr;
   }
@@ -1354,10 +1367,22 @@
   .nova-ticker-text {
     padding: 10px 12px 12px;
     font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .password-nova-help .nova-ticker-text {
+    font-size: 11.5px;
   }
 
   .password-help-placeholder {
     min-height: 0;
+  }
+
+  html[lang="en-US"] .password-nova-help .nova-ticker-text,
+  html[lang="en-US"] .nova-ticker-text {
+    font-size: 11.5px;
+    line-height: 1.38;
   }
 
   .power-countdown {
@@ -1435,6 +1460,14 @@ html, body, #root {
   min-height: 52px;
 }
 
+.game-chat-shell {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .game-header,
 .game-chat,
 .game-footer {
@@ -1457,6 +1490,66 @@ html, body, #root {
 .chat-scroll {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+}
+
+.chat-jump-bottom {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(99, 206, 214, 0.42);
+  border-radius: 999px;
+  color: #d7eef2;
+  background: rgba(18, 26, 36, 0.92);
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  animation: chat-jump-bottom-in 0.22s ease-out;
+}
+
+.chat-jump-bottom:hover {
+  border-color: rgba(114, 220, 228, 0.72);
+  background: rgba(24, 36, 48, 0.96);
+  transform: translateY(-1px);
+}
+
+.chat-jump-bottom:active {
+  transform: translateY(1px) scale(0.96);
+}
+
+.chat-jump-bottom-icon {
+  width: 9px;
+  height: 9px;
+  margin-top: -3px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+}
+
+@keyframes chat-jump-bottom-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-jump-bottom {
+    animation: none;
+  }
 }
 
 .game-footer {
