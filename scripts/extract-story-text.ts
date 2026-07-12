@@ -230,8 +230,7 @@ function formatInteractionAppendix(): string[] {
   lines.push(`标题：${zhCopy.password.title}`);
   lines.push(`任务：${zhCopy.password.mission}`);
   lines.push(`成功：${zhCopy.password.successDetail}`);
-  lines.push('提示：');
-  zhCopy.password.hints.forEach(hint => lines.push(`- ${hint}`));
+  lines.push(`失败反馈：${zhCopy.password.rejected}`);
 
   lines.push('');
   lines.push('## 2. 三层信号复原（signal-separation）');

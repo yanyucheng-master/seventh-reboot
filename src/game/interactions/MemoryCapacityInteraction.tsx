@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type {
   SealableMemoryAnchor,
   SpecialInteractionCompletion,
 } from '../types';
 import type { SpecialInteractionCopy } from './copy';
+import { useInteractionGuidance } from './useInteractionGuidance';
+import { InteractionTitle } from './InteractionTitle';
+import { NovaTicker } from './NovaTicker';
 
 type MemoryCapacityInteractionProps = {
   mode: 'seal' | 'restore';
@@ -13,6 +16,17 @@ type MemoryCapacityInteractionProps = {
 };
 
 const MEMORY_IDS: SealableMemoryAnchor[] = ['maintenance_board', 'white_flower', 'goodnight'];
+
+const MEMORY_THRESHOLDS = {
+  hint1Ms: 35000,
+  hint1Invalid: 0,
+  hint2Ms: 32000,
+  hint2Invalid: 0,
+  overrideMs: 90000,
+  overrideInvalid: 999,
+  overrideMinValid: 2,
+  overrideEmergencies: 0,
+};
 
 export function MemoryCapacityInteraction({
   mode,
@@ -39,12 +53,35 @@ function MemorySeal({
   const [selected, setSelected] = useState<SealableMemoryAnchor | null>(null);
   const [previewed, setPreviewed] = useState<SealableMemoryAnchor>('maintenance_board');
   const [confirming, setConfirming] = useState(false);
+  const [nova06NoteShown, setNova06NoteShown] = useState(false);
   const preview = copy.memory.memories[previewed];
+
+  const guidance = useInteractionGuidance({
+    thresholds: MEMORY_THRESHOLDS,
+    enabled: !confirming,
+    maxStage: 3,
+  });
+
+  useEffect(() => {
+    if (guidance.stage >= 3 && !nova06NoteShown && !selected) {
+      setNova06NoteShown(true);
+    }
+  }, [guidance.stage, nova06NoteShown, selected]);
+
+  const hintText = guidance.stage >= 2
+    ? copy.memory.novaUrge.second
+    : guidance.stage >= 1
+      ? copy.memory.novaUrge.first
+      : null;
+
+  function noteInteractionAttempt() {
+    guidance.noteValidAttempt();
+  }
 
   return (
     <section className="memory-capacity" aria-labelledby="memory-seal-title">
       <p className="interaction-kicker">{copy.memory.sealKicker}</p>
-      <h2 id="memory-seal-title">{copy.memory.sealTitle}</h2>
+      <InteractionTitle id="memory-seal-title">{copy.memory.sealTitle}</InteractionTitle>
       <p className="interaction-mission">{copy.memory.sealMission}</p>
 
       <div className="memory-index-readout">
@@ -73,7 +110,10 @@ function MemorySeal({
                 <button
                   type="button"
                   className="interaction-text-btn"
-                  onClick={() => setPreviewed(memoryId)}
+                  onClick={() => {
+                    noteInteractionAttempt();
+                    setPreviewed(memoryId);
+                  }}
                   aria-pressed={previewed === memoryId}
                 >
                   {copy.memory.preview}
@@ -82,6 +122,7 @@ function MemorySeal({
                   type="button"
                   className={isSelected ? 'interaction-primary-btn' : 'interaction-secondary-btn'}
                   onClick={() => {
+                    noteInteractionAttempt();
                     setSelected(memoryId);
                     setPreviewed(memoryId);
                     setConfirming(false);
@@ -130,6 +171,21 @@ function MemorySeal({
           </div>
         </div>
       ) : null}
+
+      {hintText && (
+        <div className="interaction-nova-hint">
+          <NovaTicker text={hintText} alert="hint" liveLabel="LIVE" />
+        </div>
+      )}
+
+      {nova06NoteShown && (
+        <div className="memory-nova06-note" role="note" data-testid="memory-nova06-note">
+          <span className="nova06-tag" data-reformed>NOVA-06 / RESIDUAL SIGNATURE</span>
+          {copy.memory.nova06Note.split('\n').map(line => (
+            <p key={line}>{line}</p>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
@@ -146,7 +202,7 @@ function MemoryRestore({
       <section className="interaction-result" aria-live="polite">
         <div className="interaction-result-mark" aria-hidden>0 / 0</div>
         <p className="interaction-kicker">{copy.memory.restoreKicker}</p>
-        <h2>{copy.memory.restoreTitle}</h2>
+        <InteractionTitle state="resolved">{copy.memory.restoreTitle}</InteractionTitle>
         <p>{copy.memory.noAnchor}</p>
         <button
           type="button"
@@ -169,7 +225,7 @@ function MemoryRestore({
   return (
     <section className="memory-restore" aria-labelledby="memory-restore-title">
       <p className="interaction-kicker">{copy.memory.restoreKicker}</p>
-      <h2 id="memory-restore-title">{copy.memory.restoreTitle}</h2>
+      <InteractionTitle id="memory-restore-title">{copy.memory.restoreTitle}</InteractionTitle>
       <p className="interaction-mission">{copy.memory.restoreMission}</p>
 
       <div className="memory-restore-anchor">

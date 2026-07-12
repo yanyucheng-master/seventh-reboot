@@ -51,9 +51,9 @@ export type PowerRoutingResult = 'excellent' | 'stable' | 'emergency_assist';
 export type SealableMemoryAnchor = 'maintenance_board' | 'white_flower' | 'goodnight';
 
 export type SpecialInteractionCompletion =
-  | { kind: 'critical-log-password'; routeKey: 'success' }
-  | { kind: 'signal-separation'; routeKey: SignalSeparationResult }
-  | { kind: 'power-routing'; routeKey: PowerRoutingResult }
+  | { kind: 'critical-log-password'; routeKey: 'success'; completedByNova06?: boolean }
+  | { kind: 'signal-separation'; routeKey: SignalSeparationResult; completedByNova06?: boolean }
+  | { kind: 'power-routing'; routeKey: PowerRoutingResult; completedByNova06?: boolean }
   | { kind: 'memory-seal'; routeKey: SealableMemoryAnchor; anchor: SealableMemoryAnchor }
   | { kind: 'memory-restore'; routeKey: SealableMemoryAnchor | 'none'; anchor?: SealableMemoryAnchor };
 
@@ -127,6 +127,16 @@ export interface GameStats {
   powerRoutingResult?: PowerRoutingResult;
   temporaryAnchorSealed?: SealableMemoryAnchor;
   temporaryAnchorRestored: boolean;
+  /** NOVA-06 残留签名越权接管：完整黑入演出是否已在本周目播放过 */
+  nova06FirstOverrideSeen: boolean;
+  /** 联合密钥互动由 NOVA-06 后门绕过验证 */
+  passwordBypassedByNova06: boolean;
+  /** 三层信号分离由 NOVA-06 预留恢复脚本完成 */
+  signalCompletedByNova06: boolean;
+  /** 联合时间线对齐由 NOVA-06 预留恢复脚本完成（与信号分离同一脚本） */
+  timelineCompletedByNova06: boolean;
+  /** 供能路由由 NOVA-06 预留配平脚本完成 */
+  powerCompletedByNova06: boolean;
 }
 
 /** UI 生成的系统提示（非剧情节点正文），切语言时按 key 重算 */

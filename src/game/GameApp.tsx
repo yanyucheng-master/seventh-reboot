@@ -39,6 +39,10 @@ import { determineEnding, resolveEndingStart } from './endings';
 import { ANCHOR_ARCHIVE_IDS, getArchiveUnlocksForNode } from './archive';
 import { SpecialInteractionOverlay } from './interactions/SpecialInteractionOverlay';
 import { applySpecialInteractionCompletion, isSealableMemoryAnchor } from './interactions/logic';
+import {
+  getNova06CommsAftermath,
+  NOVA06_BRIDGE_CHOICE_PREFIX,
+} from './interactions/nova06CommsAftermath';
 
 type Translate = (key: string, params?: Record<string, string | number>) => string;
 
@@ -335,6 +339,11 @@ export default function GameApp() {
   const statsRef = useRef(stats);
   const contactStageRef = useRef(contactStage);
   const internalTestBootstrappedRef = useRef(false);
+  const nova06BridgeRunRef = useRef(0);
+  const nova06BridgeRef = useRef<{
+    continueId: string;
+    replies: Array<{ text: string; ack: string }>;
+  } | null>(null);
 
   useEffect(() => {
     messagesRef.current = messages;
@@ -393,6 +402,8 @@ export default function GameApp() {
 
   const cancelActiveSequence = useCallback(() => {
     queueRunIdRef.current += 1;
+    nova06BridgeRunRef.current += 1;
+    nova06BridgeRef.current = null;
     nodeQueueRef.current = [];
     skipToChoiceRef.current = false;
     delayResolverRef.current?.();
@@ -1053,10 +1064,60 @@ export default function GameApp() {
         ?? activeInteraction.nextId
         ?? activeInteraction.id;
       setActiveInteraction(null);
+
+      const aftermath = getNova06CommsAftermath(completion, locale);
+      if (!aftermath) {
+        persistState(nextId, messagesRef.current);
+        scheduleSequence(nextId, 350);
+        return;
+      }
+
+      const bridgeRunId = ++nova06BridgeRunRef.current;
       persistState(nextId, messagesRef.current);
-      scheduleSequence(nextId, 350);
+      jumpToBottom();
+
+      void (async () => {
+        setNovaEmotion('normal');
+        for (let index = 0; index < aftermath.reactions.length; index += 1) {
+          if (nova06BridgeRunRef.current !== bridgeRunId) return;
+          setIsTyping(true);
+          await waitForPlayback(520);
+          if (nova06BridgeRunRef.current !== bridgeRunId) return;
+          setIsTyping(false);
+          const updated = addMessage({
+            id: `nova06_react_${Date.now()}_${index}`,
+            speaker: 'nova',
+            type: 'text',
+            content: aftermath.reactions[index],
+            emotion: 'normal',
+            contactStage: contactStageRef.current,
+            isNew: true,
+          });
+          persistState(nextId, updated);
+          jumpToBottom();
+          await waitForPlayback(360);
+        }
+
+        if (nova06BridgeRunRef.current !== bridgeRunId) return;
+
+        if (aftermath.replies && aftermath.replies.length > 0) {
+          nova06BridgeRef.current = {
+            continueId: nextId,
+            replies: aftermath.replies,
+          };
+          setChoiceNodeId(NOVA06_BRIDGE_CHOICE_PREFIX);
+          setChoices(aftermath.replies.map((reply, index) => ({
+            text: reply.text,
+            nextId: `${NOVA06_BRIDGE_CHOICE_PREFIX}${index}`,
+            statEffect: 'none' as const,
+          })));
+          return;
+        }
+
+        scheduleSequence(nextId, 350);
+      })();
     },
-    [activeInteraction, persistState, scheduleSequence],
+    [activeInteraction, addMessage, jumpToBottom, locale, persistState, scheduleSequence, waitForPlayback],
   );
 
   const saveInteractionAndExit = useCallback(() => {
@@ -1136,8 +1197,17 @@ export default function GameApp() {
           : -1;
       setChoices(null);
       setChoiceNodeId(null);
-      const nextStats = applyChoiceEffects(choice);
-      const nextId = resolveEndingStart(choice.nextId, nextStats);
+
+      const isNova06Bridge = choice.nextId.startsWith(NOVA06_BRIDGE_CHOICE_PREFIX);
+      const bridgePending = isNova06Bridge ? nova06BridgeRef.current : null;
+      if (isNova06Bridge) {
+        nova06BridgeRef.current = null;
+      }
+
+      const nextStats = isNova06Bridge ? statsRef.current : applyChoiceEffects(choice);
+      const nextId = isNova06Bridge && bridgePending
+        ? bridgePending.continueId
+        : resolveEndingStart(choice.nextId, nextStats);
 
       const playerMsg: DisplayMessage = {
         id: `player_${Date.now()}`,
@@ -1154,9 +1224,41 @@ export default function GameApp() {
       setMessages(updated);
       persistState(nextId, updated);
       jumpToBottom();
+
+      if (isNova06Bridge && bridgePending) {
+        const replyIndex = Number(choice.nextId.slice(NOVA06_BRIDGE_CHOICE_PREFIX.length));
+        const ack = bridgePending.replies[replyIndex]?.ack ?? '';
+        const ackLines = ack.split('\n').map(line => line.trim()).filter(Boolean);
+        const bridgeRunId = ++nova06BridgeRunRef.current;
+        void (async () => {
+          for (let index = 0; index < ackLines.length; index += 1) {
+            if (nova06BridgeRunRef.current !== bridgeRunId) return;
+            setIsTyping(true);
+            await waitForPlayback(420);
+            if (nova06BridgeRunRef.current !== bridgeRunId) return;
+            setIsTyping(false);
+            const withAck = addMessage({
+              id: `nova06_ack_${Date.now()}_${index}`,
+              speaker: 'nova',
+              type: 'text',
+              content: ackLines[index],
+              emotion: 'normal',
+              contactStage: contactStageRef.current,
+              isNew: true,
+            });
+            persistState(nextId, withAck);
+            jumpToBottom();
+            await waitForPlayback(280);
+          }
+          if (nova06BridgeRunRef.current !== bridgeRunId) return;
+          scheduleSequence(nextId, 400);
+        })();
+        return;
+      }
+
       scheduleSequence(nextId, 550);
     },
-    [applyChoiceEffects, choiceNodeId, choices, persistState, scheduleSequence, jumpToBottom],
+    [addMessage, applyChoiceEffects, choiceNodeId, choices, persistState, scheduleSequence, jumpToBottom, waitForPlayback],
   );
 
   const handleChoiceTimeout = useCallback(
@@ -1478,6 +1580,10 @@ export default function GameApp() {
           node={activeInteraction}
           locale={locale}
           sealedAnchor={stats.temporaryAnchorSealed}
+          nova06FirstOverrideSeen={stats.nova06FirstOverrideSeen}
+          passwordBypassedByNova06={stats.passwordBypassedByNova06}
+          signalCompletedByNova06={stats.signalCompletedByNova06}
+          powerCompletedByNova06={stats.powerCompletedByNova06}
           onComplete={handleSpecialInteractionComplete}
           onSaveAndExit={saveInteractionAndExit}
         />

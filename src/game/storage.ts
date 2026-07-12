@@ -38,7 +38,15 @@ export const defaultStats: GameStats = {
   signalCoreTelemetryRecovered: false,
   timelineAlignmentCompleted: false,
   temporaryAnchorRestored: false,
+  nova06FirstOverrideSeen: false,
+  passwordBypassedByNova06: false,
+  signalCompletedByNova06: false,
+  timelineCompletedByNova06: false,
+  powerCompletedByNova06: false,
 };
+
+/** 完整黑入演出的会话级标记；防止刷新后（存档仍在接管前）重复播放重度演出 */
+export const NOVA06_FX_SEEN_KEY = 'seventh_reboot_nova06_fx_seen';
 
 const MEMORY_ANCHOR_IDS = new Set<MemoryAnchorId>([
   'n7',
@@ -172,6 +180,11 @@ export function normalizeGameStats(value: unknown): GameStats {
     signalCoreTelemetryRecovered: stats.signalCoreTelemetryRecovered === true,
     timelineAlignmentCompleted: stats.timelineAlignmentCompleted === true,
     temporaryAnchorRestored: stats.temporaryAnchorRestored === true,
+    nova06FirstOverrideSeen: stats.nova06FirstOverrideSeen === true,
+    passwordBypassedByNova06: stats.passwordBypassedByNova06 === true,
+    signalCompletedByNova06: stats.signalCompletedByNova06 === true,
+    timelineCompletedByNova06: stats.timelineCompletedByNova06 === true,
+    powerCompletedByNova06: stats.powerCompletedByNova06 === true,
   };
 
   const finalChoice = normalizeFinalChoice(stats.finalChoice);
@@ -245,6 +258,11 @@ function isValidSaveData(data: unknown): data is SaveData {
   if (stats.powerRoutingResult !== undefined && typeof stats.powerRoutingResult !== 'string') return false;
   if (stats.temporaryAnchorSealed !== undefined && typeof stats.temporaryAnchorSealed !== 'string') return false;
   if (stats.temporaryAnchorRestored !== undefined && typeof stats.temporaryAnchorRestored !== 'boolean') return false;
+  if (stats.nova06FirstOverrideSeen !== undefined && typeof stats.nova06FirstOverrideSeen !== 'boolean') return false;
+  if (stats.passwordBypassedByNova06 !== undefined && typeof stats.passwordBypassedByNova06 !== 'boolean') return false;
+  if (stats.signalCompletedByNova06 !== undefined && typeof stats.signalCompletedByNova06 !== 'boolean') return false;
+  if (stats.timelineCompletedByNova06 !== undefined && typeof stats.timelineCompletedByNova06 !== 'boolean') return false;
+  if (stats.powerCompletedByNova06 !== undefined && typeof stats.powerCompletedByNova06 !== 'boolean') return false;
   if (typeof save.timestamp !== 'number') return false;
   if (save.storyVersion !== STORY_VERSION) return false;
   if (save.storyContentVersion !== STORY_CONTENT_VERSION) return false;
@@ -280,6 +298,11 @@ export function hasSaveFile(): boolean {
 
 export function clearSave() {
   localStorage.removeItem(SAVE_KEY);
+  try {
+    localStorage.removeItem(NOVA06_FX_SEEN_KEY);
+  } catch {
+    /* silent */
+  }
 }
 
 export function getSaveTimeString(

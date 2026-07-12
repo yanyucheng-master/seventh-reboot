@@ -8,11 +8,14 @@ import {
   applySpecialInteractionCompletion,
   classifyPowerRoutingResult,
   isCriticalLogPassword,
+  isSignalAligned,
   normalizeAuthorizationKey,
   rebalancePowerAllocation,
   type PowerAllocation,
   type PowerChannel,
 } from '../src/game/interactions/logic.ts';
+import { resolveGuidanceStage } from '../src/game/interactions/guidance.ts';
+import { resolveNova06CommsAftermath } from '../src/game/interactions/nova06CommsAftermath.ts';
 
 const acceptedPasswords = [
   '0701',
@@ -34,12 +37,20 @@ for (const password of ['', '701', '0702', '0710', '07/02', 'NOVA0701']) {
 assert.equal(normalizeAuthorizationKey(' ０７ - ０１ '), '0701');
 const zhInteractionCopy = getSpecialInteractionCopy('zh-CN');
 const enInteractionCopy = getSpecialInteractionCopy('en-US');
-assert.equal(zhInteractionCopy.password.hints.some(hint => hint.includes('第一句话') || hint.includes('第一次有人回答')), false);
-assert.equal(zhInteractionCopy.password.hints.some(hint => hint.includes('提示 0') || hint.includes('系统建议')), false);
-assert.equal(enInteractionCopy.password.hints.some(hint => /Hint\s*0|System format/i.test(hint)), false);
-assert.equal(enInteractionCopy.password.hints[0].includes("isn't quite right"), true);
-assert.equal(enInteractionCopy.password.hints[1].includes('seventh'), true);
-assert.equal(enInteractionCopy.password.hints[2].includes('Observer-01'), true);
+assert.equal('hints' in zhInteractionCopy.password, false);
+assert.equal('partialPlaceholder' in zhInteractionCopy.password, false);
+assert.equal('calibrate' in zhInteractionCopy.signal, false);
+assert.equal('assistAction' in zhInteractionCopy.power, false);
+assert.equal('hints' in enInteractionCopy.password, false);
+assert.equal('calibrate' in enInteractionCopy.signal, false);
+assert.equal('assistAction' in enInteractionCopy.power, false);
+assert.equal(zhInteractionCopy.signal.stageTitles.length, 3);
+assert.equal(enInteractionCopy.signal.stageTitles.length, 3);
+assert.equal(isSignalAligned(62, 62, 14), true);
+assert.equal(isSignalAligned(76, 62, 14), true);
+assert.equal(isSignalAligned(77, 62, 14), false);
+assert.equal(isSignalAligned(43, 34, 9), true);
+assert.equal(isSignalAligned(44, 34, 9), false);
 assert.equal(zhInteractionCopy.memory.memories.maintenance_board.title.includes('N7'), false);
 
 const channels: PowerChannel[] = ['lifeSupport', 'communications', 'coreScan'];
@@ -60,8 +71,114 @@ assert.equal(classifyPowerRoutingResult(false, [5, 7, 9.9]), 'excellent');
 assert.equal(classifyPowerRoutingResult(false, [5, 11, 9]), 'stable');
 assert.equal(classifyPowerRoutingResult(true, [5, 5, 5]), 'emergency_assist');
 
+assert.equal(resolveGuidanceStage(0, {
+  msSinceMark: 40000,
+  msTotal: 40000,
+  validAttempts: 0,
+  invalidAttempts: 0,
+  invalidSinceMark: 0,
+  emergencies: 0,
+}, {
+  hint1Ms: 32000,
+  hint1Invalid: 2,
+  hint2Ms: 30000,
+  hint2Invalid: 2,
+  overrideMs: 100000,
+  overrideInvalid: 7,
+  overrideMinValid: 6,
+  overrideEmergencies: 0,
+}), 1, 'Long stall may trigger first Nova hint without valid attempts');
+
+assert.equal(resolveGuidanceStage(2, {
+  msSinceMark: 5000,
+  msTotal: 120000,
+  validAttempts: 0,
+  invalidAttempts: 9,
+  invalidSinceMark: 1,
+  emergencies: 0,
+}, {
+  hint1Ms: 32000,
+  hint1Invalid: 2,
+  hint2Ms: 30000,
+  hint2Invalid: 2,
+  overrideMs: 100000,
+  overrideInvalid: 7,
+  overrideMinValid: 6,
+  overrideEmergencies: 0,
+}), 2, 'NOVA-06 override must not trigger without real attempts');
+
+assert.equal(resolveGuidanceStage(2, {
+  msSinceMark: 5000,
+  msTotal: 120000,
+  validAttempts: 8,
+  invalidAttempts: 9,
+  invalidSinceMark: 1,
+  emergencies: 0,
+}, {
+  hint1Ms: 32000,
+  hint1Invalid: 2,
+  hint2Ms: 30000,
+  hint2Invalid: 2,
+  overrideMs: 100000,
+  overrideInvalid: 7,
+  overrideMinValid: 6,
+  overrideEmergencies: 0,
+}), 3, 'Override requires prior hints plus real attempts and stall/invalid threshold');
+
 const originalAnchors = ['n7', 'white_flower'] as const;
-let stats = { ...defaultStats, memoryAnchors: [...originalAnchors], trust: 4, memory: 3, attachment: 2 };
+let stats: GameStats = { ...defaultStats, memoryAnchors: [...originalAnchors], trust: 4, memory: 3, attachment: 2 };
+
+stats = applySpecialInteractionCompletion(stats, {
+  kind: 'critical-log-password',
+  routeKey: 'success',
+  completedByNova06: true,
+});
+assert.equal(stats.passwordBypassedByNova06, true);
+assert.equal(stats.nova06FirstOverrideSeen, true);
+
+stats = applySpecialInteractionCompletion(stats, {
+  kind: 'signal-separation',
+  routeKey: 'clean',
+  completedByNova06: true,
+});
+assert.equal(stats.signalCompletedByNova06, true);
+assert.equal(stats.timelineCompletedByNova06, true);
+
+stats = applySpecialInteractionCompletion(stats, {
+  kind: 'power-routing',
+  routeKey: 'stable',
+  completedByNova06: true,
+});
+assert.equal(stats.powerCompletedByNova06, true);
+
+// 特殊 Nova 反应台词只在接管完成时注入，正常通关不得触发
+{
+  const copy = getSpecialInteractionCopy('zh');
+  assert.equal(
+    resolveNova06CommsAftermath({ kind: 'critical-log-password', routeKey: 'success' }, copy),
+    null,
+  );
+  assert.equal(
+    resolveNova06CommsAftermath({ kind: 'signal-separation', routeKey: 'clean' }, copy),
+    null,
+  );
+  assert.equal(
+    resolveNova06CommsAftermath({ kind: 'power-routing', routeKey: 'excellent' }, copy),
+    null,
+  );
+  assert.equal(
+    resolveNova06CommsAftermath({ kind: 'critical-log-password', routeKey: 'success', completedByNova06: false }, copy),
+    null,
+  );
+  const takeover = resolveNova06CommsAftermath(
+    { kind: 'critical-log-password', routeKey: 'success', completedByNova06: true },
+    copy,
+  );
+  assert.ok(takeover);
+  assert.equal(takeover.reactions.includes('她甚至没输入密码'), true);
+}
+
+stats = { ...defaultStats, memoryAnchors: [...originalAnchors], trust: 4, memory: 3, attachment: 2 };
 stats = applySpecialInteractionCompletion(stats, { kind: 'critical-log-password', routeKey: 'success' });
 assert.equal(stats.criticalLogUnlocked, true);
 stats = applySpecialInteractionCompletion(stats, { kind: 'signal-separation', routeKey: 'clean' });

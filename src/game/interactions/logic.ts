@@ -76,7 +76,12 @@ export function applySpecialInteractionCompletion(
 ): GameStats {
   switch (completion.kind) {
     case 'critical-log-password':
-      return { ...current, criticalLogUnlocked: true };
+      return {
+        ...current,
+        criticalLogUnlocked: true,
+        passwordBypassedByNova06: current.passwordBypassedByNova06 || completion.completedByNova06 === true,
+        nova06FirstOverrideSeen: current.nova06FirstOverrideSeen || completion.completedByNova06 === true,
+      };
     case 'signal-separation':
       return {
         ...current,
@@ -85,9 +90,17 @@ export function applySpecialInteractionCompletion(
         signalNova06Recovered: true,
         signalCoreTelemetryRecovered: true,
         timelineAlignmentCompleted: true,
+        signalCompletedByNova06: current.signalCompletedByNova06 || completion.completedByNova06 === true,
+        timelineCompletedByNova06: current.timelineCompletedByNova06 || completion.completedByNova06 === true,
+        nova06FirstOverrideSeen: current.nova06FirstOverrideSeen || completion.completedByNova06 === true,
       };
     case 'power-routing':
-      return { ...current, powerRoutingResult: completion.routeKey };
+      return {
+        ...current,
+        powerRoutingResult: completion.routeKey,
+        powerCompletedByNova06: current.powerCompletedByNova06 || completion.completedByNova06 === true,
+        nova06FirstOverrideSeen: current.nova06FirstOverrideSeen || completion.completedByNova06 === true,
+      };
     case 'memory-seal':
       return {
         ...current,

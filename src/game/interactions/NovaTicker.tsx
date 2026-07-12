@@ -7,7 +7,11 @@ type NovaTickerProps = {
   liveLabel?: string;
 };
 
-/** 互动界面中 Nova 实时发言的新闻条样式 */
+/**
+ * Nova 实时发言条。
+ * 设计取向：深空语音信道，而不是资讯新闻栏。
+ * 取消左右硬分割的方正双栏，改用不对称软轮廓 + 顶部身份行。
+ */
 export function NovaTicker({
   text,
   alert = 'stable',
@@ -15,13 +19,15 @@ export function NovaTicker({
   liveLabel = 'LIVE',
 }: NovaTickerProps) {
   return (
-    <div className="nova-ticker" data-alert={alert} aria-live="polite">
-      <div className="nova-ticker-badge">
+    <aside className="nova-ticker" data-alert={alert} aria-live="polite">
+      <span className="nova-ticker-rail" aria-hidden />
+      <span className="nova-ticker-orbit" aria-hidden />
+      <header className="nova-ticker-meta">
         <span className="nova-ticker-live" aria-hidden />
         <strong>{badgeLabel}</strong>
         <em>{liveLabel}</em>
-      </div>
+      </header>
       <p className="nova-ticker-text">{text}</p>
-    </div>
+    </aside>
   );
 }

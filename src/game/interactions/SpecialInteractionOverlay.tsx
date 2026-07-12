@@ -6,6 +6,7 @@ import type {
   SpecialInteractionCompletion,
 } from '../types';
 import { getSpecialInteractionCopy } from './copy';
+import { hasSeenNova06FullFx } from './guidance';
 import { MemoryCapacityInteraction } from './MemoryCapacityInteraction';
 import { PasswordInteraction } from './PasswordInteraction';
 import { PowerRoutingInteraction } from './PowerRoutingInteraction';
@@ -15,11 +16,15 @@ type SpecialInteractionOverlayProps = {
   node: StoryNode;
   locale: Locale;
   sealedAnchor?: SealableMemoryAnchor;
+  /** 本周目是否已经播放过完整黑入演出（存档字段；会话内以 localStorage 兜底） */
+  nova06FirstOverrideSeen: boolean;
+  passwordBypassedByNova06: boolean;
+  signalCompletedByNova06: boolean;
+  powerCompletedByNova06: boolean;
   onComplete: (result: SpecialInteractionCompletion) => void;
   onSaveAndExit: () => void;
 };
 
-const ASSIST_KEY = 'seventh_reboot_interaction_assist';
 const REDUCED_MOTION_KEY = 'seventh_reboot_interaction_reduced_motion';
 const FORCE_REDUCED_MOTION_FOR_TEST = import.meta.env.DEV
   && new URLSearchParams(window.location.search).get('testReducedMotion') === '1';
@@ -37,28 +42,24 @@ export function SpecialInteractionOverlay({
   node,
   locale,
   sealedAnchor,
+  nova06FirstOverrideSeen,
+  passwordBypassedByNova06,
+  signalCompletedByNova06,
+  powerCompletedByNova06,
   onComplete,
   onSaveAndExit,
 }: SpecialInteractionOverlayProps) {
   const copy = useMemo(() => getSpecialInteractionCopy(locale), [locale]);
-  const [assistMode, setAssistMode] = useState(() => readStoredBoolean(ASSIST_KEY, false));
   const [reducedMotion, setReducedMotion] = useState(() => FORCE_REDUCED_MOTION_FOR_TEST || readStoredBoolean(
     REDUCED_MOTION_KEY,
     window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false,
   ));
   const overlayRef = useRef<HTMLDivElement>(null);
+  const nova06FxSeen = nova06FirstOverrideSeen || hasSeenNova06FullFx();
 
   useEffect(() => {
     overlayRef.current?.focus();
   }, [node.id]);
-
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(ASSIST_KEY, String(assistMode));
-    } catch {
-      /* Preference persistence is optional. */
-    }
-  }, [assistMode]);
 
   useEffect(() => {
     try {
@@ -98,15 +99,6 @@ export function SpecialInteractionOverlay({
           <label className="interaction-switch">
             <input
               type="checkbox"
-              checked={assistMode}
-              onChange={event => setAssistMode(event.target.checked)}
-            />
-            <span aria-hidden />
-            {copy.common.assist}
-          </label>
-          <label className="interaction-switch">
-            <input
-              type="checkbox"
               checked={reducedMotion}
               onChange={event => setReducedMotion(event.target.checked)}
             />
@@ -121,21 +113,29 @@ export function SpecialInteractionOverlay({
 
       <main className="interaction-main">
         {node.interactionKind === 'critical-log-password' && (
-          <PasswordInteraction copy={copy} assistMode={assistMode} onComplete={onComplete} />
+          <PasswordInteraction
+            copy={copy}
+            reducedMotion={reducedMotion}
+            nova06FxSeen={nova06FxSeen}
+            nova06OverrideUsed={passwordBypassedByNova06}
+            onComplete={onComplete}
+          />
         )}
         {node.interactionKind === 'signal-separation' && (
           <SignalSeparationInteraction
             copy={copy}
-            assistMode={assistMode}
             reducedMotion={reducedMotion}
+            nova06FxSeen={nova06FxSeen}
+            nova06OverrideUsed={signalCompletedByNova06}
             onComplete={onComplete}
           />
         )}
         {node.interactionKind === 'power-routing' && (
           <PowerRoutingInteraction
             copy={copy}
-            assistMode={assistMode}
             reducedMotion={reducedMotion}
+            nova06FxSeen={nova06FxSeen}
+            nova06OverrideUsed={powerCompletedByNova06}
             onComplete={onComplete}
           />
         )}
