@@ -110,6 +110,9 @@
     "draftFallbackTitle": "未发送草稿",
     "anomalyFallback": "异常记录",
     "systemFile": "系统文件",
+    "summaryUnavailable": "暂无摘要",
+    "expandDetails": "展开详情",
+    "collapseDetails": "收起详情",
     "tapToClose": "点击任意处关闭"
   }
 }

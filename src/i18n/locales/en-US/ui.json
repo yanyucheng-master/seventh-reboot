@@ -110,6 +110,9 @@
     "draftFallbackTitle": "Unsent draft",
     "anomalyFallback": "Anomaly Record",
     "systemFile": "System File",
+    "summaryUnavailable": "Summary unavailable",
+    "expandDetails": "Expand details",
+    "collapseDetails": "Collapse details",
     "tapToClose": "Tap anywhere to close"
   }
 }

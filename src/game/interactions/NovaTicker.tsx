@@ -1,5 +1,3 @@
-import type { ReactNode } from 'react';
-
 type NovaTickerAlert = 'stable' | 'lifeSupport' | 'communications' | 'coreScan' | 'hint';
 
 type NovaTickerProps = {
@@ -7,7 +5,6 @@ type NovaTickerProps = {
   alert?: NovaTickerAlert;
   badgeLabel?: string;
   liveLabel?: string;
-  children?: ReactNode;
 };
 
 /** 互动界面中 Nova 实时发言的新闻条样式 */

@@ -9,7 +9,11 @@ import { spawnSync } from 'node:child_process';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const zhScript = path.join(root, '..', '第七次重启_剧情文本_V1_0_航线因果闭环与自然语言精修版.txt');
-const enScript = 'C:\\Users\\YYC\\Desktop\\The_Seventh_Reboot_V1.0_Full_English_Script.txt';
+const enScript = process.env.SEVENTH_REBOOT_EN_SOURCE;
+
+if (!enScript || !fs.existsSync(enScript)) {
+  throw new Error('Set SEVENTH_REBOOT_EN_SOURCE to an existing English story export.');
+}
 
 function run(cmd, args) {
   const result = spawnSync(cmd, args, { cwd: root, encoding: 'utf8', shell: true });

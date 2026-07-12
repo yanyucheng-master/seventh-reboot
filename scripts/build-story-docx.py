@@ -226,7 +226,7 @@ def add_body(doc: Document, body_lines: list[str]):
 
 
 def main():
-    lines = SOURCE.read_text(encoding="utf-8").splitlines()
+    lines = SOURCE.read_text(encoding="utf-8-sig").splitlines()
     divider = lines.index("---")
     header_lines = lines[:divider]
     body_lines = lines[divider + 1 :]

@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import { storyNodes } from '../src/game/story.ts';
 import type { StoryNode } from '../src/game/story.ts';
 import { getSpecialInteractionCopy } from '../src/game/interactions/copy.ts';
+import { encodeStorySource } from './story-source-format.ts';
 
 const VERSION = 'V1.0';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -199,7 +200,9 @@ for (const node of storyNodes) {
 bodyLines.push('[MENU] (系统/菜单)');
 bodyLines.push('返回主菜单');
 
-const interactionNodes = storyNodes.filter(node => node.type === 'interaction');
+const interactionNodes = storyNodes.filter(
+  node => node.type === 'interaction' && Boolean(node.interactionKind),
+);
 const zhCopy = getSpecialInteractionCopy('zh-CN');
 
 function formatInteractionAppendix(): string[] {
@@ -298,8 +301,9 @@ const output = [
   ...formatInteractionAppendix(),
 ].join('\n') + '\n';
 
-fs.writeFileSync(outPath, output, 'utf8');
-fs.writeFileSync(projectOutPath, output, 'utf8');
+const encodedOutput = encodeStorySource(output);
+fs.writeFileSync(outPath, encodedOutput);
+fs.writeFileSync(projectOutPath, encodedOutput);
 
 const lineCount = output.split('\n').length;
 const choiceCount = storyNodes.filter(n => n.choices?.length).length;

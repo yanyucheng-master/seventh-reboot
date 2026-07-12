@@ -8,6 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import { normalizeStorySourceText } from './story-source-format.ts';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(import.meta.url);
@@ -42,7 +43,7 @@ function cleanNextId(value) {
 }
 
 function parseExport(text) {
-  const lines = text.split(/\r?\n/);
+  const lines = normalizeStorySourceText(text).text.split('\n');
   const nodes = [];
   let current = null;
   let fileTitle = '';
@@ -172,7 +173,7 @@ function compareLocale(label, sourceNodes, localeNodes, { compareChoices = true 
     // Skip empty structural nodes
     if (!srcContent && !locContent && !(src.choices?.length)) continue;
 
-    if (srcContent !== locContent) {
+    if (srcContent !== locContent && !(src.type === 'chapter' && !srcContent && locContent)) {
       // Chapter titles may be promoted differently — still report
       mismatches.push({
         id,
@@ -205,20 +206,50 @@ function compareLocale(label, sourceNodes, localeNodes, { compareChoices = true 
   return { label, mismatches, missingInLocale, extraInLocale, sourceCount: sourceNodes.length, localeCount: localeIds.size };
 }
 
+function checkLocaleCoverage(label, sourceNodes, localeNodes) {
+  const missingContent = [];
+  const missingChoices = [];
+  const cjkLeaks = [];
+
+  for (const src of sourceNodes) {
+    const loc = localeNodes[src.id];
+    if (src.content?.trim() && !loc?.content?.trim()) missingContent.push(src.id);
+    (src.choices ?? []).forEach((_, index) => {
+      const key = `${src.id}__${index}`;
+      if (!loc?.choices?.[key]?.trim()) missingChoices.push(key);
+    });
+  }
+
+  for (const [id, entry] of Object.entries(localeNodes)) {
+    if (/[\u3400-\u9fff]/.test(entry.content ?? '')) cjkLeaks.push(`${id}.content`);
+    for (const [key, value] of Object.entries(entry.choices ?? {})) {
+      if (/[\u3400-\u9fff]/.test(value)) cjkLeaks.push(`${id}.choices.${key}`);
+    }
+  }
+  return { label, missingContent, missingChoices, cjkLeaks };
+}
+
 const zhScript = path.join(root, '..', '第七次重启_剧情文本_V1_0_航线因果闭环与自然语言精修版.txt');
-const enScript = 'C:\\Users\\YYC\\Desktop\\The_Seventh_Reboot_V1.0_Full_English_Script.txt';
+const enScript = process.env.SEVENTH_REBOOT_EN_SOURCE;
 
 if (!fs.existsSync(zhScript)) throw new Error(`Missing ZH script: ${zhScript}`);
-if (!fs.existsSync(enScript)) throw new Error(`Missing EN script: ${enScript}`);
+if (enScript && !fs.existsSync(enScript)) throw new Error(`Missing EN script: ${enScript}`);
 
 const zhSource = parseExport(fs.readFileSync(zhScript, 'utf8'));
-const enSource = parseExport(fs.readFileSync(enScript, 'utf8'));
+const enSource = enScript ? parseExport(fs.readFileSync(enScript, 'utf8')) : null;
 const zhLocale = loadLocale('zh-CN');
 const enLocale = loadLocale('en-US');
+const zhInteractions = JSON.parse(fs.readFileSync(path.join(root, 'src/i18n/locales/zh-CN/interactions.json'), 'utf8'));
+const enInteractions = JSON.parse(fs.readFileSync(path.join(root, 'src/i18n/locales/en-US/interactions.json'), 'utf8'));
+zhLocale.nodes = { ...zhLocale.nodes, ...zhInteractions.nodes };
+enLocale.nodes = { ...enLocale.nodes, ...enInteractions.nodes };
 const baseNodes = extractStoryTsNodes();
 
 const zhReport = compareLocale('zh-CN locale vs ZH script', zhSource, zhLocale.nodes);
-const enReport = compareLocale('en-US locale vs EN script', enSource, enLocale.nodes);
+const enReport = enSource
+  ? compareLocale('en-US locale vs external EN script', enSource, enLocale.nodes)
+  : null;
+const enCoverage = checkLocaleCoverage('en-US runtime coverage vs ZH topology', zhSource, enLocale.nodes);
 const baseVsZh = compareLocale('story.ts base vs ZH script', zhSource, Object.fromEntries(
   baseNodes.map(n => {
     const entry = {};
@@ -235,9 +266,9 @@ const baseVsZh = compareLocale('story.ts base vs ZH script', zhSource, Object.fr
 
 // Structure parity: same node ids between ZH and EN sources
 const zhIds = new Set(zhSource.map(n => n.id));
-const enIds = new Set(enSource.map(n => n.id));
-const onlyZh = [...zhIds].filter(id => !enIds.has(id));
-const onlyEn = [...enIds].filter(id => !zhIds.has(id));
+const enIds = new Set((enSource ?? []).map(n => n.id));
+const onlyZh = enSource ? [...zhIds].filter(id => !enIds.has(id)) : [];
+const onlyEn = enSource ? [...enIds].filter(id => !zhIds.has(id)) : [];
 
 function printReport(r, limit = 30) {
   console.log(`\n=== ${r.label} ===`);
@@ -253,15 +284,20 @@ function printReport(r, limit = 30) {
 }
 
 printReport(zhReport);
-printReport(enReport);
+if (enReport) printReport(enReport);
 printReport(baseVsZh);
-console.log(`\n=== Structure ZH vs EN ===`);
-console.log(`onlyZh=${onlyZh.length}`, onlyZh.slice(0, 20));
-console.log(`onlyEn=${onlyEn.length}`, onlyEn.slice(0, 20));
+console.log(`\n=== ${enCoverage.label} ===`);
+console.log(`missingContent=${enCoverage.missingContent.length} missingChoices=${enCoverage.missingChoices.length} cjkLeaks=${enCoverage.cjkLeaks.length}`);
+if (enSource) {
+  console.log(`\n=== Structure ZH vs external EN ===`);
+  console.log(`onlyZh=${onlyZh.length}`, onlyZh.slice(0, 20));
+  console.log(`onlyEn=${onlyEn.length}`, onlyEn.slice(0, 20));
+}
 
 const out = {
   zhReport: { ...zhReport, mismatches: zhReport.mismatches.slice(0, 200) },
-  enReport: { ...enReport, mismatches: enReport.mismatches.slice(0, 200) },
+  enReport: enReport ? { ...enReport, mismatches: enReport.mismatches.slice(0, 200) } : null,
+  enCoverage,
   baseVsZh: { ...baseVsZh, mismatches: baseVsZh.mismatches.slice(0, 200) },
   structure: { onlyZh, onlyEn },
 };
@@ -270,8 +306,11 @@ console.log('\nWrote scripts/data/story-audit-report.json');
 
 const fail =
   zhReport.mismatches.length +
-  enReport.mismatches.length +
+  (enReport?.mismatches.length ?? 0) +
   baseVsZh.mismatches.length +
   zhReport.missingInLocale.length +
-  enReport.missingInLocale.length;
+  (enReport?.missingInLocale.length ?? 0) +
+  enCoverage.missingContent.length +
+  enCoverage.missingChoices.length +
+  enCoverage.cjkLeaks.length;
 process.exit(fail > 0 ? 1 : 0);

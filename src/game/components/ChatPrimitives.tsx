@@ -233,7 +233,8 @@ export function AnomalyRecordCard({
 }
 
 export function FileDisplay({ content }: { content: string }) {
-  const { title, body } = splitRecordContent(content, 'System File');
+  const { t } = useI18n();
+  const { title, body } = splitRecordContent(content, t('chat.systemFile'));
   const lines = useMemo(() => normalizeFileLines(title, body), [body, title]);
   const entries = useMemo(() => lines.map(parseFileLine), [lines]);
   const summary = useMemo(() => getFileSummary(title, entries), [entries, title]);
@@ -286,7 +287,7 @@ export function FileDisplay({ content }: { content: string }) {
               </p>
             ))
           ) : (
-            <p className="file-record-summary-line">Summary unavailable</p>
+            <p className="file-record-summary-line">{t('chat.summaryUnavailable')}</p>
           )}
         </div>
         <button
@@ -295,7 +296,7 @@ export function FileDisplay({ content }: { content: string }) {
           onClick={() => setIsExpanded(value => !value)}
           aria-expanded={isExpanded}
         >
-          {isExpanded ? 'Collapse details' : 'Expand details'}
+          {isExpanded ? t('chat.collapseDetails') : t('chat.expandDetails')}
         </button>
         {isExpanded && <div className="file-record-body">{entries.map(renderEntry)}</div>}
       </div>

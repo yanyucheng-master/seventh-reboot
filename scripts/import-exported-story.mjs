@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { storyNodeMap } from '../src/game/story.ts';
+import { normalizeStorySourceText } from './story-source-format.ts';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const sourcePath = process.argv[2];
@@ -11,7 +12,7 @@ if (!sourcePath) {
 }
 
 const storyPath = path.join(root, 'src/game/story.ts');
-const source = fs.readFileSync(sourcePath, 'utf8');
+const source = normalizeStorySourceText(fs.readFileSync(sourcePath, 'utf8')).text;
 const originalStory = fs.readFileSync(storyPath, 'utf8');
 
 const EMOTION = new Map([

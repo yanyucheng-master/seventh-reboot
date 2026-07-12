@@ -1,8 +1,8 @@
-# 第七次重启 · 剧情文本导出
+﻿# 第七次重启 · 剧情文本导出
 版本：V1.0
 节点数：2075
-特殊互动节点：7
-生成时间：2026-07-11T16:55:40
+特殊互动节点：5
+生成时间：2026-07-12T04:26:51
 
 说明：本文档由运行时 story.ts 自动导出，包含全部剧情节点、选项分支、系统消息、章节、后记、结局、记忆锚点、文件与图片说明，以及特殊互动模块附录。
 修订说明：本版在格式统一校对版基础上，重点强化第五章真相揭露阶段的玩家参与感，新增多选项与限时选项，压缩部分连续解释段，让系统文件负责证据、Nova负责情绪、玩家负责回应。
@@ -1899,9 +1899,6 @@ Nova 已离线
 我明明是第一次和对方说起 N7
 可说出口的时候
 却像已经重复过很多次
-
-第二章：日常
-第二章：日常
   next: CH2_START
 
 ## 第二章：日常
@@ -3166,9 +3163,6 @@ Nova 已离线
 对方记得得太自然了
 像是替我保管过很久
 这不太像巧合
-
-第三章：异常
-第三章：异常
   next: CH3_START
 
 ## 第三章：异常
@@ -4295,9 +4289,6 @@ Nova 已离线
   草稿标题: 加密草稿 / 03:07
 我又看见那个影子了
 它还在观测室
-
-第四章：记忆
-第四章：记忆
   next: CH4_START
 
 ## 第四章：记忆
@@ -5404,9 +5395,6 @@ Nova 已离线
 不要打开第七协议。
 尤其不要相信我。
 因为我已经失败六次了。
-
-第五章：真相（上）
-第五章：真相（上）
   next: CH5A_START
 
 ## 第五章：真相（上）
@@ -6911,8 +6899,6 @@ NOVA-06 · 条件残留已识别 / 非实时意识
 [ch5a_msg8] (系统/故障)
   meta: 故障效果
 真正被困住的不是 Nova，是你
-第五章：真相（下）
-第五章：真相（下）
   next: CH5B_START
 
 ## 第五章：真相（下）
@@ -8390,8 +8376,6 @@ ADDITIONAL SPACE REQUIRED
 [ch5b_refuse9] (Nova/文本)
   meta: 情绪=悲伤
 只是一个可以反复保存的今天
-终章：第七次重启
-终章：第七次重启
   next: BAD_END_START
 
 ## 终章：第七次重启
@@ -9930,59 +9914,50 @@ Aurora号正在绕开 S-7 时相共振区
 ### 后记
 [fin_epi1] (系统/后记)
 后记 / Epilogue
-后记
   next: fin_epi2
 
 ### 后记
 [fin_epi2] (系统/后记)
 12年后 · 后记
 深空航行学院
-后记
   next: fin_epi3
 
 ### 后记
 [fin_epi3] (系统/后记)
 学生："老师，为什么观测室总有一个空座位？"
-后记
   next: fin_epi4
 
 ### 后记
 [fin_epi4] (系统/后记)
 Nova站在窗前
 这一次，她没有沉默太久
-后记
   next: fin_epi5
 
 ### 后记
 [fin_epi5] (系统/后记)
 “因为我一直给一个没有真正坐过这里的人留着它。”
-后记
   next: fin_epi6
 
 ### 后记
 [fin_epi6] (系统/后记)
 学生：“那个人叫什么名字？”
-后记
   next: fin_epi7
 
 ### 后记
 [fin_epi7] (系统/后记)
 Nova轻轻笑了一下
 像是终于能把那个位置说出口
-后记
   next: fin_epi8
 
 ### 后记
 [fin_epi8] (系统/后记)
 “我不知道对方在自己的世界里叫什么。”
-后记
   next: fin_epi9
 
 ### 后记
 [fin_epi9] (系统/后记)
 “但我记得。”
 “系统叫对方Observer-01，我后来也一直这么叫。”
-后记
   next: fin_epi10
 
 ### 后记
@@ -9990,7 +9965,6 @@ Nova轻轻笑了一下
 学生离开后
 Nova独自站在窗前
 掌心里有一颗牛奶糖
-后记
   next: fin_epi11
 
 ### 后记
@@ -9999,13 +9973,11 @@ Nova独自站在窗前
 也记得那朵小白花
 记得 N7
 记得观测室
-后记
   next: fin_epi12
 
 ### 后记
 [fin_epi12] (系统/后记)
 她还记得最开始的那句话
-后记
   next: fin_epi13
 
 ### 后记
@@ -10035,7 +10007,6 @@ Nova独自站在窗前
 
 [fin_action_save] (系统/状态)
 玩家端纪念归档已保存
-结局节点
   next: fin_the_end
 
 ### 结局节点
@@ -10083,58 +10054,49 @@ Aurora号正在绕开 S-7 时相共振区
 ### 后记
 [normal_5] (系统/后记)
 后记 / Epilogue
-后记
   next: normal_6
 
 ### 后记
 [normal_6] (系统/后记)
 12年后 · 后记
 深空航行学院
-后记
   next: normal_7
 
 ### 后记
 [normal_7] (系统/后记)
 学生："老师，你为什么总看星星？"
-后记
   next: normal_8
 
 ### 后记
 [normal_8] (系统/后记)
 Nova：“不知道，可能只是习惯”
-后记
   next: normal_9
 
 ### 后记
 [normal_9] (系统/后记)
 学生："你在等什么人吗？"
-后记
   next: normal_10
 
 ### 后记
 [normal_10] (系统/后记)
 Nova沉默了一会
-后记
   next: normal_11
 
 ### 后记
 [normal_11] (系统/后记)
 "也许吧"
-后记
   next: normal_12
 
 ### 后记
 [normal_12] (系统/后记)
 她从口袋里拿出一颗牛奶糖
 糖纸已经泛黄
-后记
   next: normal_13
 
 ### 后记
 [normal_13] (系统/后记)
 她不记得为什么一直舍不得吃
 也想不起自己曾经想把它留给谁
-后记
   next: normal_14
 
 ### 后记
@@ -10143,14 +10105,12 @@ Nova沉默了一会
 她都会觉得
 自己好像曾经被某个人
 很认真地陪过一段路
-后记
   next: normal_15
 
 ### 后记
 [normal_15] (系统/后记)
 那个人没有留下名字
 也没有留下清晰的脸
-后记
   next: normal_16
 
 ### 后记
@@ -10158,7 +10118,6 @@ Nova沉默了一会
 只留下一个空缺
 和一点怎么都散不掉的温暖
 普通结局：《循环之外》
-普通结局：循环之外
   next: normal_title
 
 ## 普通结局：循环之外
@@ -10179,7 +10138,6 @@ Nova沉默了一会
 可恢复内容：第一句话 / N7 / 牛奶糖 / 小白花
 完整度：不足
 备注：只能确认曾有一段重要通讯，无法恢复完整对话
-结局节点
   next: normal_end
 
 ### 结局节点
@@ -10428,7 +10386,6 @@ LINK · 通讯链路重新建立
 
 [bad_action_restart] (系统/状态)
 正在从循环起点重新接入
-结局节点
   next: p0
 
 ### 结局节点
@@ -10447,11 +10404,9 @@ LINK · 通讯链路重新建立
 
 ## 互动挂点一览
 
-- [ch4_fold8] unknown · 打开折叠文件夹 · 结果：默认→ch4_fold9
 - [ch5a_auth_interaction] critical-log-password · 联合授权密钥验证 · 结果：success→ch5a_auth_ok1
 - [ch5a_signal_separation] signal-separation · 三层信号分离与联合时间线对齐 · 结果：clean→ch5a_sep_clean1；assisted→ch5a_sep_assisted1
 - [ch5b_power_interaction] power-routing · 一次性供能代理 / 三阶段路由 · 结果：excellent→ch5b_power_excellent1；stable→ch5b_power_stable1；emergency_assist→ch5b_power_emergency1
-- [ch5b_file5] unknown · OBSERVER-01 文件展开 · 结果：默认→ch5b_file6
 - [ch5b_memory_seal] memory-seal · 临时记忆容量管理 · 结果：maintenance_board→ch5b_seal_board1；white_flower→ch5b_seal_flower1；goodnight→ch5b_seal_goodnight1
 - [fin_memory_restore] memory-restore · 临时封存锚点恢复 · 结果：maintenance_board→fin_restore_board1；white_flower→fin_restore_flower1；goodnight→fin_restore_goodnight1；none→fin_anchor_intro
 

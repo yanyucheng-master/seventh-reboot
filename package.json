@@ -12,6 +12,8 @@
     "import:story": "npx tsx scripts/import-exported-story.mjs",
     "build:bilingual": "npx tsx scripts/build-bilingual-stories.mjs",
     "build:interaction-locales": "npx tsx scripts/build-interaction-locales.mjs",
+    "normalize:story-source": "npx tsx scripts/normalize-story-source.ts",
+    "test:story-source-format": "npx tsx scripts/test-story-source-format.ts",
     "validate:story": "npx tsx scripts/validate-story-branches.mjs",
     "test:interactions": "npx tsx scripts/test-special-interactions.ts"
   },

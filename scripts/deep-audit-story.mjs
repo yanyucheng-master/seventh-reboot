@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { normalizeStorySourceText } from './story-source-format.ts';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -17,7 +18,7 @@ const TYPE = new Map([
 ]);
 
 function parseExport(text) {
-  const lines = text.split(/\r?\n/);
+  const lines = normalizeStorySourceText(text).text.split('\n');
   const nodes = [];
   let current = null;
   let fileTitle = '';
@@ -64,7 +65,7 @@ function parseExport(text) {
       if ((current.type === 'file' || current.type === 'draft') && body.length > 0) body.push('');
       continue;
     }
-    if (trimmed.startsWith('meta:') || trimmed.startsWith('### ')) continue;
+    if (trimmed.startsWith('meta:') || trimmed.startsWith('### ') || trimmed.startsWith('## ')) continue;
     if (trimmed.startsWith('next:')) {
       current.nextId = trimmed.replace(/^next:\s*/, '').split('//')[0].trim();
       continue;
@@ -90,6 +91,32 @@ function parseExport(text) {
   }
   finish();
   return nodes;
+}
+
+function checkLocaleCoverage(sourceNodes, locale, label) {
+  const missingContent = [];
+  const missingChoices = [];
+  const cjkLeaks = [];
+
+  for (const node of sourceNodes) {
+    const localized = locale.nodes[node.id];
+    if (node.content?.trim() && !localized?.content?.trim()) {
+      missingContent.push(node.id);
+    }
+    (node.choices || []).forEach((choice, index) => {
+      const key = `${node.id}__${index}`;
+      if (!localized?.choices?.[key]?.trim()) missingChoices.push(key);
+    });
+  }
+
+  for (const [id, entry] of Object.entries(locale.nodes)) {
+    if (/[\u3400-\u9fff]/.test(entry.content ?? '')) cjkLeaks.push(`${id}.content`);
+    for (const [key, value] of Object.entries(entry.choices ?? {})) {
+      if (/[\u3400-\u9fff]/.test(value)) cjkLeaks.push(`${id}.choices.${key}`);
+    }
+  }
+
+  return { label, missingContent, missingChoices, cjkLeaks };
 }
 
 function norm(s) {
@@ -134,7 +161,7 @@ function compare(srcNodes, locale, label) {
 }
 
 const zhScript = path.join(root, '..', '第七次重启_剧情文本_V1_0_航线因果闭环与自然语言精修版.txt');
-const enScript = 'C:\\Users\\YYC\\Desktop\\The_Seventh_Reboot_V1.0_Full_English_Script.txt';
+const enScript = process.env.SEVENTH_REBOOT_EN_SOURCE;
 const zhLoc = JSON.parse(fs.readFileSync(path.join(root, 'src/i18n/locales/zh-CN/story.json'), 'utf8'));
 const enLoc = JSON.parse(fs.readFileSync(path.join(root, 'src/i18n/locales/en-US/story.json'), 'utf8'));
 const zhInteractions = JSON.parse(fs.readFileSync(path.join(root, 'src/i18n/locales/zh-CN/interactions.json'), 'utf8'));
@@ -142,31 +169,35 @@ const enInteractions = JSON.parse(fs.readFileSync(path.join(root, 'src/i18n/loca
 zhLoc.nodes = { ...zhLoc.nodes, ...zhInteractions.nodes };
 enLoc.nodes = { ...enLoc.nodes, ...enInteractions.nodes };
 const zhSrc = parseExport(fs.readFileSync(zhScript, 'utf8'));
-const enSrc = parseExport(fs.readFileSync(enScript, 'utf8'));
+const enSrc = enScript ? parseExport(fs.readFileSync(enScript, 'utf8')) : null;
 
 const zhCmp = compare(zhSrc, zhLoc, 'zh');
-const enCmp = compare(enSrc, enLoc, 'en');
+const enCmp = enSrc ? compare(enSrc, enLoc, 'en-external') : null;
+const enCoverage = checkLocaleCoverage(zhSrc, enLoc, 'en-runtime-coverage');
 
 let nextDiff = 0;
-const enMap = Object.fromEntries(enSrc.map(n => [n.id, n]));
-for (const n of zhSrc) {
-  const e = enMap[n.id];
-  if (!e) continue;
-  if ((n.nextId || '') !== (e.nextId || '')) nextDiff += 1;
-  const a = (n.choices || []).map(c => c.nextId).join('|');
-  const b = (e.choices || []).map(c => c.nextId).join('|');
-  if (a !== b) nextDiff += 1;
+if (enSrc) {
+  const enMap = Object.fromEntries(enSrc.map(n => [n.id, n]));
+  for (const n of zhSrc) {
+    const e = enMap[n.id];
+    if (!e) continue;
+    if ((n.nextId || '') !== (e.nextId || '')) nextDiff += 1;
+    const a = (n.choices || []).map(c => c.nextId).join('|');
+    const b = (e.choices || []).map(c => c.nextId).join('|');
+    if (a !== b) nextDiff += 1;
+  }
 }
 
 const report = {
   counts: {
     zhSrc: zhSrc.length,
-    enSrc: enSrc.length,
+    enSrc: enSrc?.length ?? null,
     zhLoc: Object.keys(zhLoc.nodes).length,
     enLoc: Object.keys(enLoc.nodes).length,
   },
   zhCmp,
   enCmp,
+  enCoverage,
   nextIdStructureDiff: nextDiff,
   keyLines: {
     zh_p13e: zhLoc.nodes.p13e?.content,
@@ -182,5 +213,15 @@ console.log(JSON.stringify(report, null, 2));
 
 // Runtime localization shares story.ts topology. The external EN manuscript is text input only,
 // so its expected insertion-point differences are reported but do not invalidate runtime structure.
-const fail = zhCmp.contentDiff + zhCmp.choiceDiff + zhCmp.missing + enCmp.contentDiff + enCmp.choiceDiff + enCmp.missing;
+const externalDiffs = enCmp
+  ? enCmp.contentDiff + enCmp.choiceDiff + enCmp.missing
+  : 0;
+const fail =
+  zhCmp.contentDiff +
+  zhCmp.choiceDiff +
+  zhCmp.missing +
+  enCoverage.missingContent.length +
+  enCoverage.missingChoices.length +
+  enCoverage.cjkLeaks.length +
+  externalDiffs;
 process.exit(fail === 0 ? 0 : 1);

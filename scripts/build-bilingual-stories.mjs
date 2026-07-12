@@ -12,7 +12,7 @@ import { spawnSync } from 'node:child_process';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const zhScript = path.join(root, '..', '第七次重启_剧情文本_V1_0_航线因果闭环与自然语言精修版.txt');
-const enScript = 'C:\\Users\\YYC\\Desktop\\The_Seventh_Reboot_V1.0_Full_English_Script.txt';
+const enScript = process.env.SEVENTH_REBOOT_EN_SOURCE;
 const localeDir = path.join(root, 'src', 'i18n', 'locales');
 
 function runImport(scriptPath) {
@@ -71,8 +71,13 @@ function writeLocale(localeCode, locale) {
   console.log(`Wrote ${Object.keys(locale.nodes).length} nodes → ${out}`);
 }
 
-// 1) Current story.ts is English — extract EN locale first
-console.log('Extracting EN locale from current story.ts...');
+if (!enScript || !fs.existsSync(enScript)) {
+  throw new Error('Set SEVENTH_REBOOT_EN_SOURCE to an existing English story export.');
+}
+
+// 1) Import the optional English localization source and extract its overlay.
+console.log('Importing English localization source...');
+runImport(enScript);
 const en = extractLocaleFromStoryTs();
 writeLocale('en-US', en.locale);
 
