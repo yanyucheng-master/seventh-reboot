@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { Archive, ArrowLeft, LogOut, SkipForward } from 'lucide-react';
 import { type Choice, type StoryNode } from './story';
 import { relocalizeChapterBanner, relocalizeDisplayMessages, useI18n } from '../i18n';
 import type { Locale } from '../i18n';
@@ -24,7 +25,9 @@ import type {
   GlitchLevel,
   MemoryAnchorId,
   NovaEmotion,
+  NovaHintStage,
   SpecialInteractionCompletion,
+  SpecialInteractionKind,
 } from './types';
 import { StarBackground } from './components/StarBackground';
 import { ImageModal } from './components/ImageModal';
@@ -32,13 +35,18 @@ import { ChatMessage } from './components/ChatMessage';
 import { ChapterBanner, RemoteTypingRow } from './components/ChatPrimitives';
 import { RestartDialog } from './components/RestartDialog';
 import { MemoryArchiveOverlay } from './components/MemoryArchive';
+import { GameTitle } from './components/GameTitle';
 import { useVisualViewport } from '../hooks/useVisualViewport';
 import { getSaveProgressLabel } from './progress';
 import { formatChoiceText, shouldShowNovaAvatar, shouldShowTypingAvatar } from './format';
 import { determineEnding, resolveEndingStart } from './endings';
 import { ANCHOR_ARCHIVE_IDS, getArchiveUnlocksForNode } from './archive';
 import { SpecialInteractionOverlay } from './interactions/SpecialInteractionOverlay';
-import { applySpecialInteractionCompletion, isSealableMemoryAnchor } from './interactions/logic';
+import {
+  applyNova06OverrideCheckpoint,
+  applySpecialInteractionCompletion,
+  isSealableMemoryAnchor,
+} from './interactions/logic';
 import {
   getNova06CommsAftermath,
   NOVA06_BRIDGE_CHOICE_PREFIX,
@@ -276,7 +284,6 @@ export default function GameApp() {
   const [hasSave, setHasSave] = useState(() => hasSaveFile());
   const [saveTime, setSaveTime] = useState(() => getSaveTimeString());
   const [showRestartConfirm, setShowRestartConfirm] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
   const [stats, setStats] = useState<GameStats>(defaultStats);
   const [contactStage, setContactStage] = useState<ContactStage>(defaultContactStage);
@@ -492,6 +499,53 @@ export default function GameApp() {
     setHasSave(true);
     setSaveTime(t('saveTime.justNow'));
   }, [t]);
+
+  const updateInteractionRuntimeStats = useCallback((
+    updater: (current: GameStats) => GameStats,
+  ) => {
+    const current = statsRef.current;
+    const next = updater(current);
+    if (next === current) return;
+    statsRef.current = next;
+    setStats(next);
+    if (activeInteraction) persistState(activeInteraction.id, messagesRef.current);
+  }, [activeInteraction, persistState]);
+
+  const handleInteractionGuidanceStageChange = useCallback((
+    kind: SpecialInteractionKind,
+    stage: NovaHintStage,
+  ) => {
+    updateInteractionRuntimeStats(current => {
+      if (current.novaHintInteractionKind === kind && current.novaHintStage >= stage) return current;
+      return { ...current, novaHintInteractionKind: kind, novaHintStage: stage };
+    });
+  }, [updateInteractionRuntimeStats]);
+
+  const handleNova06OverrideStarted = useCallback((kind: SpecialInteractionKind) => {
+    updateInteractionRuntimeStats(current => ({
+      ...current,
+      novaHintInteractionKind: kind,
+      novaHintStage: 3,
+      nova06OverrideTriggered: true,
+      nova06FirstOverrideSeen: true,
+    }));
+  }, [updateInteractionRuntimeStats]);
+
+  const handleNova06ScriptApplied = useCallback((kind: SpecialInteractionKind) => {
+    updateInteractionRuntimeStats(current => applyNova06OverrideCheckpoint(current, kind));
+  }, [updateInteractionRuntimeStats]);
+
+  const handleMemoryNova06NoteSeen = useCallback(() => {
+    updateInteractionRuntimeStats(current => current.memoryNova06NoteSeen
+      ? current
+      : {
+        ...current,
+        novaHintInteractionKind: 'memory-seal',
+        novaHintStage: 3,
+        nova06OverrideTriggered: true,
+        memoryNova06NoteSeen: true,
+      });
+  }, [updateInteractionRuntimeStats]);
 
   const waitForPlayback = useCallback((duration: number): Promise<void> => {
     if (duration <= 0 || skipToChoiceRef.current) return Promise.resolve();
@@ -1388,7 +1442,6 @@ export default function GameApp() {
   const saveProgress = saveSnapshot
     ? getSaveProgressLabel(saveSnapshot.pendingNodeId, saveSnapshot.messages, t)
     : t('progress.prologue');
-  const menuNovaEmotion = saveSnapshot?.novaEmotion ?? 'normal';
   const menuContactStage = saveSnapshot?.contactStage ?? defaultContactStage;
   const contactMeta = contactMetaByStage[contactStage];
   const contactAvatar = resolveContactAvatar(contactStage, novaEmotion);
@@ -1400,124 +1453,97 @@ export default function GameApp() {
   if (screen === 'menu') {
     return (
       <div className="app-shell game-shell menu-screen relative overflow-hidden">
-        <StarBackground />
-        <button
-          type="button"
-          onClick={() => setShowSettings(v => !v)}
-          className="menu-settings-btn absolute z-20"
-          aria-label={t('menu.settingsAria')}
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-            />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-        </button>
-        {showSettings && (
-          <div className="menu-settings-panel absolute z-20">
-            <p className="text-[#6B7A8F] text-[10px] tracking-widest uppercase mb-2">{t('menu.system')}</p>
-            <p className="text-[#6B7A8F] text-[10px] tracking-widest uppercase mb-1">{t('menu.language')}</p>
-            <div className="flex gap-1 mb-2">
-              {(['zh-CN', 'en-US'] as Locale[]).map(code => (
-                <button
-                  key={code}
-                  type="button"
-                  onClick={() => setLocale(code)}
-                  className={`menu-settings-item flex-1 ${locale === code ? 'menu-settings-item-active' : ''}`}
-                >
-                  {code === 'zh-CN' ? t('menu.languageZh') : t('menu.languageEn')}
-                </button>
-              ))}
-            </div>
-            {hasSave && (
-              <button
-                type="button"
-                onClick={() => {
-                  setShowSettings(false);
-                  setShowRestartConfirm(true);
-                }}
-                className="menu-settings-item"
-              >
-                {t('menu.restart')}
-              </button>
-            )}
-            <button type="button" onClick={() => setShowSettings(false)} className="menu-settings-item">
-              {t('menu.close')}
-            </button>
+        <StarBackground variant="menu" />
+        <div className="menu-signal-field" aria-hidden="true">
+          <span className="menu-route-line menu-route-line-a" />
+          <span className="menu-route-line menu-route-line-b" />
+          <span className="menu-route-node menu-route-node-a" />
+          <span className="menu-route-node menu-route-node-b" />
+        </div>
+        <div className="menu-topbar">
+          <div className="menu-system-ident">
+            <span className="menu-system-dot" aria-hidden="true" />
+            <span>{t('menu.terminal')}</span>
+            <small>PHASE-LINK / 07</small>
           </div>
-        )}
-        <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 min-h-0 w-full">
-          <div className="flex flex-col items-center gap-7 animate-fade-in w-full max-w-xs">
-            <div className="flex flex-col items-center gap-2.5 menu-title-block">
-              <h1 className="menu-title text-[#E2E8F0]">{t('menu.title')}</h1>
-              <p className="text-[#7A8FA8] text-xs sm:text-sm tracking-[0.35em] font-light">{t('menu.subtitle')}</p>
-            </div>
-            <div className="w-20 h-px bg-gradient-to-r from-transparent via-[#3D7A9E]/60 to-transparent" />
-            <div className="flex gap-2 w-full mb-1">
+          <span className="menu-topbar-code">OBSERVER-01 / LOCAL INDEX</span>
+        </div>
+        <main className="menu-stage relative z-10">
+          <section className="menu-primary-zone animate-fade-in">
+            <GameTitle
+              title={t('menu.title')}
+              subtitle={t('menu.subtitle')}
+              phaseLabel={t('menu.phaseArchive')}
+            />
+            <div className="menu-language-selector" role="group" aria-label={t('menu.language')}>
               {(['zh-CN', 'en-US'] as Locale[]).map(code => (
                 <button
                   type="button"
                   key={code}
                   onClick={() => setLocale(code)}
-                  className={`menu-btn menu-btn-secondary flex-1 py-2 text-xs tracking-wider ${locale === code ? 'menu-settings-item-active' : ''}`}
+                  className={locale === code ? 'menu-language-active' : ''}
+                  aria-pressed={locale === code}
                 >
                   {code === 'zh-CN' ? t('menu.languageZh') : t('menu.languageEn')}
                 </button>
               ))}
             </div>
-            <div className="flex flex-col gap-2.5 w-full">
+            <nav className="menu-command-list" aria-label={t('menu.commandAria')}>
               {hasSave ? (
                 <>
                   <button
                     type="button"
                     onClick={() => startGame('continue')}
-                    className="menu-btn menu-btn-primary w-full px-6 py-3 rounded-lg text-[#E8F4FF] text-base tracking-widest"
+                    className="menu-command menu-command-primary"
                   >
-                    {t('menu.continue')}
+                    <span aria-hidden="true" className="menu-command-corner menu-command-corner-left" />
+                    <strong>{t('menu.continue')}</strong>
+                    <span aria-hidden="true" className="menu-command-corner menu-command-corner-right" />
                   </button>
-                  <div className="flex flex-col items-center gap-0.5 py-1">
-                    <span className="text-[#6B7A8F] text-xs">{t('menu.lastConnection', { time: saveTime })}</span>
-                    <span className="text-[#8B9CB0] text-xs">{t('menu.currentProgress', { progress: saveProgress })}</span>
+                  <div className="menu-save-meta">
+                    <span>{t('menu.lastConnection', { time: saveTime })}</span>
+                    <span>{t('menu.currentProgress', { progress: saveProgress })}</span>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setShowRestartConfirm(true)}
-                    className="menu-btn menu-btn-secondary w-full px-6 py-2.5 rounded-lg text-sm tracking-wider"
-                  >
-                    {t('menu.restart')}
-                  </button>
+                  <div className="menu-secondary-actions">
+                    <button type="button" onClick={() => setShowArchive(true)}>
+                      {t('menu.archive')}
+                    </button>
+                    <button type="button" onClick={() => setShowRestartConfirm(true)}>
+                      {t('menu.restart')}
+                    </button>
+                  </div>
                 </>
               ) : (
                 <button
                   type="button"
                   onClick={() => startGame('new')}
-                  className="menu-btn menu-btn-primary w-full px-6 py-3 rounded-lg text-[#E8F4FF] text-base tracking-widest"
+                  className="menu-command menu-command-primary"
                 >
-                  {t('menu.connect')}
+                  <span aria-hidden="true" className="menu-command-corner menu-command-corner-left" />
+                  <strong>{t('menu.connect')}</strong>
+                  <span aria-hidden="true" className="menu-command-corner menu-command-corner-right" />
                 </button>
               )}
-            </div>
-            <div className="flex flex-col items-center gap-2 mt-2">
-              {hasSave && (
-                <img
-                  src={resolveContactAvatar(menuContactStage, menuNovaEmotion)}
-                  alt=""
-                  className="menu-nova-avatar w-7 h-7 rounded-full object-cover"
-                />
-              )}
-              <div className="flex flex-col items-center gap-1 text-center">
-                <span className="text-[#9AABB8] text-xs tracking-wide">{t('menu.memoryStandby')}</span>
-                <p className="text-[#5E6E82] text-[11px] font-light tracking-wide">
-                  {t('menu.protocolTagline')}
-                </p>
-              </div>
+            </nav>
+          </section>
+        </main>
+        <footer className="menu-footer relative z-10">
+          <div className="menu-footer-status">
+            <span className="menu-footer-dot" aria-hidden="true" />
+            <div>
+              <span>{t('menu.memoryStandby')}</span>
+              <small>{t('menu.protocolTagline')}</small>
             </div>
           </div>
-        </div>
+        </footer>
+        {showArchive && (
+          <MemoryArchiveOverlay
+            stats={saveSnapshot?.stats ?? stats}
+            contactStage={menuContactStage}
+            onClose={() => setShowArchive(false)}
+            backLabel={t('archiveOverlay.backToMenu')}
+          />
+        )}
         {showRestartConfirm && (
           <RestartDialog
             onCancel={() => setShowRestartConfirm(false)}
@@ -1581,16 +1607,23 @@ export default function GameApp() {
           locale={locale}
           sealedAnchor={stats.temporaryAnchorSealed}
           nova06FirstOverrideSeen={stats.nova06FirstOverrideSeen}
+          novaHintStage={stats.novaHintStage}
+          novaHintInteractionKind={stats.novaHintInteractionKind}
           passwordBypassedByNova06={stats.passwordBypassedByNova06}
           signalCompletedByNova06={stats.signalCompletedByNova06}
           powerCompletedByNova06={stats.powerCompletedByNova06}
+          memoryNova06NoteSeen={stats.memoryNova06NoteSeen}
+          onGuidanceStageChange={handleInteractionGuidanceStageChange}
+          onNova06OverrideStarted={handleNova06OverrideStarted}
+          onNova06ScriptApplied={handleNova06ScriptApplied}
+          onMemoryNova06NoteSeen={handleMemoryNova06NoteSeen}
           onComplete={handleSpecialInteractionComplete}
           onSaveAndExit={saveInteractionAndExit}
         />
       )}
 
       <div
-        className={`game-layout relative z-10 flex flex-col flex-1 min-h-0 w-full max-w-[1040px] mx-auto bg-[#0B0E14]/82 backdrop-blur-sm ${
+        className={`game-layout relative z-10 flex flex-col flex-1 min-h-0 w-full max-w-[1160px] mx-auto bg-[#080A0D]/84 backdrop-blur-sm ${
           signalGlitch ? `signal-glitch-frame signal-glitch-frame-level-${signalGlitch.level}` : ''
         }`}
       >
@@ -1611,39 +1644,55 @@ export default function GameApp() {
                     alt={contactMeta.name}
                     className={`nova-header-avatar ${signalGlitch ? `signal-glitch-avatar signal-glitch-avatar-${signalGlitch.tone}` : ''}`}
                   />
-                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#4ADE80] border-2 border-[#151A26]" />
+                  <span className="contact-status-dot" />
                 </div>
                 <div className="flex flex-col min-w-0 flex-1">
                   <span className="text-[#E8EEF4] text-[15px] font-medium leading-tight">{contactMeta.name}</span>
                   <span className="text-[#6E8498] text-[11px] leading-snug truncate">{contactMeta.subtitle}</span>
                 </div>
               </>
-            )}
-            <div className="ml-auto flex items-center gap-1.5 shrink-0">
-              {INTERNAL_TEST_SKIP_ENABLED && (
+              )}
+              <div className="chat-link-readout" aria-hidden="true">
+                <span>LINK / 07</span>
+                <span className="chat-link-bars"><i /><i /><i /><i /></span>
+              </div>
+              <div className="ml-auto flex items-center gap-1.5 shrink-0">
+              {INTERNAL_TEST_SKIP_ENABLED && !activeInteraction && (
                 <button
                   type="button"
                   onClick={skipToNextChoice}
-                  className={`internal-skip-btn text-[11px] px-2.5 py-1.5 rounded transition-colors ${isSkippingToChoice ? 'internal-skip-btn-active' : ''}`}
+                  className={`header-tool-btn internal-skip-btn text-[11px] px-2.5 py-1.5 rounded transition-colors ${isSkippingToChoice ? 'internal-skip-btn-active' : ''}`}
                   disabled={Boolean(choices || inputNode || activeInteraction || isFinished)}
                   title="Internal test: skip to next choice/input"
+                  aria-label={isSkippingToChoice ? t('game.skipping') : t('game.skip')}
                 >
-                  {isSkippingToChoice ? t('game.skipping') : t('game.skip')}
+                  <SkipForward size={14} strokeWidth={1.7} aria-hidden="true" />
+                  <span className="header-btn-label">{isSkippingToChoice ? t('game.skipping') : t('game.skip')}</span>
                 </button>
               )}
               <button
                 type="button"
                 onClick={() => setShowArchive(true)}
-                className="header-archive-btn text-[11px] px-2.5 py-1.5 rounded transition-colors"
+                className="header-tool-btn header-archive-btn text-[11px] px-2.5 py-1.5 rounded transition-colors"
+                aria-label={t('game.archive')}
+                title={t('game.archive')}
               >
-                {t('game.archive')}
+                <Archive size={14} strokeWidth={1.7} aria-hidden="true" />
+                <span className="header-btn-label">{t('game.archive')}</span>
               </button>
               <button
                 type="button"
                 onClick={goToMenu}
-                className="header-disconnect-btn text-[11px] px-2.5 py-1.5 rounded transition-colors"
+                className="header-tool-btn header-disconnect-btn text-[11px] px-2.5 py-1.5 rounded transition-colors"
+                aria-label={isEpilogueMode ? t('game.back') : t('game.disconnect')}
+                title={isEpilogueMode ? t('game.back') : t('game.disconnect')}
               >
-                {isEpilogueMode ? t('game.back') : t('game.disconnect')}
+                {isEpilogueMode ? (
+                  <ArrowLeft size={14} strokeWidth={1.7} aria-hidden="true" />
+                ) : (
+                  <LogOut size={14} strokeWidth={1.7} aria-hidden="true" />
+                )}
+                <span className="header-btn-label">{isEpilogueMode ? t('game.back') : t('game.disconnect')}</span>
               </button>
             </div>
           </header>
@@ -1725,7 +1774,7 @@ export default function GameApp() {
             )}
           </div>
 
-          <footer className="game-footer shrink-0 px-3 sm:px-4 pt-2 bg-[#151A26]/90 border-t border-[#1A2236]">
+          <footer className="game-footer shrink-0 px-3 sm:px-4 pt-2 border-t">
             {inputNode ? (
               <div className="flex gap-2">
                 <input

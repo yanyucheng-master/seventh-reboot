@@ -18,6 +18,8 @@ type Nova06OverrideSequenceProps = {
   noteLines?: string[];
   /** 进入 script 阶段时调用；返回的 Promise 结束后进入留言阶段 */
   runScript: () => Promise<void>;
+  /** 恢复脚本已经写入时立即持久化，演出结束前刷新也不会重复执行 */
+  onScriptApplied?: () => void;
   /** 留言停留结束后、电视机关闭特效播完时触发 */
   onDone: () => void;
 };
@@ -32,10 +34,10 @@ const FULL_TIMINGS = {
 };
 const LIGHT_TIMINGS = {
   precursor: 0,
-  tear: 380,
-  identity: 1050,
-  noteHold: 3300,
-  outro: 420,
+  tear: 220,
+  identity: 480,
+  noteHold: 1500,
+  outro: 280,
 };
 const REDUCED_TIMINGS = {
   precursor: 1200,
@@ -102,6 +104,7 @@ export function Nova06OverrideSequence({
   scriptLines,
   noteLines,
   runScript,
+  onScriptApplied,
   onDone,
 }: Nova06OverrideSequenceProps) {
   const [phase, setPhase] = useState<Nova06Phase>(mode === 'light' ? 'tear' : 'precursor');
@@ -114,11 +117,15 @@ export function Nova06OverrideSequence({
   const [stability, setStability] = useState('18%');
   const [routeStep, setRouteStep] = useState(0);
   const timersRef = useRef<number[]>([]);
+  const mountedRef = useRef(true);
   const scriptStartedRef = useRef(false);
+  const scriptAppliedRef = useRef(false);
   const noteStartedRef = useRef(false);
   const runScriptRef = useRef(runScript);
+  const onScriptAppliedRef = useRef(onScriptApplied);
   const onDoneRef = useRef(onDone);
   runScriptRef.current = runScript;
+  onScriptAppliedRef.current = onScriptApplied;
   onDoneRef.current = onDone;
 
   const timings = mode === 'light'
@@ -126,17 +133,21 @@ export function Nova06OverrideSequence({
     : reducedMotion ? REDUCED_TIMINGS : FULL_TIMINGS;
 
   useEffect(() => {
+    mountedRef.current = true;
     const timers = timersRef.current;
     later(340, () => setPanelEntering(false));
     return () => {
+      mountedRef.current = false;
       timers.forEach(id => window.clearTimeout(id));
       timers.length = 0;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount once
   }, []);
 
   function later(delayMs: number, action: () => void) {
-    timersRef.current.push(window.setTimeout(action, delayMs));
+    if (!mountedRef.current) return;
+    timersRef.current.push(window.setTimeout(() => {
+      if (mountedRef.current) action();
+    }, delayMs));
   }
 
   /** 逐字逐句打字；返回打完时间点（ms） */
@@ -145,8 +156,8 @@ export function Nova06OverrideSequence({
     onUpdate: (block: TypedBlock) => void,
     opts?: { charMs?: number; lineGap?: number },
   ): number {
-    const charMs = reducedMotion ? 12 : (opts?.charMs ?? 32);
-    const lineGap = reducedMotion ? 80 : (opts?.lineGap ?? 150);
+    const charMs = reducedMotion ? 12 : mode === 'light' ? 18 : (opts?.charMs ?? 32);
+    const lineGap = reducedMotion ? 80 : mode === 'light' ? 90 : (opts?.lineGap ?? 150);
     let t = 0;
     onUpdate({ done: [], current: '', complete: false });
     lines.forEach((line, lineIndex) => {
@@ -217,7 +228,7 @@ export function Nova06OverrideSequence({
     }
     if (phase === 'script' && !scriptStartedRef.current) {
       scriptStartedRef.current = true;
-      const lineDelay = reducedMotion ? 220 : 380;
+      const lineDelay = reducedMotion ? 220 : mode === 'light' ? 140 : 380;
       let linesDoneAt = 0;
       scriptLines.forEach((_, index) => {
         const at = lineDelay * (index + 1);
@@ -229,9 +240,14 @@ export function Nova06OverrideSequence({
         });
       });
       const scriptVisualDone = new Promise<void>(resolve => {
-        later(linesDoneAt + (reducedMotion ? 420 : 720), () => resolve());
+        later(linesDoneAt + (reducedMotion ? 420 : mode === 'light' ? 260 : 720), () => resolve());
       });
       void Promise.all([runScriptRef.current(), scriptVisualDone]).then(() => {
+        if (!mountedRef.current) return;
+        if (!scriptAppliedRef.current) {
+          scriptAppliedRef.current = true;
+          onScriptAppliedRef.current?.();
+        }
         later(reducedMotion ? 80 : 160, () => {
           setVisibleScriptLines(scriptLines.length);
           setRouteStep(Math.max(scriptLines.length, 1));
@@ -244,7 +260,8 @@ export function Nova06OverrideSequence({
     if (phase === 'note' && !noteStartedRef.current) {
       noteStartedRef.current = true;
       setStability('100%');
-      const typedAt = scheduleTyping(unknownLines, setNoteTyped, {
+      const remainingUnknownLines = unknownLines.length > 1 ? unknownLines.slice(1) : unknownLines;
+      const typedAt = scheduleTyping(remainingUnknownLines, setNoteTyped, {
         charMs: reducedMotion ? 18 : 58,
         lineGap: 220,
       });
@@ -400,6 +417,9 @@ export function Nova06OverrideSequence({
                 </div>
               </div>
               <p className="nova06-identity-status">{identityStatus}</p>
+              {identityReformed && unknownLines[0] && (
+                <p className="nova06-identity-preview">{unknownLines[0]}</p>
+              )}
             </>
           )}
 

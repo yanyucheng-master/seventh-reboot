@@ -1,6 +1,10 @@
 import { useEffect, useRef } from 'react';
 
-export function StarBackground() {
+type StarBackgroundProps = {
+  variant?: 'default' | 'menu';
+};
+
+export function StarBackground({ variant = 'default' }: StarBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -19,6 +23,7 @@ export function StarBackground() {
       twinkleSpeed: Math.random() * 0.02 + 0.005,
       twinkleOffset: Math.random() * Math.PI * 2,
       flash: Math.random() < 0.08,
+      tone: Math.random(),
     }));
 
     function resize() {
@@ -36,11 +41,20 @@ export function StarBackground() {
       ctx!.clearRect(0, 0, w, h);
 
       const grad = ctx!.createLinearGradient(0, 0, 0, h);
-      grad.addColorStop(0, '#0B0E14');
-      grad.addColorStop(0.5, '#0D1118');
-      grad.addColorStop(1, '#0B0E14');
+      grad.addColorStop(0, variant === 'menu' ? '#010813' : '#080A0D');
+      grad.addColorStop(0.52, variant === 'menu' ? '#061528' : '#0B1012');
+      grad.addColorStop(1, variant === 'menu' ? '#010711' : '#08090C');
       ctx!.fillStyle = grad;
       ctx!.fillRect(0, 0, w, h);
+
+      if (variant === 'menu') {
+        const coreGlow = ctx!.createRadialGradient(w * 0.5, h * 0.34, 0, w * 0.5, h * 0.34, Math.max(w, h) * 0.52);
+        coreGlow.addColorStop(0, 'rgba(24, 91, 145, 0.18)');
+        coreGlow.addColorStop(0.38, 'rgba(8, 43, 79, 0.1)');
+        coreGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx!.fillStyle = coreGlow;
+        ctx!.fillRect(0, 0, w, h);
+      }
 
       for (const s of stars) {
         s.ny += s.speed;
@@ -54,7 +68,11 @@ export function StarBackground() {
         const flashBoost = s.flash && twinkle > 0.92 ? 1.4 : 1;
         ctx!.beginPath();
         ctx!.arc(x, y, s.r, 0, Math.PI * 2);
-        ctx!.fillStyle = `rgba(180,210,255,${s.opacity * twinkle * 0.64 * flashBoost})`;
+        const rgb = variant === 'menu'
+          ? (s.tone > 0.86 ? '138,211,255' : '180,216,238')
+          : (s.tone > 0.9 ? '226,190,134' : s.tone > 0.72 ? '166,210,190' : '180,210,224');
+        const starStrength = variant === 'menu' ? 0.78 : 0.64;
+        ctx!.fillStyle = `rgba(${rgb},${s.opacity * twinkle * starStrength * flashBoost})`;
         ctx!.fill();
       }
 
@@ -76,13 +94,16 @@ export function StarBackground() {
         ctx!.stroke();
       }
 
-      const specY = h - 28;
-      const barCount = 48;
-      const barW = w / barCount;
-      for (let i = 0; i < barCount; i++) {
-        const barH = 1.5 + Math.abs(Math.sin(time * 0.04 + i * 0.35)) * 5;
-        ctx!.fillStyle = `rgba(74, 130, 180, ${0.05 + Math.sin(time * 0.03 + i * 0.5) * 0.025})`;
-        ctx!.fillRect(i * barW + 1, specY - barH, barW - 2, barH);
+      if (variant !== 'menu') {
+        const specY = h - 28;
+        const barCount = 48;
+        const barW = w / barCount;
+        for (let i = 0; i < barCount; i++) {
+          const barH = 1.5 + Math.abs(Math.sin(time * 0.04 + i * 0.35)) * 5;
+          const spectrumColor = i % 11 === 0 ? '211,158,82' : '74,154,166';
+          ctx!.fillStyle = `rgba(${spectrumColor}, ${0.05 + Math.sin(time * 0.03 + i * 0.5) * 0.025})`;
+          ctx!.fillRect(i * barW + 1, specY - barH, barW - 2, barH);
+        }
       }
 
       animId = requestAnimationFrame(animate);
@@ -93,7 +114,7 @@ export function StarBackground() {
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', resize);
     };
-  }, []);
+  }, [variant]);
 
   return (
     <>

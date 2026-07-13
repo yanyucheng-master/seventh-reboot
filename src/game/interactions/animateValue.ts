@@ -5,7 +5,9 @@ export function animateValue(
   durationMs: number,
   onUpdate: (value: number) => void,
   reducedMotion = false,
+  signal?: AbortSignal,
 ): Promise<void> {
+  if (signal?.aborted) return Promise.resolve();
   if (from === to) {
     onUpdate(to);
     return Promise.resolve();
@@ -15,19 +17,54 @@ export function animateValue(
 
   return new Promise(resolve => {
     const startedAt = performance.now();
+    let frameId = 0;
+    let settled = false;
+
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      signal?.removeEventListener('abort', handleAbort);
+      resolve();
+    };
+
+    const handleAbort = () => {
+      if (frameId) window.cancelAnimationFrame(frameId);
+      finish();
+    };
 
     function frame(now: number) {
+      if (signal?.aborted) {
+        finish();
+        return;
+      }
       const progress = Math.min(1, (now - startedAt) / duration);
       const eased = 1 - (1 - progress) ** 2;
       onUpdate(Math.round(from + (to - from) * eased));
       if (progress < 1) {
-        window.requestAnimationFrame(frame);
+        frameId = window.requestAnimationFrame(frame);
       } else {
         onUpdate(to);
-        resolve();
+        finish();
       }
     }
 
-    window.requestAnimationFrame(frame);
+    signal?.addEventListener('abort', handleAbort, { once: true });
+    frameId = window.requestAnimationFrame(frame);
+  });
+}
+
+export function waitForAbortableDelay(delayMs: number, signal?: AbortSignal): Promise<void> {
+  if (signal?.aborted || delayMs <= 0) return Promise.resolve();
+  return new Promise(resolve => {
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timeoutId);
+      signal?.removeEventListener('abort', finish);
+      resolve();
+    };
+    const timeoutId = window.setTimeout(finish, delayMs);
+    signal?.addEventListener('abort', finish, { once: true });
   });
 }

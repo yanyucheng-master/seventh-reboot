@@ -44,6 +44,8 @@ export type SpecialInteractionKind =
   | 'memory-seal'
   | 'memory-restore';
 
+export type NovaHintStage = 0 | 1 | 2 | 3;
+
 export type SignalSeparationResult = 'clean' | 'assisted';
 
 export type PowerRoutingResult = 'excellent' | 'stable' | 'emergency_assist';
@@ -129,6 +131,11 @@ export interface GameStats {
   temporaryAnchorRestored: boolean;
   /** NOVA-06 残留签名越权接管：完整黑入演出是否已在本周目播放过 */
   nova06FirstOverrideSeen: boolean;
+  /** 当前特殊互动已经出现的 Nova 主动提示阶段；与互动类型一起保存 */
+  novaHintStage: NovaHintStage;
+  novaHintInteractionKind?: SpecialInteractionKind;
+  /** 本周目是否曾进入过一次 NOVA-06 条件式越权流程 */
+  nova06OverrideTriggered: boolean;
   /** 联合密钥互动由 NOVA-06 后门绕过验证 */
   passwordBypassedByNova06: boolean;
   /** 三层信号分离由 NOVA-06 预留恢复脚本完成 */
@@ -137,6 +144,8 @@ export interface GameStats {
   timelineCompletedByNova06: boolean;
   /** 供能路由由 NOVA-06 预留配平脚本完成 */
   powerCompletedByNova06: boolean;
+  /** 记忆封存中的 NOVA-06 预留留言是否已出现；它永远不代表代选完成 */
+  memoryNova06NoteSeen: boolean;
 }
 
 /** UI 生成的系统提示（非剧情节点正文），切语言时按 key 重算 */

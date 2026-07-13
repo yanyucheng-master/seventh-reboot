@@ -1,12 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
-import type { SpecialInteractionCompletion } from '../types';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type { NovaHintStage, SpecialInteractionCompletion } from '../types';
 import type { SpecialInteractionCopy } from './copy';
-import { isCriticalLogPassword } from './logic';
+import { isCriticalLogPassword, normalizeAuthorizationKey } from './logic';
 import { markNova06FullFxSeen } from './guidance';
 import { useInteractionGuidance } from './useInteractionGuidance';
 import { InteractionTitle } from './InteractionTitle';
 import { NovaTicker } from './NovaTicker';
 import { Nova06OverrideSequence } from './Nova06OverrideSequence';
+import { waitForAbortableDelay } from './animateValue';
 
 type PasswordInteractionProps = {
   copy: SpecialInteractionCopy;
@@ -14,6 +15,10 @@ type PasswordInteractionProps = {
   nova06FxSeen: boolean;
   /** 本周目该互动是否已由 NOVA-06 接管完成过 */
   nova06OverrideUsed: boolean;
+  initialGuidanceStage: NovaHintStage;
+  onGuidanceStageChange: (stage: NovaHintStage) => void;
+  onOverrideStarted: () => void;
+  onOverrideScriptApplied: () => void;
   onComplete: (result: SpecialInteractionCompletion) => void;
 };
 
@@ -30,6 +35,7 @@ const PASSWORD_THRESHOLDS = {
   overrideInvalid: 7,
   overrideMinValid: 6,
   overrideEmergencies: 0,
+  overrideRequiresTime: true,
 };
 
 type OverrideState = 'none' | 'sequence';
@@ -39,39 +45,57 @@ export function PasswordInteraction({
   reducedMotion,
   nova06FxSeen,
   nova06OverrideUsed,
+  initialGuidanceStage,
+  onGuidanceStageChange,
+  onOverrideStarted,
+  onOverrideScriptApplied,
   onComplete,
 }: PasswordInteractionProps) {
   const [value, setValue] = useState('');
   const [attempts, setAttempts] = useState(0);
-  const [accepted, setAccepted] = useState(false);
-  const [overrideState, setOverrideState] = useState<OverrideState>('none');
+  const [accepted, setAccepted] = useState(nova06OverrideUsed);
+  const [overrideState, setOverrideState] = useState<OverrideState>(
+    initialGuidanceStage === 3 && !nova06OverrideUsed ? 'sequence' : 'none',
+  );
+  const [overrideMode] = useState<'full' | 'light'>(() => nova06FxSeen ? 'light' : 'full');
+  const [resumedByNova06] = useState(nova06OverrideUsed);
   const inputRef = useRef<HTMLInputElement>(null);
-  const overrideModeRef = useRef<'full' | 'light'>(nova06FxSeen ? 'light' : 'full');
+  const attemptedKeysRef = useRef(new Set<string>());
+  const scriptAbortRef = useRef<AbortController | null>(null);
+
+  const handleGuidanceStageChange = useCallback((stage: NovaHintStage) => {
+    onGuidanceStageChange(stage);
+    if (stage === 3 && !accepted && overrideState === 'none' && !nova06OverrideUsed) {
+      if (overrideMode === 'full') markNova06FullFxSeen();
+      onOverrideStarted();
+      setOverrideState('sequence');
+    }
+  }, [accepted, nova06OverrideUsed, onGuidanceStageChange, onOverrideStarted, overrideMode, overrideState]);
 
   const guidance = useInteractionGuidance({
     thresholds: PASSWORD_THRESHOLDS,
     enabled: !accepted && overrideState === 'none' && !nova06OverrideUsed,
+    initialStage: initialGuidanceStage,
+    onStageChange: handleGuidanceStageChange,
   });
 
   useEffect(() => {
     inputRef.current?.focus();
+    return () => scriptAbortRef.current?.abort();
   }, []);
-
-  useEffect(() => {
-    if (guidance.stage === 3 && !accepted && overrideState === 'none' && !nova06OverrideUsed) {
-      if (overrideModeRef.current === 'full') markNova06FullFxSeen();
-      setOverrideState('sequence');
-    }
-  }, [accepted, guidance.stage, nova06OverrideUsed, overrideState]);
 
   function verify() {
     if (overrideState !== 'none') return;
-    guidance.noteValidAttempt();
     if (isCriticalLogPassword(value)) {
       setAccepted(true);
       return;
     }
-    guidance.noteInvalidAttempt();
+    const normalized = normalizeAuthorizationKey(value);
+    if (normalized.length > 0 && !attemptedKeysRef.current.has(normalized)) {
+      attemptedKeysRef.current.add(normalized);
+      guidance.noteValidAttempt();
+      guidance.noteInvalidAttempt();
+    }
     setAttempts(current => current + 1);
     setValue('');
     inputRef.current?.focus();
@@ -81,17 +105,23 @@ export function PasswordInteraction({
     return (
       <section className="interaction-result" aria-live="polite" data-testid="password-success">
         <div className="interaction-result-mark" aria-hidden>07 / 01</div>
-        <p className="interaction-kicker">{copy.password.accepted}</p>
-        <InteractionTitle state="resolved">{copy.password.title}</InteractionTitle>
+        <p className="interaction-kicker">{resumedByNova06 ? copy.nova06.signatureTag : copy.password.accepted}</p>
+        <InteractionTitle state="resolved">
+          {resumedByNova06 ? copy.password.override.resultTitle : copy.password.title}
+        </InteractionTitle>
         <div className="authorization-output">
-          <strong>AUTHORIZATION KEY ACCEPTED</strong>
+          <strong>{resumedByNova06 ? 'AUTHORIZATION CHECK BYPASSED' : 'AUTHORIZATION KEY ACCEPTED'}</strong>
           <strong>NOVA-06 SEALED RECORD UNLOCKED</strong>
         </div>
-        <p>{copy.password.successDetail}</p>
+        <p>{resumedByNova06 ? copy.password.override.resultDetail : copy.password.successDetail}</p>
         <button
           type="button"
           className="interaction-primary-btn"
-          onClick={() => onComplete({ kind: 'critical-log-password', routeKey: 'success' })}
+          onClick={() => onComplete({
+            kind: 'critical-log-password',
+            routeKey: 'success',
+            completedByNova06: resumedByNova06 || undefined,
+          })}
         >
           {copy.common.continue}
         </button>
@@ -165,14 +195,19 @@ export function PasswordInteraction({
 
       {bypassing && (
         <Nova06OverrideSequence
-          mode={overrideModeRef.current}
+          mode={overrideMode}
           reducedMotion={reducedMotion}
           copy={copy.nova06}
           unknownLines={copy.password.override.unknownLines}
           scriptLines={copy.password.override.systemLines}
-          runScript={() => new Promise(resolve => {
-            window.setTimeout(resolve, reducedMotion ? 700 : 1100);
-          })}
+          runScript={() => {
+            if (!scriptAbortRef.current || scriptAbortRef.current.signal.aborted) {
+              scriptAbortRef.current = new AbortController();
+            }
+            const duration = overrideMode === 'light' ? 420 : reducedMotion ? 700 : 1100;
+            return waitForAbortableDelay(duration, scriptAbortRef.current.signal);
+          }}
+          onScriptApplied={onOverrideScriptApplied}
           onDone={() => onComplete({
             kind: 'critical-log-password',
             routeKey: 'success',

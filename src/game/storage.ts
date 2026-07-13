@@ -10,10 +10,12 @@ import type {
   GameStats,
   MemoryAnchorId,
   NovaEmotion,
+  NovaHintStage,
   PowerRoutingResult,
   SaveData,
   SealableMemoryAnchor,
   SignalSeparationResult,
+  SpecialInteractionKind,
   TimedProof,
   TimedResponse,
 } from './types';
@@ -39,10 +41,13 @@ export const defaultStats: GameStats = {
   timelineAlignmentCompleted: false,
   temporaryAnchorRestored: false,
   nova06FirstOverrideSeen: false,
+  novaHintStage: 0,
+  nova06OverrideTriggered: false,
   passwordBypassedByNova06: false,
   signalCompletedByNova06: false,
   timelineCompletedByNova06: false,
   powerCompletedByNova06: false,
+  memoryNova06NoteSeen: false,
 };
 
 /** 完整黑入演出的会话级标记；防止刷新后（存档仍在接管前）重复播放重度演出 */
@@ -77,6 +82,13 @@ const TIMED_PROOFS = new Set<TimedProof>(['n7_core_anchor']);
 const ENDING_TYPES = new Set<EndingType>(['true', 'normal', 'bad']);
 const SIGNAL_SEPARATION_RESULTS = new Set<SignalSeparationResult>(['clean', 'assisted']);
 const POWER_ROUTING_RESULTS = new Set<PowerRoutingResult>(['excellent', 'stable', 'emergency_assist']);
+const SPECIAL_INTERACTION_KINDS = new Set<SpecialInteractionKind>([
+  'critical-log-password',
+  'signal-separation',
+  'power-routing',
+  'memory-seal',
+  'memory-restore',
+]);
 const SEALABLE_MEMORY_ANCHORS = new Set<SealableMemoryAnchor>([
   'maintenance_board',
   'white_flower',
@@ -163,6 +175,16 @@ function normalizeSealableMemoryAnchor(value: unknown): SealableMemoryAnchor | u
     : undefined;
 }
 
+function normalizeNovaHintStage(value: unknown): NovaHintStage {
+  return value === 1 || value === 2 || value === 3 ? value : 0;
+}
+
+function normalizeSpecialInteractionKind(value: unknown): SpecialInteractionKind | undefined {
+  return typeof value === 'string' && SPECIAL_INTERACTION_KINDS.has(value as SpecialInteractionKind)
+    ? value as SpecialInteractionKind
+    : undefined;
+}
+
 export function normalizeGameStats(value: unknown): GameStats {
   const stats = value && typeof value === 'object' ? value as Partial<GameStats> : {};
   const memoryAnchors = normalizeMemoryAnchors(stats.memoryAnchors);
@@ -181,10 +203,13 @@ export function normalizeGameStats(value: unknown): GameStats {
     timelineAlignmentCompleted: stats.timelineAlignmentCompleted === true,
     temporaryAnchorRestored: stats.temporaryAnchorRestored === true,
     nova06FirstOverrideSeen: stats.nova06FirstOverrideSeen === true,
+    novaHintStage: normalizeNovaHintStage(stats.novaHintStage),
+    nova06OverrideTriggered: stats.nova06OverrideTriggered === true,
     passwordBypassedByNova06: stats.passwordBypassedByNova06 === true,
     signalCompletedByNova06: stats.signalCompletedByNova06 === true,
     timelineCompletedByNova06: stats.timelineCompletedByNova06 === true,
     powerCompletedByNova06: stats.powerCompletedByNova06 === true,
+    memoryNova06NoteSeen: stats.memoryNova06NoteSeen === true,
   };
 
   const finalChoice = normalizeFinalChoice(stats.finalChoice);
@@ -196,6 +221,7 @@ export function normalizeGameStats(value: unknown): GameStats {
   const signalSeparationResult = normalizeSignalSeparationResult(stats.signalSeparationResult);
   const powerRoutingResult = normalizePowerRoutingResult(stats.powerRoutingResult);
   const temporaryAnchorSealed = normalizeSealableMemoryAnchor(stats.temporaryAnchorSealed);
+  const novaHintInteractionKind = normalizeSpecialInteractionKind(stats.novaHintInteractionKind);
   if (finalChoice) normalized.finalChoice = finalChoice;
   if (finalFarewellVariant) normalized.finalFarewellVariant = finalFarewellVariant;
   if (finalFarewellTone) normalized.finalFarewellTone = finalFarewellTone;
@@ -205,6 +231,7 @@ export function normalizeGameStats(value: unknown): GameStats {
   if (signalSeparationResult) normalized.signalSeparationResult = signalSeparationResult;
   if (powerRoutingResult) normalized.powerRoutingResult = powerRoutingResult;
   if (temporaryAnchorSealed) normalized.temporaryAnchorSealed = temporaryAnchorSealed;
+  if (novaHintInteractionKind) normalized.novaHintInteractionKind = novaHintInteractionKind;
   return normalized;
 }
 
@@ -259,10 +286,14 @@ function isValidSaveData(data: unknown): data is SaveData {
   if (stats.temporaryAnchorSealed !== undefined && typeof stats.temporaryAnchorSealed !== 'string') return false;
   if (stats.temporaryAnchorRestored !== undefined && typeof stats.temporaryAnchorRestored !== 'boolean') return false;
   if (stats.nova06FirstOverrideSeen !== undefined && typeof stats.nova06FirstOverrideSeen !== 'boolean') return false;
+  if (stats.novaHintStage !== undefined && typeof stats.novaHintStage !== 'number') return false;
+  if (stats.novaHintInteractionKind !== undefined && typeof stats.novaHintInteractionKind !== 'string') return false;
+  if (stats.nova06OverrideTriggered !== undefined && typeof stats.nova06OverrideTriggered !== 'boolean') return false;
   if (stats.passwordBypassedByNova06 !== undefined && typeof stats.passwordBypassedByNova06 !== 'boolean') return false;
   if (stats.signalCompletedByNova06 !== undefined && typeof stats.signalCompletedByNova06 !== 'boolean') return false;
   if (stats.timelineCompletedByNova06 !== undefined && typeof stats.timelineCompletedByNova06 !== 'boolean') return false;
   if (stats.powerCompletedByNova06 !== undefined && typeof stats.powerCompletedByNova06 !== 'boolean') return false;
+  if (stats.memoryNova06NoteSeen !== undefined && typeof stats.memoryNova06NoteSeen !== 'boolean') return false;
   if (typeof save.timestamp !== 'number') return false;
   if (save.storyVersion !== STORY_VERSION) return false;
   if (save.storyContentVersion !== STORY_CONTENT_VERSION) return false;

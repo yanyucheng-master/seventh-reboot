@@ -2,8 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Locale } from '../../i18n';
 import type { StoryNode } from '../story';
 import type {
+  NovaHintStage,
   SealableMemoryAnchor,
   SpecialInteractionCompletion,
+  SpecialInteractionKind,
 } from '../types';
 import { getSpecialInteractionCopy } from './copy';
 import { hasSeenNova06FullFx } from './guidance';
@@ -18,9 +20,16 @@ type SpecialInteractionOverlayProps = {
   sealedAnchor?: SealableMemoryAnchor;
   /** 本周目是否已经播放过完整黑入演出（存档字段；会话内以 localStorage 兜底） */
   nova06FirstOverrideSeen: boolean;
+  novaHintStage: NovaHintStage;
+  novaHintInteractionKind?: SpecialInteractionKind;
   passwordBypassedByNova06: boolean;
   signalCompletedByNova06: boolean;
   powerCompletedByNova06: boolean;
+  memoryNova06NoteSeen: boolean;
+  onGuidanceStageChange: (kind: SpecialInteractionKind, stage: NovaHintStage) => void;
+  onNova06OverrideStarted: (kind: SpecialInteractionKind) => void;
+  onNova06ScriptApplied: (kind: SpecialInteractionKind) => void;
+  onMemoryNova06NoteSeen: () => void;
   onComplete: (result: SpecialInteractionCompletion) => void;
   onSaveAndExit: () => void;
 };
@@ -43,9 +52,16 @@ export function SpecialInteractionOverlay({
   locale,
   sealedAnchor,
   nova06FirstOverrideSeen,
+  novaHintStage,
+  novaHintInteractionKind,
   passwordBypassedByNova06,
   signalCompletedByNova06,
   powerCompletedByNova06,
+  memoryNova06NoteSeen,
+  onGuidanceStageChange,
+  onNova06OverrideStarted,
+  onNova06ScriptApplied,
+  onMemoryNova06NoteSeen,
   onComplete,
   onSaveAndExit,
 }: SpecialInteractionOverlayProps) {
@@ -56,6 +72,7 @@ export function SpecialInteractionOverlay({
   ));
   const overlayRef = useRef<HTMLDivElement>(null);
   const nova06FxSeen = nova06FirstOverrideSeen || hasSeenNova06FullFx();
+  const initialGuidanceStage = node.interactionKind === novaHintInteractionKind ? novaHintStage : 0;
 
   useEffect(() => {
     overlayRef.current?.focus();
@@ -118,6 +135,10 @@ export function SpecialInteractionOverlay({
             reducedMotion={reducedMotion}
             nova06FxSeen={nova06FxSeen}
             nova06OverrideUsed={passwordBypassedByNova06}
+            initialGuidanceStage={initialGuidanceStage}
+            onGuidanceStageChange={stage => onGuidanceStageChange('critical-log-password', stage)}
+            onOverrideStarted={() => onNova06OverrideStarted('critical-log-password')}
+            onOverrideScriptApplied={() => onNova06ScriptApplied('critical-log-password')}
             onComplete={onComplete}
           />
         )}
@@ -127,6 +148,10 @@ export function SpecialInteractionOverlay({
             reducedMotion={reducedMotion}
             nova06FxSeen={nova06FxSeen}
             nova06OverrideUsed={signalCompletedByNova06}
+            initialGuidanceStage={initialGuidanceStage}
+            onGuidanceStageChange={stage => onGuidanceStageChange('signal-separation', stage)}
+            onOverrideStarted={() => onNova06OverrideStarted('signal-separation')}
+            onOverrideScriptApplied={() => onNova06ScriptApplied('signal-separation')}
             onComplete={onComplete}
           />
         )}
@@ -136,17 +161,33 @@ export function SpecialInteractionOverlay({
             reducedMotion={reducedMotion}
             nova06FxSeen={nova06FxSeen}
             nova06OverrideUsed={powerCompletedByNova06}
+            initialGuidanceStage={initialGuidanceStage}
+            onGuidanceStageChange={stage => onGuidanceStageChange('power-routing', stage)}
+            onOverrideStarted={() => onNova06OverrideStarted('power-routing')}
+            onOverrideScriptApplied={() => onNova06ScriptApplied('power-routing')}
             onComplete={onComplete}
           />
         )}
         {node.interactionKind === 'memory-seal' && (
-          <MemoryCapacityInteraction mode="seal" copy={copy} onComplete={onComplete} />
+          <MemoryCapacityInteraction
+            mode="seal"
+            copy={copy}
+            initialGuidanceStage={initialGuidanceStage}
+            memoryNova06NoteSeen={memoryNova06NoteSeen}
+            onGuidanceStageChange={stage => onGuidanceStageChange('memory-seal', stage)}
+            onMemoryNova06NoteSeen={onMemoryNova06NoteSeen}
+            onComplete={onComplete}
+          />
         )}
         {node.interactionKind === 'memory-restore' && (
           <MemoryCapacityInteraction
             mode="restore"
             copy={copy}
             sealedAnchor={sealedAnchor}
+            initialGuidanceStage={0}
+            memoryNova06NoteSeen={memoryNova06NoteSeen}
+            onGuidanceStageChange={() => undefined}
+            onMemoryNova06NoteSeen={() => undefined}
             onComplete={onComplete}
           />
         )}

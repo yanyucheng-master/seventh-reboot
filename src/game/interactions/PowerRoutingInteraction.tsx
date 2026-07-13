@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
-import type { PowerRoutingResult, SpecialInteractionCompletion } from '../types';
+import type { NovaHintStage, PowerRoutingResult, SpecialInteractionCompletion } from '../types';
 import type { SpecialInteractionCopy } from './copy';
 import {
   classifyPowerRoutingResult,
+  interpolatePowerAllocation,
   isPowerAllocationStable,
   rebalancePowerAllocation,
   type PowerAllocation,
@@ -11,7 +12,7 @@ import {
 } from './logic';
 import { markNova06FullFxSeen } from './guidance';
 import { useInteractionGuidance } from './useInteractionGuidance';
-import { animateValue } from './animateValue';
+import { animateValue, waitForAbortableDelay } from './animateValue';
 import { NovaTicker } from './NovaTicker';
 import { InteractionTitle } from './InteractionTitle';
 import { Nova06OverrideSequence } from './Nova06OverrideSequence';
@@ -21,6 +22,10 @@ type PowerRoutingInteractionProps = {
   reducedMotion: boolean;
   nova06FxSeen: boolean;
   nova06OverrideUsed: boolean;
+  initialGuidanceStage: NovaHintStage;
+  onGuidanceStageChange: (stage: NovaHintStage) => void;
+  onOverrideStarted: () => void;
+  onOverrideScriptApplied: () => void;
   onComplete: (result: SpecialInteractionCompletion) => void;
 };
 
@@ -40,7 +45,7 @@ const POWER_PHASES: PowerPhase[] = [
 const NOVA06_PRESETS: PowerAllocation[] = [
   { lifeSupport: 25, communications: 20, coreScan: 55 },
   { lifeSupport: 55, communications: 25, coreScan: 20 },
-  { lifeSupport: 25, communications: 35, coreScan: 40 },
+  { lifeSupport: 20, communications: 35, coreScan: 45 },
 ];
 
 const CHANNELS: PowerChannel[] = ['lifeSupport', 'communications', 'coreScan'];
@@ -72,11 +77,14 @@ function buildNovaHint(
   if (stage < 1) return null;
   const low = findLowChannel(allocation, thresholds);
   if (stage >= 2) {
-    if (low) return copy.power.urgentMessages[low];
-    if (allocation.communications > 45 && allocation.coreScan < thresholds.coreScan!) {
+    if (allocation.communications > 45 && (
+      allocation.lifeSupport < (thresholds.lifeSupport ?? 0)
+      || allocation.coreScan < (thresholds.coreScan ?? 0)
+    )) {
       return copy.power.steadyHint;
     }
-    return copy.power.phases[phaseIndex]?.order ?? copy.power.steadyHint;
+    if (low) return copy.power.urgentMessages[low];
+    return copy.power.liveMessages.stable[phaseIndex] ?? copy.power.steadyHint;
   }
   if (low === 'lifeSupport') return copy.power.urgentMessages.lifeSupport;
   if (low === 'coreScan') return copy.power.urgentMessages.coreScan;
@@ -89,6 +97,10 @@ export function PowerRoutingInteraction({
   reducedMotion,
   nova06FxSeen,
   nova06OverrideUsed,
+  initialGuidanceStage,
+  onGuidanceStageChange,
+  onOverrideStarted,
+  onOverrideScriptApplied,
   onComplete,
 }: PowerRoutingInteractionProps) {
   const [allocation, setAllocation] = useState<PowerAllocation>({
@@ -101,23 +113,38 @@ export function PowerRoutingInteraction({
   const [heldMs, setHeldMs] = useState(0);
   const [transitioning, setTransitioning] = useState(false);
   const [windowFeedback, setWindowFeedback] = useState('');
-  const [result, setResult] = useState<PowerRoutingResult | null>(null);
-  const [elapsedPhases, setElapsedPhases] = useState<number[]>([]);
-  const [overrideState, setOverrideState] = useState<OverrideState>('none');
-  const [scriptLocked, setScriptLocked] = useState(false);
+  const [result, setResult] = useState<PowerRoutingResult | null>(nova06OverrideUsed ? 'stable' : null);
+  const [elapsedPhases, setElapsedPhases] = useState<number[]>(nova06OverrideUsed ? [6, 6, 6] : []);
+  const [overrideState, setOverrideState] = useState<OverrideState>(
+    initialGuidanceStage === 3 && !nova06OverrideUsed ? 'sequence' : 'none',
+  );
+  const [scriptLocked, setScriptLocked] = useState(initialGuidanceStage === 3 && !nova06OverrideUsed);
+  const [overrideMode] = useState<'full' | 'light'>(() => nova06FxSeen ? 'light' : 'full');
+  const [resumedByNova06] = useState(nova06OverrideUsed);
   const allocationRef = useRef(allocation);
   const phaseStartedAtRef = useRef(0);
   const heldMsRef = useRef(0);
-  const elapsedPhasesRef = useRef<number[]>([]);
+  const elapsedPhasesRef = useRef<number[]>(nova06OverrideUsed ? [6, 6, 6] : []);
   const transitioningRef = useRef(false);
   const transitionTimeoutRef = useRef<number | null>(null);
-  const emergencyActiveRef = useRef(false);
-  const lastAllocationRef = useRef(allocation);
-  const overrideModeRef = useRef<'full' | 'light'>(nova06FxSeen ? 'light' : 'full');
+  const emergencyActiveRef = useRef(true);
+  const scriptAbortRef = useRef<AbortController | null>(null);
+
+  const handleGuidanceStageChange = useCallback((stage: NovaHintStage) => {
+    onGuidanceStageChange(stage);
+    if (stage === 3 && overrideState === 'none' && !nova06OverrideUsed && !result) {
+      if (overrideMode === 'full') markNova06FullFxSeen();
+      onOverrideStarted();
+      setScriptLocked(true);
+      setOverrideState('sequence');
+    }
+  }, [nova06OverrideUsed, onGuidanceStageChange, onOverrideStarted, overrideMode, overrideState, result]);
 
   const guidance = useInteractionGuidance({
     thresholds: POWER_THRESHOLDS,
     enabled: !result && overrideState === 'none' && !nova06OverrideUsed,
+    initialStage: initialGuidanceStage,
+    onStageChange: handleGuidanceStageChange,
   });
 
   const phase = POWER_PHASES[phaseIndex];
@@ -132,18 +159,11 @@ export function PowerRoutingInteraction({
   }, [phaseIndex]);
 
   useEffect(() => () => {
+    scriptAbortRef.current?.abort();
     if (transitionTimeoutRef.current !== null) {
       window.clearTimeout(transitionTimeoutRef.current);
     }
   }, []);
-
-  useEffect(() => {
-    if (guidance.stage === 3 && overrideState === 'none' && !nova06OverrideUsed && !result) {
-      if (overrideModeRef.current === 'full') markNova06FullFxSeen();
-      setScriptLocked(true);
-      setOverrideState('sequence');
-    }
-  }, [guidance.stage, nova06OverrideUsed, overrideState, result]);
 
   const advancePhase = useCallback((fromOverride = false) => {
     if (transitioningRef.current || result) return;
@@ -214,7 +234,6 @@ export function PowerRoutingInteraction({
     copy.power.windowExpired,
     guidance,
     overrideState,
-    overrideState,
     phase.thresholds,
     result,
     transitioning,
@@ -222,50 +241,52 @@ export function PowerRoutingInteraction({
 
   function updateChannel(channel: PowerChannel, value: number) {
     if (transitioning || scriptLocked) return;
-    const previous = lastAllocationRef.current;
+    const previous = allocationRef.current;
+    const next = rebalancePowerAllocation(previous, channel, value);
+    const changed = CHANNELS.some(key => Math.abs(next[key] - previous[key]) >= 2);
+    allocationRef.current = next;
     setWindowFeedback('');
-    setAllocation(current => {
-      const next = rebalancePowerAllocation(current, channel, value);
-      const changed = CHANNELS.some(key => Math.abs(next[key] - previous[key]) >= 2);
-      if (changed) {
-        guidance.noteValidAttempt();
-        lastAllocationRef.current = next;
-      }
-      return next;
-    });
+    setAllocation(next);
+    if (changed) guidance.noteValidAttempt();
   }
 
-  async function animateAllocation(target: PowerAllocation) {
-    const duration = reducedMotion ? 380 : 720;
-    for (const channel of CHANNELS) {
-      await animateValue(
-        allocationRef.current[channel],
-        target[channel],
-        duration,
-        value => {
-          setAllocation(current => ({ ...current, [channel]: value }));
-        },
-        reducedMotion,
-      );
-    }
-    allocationRef.current = target;
-    lastAllocationRef.current = target;
+  async function animateAllocation(target: PowerAllocation, signal: AbortSignal) {
+    const duration = reducedMotion ? 380 : overrideMode === 'light' ? 260 : 720;
+    const start = allocationRef.current;
+    await animateValue(0, 100, duration, value => {
+      const next = interpolatePowerAllocation(start, target, value / 100);
+      allocationRef.current = next;
+      setAllocation(next);
+    }, reducedMotion, signal);
   }
 
   async function runNova06Script() {
+    if (!scriptAbortRef.current || scriptAbortRef.current.signal.aborted) {
+      scriptAbortRef.current = new AbortController();
+    }
+    const signal = scriptAbortRef.current.signal;
     for (let index = phaseIndex; index < POWER_PHASES.length; index += 1) {
+      if (signal.aborted) return;
       if (index !== phaseIndex) {
         setPhaseIndex(index);
         phaseStartedAtRef.current = Date.now();
         heldMsRef.current = 0;
         setHeldMs(0);
         setSecondsLeft(PHASE_DURATION_SECONDS);
-        await new Promise(resolve => window.setTimeout(resolve, reducedMotion ? 120 : 280));
+        await waitForAbortableDelay(
+          reducedMotion ? 120 : overrideMode === 'light' ? 70 : 280,
+          signal,
+        );
       }
-      await animateAllocation(NOVA06_PRESETS[index]!);
+      await animateAllocation(NOVA06_PRESETS[index]!, signal);
+      if (signal.aborted) return;
       heldMsRef.current = HOLD_DURATION_MS;
       setHeldMs(HOLD_DURATION_MS);
-      await new Promise(resolve => window.setTimeout(resolve, reducedMotion ? 260 : 520));
+      await waitForAbortableDelay(
+        reducedMotion ? 260 : overrideMode === 'light' ? 90 : 520,
+        signal,
+      );
+      if (signal.aborted) return;
       if (index < POWER_PHASES.length - 1) {
         const elapsed = Math.min(PHASE_DURATION_SECONDS, 6);
         elapsedPhasesRef.current = [...elapsedPhasesRef.current, elapsed];
@@ -307,7 +328,11 @@ export function PowerRoutingInteraction({
         <button
           type="button"
           className="interaction-primary-btn"
-          onClick={() => onComplete({ kind: 'power-routing', routeKey: result })}
+          onClick={() => onComplete({
+            kind: 'power-routing',
+            routeKey: result,
+            completedByNova06: resumedByNova06 || undefined,
+          })}
         >
           {copy.power.reconnect}
         </button>
@@ -423,7 +448,7 @@ export function PowerRoutingInteraction({
 
       {bypassing && (
         <Nova06OverrideSequence
-          mode={overrideModeRef.current}
+          mode={overrideMode}
           reducedMotion={reducedMotion}
           copy={copy.nova06}
           detectLines={copy.power.override.systemDetect}
@@ -431,6 +456,7 @@ export function PowerRoutingInteraction({
           scriptLines={[copy.power.override.systemLoaded]}
           noteLines={copy.power.override.routingNote}
           runScript={runNova06Script}
+          onScriptApplied={onOverrideScriptApplied}
           onDone={() => onComplete({
             kind: 'power-routing',
             routeKey: 'stable',

@@ -1,14 +1,16 @@
 import assert from 'node:assert/strict';
 import { storyNodes } from '../src/game/story.ts';
-import { defaultStats } from '../src/game/storage.ts';
+import { defaultStats, normalizeGameStats } from '../src/game/storage.ts';
 import type { GameStats } from '../src/game/types.ts';
 import { applyStoryLocale } from '../src/i18n/storyResolver.ts';
 import { getSpecialInteractionCopy } from '../src/game/interactions/copy.ts';
 import {
   applySpecialInteractionCompletion,
+  applyNova06OverrideCheckpoint,
   classifyPowerRoutingResult,
   isCriticalLogPassword,
   isSignalAligned,
+  interpolatePowerAllocation,
   normalizeAuthorizationKey,
   rebalancePowerAllocation,
   type PowerAllocation,
@@ -66,6 +68,16 @@ for (const channel of channels) {
     }
   }
 }
+
+const animationStart: PowerAllocation = { lifeSupport: 34, communications: 33, coreScan: 33 };
+const animationTarget: PowerAllocation = { lifeSupport: 20, communications: 35, coreScan: 45 };
+for (const progress of [0, 0.01, 0.25, 0.5, 0.75, 0.99, 1]) {
+  const frame = interpolatePowerAllocation(animationStart, animationTarget, progress);
+  assert.equal(channels.reduce((sum, channel) => sum + frame[channel], 0), 100);
+  assert.equal(channels.every(channel => Number.isInteger(frame[channel])), true);
+}
+assert.deepEqual(interpolatePowerAllocation(animationStart, animationTarget, 0), animationStart);
+assert.deepEqual(interpolatePowerAllocation(animationStart, animationTarget, 1), animationTarget);
 
 assert.equal(classifyPowerRoutingResult(false, [5, 7, 9.9]), 'excellent');
 assert.equal(classifyPowerRoutingResult(false, [5, 11, 9]), 'stable');
@@ -125,8 +137,47 @@ assert.equal(resolveGuidanceStage(2, {
   overrideEmergencies: 0,
 }), 3, 'Override requires prior hints plus real attempts and stall/invalid threshold');
 
+const passwordThresholds = {
+  hint1Ms: 32000,
+  hint1Invalid: 2,
+  hint2Ms: 30000,
+  hint2Invalid: 2,
+  overrideMs: 100000,
+  overrideInvalid: 7,
+  overrideMinValid: 6,
+  overrideEmergencies: 0,
+  overrideRequiresTime: true,
+};
+assert.equal(resolveGuidanceStage(2, {
+  msSinceMark: 5000,
+  msTotal: 8000,
+  validAttempts: 8,
+  invalidAttempts: 9,
+  invalidSinceMark: 1,
+  emergencies: 0,
+}, passwordThresholds), 2, 'Rapid password guessing must not trigger the hidden override');
+assert.equal(resolveGuidanceStage(2, {
+  msSinceMark: 5000,
+  msTotal: 100000,
+  validAttempts: 8,
+  invalidAttempts: 9,
+  invalidSinceMark: 1,
+  emergencies: 0,
+}, passwordThresholds), 3, 'Password override requires both time and real failed submissions');
+
 const originalAnchors = ['n7', 'white_flower'] as const;
 let stats: GameStats = { ...defaultStats, memoryAnchors: [...originalAnchors], trust: 4, memory: 3, attachment: 2 };
+
+stats = {
+  ...stats,
+  novaHintStage: 2,
+  novaHintInteractionKind: 'signal-separation',
+};
+stats = applyNova06OverrideCheckpoint(stats, 'signal-separation');
+assert.equal(stats.signalCompletedByNova06, true);
+assert.equal(stats.timelineCompletedByNova06, true);
+assert.equal(stats.nova06OverrideTriggered, true);
+assert.equal(stats.novaHintStage, 2, 'Script checkpoint must not advance the story or clear guidance yet');
 
 stats = applySpecialInteractionCompletion(stats, {
   kind: 'critical-log-password',
@@ -135,6 +186,8 @@ stats = applySpecialInteractionCompletion(stats, {
 });
 assert.equal(stats.passwordBypassedByNova06, true);
 assert.equal(stats.nova06FirstOverrideSeen, true);
+assert.equal(stats.novaHintStage, 0);
+assert.equal(stats.novaHintInteractionKind, undefined);
 
 stats = applySpecialInteractionCompletion(stats, {
   kind: 'signal-separation',
@@ -150,6 +203,11 @@ stats = applySpecialInteractionCompletion(stats, {
   completedByNova06: true,
 });
 assert.equal(stats.powerCompletedByNova06, true);
+
+const normalizedLegacyStats = normalizeGameStats({ trust: 0, memory: 0, attachment: 0 });
+assert.equal(normalizedLegacyStats.novaHintStage, 0);
+assert.equal(normalizedLegacyStats.nova06OverrideTriggered, false);
+assert.equal(normalizedLegacyStats.memoryNova06NoteSeen, false);
 
 // 特殊 Nova 反应台词只在接管完成时注入，正常通关不得触发
 {
@@ -208,6 +266,7 @@ assert.equal(stats.trust, 4);
 assert.equal(stats.memory, 3);
 assert.equal(stats.attachment, 2);
 assert.equal(stats.ending, undefined, 'Special interactions must not determine an ending');
+assert.equal('memoryChoiceCompletedByNova06' in stats, false);
 
 const sealableAnchors = ['maintenance_board', 'white_flower', 'goodnight'] as const;
 for (const anchor of sealableAnchors) {

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   resolveGuidanceStage,
   scaleThresholdsForDevTest,
@@ -15,6 +15,10 @@ type UseInteractionGuidanceOptions = {
   enabled: boolean;
   /** 记忆封存等场景可封顶到 2（或把 3 用作纯留言阶段） */
   maxStage?: GuidanceStage;
+  /** 从存档恢复同一互动时继续已经出现过的提示阶段 */
+  initialStage?: GuidanceStage;
+  /** 阶段首次提升时通知外层持久化 */
+  onStageChange?: (stage: GuidanceStage) => void;
 };
 
 type InteractionGuidance = {
@@ -37,11 +41,15 @@ export function useInteractionGuidance({
   thresholds,
   enabled,
   maxStage = 3,
+  initialStage = 0,
+  onStageChange,
 }: UseInteractionGuidanceOptions): InteractionGuidance {
-  const [stage, setStage] = useState<GuidanceStage>(0);
-  const stageRef = useRef<GuidanceStage>(0);
-  const startedAtRef = useRef(Date.now());
-  const markAtRef = useRef(Date.now());
+  const restoredStage = Math.min(initialStage, maxStage) as GuidanceStage;
+  const [stage, setStage] = useState<GuidanceStage>(restoredStage);
+  const stageRef = useRef<GuidanceStage>(restoredStage);
+  const onStageChangeRef = useRef(onStageChange);
+  const startedAtRef = useRef(0);
+  const markAtRef = useRef(0);
   const validAttemptsRef = useRef(0);
   const invalidAttemptsRef = useRef(0);
   const invalidSinceMarkRef = useRef(0);
@@ -50,8 +58,14 @@ export function useInteractionGuidance({
     DEV_FAST_GUIDANCE ? scaleThresholdsForDevTest(thresholds) : thresholds,
   );
 
+  useEffect(() => {
+    onStageChangeRef.current = onStageChange;
+  }, [onStageChange]);
+
   const evaluate = useCallback(() => {
     const now = Date.now();
+    if (startedAtRef.current === 0) startedAtRef.current = now;
+    if (markAtRef.current === 0) markAtRef.current = now;
     const next = resolveGuidanceStage(stageRef.current, {
       msSinceMark: now - markAtRef.current,
       msTotal: now - startedAtRef.current,
@@ -66,11 +80,15 @@ export function useInteractionGuidance({
       markAtRef.current = now;
       invalidSinceMarkRef.current = 0;
       setStage(capped);
+      onStageChangeRef.current?.(capped);
     }
   }, [maxStage]);
 
   useEffect(() => {
     if (!enabled) return undefined;
+    const now = Date.now();
+    if (startedAtRef.current === 0) startedAtRef.current = now;
+    if (markAtRef.current === 0) markAtRef.current = now;
     const intervalId = window.setInterval(evaluate, 1000);
     return () => window.clearInterval(intervalId);
   }, [enabled, evaluate]);
@@ -94,5 +112,11 @@ export function useInteractionGuidance({
     emergenciesRef.current += 1;
   }, []);
 
-  return { stage, noteValidAttempt, noteInvalidAttempt, noteProgress, noteEmergency };
+  return useMemo(() => ({
+    stage,
+    noteValidAttempt,
+    noteInvalidAttempt,
+    noteProgress,
+    noteEmergency,
+  }), [stage, noteEmergency, noteInvalidAttempt, noteProgress, noteValidAttempt]);
 }

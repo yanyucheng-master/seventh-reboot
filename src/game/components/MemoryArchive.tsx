@@ -97,10 +97,12 @@ export function MemoryArchiveOverlay({
   stats,
   contactStage,
   onClose,
+  backLabel,
 }: {
   stats: GameStats;
   contactStage: ContactStage;
   onClose: () => void;
+  backLabel?: string;
 }) {
   const { t, locale } = useI18n();
   const [activeTab, setActiveTab] = useState<ArchiveCategory>('anchor');
@@ -126,7 +128,7 @@ export function MemoryArchiveOverlay({
             <p>{t('archiveOverlay.subtitle')}</p>
           </div>
           <button type="button" className="archive-close-btn" onClick={onClose}>
-            {t('archiveOverlay.backToChat')}
+            {backLabel ?? t('archiveOverlay.backToChat')}
           </button>
         </header>
 

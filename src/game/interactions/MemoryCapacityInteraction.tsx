@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type {
+  NovaHintStage,
   SealableMemoryAnchor,
   SpecialInteractionCompletion,
 } from '../types';
@@ -12,6 +13,10 @@ type MemoryCapacityInteractionProps = {
   mode: 'seal' | 'restore';
   copy: SpecialInteractionCopy;
   sealedAnchor?: SealableMemoryAnchor;
+  initialGuidanceStage: NovaHintStage;
+  memoryNova06NoteSeen: boolean;
+  onGuidanceStageChange: (stage: NovaHintStage) => void;
+  onMemoryNova06NoteSeen: () => void;
   onComplete: (result: SpecialInteractionCompletion) => void;
 };
 
@@ -32,6 +37,10 @@ export function MemoryCapacityInteraction({
   mode,
   copy,
   sealedAnchor,
+  initialGuidanceStage,
+  memoryNova06NoteSeen,
+  onGuidanceStageChange,
+  onMemoryNova06NoteSeen,
   onComplete,
 }: MemoryCapacityInteractionProps) {
   if (mode === 'restore') {
@@ -43,38 +52,64 @@ export function MemoryCapacityInteraction({
       />
     );
   }
-  return <MemorySeal copy={copy} onComplete={onComplete} />;
+  return (
+    <MemorySeal
+      copy={copy}
+      initialGuidanceStage={initialGuidanceStage}
+      memoryNova06NoteSeen={memoryNova06NoteSeen}
+      onGuidanceStageChange={onGuidanceStageChange}
+      onMemoryNova06NoteSeen={onMemoryNova06NoteSeen}
+      onComplete={onComplete}
+    />
+  );
 }
 
 function MemorySeal({
   copy,
   onComplete,
-}: Pick<MemoryCapacityInteractionProps, 'copy' | 'onComplete'>) {
+  initialGuidanceStage,
+  memoryNova06NoteSeen,
+  onGuidanceStageChange,
+  onMemoryNova06NoteSeen,
+}: Pick<
+  MemoryCapacityInteractionProps,
+  | 'copy'
+  | 'onComplete'
+  | 'initialGuidanceStage'
+  | 'memoryNova06NoteSeen'
+  | 'onGuidanceStageChange'
+  | 'onMemoryNova06NoteSeen'
+>) {
   const [selected, setSelected] = useState<SealableMemoryAnchor | null>(null);
   const [previewed, setPreviewed] = useState<SealableMemoryAnchor>('maintenance_board');
   const [confirming, setConfirming] = useState(false);
-  const [nova06NoteShown, setNova06NoteShown] = useState(false);
+  const attemptKeysRef = useRef(new Set<string>());
   const preview = copy.memory.memories[previewed];
 
   const guidance = useInteractionGuidance({
     thresholds: MEMORY_THRESHOLDS,
     enabled: !confirming,
     maxStage: 3,
+    initialStage: initialGuidanceStage,
+    onStageChange: onGuidanceStageChange,
   });
 
   useEffect(() => {
-    if (guidance.stage >= 3 && !nova06NoteShown && !selected) {
-      setNova06NoteShown(true);
+    if (guidance.stage >= 3 && !memoryNova06NoteSeen && !selected) {
+      onMemoryNova06NoteSeen();
     }
-  }, [guidance.stage, nova06NoteShown, selected]);
+  }, [guidance.stage, memoryNova06NoteSeen, onMemoryNova06NoteSeen, selected]);
 
   const hintText = guidance.stage >= 2
     ? copy.memory.novaUrge.second
     : guidance.stage >= 1
       ? copy.memory.novaUrge.first
       : null;
+  const showNova06Note = memoryNova06NoteSeen || (guidance.stage >= 3 && !selected);
 
-  function noteInteractionAttempt() {
+  function noteInteractionAttempt(key: string) {
+    if (attemptKeysRef.current.has(key)) return;
+    attemptKeysRef.current.add(key);
     guidance.noteValidAttempt();
   }
 
@@ -111,7 +146,7 @@ function MemorySeal({
                   type="button"
                   className="interaction-text-btn"
                   onClick={() => {
-                    noteInteractionAttempt();
+                    noteInteractionAttempt(`preview:${memoryId}`);
                     setPreviewed(memoryId);
                   }}
                   aria-pressed={previewed === memoryId}
@@ -122,7 +157,7 @@ function MemorySeal({
                   type="button"
                   className={isSelected ? 'interaction-primary-btn' : 'interaction-secondary-btn'}
                   onClick={() => {
-                    noteInteractionAttempt();
+                    noteInteractionAttempt(`select:${memoryId}`);
                     setSelected(memoryId);
                     setPreviewed(memoryId);
                     setConfirming(false);
@@ -178,7 +213,7 @@ function MemorySeal({
         </div>
       )}
 
-      {nova06NoteShown && (
+      {showNova06Note && (
         <div className="memory-nova06-note" role="note" data-testid="memory-nova06-note">
           <span className="nova06-tag" data-reformed>NOVA-06 / RESIDUAL SIGNATURE</span>
           {copy.memory.nova06Note.split('\n').map(line => (

@@ -1,11 +1,12 @@
 import { NOVA06_FX_SEEN_KEY } from '../storage';
+import type { NovaHintStage } from '../types';
 
 /**
  * 三级提示结构的阶段：
  * 0 = 玩家正常操作；1 = Nova 第一次方向提示；2 = Nova 第二次明确提示；
  * 3 = NOVA-06 残留签名越权接管（记忆封存互动中仅为一次不可代选的留言）。
  */
-export type GuidanceStage = 0 | 1 | 2 | 3;
+export type GuidanceStage = NovaHintStage;
 
 export type GuidanceSnapshot = {
   /** 距离上一次“有效推进 / 阶段变化”的毫秒数 */
@@ -35,6 +36,8 @@ export type GuidanceThresholds = {
   overrideMinValid: number;
   /** 供能互动：接管所需的紧急状态次数（0 表示不适用） */
   overrideEmergencies: number;
+  /** 密码等互动可要求“停留时间”和失败量同时达标，避免快速穷举触发 */
+  overrideRequiresTime?: boolean;
 };
 
 /**
@@ -67,6 +70,9 @@ export function resolveGuidanceStage(
   const manyInvalid = snapshot.invalidAttempts >= thresholds.overrideInvalid;
   const manyEmergencies = thresholds.overrideEmergencies > 0
     && snapshot.emergencies >= thresholds.overrideEmergencies;
+  if (thresholds.overrideRequiresTime) {
+    return longStall && (manyInvalid || manyEmergencies) ? 3 : current;
+  }
   return longStall || manyInvalid || manyEmergencies ? 3 : current;
 }
 

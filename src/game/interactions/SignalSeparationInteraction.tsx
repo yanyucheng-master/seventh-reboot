@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
-import type { SpecialInteractionCompletion } from '../types';
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import type { NovaHintStage, SpecialInteractionCompletion } from '../types';
 import type { SpecialInteractionCopy } from './copy';
 import { isSignalAligned } from './logic';
 import { markNova06FullFxSeen } from './guidance';
@@ -16,6 +16,10 @@ type SignalSeparationInteractionProps = {
   nova06FxSeen: boolean;
   /** 本周目该互动是否已由 NOVA-06 接管完成过 */
   nova06OverrideUsed: boolean;
+  initialGuidanceStage: NovaHintStage;
+  onGuidanceStageChange: (stage: NovaHintStage) => void;
+  onOverrideStarted: () => void;
+  onOverrideScriptApplied: () => void;
   onComplete: (result: SpecialInteractionCompletion) => void;
 };
 
@@ -62,6 +66,10 @@ export function SignalSeparationInteraction({
   reducedMotion,
   nova06FxSeen,
   nova06OverrideUsed,
+  initialGuidanceStage,
+  onGuidanceStageChange,
+  onOverrideStarted,
+  onOverrideScriptApplied,
   onComplete,
 }: SignalSeparationInteractionProps) {
   const [roundIndex, setRoundIndex] = useState(DEV_TEST_ROUND);
@@ -72,17 +80,34 @@ export function SignalSeparationInteraction({
   const [feedback, setFeedback] = useState('');
   const [holdMs, setHoldMs] = useState(0);
   const [transitioning, setTransitioning] = useState(false);
-  const [completedByPlayer, setCompletedByPlayer] = useState(false);
-  const [overrideState, setOverrideState] = useState<OverrideState>('none');
-  const [scriptLocked, setScriptLocked] = useState(false);
+  const [completedByPlayer, setCompletedByPlayer] = useState(nova06OverrideUsed);
+  const [overrideState, setOverrideState] = useState<OverrideState>(
+    initialGuidanceStage === 3 && !nova06OverrideUsed ? 'sequence' : 'none',
+  );
+  const [scriptLocked, setScriptLocked] = useState(initialGuidanceStage === 3 && !nova06OverrideUsed);
+  const [overrideMode] = useState<'full' | 'light'>(() => nova06FxSeen ? 'light' : 'full');
+  const [resumedByNova06] = useState(nova06OverrideUsed);
   const transitioningRef = useRef(false);
   const transitionTimeoutRef = useRef<number | null>(null);
   const lastSliderRef = useRef<number | null>(null);
-  const overrideModeRef = useRef<'full' | 'light'>(nova06FxSeen ? 'light' : 'full');
+  const lastInvalidLockRef = useRef('');
+  const scriptAbortRef = useRef<AbortController | null>(null);
+
+  const handleGuidanceStageChange = useCallback((stage: NovaHintStage) => {
+    onGuidanceStageChange(stage);
+    if (stage === 3 && overrideState === 'none' && !nova06OverrideUsed) {
+      if (overrideMode === 'full') markNova06FullFxSeen();
+      onOverrideStarted();
+      setScriptLocked(true);
+      setOverrideState('sequence');
+    }
+  }, [nova06OverrideUsed, onGuidanceStageChange, onOverrideStarted, overrideMode, overrideState]);
 
   const guidance = useInteractionGuidance({
     thresholds: SIGNAL_THRESHOLDS,
     enabled: !completedByPlayer && overrideState === 'none' && !nova06OverrideUsed,
+    initialStage: initialGuidanceStage,
+    onStageChange: handleGuidanceStageChange,
   });
 
   const values = [carrier, phase, gain];
@@ -113,14 +138,6 @@ export function SignalSeparationInteraction({
   const qualityText = copy.signal.statuses[qualityState];
 
   useEffect(() => {
-    if (guidance.stage === 3 && overrideState === 'none' && !nova06OverrideUsed) {
-      if (overrideModeRef.current === 'full') markNova06FullFxSeen();
-      setScriptLocked(true);
-      setOverrideState('sequence');
-    }
-  }, [guidance.stage, nova06OverrideUsed, overrideState]);
-
-  useEffect(() => {
     if (roundIndex !== 2 || completedByPlayer || !finalAligned || overrideState !== 'none') return;
 
     const startedAt = Date.now();
@@ -142,6 +159,7 @@ export function SignalSeparationInteraction({
   }, [completedByPlayer, finalAligned, guidance, overrideState, reducedMotion, roundIndex]);
 
   useEffect(() => () => {
+    scriptAbortRef.current?.abort();
     if (transitionTimeoutRef.current !== null) {
       window.clearTimeout(transitionTimeoutRef.current);
     }
@@ -166,7 +184,11 @@ export function SignalSeparationInteraction({
     if (transitioningRef.current || scriptLocked) return;
 
     if (!currentAligned) {
-      guidance.noteInvalidAttempt();
+      const invalidSignature = `${roundIndex}:${currentValue}`;
+      if (lastInvalidLockRef.current !== invalidSignature) {
+        lastInvalidLockRef.current = invalidSignature;
+        guidance.noteInvalidAttempt();
+      }
       setFeedback(copy.signal.outsideBand);
       return;
     }
@@ -186,14 +208,33 @@ export function SignalSeparationInteraction({
   }
 
   async function runNova06Script() {
-    const stepMs = reducedMotion ? 380 : 620;
-    await animateValue(carrier, ROUNDS[0].target, stepMs, setCarrier, reducedMotion);
+    if (!scriptAbortRef.current || scriptAbortRef.current.signal.aborted) {
+      scriptAbortRef.current = new AbortController();
+    }
+    const signal = scriptAbortRef.current.signal;
+    const light = overrideMode === 'light';
+    const stepMs = reducedMotion ? 380 : light ? 320 : 620;
+    if (light) {
+      setRoundIndex(2);
+      await Promise.all([
+        animateValue(carrier, ROUNDS[0].target, stepMs, setCarrier, reducedMotion, signal),
+        animateValue(phase, ROUNDS[1].target, stepMs, setPhase, reducedMotion, signal),
+        animateValue(gain, FINAL_ROUND.gainTarget, stepMs, setGain, reducedMotion, signal),
+        animateValue(timeline, FINAL_ROUND.timelineTarget, stepMs, setTimeline, reducedMotion, signal),
+      ]);
+      if (!signal.aborted) setHoldMs(STANDARD_HOLD_MS);
+      return;
+    }
+    await animateValue(carrier, ROUNDS[0].target, stepMs, setCarrier, reducedMotion, signal);
+    if (signal.aborted) return;
     setRoundIndex(1);
-    await animateValue(phase, ROUNDS[1].target, stepMs, setPhase, reducedMotion);
+    await animateValue(phase, ROUNDS[1].target, stepMs, setPhase, reducedMotion, signal);
+    if (signal.aborted) return;
     setRoundIndex(2);
-    await animateValue(gain, FINAL_ROUND.gainTarget, stepMs, setGain, reducedMotion);
-    await animateValue(timeline, FINAL_ROUND.timelineTarget, stepMs, setTimeline, reducedMotion);
-    setHoldMs(STANDARD_HOLD_MS);
+    await animateValue(gain, FINAL_ROUND.gainTarget, stepMs, setGain, reducedMotion, signal);
+    if (signal.aborted) return;
+    await animateValue(timeline, FINAL_ROUND.timelineTarget, stepMs, setTimeline, reducedMotion, signal);
+    if (!signal.aborted) setHoldMs(STANDARD_HOLD_MS);
   }
 
   const hintText = guidance.stage >= 2
@@ -207,8 +248,10 @@ export function SignalSeparationInteraction({
       <section className="interaction-result" aria-live="polite" data-testid="signal-result">
         <div className="interaction-result-mark" aria-hidden>3 / 3</div>
         <p className="interaction-kicker">{copy.signal.kicker}</p>
-        <InteractionTitle state="resolved">{copy.signal.cleanTitle}</InteractionTitle>
-        <p>{copy.signal.cleanDetail}</p>
+        <InteractionTitle state="resolved">
+          {resumedByNova06 ? copy.signal.assistedTitle : copy.signal.cleanTitle}
+        </InteractionTitle>
+        <p>{resumedByNova06 ? copy.signal.assistedDetail : copy.signal.cleanDetail}</p>
         <div className="signal-result-ledger">
           {copy.signal.layers.map(layer => (
             <span key={layer.name}><b>LOCKED</b>{layer.name}</span>
@@ -218,7 +261,11 @@ export function SignalSeparationInteraction({
         <button
           type="button"
           className="interaction-primary-btn"
-          onClick={() => onComplete({ kind: 'signal-separation', routeKey: 'clean' })}
+          onClick={() => onComplete({
+            kind: 'signal-separation',
+            routeKey: 'clean',
+            completedByNova06: resumedByNova06 || undefined,
+          })}
         >
           {copy.signal.returnToChannel}
         </button>
@@ -392,12 +439,13 @@ export function SignalSeparationInteraction({
 
       {bypassing && (
         <Nova06OverrideSequence
-          mode={overrideModeRef.current}
+          mode={overrideMode}
           reducedMotion={reducedMotion}
           copy={copy.nova06}
           unknownLines={copy.signal.override.unknownLines}
           scriptLines={copy.signal.override.systemLines}
           runScript={runNova06Script}
+          onScriptApplied={onOverrideScriptApplied}
           onDone={() => onComplete({
             kind: 'signal-separation',
             routeKey: 'clean',

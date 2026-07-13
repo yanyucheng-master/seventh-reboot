@@ -3,6 +3,7 @@ import type {
   PowerRoutingResult,
   SealableMemoryAnchor,
   SpecialInteractionCompletion,
+  SpecialInteractionKind,
 } from '../types';
 
 export type PowerChannel = 'lifeSupport' | 'communications' | 'coreScan';
@@ -49,6 +50,25 @@ export function rebalancePowerAllocation(
   };
 }
 
+/** 在线性动画中保持三个通道为整数，且每一帧总和严格等于 100。 */
+export function interpolatePowerAllocation(
+  from: PowerAllocation,
+  to: PowerAllocation,
+  progress: number,
+): PowerAllocation {
+  const ratio = Math.max(0, Math.min(1, Number.isFinite(progress) ? progress : 0));
+  const raw = POWER_CHANNELS.map(channel => {
+    const value = from[channel] + (to[channel] - from[channel]) * ratio;
+    return { channel, value, base: Math.floor(value), fraction: value - Math.floor(value) };
+  });
+  let remainder = 100 - raw.reduce((sum, item) => sum + item.base, 0);
+  const ranked = [...raw].sort((a, b) => b.fraction - a.fraction);
+  for (let index = 0; index < ranked.length && remainder > 0; index += 1, remainder -= 1) {
+    ranked[index].base += 1;
+  }
+  return Object.fromEntries(raw.map(item => [item.channel, item.base])) as PowerAllocation;
+}
+
 export function isPowerAllocationStable(
   allocation: PowerAllocation,
   thresholds: PowerThresholds,
@@ -79,8 +99,11 @@ export function applySpecialInteractionCompletion(
       return {
         ...current,
         criticalLogUnlocked: true,
+        novaHintStage: 0,
+        novaHintInteractionKind: undefined,
         passwordBypassedByNova06: current.passwordBypassedByNova06 || completion.completedByNova06 === true,
         nova06FirstOverrideSeen: current.nova06FirstOverrideSeen || completion.completedByNova06 === true,
+        nova06OverrideTriggered: current.nova06OverrideTriggered || completion.completedByNova06 === true,
       };
     case 'signal-separation':
       return {
@@ -90,32 +113,73 @@ export function applySpecialInteractionCompletion(
         signalNova06Recovered: true,
         signalCoreTelemetryRecovered: true,
         timelineAlignmentCompleted: true,
+        novaHintStage: 0,
+        novaHintInteractionKind: undefined,
         signalCompletedByNova06: current.signalCompletedByNova06 || completion.completedByNova06 === true,
         timelineCompletedByNova06: current.timelineCompletedByNova06 || completion.completedByNova06 === true,
         nova06FirstOverrideSeen: current.nova06FirstOverrideSeen || completion.completedByNova06 === true,
+        nova06OverrideTriggered: current.nova06OverrideTriggered || completion.completedByNova06 === true,
       };
     case 'power-routing':
       return {
         ...current,
         powerRoutingResult: completion.routeKey,
+        novaHintStage: 0,
+        novaHintInteractionKind: undefined,
         powerCompletedByNova06: current.powerCompletedByNova06 || completion.completedByNova06 === true,
         nova06FirstOverrideSeen: current.nova06FirstOverrideSeen || completion.completedByNova06 === true,
+        nova06OverrideTriggered: current.nova06OverrideTriggered || completion.completedByNova06 === true,
       };
     case 'memory-seal':
       return {
         ...current,
         temporaryAnchorSealed: completion.anchor,
         temporaryAnchorRestored: false,
+        novaHintStage: 0,
+        novaHintInteractionKind: undefined,
       };
     case 'memory-restore': {
       const next: GameStats = {
         ...current,
         temporaryAnchorRestored: true,
+        novaHintStage: 0,
+        novaHintInteractionKind: undefined,
       };
       delete next.temporaryAnchorSealed;
       return next;
     }
   }
+}
+
+/** 接管脚本已经真正写入，但演出尚未结束时先落盘，防止刷新后重复执行。 */
+export function applyNova06OverrideCheckpoint(
+  current: GameStats,
+  kind: SpecialInteractionKind,
+): GameStats {
+  const common = {
+    ...current,
+    nova06FirstOverrideSeen: true,
+    nova06OverrideTriggered: true,
+  };
+  if (kind === 'critical-log-password') {
+    return { ...common, criticalLogUnlocked: true, passwordBypassedByNova06: true };
+  }
+  if (kind === 'signal-separation') {
+    return {
+      ...common,
+      signalSeparationResult: 'clean',
+      signalCurrentNovaRecovered: true,
+      signalNova06Recovered: true,
+      signalCoreTelemetryRecovered: true,
+      timelineAlignmentCompleted: true,
+      signalCompletedByNova06: true,
+      timelineCompletedByNova06: true,
+    };
+  }
+  if (kind === 'power-routing') {
+    return { ...common, powerRoutingResult: 'stable', powerCompletedByNova06: true };
+  }
+  return common;
 }
 
 export function isSealableMemoryAnchor(value: string): value is SealableMemoryAnchor {
