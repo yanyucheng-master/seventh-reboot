@@ -7,12 +7,19 @@ export type Nova06CommsAftermath = {
   replies?: Array<{ text: string; ack: string }>;
 };
 
+function wasCompletedByNova06(
+  completion: SpecialInteractionCompletion,
+): completion is SpecialInteractionCompletion & { completedByNova06: true } {
+  return 'completedByNova06' in completion && completion.completedByNova06 === true;
+}
+
 /** 接管结束后回到通讯页时，Nova 要接上的正常发言（及可选轻量回句） */
 export function resolveNova06CommsAftermath(
   completion: SpecialInteractionCompletion,
   copy: SpecialInteractionCopy,
 ): Nova06CommsAftermath | null {
-  if (!completion.completedByNova06) return null;
+  // memory-seal / memory-restore 没有 completedByNova06，不能直接读该字段
+  if (!wasCompletedByNova06(completion)) return null;
 
   switch (completion.kind) {
     case 'critical-log-password':
