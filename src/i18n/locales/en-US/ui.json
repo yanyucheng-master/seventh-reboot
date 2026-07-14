@@ -99,9 +99,9 @@
   },
   "restartDialog": {
     "title": "Restart from the beginning?",
-    "body": "This deletes all save data and starts over. Are you sure you want to forget Nova?",
+    "body": "The current transmission will restart from the beginning. Recovered archives, ending records, and the player-side commemorative archive will remain available.",
     "cancel": "Cancel",
-    "confirm": "Confirm"
+    "confirm": "Reconnect"
   },
   "archiveOverlay": {
     "title": "Memory Archive",
@@ -109,9 +109,14 @@
     "backToChat": "Back to chat",
     "backToMenu": "Back to main menu",
     "backToList": "Back to list",
-    "entryCount": "Entries: {unlocked}/{total}",
-    "anchorCount": "Anchors: {count}",
-    "endingCount": "Endings: {count}",
+    "statusLabel": "Archive recovery status",
+    "sectionsLabel": "Archive sections",
+    "entryCount": "Recovered: {unlocked}/{total}",
+    "anchorCount": "Run anchors: {count}",
+    "endingCount": "Observed endings: {count}",
+    "arrayOnline": "INDEX ARRAY ONLINE",
+    "memorialSaved": "MEMORIAL ARCHIVE SAVED",
+    "branchArchiveNote": "The remaining {count} entries belong to unobserved ending branches; this run is not missing records.",
     "locked": "LOCKED",
     "tabs": {
       "anchor": "Memory Anchors",

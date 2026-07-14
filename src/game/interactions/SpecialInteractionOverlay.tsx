@@ -38,6 +38,14 @@ const REDUCED_MOTION_KEY = 'seventh_reboot_interaction_reduced_motion';
 const FORCE_REDUCED_MOTION_FOR_TEST = import.meta.env.DEV
   && new URLSearchParams(window.location.search).get('testReducedMotion') === '1';
 
+const INTERACTION_TERMINAL_CODES: Record<SpecialInteractionKind, string> = {
+  'critical-log-password': 'ARCHIVE AUTH / 07',
+  'signal-separation': 'SIGNAL RESTORE / 03-LAYER',
+  'power-routing': 'POWER PROXY / AURORA',
+  'memory-seal': 'MEMORY INDEX / SEAL',
+  'memory-restore': 'MEMORY INDEX / RESTORE',
+};
+
 function readStoredBoolean(key: string, fallback: boolean): boolean {
   try {
     const value = window.localStorage.getItem(key);
@@ -110,7 +118,7 @@ export function SpecialInteractionOverlay({
       <header className="interaction-header">
         <div className="interaction-header-id">
           <span>OBSERVER-01</span>
-          <strong>{node.id}</strong>
+          <strong>{node.interactionKind ? INTERACTION_TERMINAL_CODES[node.interactionKind] : 'INTERACTION TERMINAL'}</strong>
         </div>
         <div className="interaction-header-controls">
           <label className="interaction-switch">

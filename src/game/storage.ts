@@ -21,9 +21,10 @@ import type {
 } from './types';
 
 export const SAVE_KEY = 'seventh_reboot_save';
+export const PERSISTENT_PROGRESS_KEY = 'seventh_reboot_persistent_progress';
 /** 剧情分支拓扑版本；变更选项 nextId 后递增，使旧 localStorage 存档失效 */
 export const STORY_VERSION = 'V1.0';
-export const STORY_CONTENT_VERSION = 'v1.0-special-interactions-20260711';
+export const STORY_CONTENT_VERSION = 'v1.0-integrity-pass-20260714';
 export const defaultContactStage: ContactStage = 'unknown';
 
 export const defaultStats: GameStats = {
@@ -34,6 +35,7 @@ export const defaultStats: GameStats = {
   acceptFarewell: false,
   unlockedArchives: [],
   endingsUnlocked: [],
+  commemorativeArchiveSaved: false,
   criticalLogUnlocked: false,
   signalCurrentNovaRecovered: false,
   signalNova06Recovered: false,
@@ -196,6 +198,7 @@ export function normalizeGameStats(value: unknown): GameStats {
     acceptFarewell: typeof stats.acceptFarewell === 'boolean' ? stats.acceptFarewell : defaultStats.acceptFarewell,
     unlockedArchives: normalizeStringList(stats.unlockedArchives),
     endingsUnlocked: normalizeEndings(stats.endingsUnlocked),
+    commemorativeArchiveSaved: stats.commemorativeArchiveSaved === true,
     criticalLogUnlocked: stats.criticalLogUnlocked === true,
     signalCurrentNovaRecovered: stats.signalCurrentNovaRecovered === true,
     signalNova06Recovered: stats.signalNova06Recovered === true,
@@ -239,6 +242,80 @@ function clampStat(value: number): number {
   return Math.max(0, Math.min(6, value));
 }
 
+export type PersistentProgress = {
+  version: 1;
+  unlockedArchives: string[];
+  endingsUnlocked: EndingId[];
+  commemorativeArchiveSaved: boolean;
+};
+
+const EMPTY_PERSISTENT_PROGRESS: PersistentProgress = {
+  version: 1,
+  unlockedArchives: [],
+  endingsUnlocked: [],
+  commemorativeArchiveSaved: false,
+};
+
+export function loadPersistentProgress(): PersistentProgress {
+  try {
+    const raw = localStorage.getItem(PERSISTENT_PROGRESS_KEY);
+    if (!raw) return { ...EMPTY_PERSISTENT_PROGRESS };
+    const parsed = JSON.parse(raw) as Partial<PersistentProgress>;
+    return {
+      version: 1,
+      unlockedArchives: normalizeStringList(parsed.unlockedArchives),
+      endingsUnlocked: normalizeEndings(parsed.endingsUnlocked),
+      commemorativeArchiveSaved: parsed.commemorativeArchiveSaved === true,
+    };
+  } catch {
+    return { ...EMPTY_PERSISTENT_PROGRESS };
+  }
+}
+
+function savePersistentProgress(progress: PersistentProgress): void {
+  try {
+    localStorage.setItem(PERSISTENT_PROGRESS_KEY, JSON.stringify(progress));
+  } catch {
+    /* silent */
+  }
+}
+
+function mergeStatsWithPersistentProgress(stats: GameStats): GameStats {
+  const progress = loadPersistentProgress();
+  return {
+    ...stats,
+    unlockedArchives: [...new Set([
+      ...progress.unlockedArchives,
+      ...progress.endingsUnlocked,
+      ...stats.unlockedArchives,
+      ...stats.endingsUnlocked,
+    ])],
+    endingsUnlocked: [...new Set([...progress.endingsUnlocked, ...stats.endingsUnlocked])],
+    commemorativeArchiveSaved:
+      progress.commemorativeArchiveSaved || stats.commemorativeArchiveSaved,
+  };
+}
+
+function persistProgressFromStats(stats: GameStats): void {
+  const merged = mergeStatsWithPersistentProgress(stats);
+  savePersistentProgress({
+    version: 1,
+    unlockedArchives: merged.unlockedArchives,
+    endingsUnlocked: merged.endingsUnlocked,
+    commemorativeArchiveSaved: merged.commemorativeArchiveSaved,
+  });
+}
+
+/** Starts a clean run while retaining the player's recovered archive collection. */
+export function createNewGameStats(): GameStats {
+  return mergeStatsWithPersistentProgress({
+    ...defaultStats,
+    memoryAnchors: [],
+    unlockedArchives: [],
+    endingsUnlocked: [],
+  });
+}
+
 export function normalizeContactStage(value: unknown): ContactStage {
   if (typeof value === 'string' && CONTACT_STAGES.has(value as ContactStage)) {
     return value as ContactStage;
@@ -248,75 +325,77 @@ export function normalizeContactStage(value: unknown): ContactStage {
 
 export function saveGame(data: SaveData) {
   try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    const stats = mergeStatsWithPersistentProgress(normalizeGameStats(data.stats));
+    persistProgressFromStats(stats);
+    localStorage.setItem(SAVE_KEY, JSON.stringify({ ...data, stats }));
   } catch {
     /* silent */
   }
 }
 
-function isValidSaveData(data: unknown): data is SaveData {
-  if (!data || typeof data !== 'object') return false;
-  const save = data as Partial<SaveData>;
-  if (typeof save.pendingNodeId !== 'string') return false;
-  if (!Array.isArray(save.messages)) return false;
-  if (typeof save.novaEmotion !== 'string') return false;
-  if (!save.stats || typeof save.stats !== 'object') return false;
-  if (save.contactStage !== undefined && typeof save.contactStage !== 'string') return false;
-  const stats = save.stats as Partial<GameStats>;
-  if (typeof stats.trust !== 'number') return false;
-  if (typeof stats.attachment !== 'number') return false;
-  if (stats.memory !== undefined && typeof stats.memory !== 'number') return false;
-  if (stats.memoryAnchors !== undefined && !Array.isArray(stats.memoryAnchors)) return false;
-  if (stats.acceptFarewell !== undefined && typeof stats.acceptFarewell !== 'boolean') return false;
-  if (stats.finalChoice !== undefined && typeof stats.finalChoice !== 'string') return false;
-  if (stats.finalFarewellVariant !== undefined && typeof stats.finalFarewellVariant !== 'string') return false;
-  if (stats.finalFarewellTone !== undefined && typeof stats.finalFarewellTone !== 'string') return false;
-  if (stats.timedResponse !== undefined && typeof stats.timedResponse !== 'string') return false;
-  if (stats.timedProof !== undefined && typeof stats.timedProof !== 'string') return false;
-  if (stats.ending !== undefined && typeof stats.ending !== 'string') return false;
-  if (stats.unlockedArchives !== undefined && !Array.isArray(stats.unlockedArchives)) return false;
-  if (stats.endingsUnlocked !== undefined && !Array.isArray(stats.endingsUnlocked)) return false;
-  if (stats.criticalLogUnlocked !== undefined && typeof stats.criticalLogUnlocked !== 'boolean') return false;
-  if (stats.signalSeparationResult !== undefined && typeof stats.signalSeparationResult !== 'string') return false;
-  if (stats.signalCurrentNovaRecovered !== undefined && typeof stats.signalCurrentNovaRecovered !== 'boolean') return false;
-  if (stats.signalNova06Recovered !== undefined && typeof stats.signalNova06Recovered !== 'boolean') return false;
-  if (stats.signalCoreTelemetryRecovered !== undefined && typeof stats.signalCoreTelemetryRecovered !== 'boolean') return false;
-  if (stats.timelineAlignmentCompleted !== undefined && typeof stats.timelineAlignmentCompleted !== 'boolean') return false;
-  if (stats.powerRoutingResult !== undefined && typeof stats.powerRoutingResult !== 'string') return false;
-  if (stats.temporaryAnchorSealed !== undefined && typeof stats.temporaryAnchorSealed !== 'string') return false;
-  if (stats.temporaryAnchorRestored !== undefined && typeof stats.temporaryAnchorRestored !== 'boolean') return false;
-  if (stats.nova06FirstOverrideSeen !== undefined && typeof stats.nova06FirstOverrideSeen !== 'boolean') return false;
-  if (stats.novaHintStage !== undefined && typeof stats.novaHintStage !== 'number') return false;
-  if (stats.novaHintInteractionKind !== undefined && typeof stats.novaHintInteractionKind !== 'string') return false;
-  if (stats.nova06OverrideTriggered !== undefined && typeof stats.nova06OverrideTriggered !== 'boolean') return false;
-  if (stats.passwordBypassedByNova06 !== undefined && typeof stats.passwordBypassedByNova06 !== 'boolean') return false;
-  if (stats.signalCompletedByNova06 !== undefined && typeof stats.signalCompletedByNova06 !== 'boolean') return false;
-  if (stats.timelineCompletedByNova06 !== undefined && typeof stats.timelineCompletedByNova06 !== 'boolean') return false;
-  if (stats.powerCompletedByNova06 !== undefined && typeof stats.powerCompletedByNova06 !== 'boolean') return false;
-  if (stats.memoryNova06NoteSeen !== undefined && typeof stats.memoryNova06NoteSeen !== 'boolean') return false;
-  if (typeof save.timestamp !== 'number') return false;
-  if (save.storyVersion !== STORY_VERSION) return false;
-  if (save.storyContentVersion !== STORY_CONTENT_VERSION) return false;
-  return true;
+function isDisplayMessageLike(value: unknown): value is DisplayMessage {
+  if (!value || typeof value !== 'object') return false;
+  const message = value as Partial<DisplayMessage>;
+  return typeof message.id === 'string'
+    && typeof message.speaker === 'string'
+    && typeof message.type === 'string'
+    && typeof message.content === 'string';
+}
+
+function migrateSaveData(value: unknown): SaveData | null {
+  if (!value || typeof value !== 'object') return null;
+  const save = value as Partial<SaveData>;
+  if (save.storyVersion !== undefined && save.storyVersion !== STORY_VERSION) return null;
+  const rawMessages = Array.isArray(save.messages) ? save.messages : [];
+
+  const pendingNodeId = typeof save.pendingNodeId === 'string' ? save.pendingNodeId : '';
+  const currentNodeId = typeof save.currentNodeId === 'string' ? save.currentNodeId : undefined;
+  if (!pendingNodeId && !currentNodeId) return null;
+
+  const messageIds = new Set<string>();
+  const messages = rawMessages
+    .filter(isDisplayMessageLike)
+    .filter(message => {
+      if (messageIds.has(message.id)) return false;
+      messageIds.add(message.id);
+      return true;
+    })
+    .map(message => ({
+      ...message,
+      contactStage: normalizeContactStage(message.contactStage),
+      isNew: false,
+    }));
+
+  const migrated: SaveData = {
+    pendingNodeId,
+    currentNodeId,
+    messages,
+    novaEmotion:
+      save.novaEmotion === 'smile' || save.novaEmotion === 'sad' || save.novaEmotion === 'glitch'
+        ? save.novaEmotion
+        : 'normal',
+    contactStage: normalizeContactStage(save.contactStage),
+    stats: mergeStatsWithPersistentProgress(normalizeGameStats(save.stats)),
+    timestamp: typeof save.timestamp === 'number' && Number.isFinite(save.timestamp)
+      ? save.timestamp
+      : Date.now(),
+    storyVersion: STORY_VERSION,
+    storyContentVersion: STORY_CONTENT_VERSION,
+  };
+
+  const resolvedNodeId = resolveResumeNodeId(migrated);
+  if (resolvedNodeId !== 'MENU' && !storyNodeMap.has(resolvedNodeId)) return null;
+  migrated.pendingNodeId = resolvedNodeId;
+  return migrated;
 }
 
 export function loadGame(): SaveData | null {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
     if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (!isValidSaveData(parsed)) return null;
-    const data = parsed;
-    const messageIds = new Set<string>();
-    data.messages = data.messages
-      .filter(message => {
-        if (messageIds.has(message.id)) return false;
-        messageIds.add(message.id);
-        return true;
-      })
-      .map(m => ({ ...m, contactStage: normalizeContactStage(m.contactStage), isNew: false }));
-    data.contactStage = normalizeContactStage(data.contactStage);
-    data.stats = normalizeGameStats(data.stats);
+    const data = migrateSaveData(JSON.parse(raw));
+    if (!data) return null;
+    saveGame(data);
     return data;
   } catch {
     return null;
@@ -327,10 +406,21 @@ export function hasSaveFile(): boolean {
   return loadGame() !== null;
 }
 
+/** Clears only the active run. Recovered archives and endings remain available. */
 export function clearSave() {
   localStorage.removeItem(SAVE_KEY);
   try {
     localStorage.removeItem(NOVA06_FX_SEEN_KEY);
+  } catch {
+    /* silent */
+  }
+}
+
+/** Destructive reset reserved for an explicit future "clear all data" action. */
+export function clearAllData() {
+  clearSave();
+  try {
+    localStorage.removeItem(PERSISTENT_PROGRESS_KEY);
   } catch {
     /* silent */
   }
@@ -389,12 +479,13 @@ export function createSaveData(
   contactStage: ContactStage,
   stats: GameStats,
 ): SaveData {
+  const mergedStats = mergeStatsWithPersistentProgress(normalizeGameStats(stats));
   return {
     pendingNodeId,
     messages: messages.map(m => ({ ...m, isNew: false })),
     novaEmotion,
     contactStage,
-    stats,
+    stats: mergedStats,
     storyVersion: STORY_VERSION,
     storyContentVersion: STORY_CONTENT_VERSION,
     timestamp: Date.now(),

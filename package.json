@@ -15,7 +15,8 @@
     "normalize:story-source": "npx tsx scripts/normalize-story-source.ts",
     "test:story-source-format": "npx tsx scripts/test-story-source-format.ts",
     "validate:story": "npx tsx scripts/validate-story-branches.mjs",
-    "test:interactions": "npx tsx scripts/test-special-interactions.ts"
+    "test:interactions": "npx tsx scripts/test-special-interactions.ts",
+    "test:integrity": "npx tsx scripts/test-game-integrity.ts"
   },
   "dependencies": {
     "lucide-react": "^1.24.0",

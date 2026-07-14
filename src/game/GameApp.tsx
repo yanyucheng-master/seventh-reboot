@@ -6,6 +6,7 @@ import type { Locale } from '../i18n';
 import { resolveContactAvatar } from './assets';
 import {
   clearSave,
+  createNewGameStats,
   createSaveData,
   defaultContactStage,
   defaultStats,
@@ -19,7 +20,6 @@ import {
 import type {
   ContactStage,
   DisplayMessage,
-  FinalFarewellVariant,
   GameScreen,
   GameStats,
   GlitchLevel,
@@ -39,8 +39,14 @@ import { GameTitle } from './components/GameTitle';
 import { useVisualViewport } from '../hooks/useVisualViewport';
 import { getSaveProgressLabel } from './progress';
 import { formatChoiceText, shouldShowNovaAvatar, shouldShowTypingAvatar } from './format';
-import { determineEnding, resolveEndingStart } from './endings';
+import { resolveEndingStart } from './endings';
 import { ANCHOR_ARCHIVE_IDS, getArchiveUnlocksForNode } from './archive';
+import {
+  applyPersistentStoryNodeEffects,
+  applyStoryChoiceEffects,
+  applyTimedChoiceTimeoutEffects,
+  clampStat,
+} from './state';
 import { SpecialInteractionOverlay } from './interactions/SpecialInteractionOverlay';
 import {
   applyNova06OverrideCheckpoint,
@@ -99,17 +105,6 @@ type ActiveInputNode = {
   inputAutoFocus?: boolean;
   specialInputNextIds?: Record<string, string>;
 };
-
-function clampStat(value: number): number {
-  return Math.max(0, Math.min(6, value));
-}
-
-function getFinalFarewellVariant(choice: Choice): FinalFarewellVariant | undefined {
-  if (choice.nextId === 'fin_correct1') return 'remembered_until_end';
-  if (/^fin_wrong_/.test(choice.nextId)) return 'remembered_wrong';
-  if (choice.nextId === 'fin_timeout1' || /^fin_timeout/.test(choice.nextId)) return 'forgetting_started';
-  return undefined;
-}
 
 function getWaitConfig(node: StoryNode, t: Translate): WaitConfig | null {
   if (!node.nextId) return null;
@@ -223,21 +218,27 @@ function getSignalGlitchDuration(level: GlitchLevel, tone: SignalGlitchTone, con
 const SIGNAL_GLITCH_COOLDOWN_MS = 9000;
 
 function isNovaSilentBeat(content: string): boolean {
-  return /\.\.\.|silence|don't know|just |unless|seems|so |actually|maybe|perhaps|right\?|myself|remember/i.test(content);
+  return /^(?:\.{3,}|…{2,}|silence)$/i.test(content.trim());
 }
 
 function isNovaHesitationBeat(content: string): boolean {
-  return /\.\.\.|silence|don't know|just |unless|seems|so |actually|maybe|perhaps|right\?|myself|remember/i.test(content);
+  const trimmed = content.trim();
+  return isNovaSilentBeat(trimmed)
+    || /\.{3,}|…{2,}|\b(?:don't know|unless|seems|actually|maybe|perhaps)\b/i.test(trimmed)
+    || /^(?:嗯|等等|算了|不对|我不知道|不知道|其实|也许|可能|好像|除非)(?:[，。！？?!]|$)/.test(trimmed);
 }
 
-function getNovaTypingLeadDelay(node: StoryNode): number {
+function getNovaTypingLeadDelay(node: StoryNode, previousMessage?: DisplayMessage): number {
   const explicitDelay = node.delay ?? 0;
-  let delay = 900;
+  const isConsecutiveNova = previousMessage?.speaker === 'nova' && previousMessage.type === 'text';
+  let delay = isConsecutiveNova ? 420 : 900;
 
-  if (explicitDelay >= 2500) delay = 1250;
+  if (explicitDelay >= 2500) delay = Math.max(delay, 1250);
   if (isNovaHesitationBeat(node.content)) delay = Math.max(delay, 1180);
   if (isNovaSilentBeat(node.content)) delay = Math.max(delay, 1550);
-  if (/^fin_|^normal_|^bad_/.test(node.id)) delay = Math.max(delay, 1150);
+  if (/^fin_|^normal_|^bad_/.test(node.id)) {
+    delay = Math.max(delay, isConsecutiveNova ? 720 : 1150);
+  }
 
   return Math.min(delay, 2200);
 }
@@ -337,6 +338,8 @@ export default function GameApp() {
   const waitResolverRef = useRef<((result: WaitResult) => void) | null>(null);
   const delayResolverRef = useRef<(() => void) | null>(null);
   const choiceTimeoutRef = useRef<number | null>(null);
+  const choiceDeadlineRef = useRef<{ nodeId: string; expiresAt: number } | null>(null);
+  const activeChoiceRef = useRef<{ nodeId: string; settled: boolean } | null>(null);
   const signalGlitchTimeoutRef = useRef<number | null>(null);
   const signalGlitchPulseRef = useRef(0);
   const lastSignalGlitchRef = useRef({ at: 0, level: 0 });
@@ -407,6 +410,19 @@ export default function GameApp() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- choice/input refreshed from current ids
   }, [locale, storyNodeMap, t, applyLocalizedMessages, screen]);
 
+  const activateChoice = useCallback((nodeId: string) => {
+    activeChoiceRef.current = { nodeId, settled: false };
+    if (choiceDeadlineRef.current?.nodeId !== nodeId) choiceDeadlineRef.current = null;
+  }, []);
+
+  const claimChoiceResult = useCallback((nodeId: string): boolean => {
+    const active = activeChoiceRef.current;
+    if (!active || active.nodeId !== nodeId || active.settled) return false;
+    active.settled = true;
+    choiceDeadlineRef.current = null;
+    return true;
+  }, []);
+
   const cancelActiveSequence = useCallback(() => {
     queueRunIdRef.current += 1;
     nova06BridgeRunRef.current += 1;
@@ -425,6 +441,8 @@ export default function GameApp() {
       window.clearTimeout(choiceTimeoutRef.current);
       choiceTimeoutRef.current = null;
     }
+    choiceDeadlineRef.current = null;
+    activeChoiceRef.current = null;
     if (signalGlitchTimeoutRef.current !== null) {
       window.clearTimeout(signalGlitchTimeoutRef.current);
       signalGlitchTimeoutRef.current = null;
@@ -691,6 +709,15 @@ export default function GameApp() {
     return true;
   }, []);
 
+  const markCommemorativeArchiveSaved = useCallback(() => {
+    const current = statsRef.current;
+    const nextStats = applyPersistentStoryNodeEffects(current, 'fin_action_save');
+    if (nextStats === current) return false;
+    statsRef.current = nextStats;
+    setStats(nextStats);
+    return true;
+  }, []);
+
   const saveMemoryAnchor = useCallback(
     (anchor: MemoryAnchorId, pendingNodeId: string) => {
       const current = statsRef.current;
@@ -728,6 +755,8 @@ export default function GameApp() {
       const node = storyNodeMap.get(nodeId);
       if (!node) return false;
       const nodeArchiveUnlocks = getArchiveUnlocksForNode(node);
+
+      if (node.id === 'fin_action_save') markCommemorativeArchiveSaved();
 
       if (node.requiresAnchor && !statsRef.current.memoryAnchors.includes(node.requiresAnchor)) {
         if (node.nextId) nodeQueueRef.current.push(node.nextId);
@@ -808,6 +837,7 @@ export default function GameApp() {
           if (!isCurrentRun()) return false;
         }
         stopFastForwardAtInteraction();
+        activateChoice(nodeId);
         setChoices(node.choices);
         setChoiceNodeId(nodeId);
         setIsTyping(false);
@@ -854,7 +884,7 @@ export default function GameApp() {
 
       if (node.speaker === 'nova' && node.type === 'text' && !node.isGlitch) {
         setIsTyping(true);
-        await waitForPlayback(getNovaTypingLeadDelay(node));
+        await waitForPlayback(getNovaTypingLeadDelay(node, messagesRef.current.at(-1)));
         if (!isCurrentRun()) return false;
         setIsTyping(false);
 
@@ -937,12 +967,27 @@ export default function GameApp() {
         }
       }
 
+      if (node.id === 'bad_action_restart') {
+        clearSave();
+        const freshStats = createNewGameStats();
+        messagesRef.current = [];
+        statsRef.current = freshStats;
+        emotionRef.current = 'normal';
+        contactStageRef.current = defaultContactStage;
+        lastSignalGlitchRef.current = { at: 0, level: 0 };
+        setMessages([]);
+        setStats(freshStats);
+        setNovaEmotion('normal');
+        setContactStage(defaultContactStage);
+        persistState(node.nextId ?? 'p0', []);
+      }
+
       if (node.nextId) {
         nodeQueueRef.current.push(node.nextId);
       }
       return true;
     },
-    [addMessage, persistState, saveMemoryAnchor, stopFastForwardAtInteraction, storyNodeMap, t, triggerSignalGlitch, unlockArchives, waitForPlayback, waitForSignal],
+    [activateChoice, addMessage, markCommemorativeArchiveSaved, persistState, saveMemoryAnchor, stopFastForwardAtInteraction, storyNodeMap, t, triggerSignalGlitch, unlockArchives, waitForPlayback, waitForSignal],
   );
 
   const processQueue = useCallback(async (runId: number) => {
@@ -1066,6 +1111,7 @@ export default function GameApp() {
           const resumeId = resolveResumeNodeId(save);
           const resumeNode = storyNodeMap.get(resumeId);
           if (resumeNode?.type === 'choice') {
+            activateChoice(resumeNode.id);
             setChoices(resumeNode.choices ?? null);
             setChoiceNodeId(resumeNode.id);
             return;
@@ -1088,14 +1134,15 @@ export default function GameApp() {
       }
 
       clearSave();
+      const freshStats = createNewGameStats();
       messagesRef.current = [];
       emotionRef.current = 'normal';
       contactStageRef.current = defaultContactStage;
       setMessages([]);
       setNovaEmotion('normal');
       setContactStage(defaultContactStage);
-      setStats(defaultStats);
-      statsRef.current = defaultStats;
+      setStats(freshStats);
+      statsRef.current = freshStats;
       setInputNode(null);
       setPlayerInput('');
       setWaitPrompt(null);
@@ -1104,7 +1151,7 @@ export default function GameApp() {
       setScreen('playing');
       startSequence('p0');
     },
-    [cancelActiveSequence, memoryAnchorLabels, scheduleSequence, startSequence, storyNodeMap, t],
+    [activateChoice, cancelActiveSequence, memoryAnchorLabels, scheduleSequence, startSequence, storyNodeMap, t],
   );
 
   const handleSpecialInteractionComplete = useCallback(
@@ -1159,8 +1206,10 @@ export default function GameApp() {
             continueId: nextId,
             replies: aftermath.replies,
           };
+          activateChoice(NOVA06_BRIDGE_CHOICE_PREFIX);
           setChoiceNodeId(NOVA06_BRIDGE_CHOICE_PREFIX);
           setChoices(aftermath.replies.map((reply, index) => ({
+            id: `${NOVA06_BRIDGE_CHOICE_PREFIX}${index}`,
             text: reply.text,
             nextId: `${NOVA06_BRIDGE_CHOICE_PREFIX}${index}`,
             statEffect: 'none' as const,
@@ -1171,7 +1220,7 @@ export default function GameApp() {
         scheduleSequence(nextId, 350);
       })();
     },
-    [activeInteraction, addMessage, jumpToBottom, locale, persistState, scheduleSequence, waitForPlayback],
+    [activateChoice, activeInteraction, addMessage, jumpToBottom, locale, persistState, scheduleSequence, waitForPlayback],
   );
 
   const saveInteractionAndExit = useCallback(() => {
@@ -1182,57 +1231,7 @@ export default function GameApp() {
   }, [activeInteraction, goToMenu, persistState]);
 
   const applyChoiceEffects = useCallback((choice: Choice) => {
-    const current = statsRef.current;
-    const next: GameStats = {
-      ...current,
-      memoryAnchors: [...current.memoryAnchors],
-      unlockedArchives: [...current.unlockedArchives],
-      endingsUnlocked: [...current.endingsUnlocked],
-    };
-
-    const shouldApplyStatEffects = choice.statEffect !== 'none';
-    if (shouldApplyStatEffects) {
-      next.trust = clampStat(next.trust + (choice.trustDelta ?? 0));
-      next.memory = clampStat(next.memory + (choice.memoryDelta ?? 0));
-      next.attachment = clampStat(next.attachment + (choice.attachmentDelta ?? 0));
-    }
-    if (choice.acceptFarewell !== undefined) {
-      next.acceptFarewell = choice.acceptFarewell;
-    } else if (choice.nextId === 'FINALE_DECISION_END') {
-      next.acceptFarewell = true;
-    }
-    if (choice.finalChoice) {
-      next.finalChoice = choice.finalChoice;
-    } else if (choice.nextId === 'FINALE_DECISION_END') {
-      next.finalChoice = 'accept_farewell';
-    } else if (choice.nextId === 'BAD_END_START') {
-      next.finalChoice = 'refuse_farewell';
-    }
-    if (next.finalChoice === 'refuse_farewell') {
-      next.acceptFarewell = false;
-    }
-    const finalFarewellVariant = getFinalFarewellVariant(choice);
-    if (finalFarewellVariant) {
-      next.finalFarewellVariant = finalFarewellVariant;
-    }
-    if (choice.finalFarewellTone) {
-      next.finalFarewellTone = choice.finalFarewellTone;
-    }
-    if (choice.timedResponse) {
-      next.timedResponse = choice.timedResponse;
-    }
-    if (choice.timedProof) {
-      next.timedProof = choice.timedProof;
-    }
-    const isFinalDecision =
-      choice.nextId === 'FINALE_DECISION_END' ||
-      choice.nextId === 'BAD_END_START' ||
-      choice.acceptFarewell !== undefined ||
-      choice.finalChoice !== undefined;
-    if (isFinalDecision) {
-      next.ending = determineEnding(next);
-    }
-
+    const next = applyStoryChoiceEffects(statsRef.current, choice);
     statsRef.current = next;
     setStats(next);
     return next;
@@ -1240,14 +1239,17 @@ export default function GameApp() {
 
   const handleChoice = useCallback(
     (choice: Choice) => {
+      const fromNodeId = choiceNodeId;
+      if (!fromNodeId || !claimChoiceResult(fromNodeId)) return;
       if (choiceTimeoutRef.current !== null) {
         window.clearTimeout(choiceTimeoutRef.current);
         choiceTimeoutRef.current = null;
       }
-      const fromNodeId = choiceNodeId;
       const choiceIndex =
         fromNodeId && choices
-          ? choices.findIndex(item => item === choice || (item.text === choice.text && item.nextId === choice.nextId))
+          ? choices.findIndex(item =>
+              item === choice ||
+              (item.id && choice.id ? item.id === choice.id : item.text === choice.text && item.nextId === choice.nextId))
           : -1;
       setChoices(null);
       setChoiceNodeId(null);
@@ -1312,25 +1314,16 @@ export default function GameApp() {
 
       scheduleSequence(nextId, 550);
     },
-    [addMessage, applyChoiceEffects, choiceNodeId, choices, persistState, scheduleSequence, jumpToBottom, waitForPlayback],
+    [addMessage, applyChoiceEffects, choiceNodeId, choices, claimChoiceResult, persistState, scheduleSequence, jumpToBottom, waitForPlayback],
   );
 
   const handleChoiceTimeout = useCallback(
     (node: StoryNode) => {
-      if (!node.timeoutNextId) return;
+      if (!node.timeoutNextId || !claimChoiceResult(node.id)) return;
       setChoices(null);
       setChoiceNodeId(null);
 
-      const current = statsRef.current;
-      const nextStats: GameStats = {
-        ...current,
-        memoryAnchors: [...current.memoryAnchors],
-        unlockedArchives: [...current.unlockedArchives],
-        endingsUnlocked: [...current.endingsUnlocked],
-      };
-      if (node.id === 'fin_last6') {
-        nextStats.finalFarewellVariant = 'forgetting_started';
-      }
+      const nextStats = applyTimedChoiceTimeoutEffects(statsRef.current, node.id);
       statsRef.current = nextStats;
       setStats(nextStats);
 
@@ -1350,7 +1343,7 @@ export default function GameApp() {
       jumpToBottom();
       scheduleSequence(node.timeoutNextId, 550);
     },
-    [addMessage, persistState, scheduleSequence, jumpToBottom, t],
+    [addMessage, claimChoiceResult, persistState, scheduleSequence, jumpToBottom, t],
   );
 
   useEffect(() => {
@@ -1358,13 +1351,17 @@ export default function GameApp() {
     const node = storyNodeMap.get(choiceNodeId);
     if (!node?.choiceTimeoutMs || !node.timeoutNextId) return undefined;
 
-    if (choiceTimeoutRef.current !== null) {
-      window.clearTimeout(choiceTimeoutRef.current);
-    }
+    if (choiceTimeoutRef.current !== null) window.clearTimeout(choiceTimeoutRef.current);
+    const now = Date.now();
+    const deadline = choiceDeadlineRef.current?.nodeId === node.id
+      ? choiceDeadlineRef.current
+      : { nodeId: node.id, expiresAt: now + node.choiceTimeoutMs };
+    choiceDeadlineRef.current = deadline;
+    const remainingMs = Math.max(0, deadline.expiresAt - now);
     choiceTimeoutRef.current = window.setTimeout(() => {
       choiceTimeoutRef.current = null;
       handleChoiceTimeout(node);
-    }, node.choiceTimeoutMs);
+    }, remainingMs);
 
     return () => {
       if (choiceTimeoutRef.current !== null) {
@@ -1548,9 +1545,7 @@ export default function GameApp() {
           <RestartDialog
             onCancel={() => setShowRestartConfirm(false)}
             onConfirm={() => {
-              clearSave();
               setHasSave(false);
-              setStats(defaultStats);
               setShowRestartConfirm(false);
               startGame('new');
             }}

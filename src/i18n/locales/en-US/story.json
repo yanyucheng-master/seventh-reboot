@@ -2857,7 +2857,7 @@
       "content": "Then you should know something I've never told anyone else"
     },
     "ch4_proof_sys1": {
-      "content": "Nova trust threshold decreasing"
+      "content": "Contact alert response elevated"
     },
     "ch4_proof_sys2": {
       "content": "Available memory anchors: unstable"
@@ -5866,7 +5866,7 @@
       "content": "I will remem▇"
     },
     "fin_memory_shift": {
-      "content": "Memory-drift branch"
+      "content": "Observer-01 memory-index deviation detected"
     },
     "fin_wrong_common": {
       "content": "It is okay."
@@ -6038,7 +6038,7 @@
       "content": "Terminating the Seventh Protocol and canceling Phase-Anchor Core reversion standby..."
     },
     "normal_2": {
-      "content": "Memory-anchor return incomplete\nAssociated-memory synchronization incomplete\nArchive integrity: Below true-ending threshold"
+      "content": "Memory-anchor return incomplete\nAssociated-memory synchronization incomplete\nArchive integrity: Insufficient"
     },
     "normal_3": {
       "content": "Observer-01 memory-retention authority revoked"

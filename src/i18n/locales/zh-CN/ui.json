@@ -99,9 +99,9 @@
   },
   "restartDialog": {
     "title": "确认重新开始？",
-    "body": "这将删除所有存档数据，从头开始游戏。你确定要遗忘 Nova 吗？",
+    "body": "当前通讯进度会从头开始。已恢复的档案、结局记录与玩家端纪念归档会继续保留。",
     "cancel": "取消",
-    "confirm": "确认"
+    "confirm": "重新接入"
   },
   "archiveOverlay": {
     "title": "记忆档案",
@@ -109,9 +109,14 @@
     "backToChat": "返回通讯",
     "backToMenu": "返回主菜单",
     "backToList": "返回列表",
-    "entryCount": "记录条目：{unlocked}/{total}",
-    "anchorCount": "锚点：{count}",
-    "endingCount": "结局：{count}",
+    "statusLabel": "档案恢复状态",
+    "sectionsLabel": "档案分类",
+    "entryCount": "累计恢复：{unlocked}/{total}",
+    "anchorCount": "本轮锚点：{count}",
+    "endingCount": "累计结局：{count}",
+    "arrayOnline": "索引阵列在线",
+    "memorialSaved": "纪念归档已保存",
+    "branchArchiveNote": "其余 {count} 项属于尚未观测的结局分支，并非当前记录缺失。",
     "locked": "LOCKED",
     "tabs": {
       "anchor": "记忆锚点",

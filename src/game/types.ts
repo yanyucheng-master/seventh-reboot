@@ -120,6 +120,8 @@ export interface GameStats {
   ending?: EndingType;
   unlockedArchives: string[];
   endingsUnlocked: EndingId[];
+  /** 玩家端纪念归档已确认保存；跨周目保留。 */
+  commemorativeArchiveSaved: boolean;
   criticalLogUnlocked: boolean;
   signalSeparationResult?: SignalSeparationResult;
   signalCurrentNovaRecovered: boolean;
