@@ -64,7 +64,7 @@ const CHOICE_TEXT_INDEX = buildChoiceTextIndex();
 
 function parseSourceFromMessageId(
   message: DisplayMessage,
-): Pick<DisplayMessage, 'sourceNodeId' | 'sourceChoiceIndex' | 'uiKind' | 'memoryAnchor'> {
+): Pick<DisplayMessage, 'sourceNodeId' | 'sourceChoiceIndex' | 'uiKind' | 'memoryAnchor' | 'uiKey'> {
   const { id } = message;
 
   const memoryMatch = id.match(/^memory_anchor_([a-z0-9_]+)_(\d+)$/);
@@ -101,13 +101,14 @@ function parseSourceFromMessageId(
 
 function inferLegacySource(
   message: DisplayMessage,
-): Pick<DisplayMessage, 'sourceNodeId' | 'sourceChoiceIndex' | 'uiKind' | 'memoryAnchor'> {
-  if (message.uiKind || message.sourceNodeId != null || message.memoryAnchor) {
+): Pick<DisplayMessage, 'sourceNodeId' | 'sourceChoiceIndex' | 'uiKind' | 'memoryAnchor' | 'uiKey'> {
+  if (message.uiKind || message.sourceNodeId != null || message.memoryAnchor || message.uiKey) {
     return {
       sourceNodeId: message.sourceNodeId,
       sourceChoiceIndex: message.sourceChoiceIndex,
       uiKind: message.uiKind,
       memoryAnchor: message.memoryAnchor,
+      uiKey: message.uiKey,
     };
   }
 
@@ -132,6 +133,7 @@ function inferLegacySource(
 function resolveUiContent(
   uiKind: DisplayMessageUiKind,
   memoryAnchor: MemoryAnchorId | undefined,
+  uiKey: DisplayMessage['uiKey'],
   t: Translate,
   memoryAnchorLabels: Record<MemoryAnchorId, string>,
 ): string {
@@ -144,6 +146,8 @@ function resolveUiContent(
       const label = memoryAnchor ? memoryAnchorLabels[memoryAnchor] : '';
       return t('game.memoryRecorded', { label });
     }
+    case 'avatarNotice':
+      return uiKey ? t(uiKey) : '';
     default:
       return '';
   }
@@ -161,11 +165,12 @@ export function relocalizeDisplayMessages(
     const sourceChoiceIndex = inferred.sourceChoiceIndex ?? message.sourceChoiceIndex;
     const uiKind = inferred.uiKind ?? message.uiKind;
     const memoryAnchor = inferred.memoryAnchor ?? message.memoryAnchor;
+    const uiKey = inferred.uiKey ?? message.uiKey;
 
     let content = message.content;
 
     if (uiKind) {
-      content = resolveUiContent(uiKind, memoryAnchor, t, memoryAnchorLabels);
+      content = resolveUiContent(uiKind, memoryAnchor, uiKey, t, memoryAnchorLabels);
     } else if (message.speaker === 'player' && sourceNodeId != null && sourceChoiceIndex != null) {
       const choice = storyNodeMap.get(sourceNodeId)?.choices?.[sourceChoiceIndex];
       if (choice?.text) content = formatChoiceText(choice.text);
@@ -181,7 +186,8 @@ export function relocalizeDisplayMessages(
       sourceNodeId === message.sourceNodeId &&
       sourceChoiceIndex === message.sourceChoiceIndex &&
       uiKind === message.uiKind &&
-      memoryAnchor === message.memoryAnchor
+      memoryAnchor === message.memoryAnchor &&
+      uiKey === message.uiKey
     ) {
       return message;
     }
@@ -193,6 +199,7 @@ export function relocalizeDisplayMessages(
       sourceChoiceIndex,
       uiKind,
       memoryAnchor,
+      uiKey,
     };
   });
 }

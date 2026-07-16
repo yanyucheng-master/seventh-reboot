@@ -1,10 +1,111 @@
 export type GameScreen = 'menu' | 'playing';
 
-export type NovaEmotion = 'normal' | 'smile' | 'sad' | 'glitch';
-
 export type ContactStage = 'unknown' | 'named' | 'verified';
 
-export type AvatarProfile = 'unknown' | 'nova' | 'nova_glitch';
+export type NovaBaseAvatar =
+  | 'unknown_signal'
+  | 'official_navigator'
+  | 'n7_private'
+  | 'white_flower';
+
+export type NovaAvatarOverlay =
+  | 'none'
+  | 'signal_weak'
+  | 'offline_residual'
+  | 'archived'
+  | 'nova06_interference'
+  | 'special_password'
+  | 'special_signal'
+  | 'special_power'
+  | 'special_memory_seal';
+
+export type NovaEndingAvatarMode =
+  | 'none'
+  | 'private_archive'
+  | 'official_identity_restored';
+
+export type NovaConnectionState = 'stable' | 'weak' | 'offline' | 'archived';
+
+export type OutgoingMessageDeliveryState =
+  | 'queued'
+  | 'sending'
+  | 'delayed'
+  | 'failed'
+  | 'delivered';
+
+export type CommunicationLinkState =
+  | 'stable'
+  | 'degraded'
+  | 'unstable'
+  | 'interrupted'
+  | 'restoring';
+
+export type DeliveryEventKey =
+  | 'prologue_first_reply'
+  | 'chapter3_reconnect_reply'
+  | 'chapter5_explicit_failure'
+  | 'finale_last_answer';
+
+export type DeliveryEventPhase = 'not_started' | 'in_progress' | 'completed';
+
+export type DeliveryEventReceipts = {
+  prologueFirstReply: DeliveryEventPhase;
+  chapter3ReconnectReply: DeliveryEventPhase;
+  chapter5ExplicitFailure: DeliveryEventPhase;
+  finaleLastAnswer: DeliveryEventPhase;
+  powerEmergencyPacketLoss: DeliveryEventPhase;
+};
+
+export type ChatDeliveryRuntime = {
+  deliveryStateVersion: 1;
+  linkState: CommunicationLinkState;
+  activeMessageId?: string;
+  pendingAutoRetryIds: string[];
+  receipts: DeliveryEventReceipts;
+};
+
+export type NovaAvatarTransition =
+  | 'identity-verification'
+  | 'private-profile'
+  | 'flower-profile'
+  | 'profile-clear';
+
+export type NovaSpeakerIdentity = 'residual06';
+
+export type NovaAvatarEventReceipts = {
+  unknownConnectionNoticeShown: boolean;
+  identityVerificationAnimationSeen: boolean;
+  identityVerificationNoticeShown: boolean;
+  n7ProfileTransitionSeen: boolean;
+  whiteFlowerProfileTransitionSeen: boolean;
+  badEndingProfileClearAnimationSeen: boolean;
+  trueEndingArchiveNoticeShown: boolean;
+  normalEndingArchiveNoticeShown: boolean;
+};
+
+export type NovaAvatarStoryState = {
+  novaAvatarStateVersion: 1;
+  novaIdentityVerified: boolean;
+  novaOfficialProfileEstablished: boolean;
+  n7StoryIntroduced: boolean;
+  n7PhotoShared: boolean;
+  n7AvatarQueued: boolean;
+  n7AvatarActivated: boolean;
+  whiteFlowerSeen: boolean;
+  whiteFlowerPhotoShared: boolean;
+  whiteFlowerAvatarQueued: boolean;
+  whiteFlowerAvatarActive: boolean;
+  whiteFlowerAvatarExpired: boolean;
+  novaConnectionState: NovaConnectionState;
+  novaEndingAvatarMode: NovaEndingAvatarMode;
+  novaAvatarEventReceipts: NovaAvatarEventReceipts;
+  novaAvatarProfileUpdatedAt?: string;
+};
+
+export type NovaAvatarPresentation = {
+  base: NovaBaseAvatar;
+  overlay: NovaAvatarOverlay;
+};
 
 export type Speaker = 'nova' | 'system' | 'player';
 
@@ -151,18 +252,20 @@ export interface GameStats {
 }
 
 /** UI 生成的系统提示（非剧情节点正文），切语言时按 key 重算 */
-export type DisplayMessageUiKind = 'memoryRecorded' | 'syncNext' | 'choiceTimeout';
+export type AvatarNoticeKey =
+  | 'avatar.connection.unregistered'
+  | 'avatar.badEnding.profileReset';
+
+export type DisplayMessageUiKind = 'memoryRecorded' | 'syncNext' | 'choiceTimeout' | 'avatarNotice';
 
 export type DisplayMessage = {
   id: string;
   speaker: Speaker;
   type: MessageType;
   content: string;
-  emotion?: NovaEmotion;
   image?: string;
-  contactStage?: ContactStage;
   displayName?: string;
-  avatarProfile?: AvatarProfile;
+  speakerIdentity?: NovaSpeakerIdentity;
   isGlitch?: boolean;
   glitchLevel?: GlitchLevel;
   isNew?: boolean;
@@ -174,19 +277,39 @@ export type DisplayMessage = {
   uiKind?: DisplayMessageUiKind;
   /** memoryRecorded 对应的记忆锚点 */
   memoryAnchor?: MemoryAnchorId;
+  /** avatarNotice uses a stable i18n key so saved notices follow language changes. */
+  uiKey?: AvatarNoticeKey;
+  /** Player-choice fact and delivery state. The branch is committed before transport begins. */
+  choiceId?: string;
+  committedAt?: number;
+  deliveredAt?: number;
+  committedOrder?: number;
+  deliverySequence?: number;
+  deliveryState?: OutgoingMessageDeliveryState;
+  scriptedDeliveryEvent?: DeliveryEventKey;
+  retryCount?: number;
+  autoRetry?: boolean;
+  allowFail?: boolean;
+  branchCommitted?: boolean;
+  branchTargetNodeId?: string;
+  deliveryLatencyMs?: number;
+  deliveryLabelVisible?: boolean;
+  reordered?: boolean;
 };
 
 export interface SaveData {
   pendingNodeId: string;
   messages: DisplayMessage[];
-  novaEmotion: NovaEmotion;
   contactStage: ContactStage;
+  avatarState: NovaAvatarStoryState;
+  deliveryRuntime: ChatDeliveryRuntime;
   stats: GameStats;
   timestamp: number;
   /** 剧情拓扑版本；节点分支变更后递增，旧存档将失效 */
   storyVersion?: string;
   /** 内部剧情内容版本；玩家可见版本仍保持 V1.0 */
   storyContentVersion?: string;
+  deliveryStateVersion?: 1;
   /** @deprecated 旧版存档字段，仅用于兼容 */
   currentNodeId?: string;
 }

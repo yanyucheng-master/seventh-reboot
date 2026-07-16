@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "typecheck": "tsc -b --pretty false",
     "preview": "vite preview",
     "extract:story": "npx tsx scripts/extract-story-text.ts",
     "import:story": "npx tsx scripts/import-exported-story.mjs",
@@ -16,7 +17,9 @@
     "test:story-source-format": "npx tsx scripts/test-story-source-format.ts",
     "validate:story": "npx tsx scripts/validate-story-branches.mjs",
     "test:interactions": "npx tsx scripts/test-special-interactions.ts",
-    "test:integrity": "npx tsx scripts/test-game-integrity.ts"
+    "test:integrity": "npx tsx scripts/test-game-integrity.ts",
+    "test:avatar": "npx tsx scripts/test-avatar-system.ts",
+    "test:delivery": "npx tsx scripts/test-delivery-system.ts"
   },
   "dependencies": {
     "lucide-react": "^1.24.0",

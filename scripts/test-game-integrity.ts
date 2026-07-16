@@ -27,6 +27,7 @@ import type {
   SpecialInteractionCompletion,
 } from '../src/game/types.ts';
 import { applyStoryLocale } from '../src/i18n/storyResolver.ts';
+import { createDefaultNovaAvatarState } from '../src/game/avatarState.ts';
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();
@@ -278,7 +279,7 @@ assert.equal(firstSave.commemorativeArchiveSaved, true);
 assert.equal(secondSave, firstSave, 'Commemorative archive save must be idempotent');
 
 clearAllData();
-saveGame(createSaveData('fin_the_end', [], 'normal', 'verified', firstSave));
+saveGame(createSaveData('fin_the_end', [], createDefaultNovaAvatarState(), 'verified', firstSave));
 assert.ok(localStorage.getItem(SAVE_KEY));
 assert.ok(localStorage.getItem(PERSISTENT_PROGRESS_KEY));
 clearSave();

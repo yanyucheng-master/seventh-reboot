@@ -1,5 +1,12 @@
 import { storyNodeMap } from './story';
+import { migrateNovaAvatarState, normalizeNovaAvatarState } from './avatarState';
+import {
+  createDefaultChatDeliveryRuntime,
+  migrateDeliveryState,
+  normalizeChatDeliveryRuntime,
+} from './delivery/state';
 import type {
+  ChatDeliveryRuntime,
   ContactStage,
   DisplayMessage,
   EndingId,
@@ -9,7 +16,7 @@ import type {
   FinalFarewellVariant,
   GameStats,
   MemoryAnchorId,
-  NovaEmotion,
+  NovaAvatarStoryState,
   NovaHintStage,
   PowerRoutingResult,
   SaveData,
@@ -24,7 +31,7 @@ export const SAVE_KEY = 'seventh_reboot_save';
 export const PERSISTENT_PROGRESS_KEY = 'seventh_reboot_persistent_progress';
 /** 剧情分支拓扑版本；变更选项 nextId 后递增，使旧 localStorage 存档失效 */
 export const STORY_VERSION = 'V1.0';
-export const STORY_CONTENT_VERSION = 'v1.0-integrity-pass-20260714';
+export const STORY_CONTENT_VERSION = 'v1.0-delivery-state-v1-20260716';
 export const defaultContactStage: ContactStage = 'unknown';
 
 export const defaultStats: GameStats = {
@@ -327,7 +334,13 @@ export function saveGame(data: SaveData) {
   try {
     const stats = mergeStatsWithPersistentProgress(normalizeGameStats(data.stats));
     persistProgressFromStats(stats);
-    localStorage.setItem(SAVE_KEY, JSON.stringify({ ...data, stats }));
+    localStorage.setItem(SAVE_KEY, JSON.stringify({
+      ...data,
+      avatarState: normalizeNovaAvatarState(data.avatarState),
+      deliveryRuntime: normalizeChatDeliveryRuntime(data.deliveryRuntime),
+      deliveryStateVersion: 1,
+      stats,
+    }));
   } catch {
     /* silent */
   }
@@ -342,7 +355,7 @@ function isDisplayMessageLike(value: unknown): value is DisplayMessage {
     && typeof message.content === 'string';
 }
 
-function migrateSaveData(value: unknown): SaveData | null {
+export function migrateSaveData(value: unknown): SaveData | null {
   if (!value || typeof value !== 'object') return null;
   const save = value as Partial<SaveData>;
   if (save.storyVersion !== undefined && save.storyVersion !== STORY_VERSION) return null;
@@ -353,34 +366,88 @@ function migrateSaveData(value: unknown): SaveData | null {
   if (!pendingNodeId && !currentNodeId) return null;
 
   const messageIds = new Set<string>();
-  const messages = rawMessages
+  const messages: DisplayMessage[] = rawMessages
     .filter(isDisplayMessageLike)
     .filter(message => {
       if (messageIds.has(message.id)) return false;
       messageIds.add(message.id);
       return true;
     })
-    .map(message => ({
-      ...message,
-      contactStage: normalizeContactStage(message.contactStage),
-      isNew: false,
-    }));
+    .map(message => {
+      const legacy = message as DisplayMessage & Record<string, unknown>;
+      const {
+        emotion: _emotion,
+        avatarProfile: _avatarProfile,
+        contactStage: _messageContactStage,
+        avatar: _avatar,
+        avatarSrc: _avatarSrc,
+        avatarUrl: _avatarUrl,
+        portrait: _portrait,
+        ...cleanMessage
+      } = legacy;
+      void _emotion;
+      void _avatarProfile;
+      void _messageContactStage;
+      void _avatar;
+      void _avatarSrc;
+      void _avatarUrl;
+      void _portrait;
+
+      const speakerIdentity = cleanMessage.speakerIdentity === 'residual06'
+        || cleanMessage.displayName === 'UNKNOWN-06'
+        ? 'residual06'
+        : undefined;
+      return {
+        ...cleanMessage,
+        ...(speakerIdentity ? { speakerIdentity } : {}),
+        isNew: false,
+      } as DisplayMessage;
+    });
+
+  const contactStage = normalizeContactStage(save.contactStage);
+  const stats = mergeStatsWithPersistentProgress(normalizeGameStats(save.stats));
+  let resumeCandidate = pendingNodeId;
+  if (!resumeCandidate && currentNodeId) {
+    const legacyNode = storyNodeMap.get(currentNodeId);
+    const lastMessage = messages.at(-1);
+    resumeCandidate = legacyNode
+      && lastMessage?.id.startsWith(`${currentNodeId}_`)
+      && legacyNode.type !== 'choice'
+      && legacyNode.type !== 'input'
+      && legacyNode.type !== 'interaction'
+      && legacyNode.type !== 'end'
+      ? legacyNode.nextId ?? currentNodeId
+      : currentNodeId;
+  }
+  const delivery = migrateDeliveryState(
+    messages,
+    save.deliveryRuntime,
+    resumeCandidate || 'p0',
+    typeof save.timestamp === 'number' && Number.isFinite(save.timestamp)
+      ? save.timestamp
+      : Date.now(),
+  );
+  const avatarState = migrateNovaAvatarState(save.avatarState, {
+    pendingNodeId: delivery.pendingNodeId,
+    messages: delivery.messages,
+    contactStage,
+    stats,
+  });
 
   const migrated: SaveData = {
-    pendingNodeId,
+    pendingNodeId: delivery.pendingNodeId,
     currentNodeId,
-    messages,
-    novaEmotion:
-      save.novaEmotion === 'smile' || save.novaEmotion === 'sad' || save.novaEmotion === 'glitch'
-        ? save.novaEmotion
-        : 'normal',
-    contactStage: normalizeContactStage(save.contactStage),
-    stats: mergeStatsWithPersistentProgress(normalizeGameStats(save.stats)),
+    messages: delivery.messages,
+    contactStage,
+    avatarState,
+    deliveryRuntime: delivery.runtime,
+    stats,
     timestamp: typeof save.timestamp === 'number' && Number.isFinite(save.timestamp)
       ? save.timestamp
       : Date.now(),
     storyVersion: STORY_VERSION,
     storyContentVersion: STORY_CONTENT_VERSION,
+    deliveryStateVersion: 1,
   };
 
   const resolvedNodeId = resolveResumeNodeId(migrated);
@@ -475,19 +542,22 @@ export function resolveResumeNodeId(save: SaveData): string {
 export function createSaveData(
   pendingNodeId: string,
   messages: DisplayMessage[],
-  novaEmotion: NovaEmotion,
+  avatarState: NovaAvatarStoryState,
   contactStage: ContactStage,
   stats: GameStats,
+  deliveryRuntime: ChatDeliveryRuntime = createDefaultChatDeliveryRuntime(),
 ): SaveData {
   const mergedStats = mergeStatsWithPersistentProgress(normalizeGameStats(stats));
   return {
     pendingNodeId,
     messages: messages.map(m => ({ ...m, isNew: false })),
-    novaEmotion,
+    avatarState: normalizeNovaAvatarState(avatarState),
+    deliveryRuntime: normalizeChatDeliveryRuntime(deliveryRuntime),
     contactStage,
     stats: mergedStats,
     storyVersion: STORY_VERSION,
     storyContentVersion: STORY_CONTENT_VERSION,
+    deliveryStateVersion: 1,
     timestamp: Date.now(),
   };
 }

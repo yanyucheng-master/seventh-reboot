@@ -64,10 +64,56 @@
     "hint": "Tap to advance time",
     "mediaHint": "Tap to view reply"
   },
+  "delivery": {
+    "queued": "Queued for link",
+    "sending": "Sending",
+    "delayed": "Link delayed",
+    "failed": "Not delivered yet",
+    "retrying": "Retrying automatically",
+    "delivered": "Delivered",
+    "deliveredWithLatency": "Delivered · {latency}ms"
+  },
+  "link": {
+    "stable": "Link stable",
+    "degraded": "Signal degraded",
+    "unstable": "Link unstable",
+    "interrupted": "Link interrupted",
+    "restoring": "Restoring link"
+  },
   "contact": {
     "unknownName": "???",
     "unknownSubtitle": "Online · Weak signal · Unknown link",
-    "novaSubtitle": "Online · Weak signal · Aurora link"
+    "novaSubtitle": "Online · Aurora link",
+    "stableSubtitle": "Online · Aurora link stable",
+    "weakSubtitle": "Online · Weak signal · Aurora link",
+    "offlineSubtitle": "Offline · Residual signal readable",
+    "archivedSubtitle": "Link closed · Contact archived"
+  },
+  "avatar": {
+    "alt": {
+      "unknownSignal": "Unverified communication signal avatar",
+      "officialNavigator": "Nova's official navigator avatar",
+      "n7Private": "Nova's private N7 avatar",
+      "whiteFlower": "Nova's temporary white flower avatar"
+    },
+    "status": {
+      "signalWeak": "Weak signal",
+      "offline": "Contact offline; residual signal remains readable",
+      "archived": "Contact record archived",
+      "nova06Interference": "NOVA-06 residual signature interfering with avatar",
+      "specialPassword": "Joint-key authentication in progress",
+      "specialSignal": "Three-layer signal separation in progress",
+      "specialPower": "Power routing in progress",
+      "specialMemory": "Memory anchor synchronization in progress",
+      "residual06": "Sixth-cycle residual signature"
+    },
+    "connection": {
+      "unregistered": "[Contact profile unregistered]\n[Unknown signal marker enabled]"
+    },
+    "badEnding": {
+      "profileReset": "[Private profile cleared from this cycle]\n[Identity marker restored from official archive]"
+    },
+    "residualBadge": "Sixth-cycle residual signature"
   },
   "memoryAnchors": {
     "n7": "N7",

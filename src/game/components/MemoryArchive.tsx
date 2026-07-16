@@ -10,8 +10,9 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { ARCHIVE_ENTRIES } from '../archive';
-import type { ArchiveCategory, ArchiveEntry, ContactStage, GameStats } from '../types';
+import type { ArchiveCategory, ArchiveEntry, ContactStage, GameStats, NovaAvatarPresentation } from '../types';
 import { useI18n } from '../../i18n';
+import { NovaAvatar } from './NovaAvatar';
 import {
   getArchiveCategoryLabel,
   getLocalizedArchiveEntries,
@@ -124,11 +125,13 @@ function ArchiveDetail({
 export function MemoryArchiveOverlay({
   stats,
   contactStage,
+  avatarPresentation,
   onClose,
   backLabel,
 }: {
   stats: GameStats;
   contactStage: ContactStage;
+  avatarPresentation: NovaAvatarPresentation;
   onClose: () => void;
   backLabel?: string;
 }) {
@@ -201,6 +204,13 @@ export function MemoryArchiveOverlay({
               </div>
             </div>
             <p>{t('archiveOverlay.subtitle')}</p>
+          </div>
+          <div className="archive-contact-identity">
+            <NovaAvatar presentation={avatarPresentation} size={48} />
+            <span>
+              <small>CONTACT TRACE</small>
+              <strong>{contactStage === 'unknown' ? t('contact.unknownName') : 'NOVA'}</strong>
+            </span>
           </div>
           <button
             ref={closeButtonRef}

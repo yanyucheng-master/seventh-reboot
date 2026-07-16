@@ -29,7 +29,8 @@ export function shouldShowNovaAvatar(messages: DisplayMessage[], index: number):
   if (msg.speaker !== 'nova' || !NOVA_BUBBLE_TYPES.has(msg.type)) return false;
 
   const previous = messages[index - 1];
-  return !(previous?.speaker === 'nova' && NOVA_BUBBLE_TYPES.has(previous.type));
+  if (!(previous?.speaker === 'nova' && NOVA_BUBBLE_TYPES.has(previous.type))) return true;
+  return previous.displayName !== msg.displayName || previous.speakerIdentity !== msg.speakerIdentity;
 }
 
 export function shouldShowTypingAvatar(messages: DisplayMessage[]): boolean {

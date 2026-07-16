@@ -15,21 +15,6 @@ const storyPath = path.join(root, 'src/game/story.ts');
 const source = normalizeStorySourceText(fs.readFileSync(sourcePath, 'utf8')).text;
 const originalStory = fs.readFileSync(storyPath, 'utf8');
 
-const EMOTION = new Map([
-  ['平常', 'normal'],
-  ['微笑', 'smile'],
-  ['悲伤', 'sad'],
-  ['故障', 'glitch'],
-  ['惊讶', 'normal'],
-  ['neutral', 'normal'],
-  ['smiling', 'smile'],
-  ['smile', 'smile'],
-  ['sad', 'sad'],
-  ['glitch', 'glitch'],
-  ['surprised', 'normal'],
-  ['normal', 'normal'],
-]);
-
 const SPEAKER = new Map([
   ['Nova', 'nova'],
   ['系统', 'system'],
@@ -175,12 +160,14 @@ function parseMeta(metaText, node) {
       continue;
     }
     const [key, value = ''] = part.split('=').map(s => s.trim());
-    if (key === '情绪' || key === 'emotion') node.emotion = EMOTION.get(value) ?? value;
+    // Legacy emotion metadata is accepted but intentionally ignored. Avatar
+    // identity now follows narrative events instead of mood labels.
     if (key === '图片' || key === 'image') node.image = value;
     if (key === '故障等级' || key === 'glitch_level') node.glitchLevel = Number(value);
     if (key === '记忆锚点' || key === 'memory_anchor') node.memoryAnchor = value;
     if (key === '需要锚点' || key === 'required_anchor' || key === 'requires_anchor') node.requiresAnchor = value;
     if (key === '联系人阶段' || key === 'contact_stage') node.contactStage = value;
+    if (key === '投递事件' || key === 'delivery_event') node.deliveryEvent = value;
     if (key === '档案解锁' || key === 'archive_unlock') node.archiveUnlock = parsePipeList(value);
     if (key === '显示选项' || key === 'display_choice' || key === 'display_option') node.displayOptionContext = value;
     if (key === '归档入口' || key === 'archive_entry') node.archiveEntry = value;
@@ -341,9 +328,6 @@ function preserveNodeRuntime(parsed) {
   if (old?.delay !== undefined) node.delay = old.delay;
   else if (DEFAULT_DELAY[node.type] !== undefined && node.type !== 'choice' && node.type !== 'end') node.delay = DEFAULT_DELAY[node.type];
 
-  if (old?.emotion && node.speaker === 'nova' && node.type === 'text' && node.emotion === undefined) node.emotion = old.emotion;
-  if (node.speaker === 'nova' && node.type === 'text' && node.emotion === undefined) node.emotion = 'normal';
-
   if (node.choices?.length) {
     const oldChoices = old?.choices ?? [];
     node.choices = node.choices.map((choice, index) => {
@@ -363,12 +347,7 @@ function applyDisplayOverrides(node) {
   const unknown06Ids = new Set(['p11', 'p12a_u06', 'p12b_u06', 'p12e_u06', 'p13_u06', 'p13a_u06']);
   if (unknown06Ids.has(node.id)) {
     node.displayName = 'UNKNOWN-06';
-    node.avatarProfile = 'unknown';
-  }
-  if (node.id.startsWith('fin_timeout') || node.id.startsWith('fin_break')) {
-    if (node.speaker === 'nova' && node.isGlitch) {
-      node.avatarProfile = 'nova_glitch';
-    }
+    node.speakerIdentity = 'residual06';
   }
   return node;
 }
@@ -499,7 +478,6 @@ function renderNode(node) {
   prop('speaker', node.speaker, lines);
   prop('type', node.type, lines);
   prop('content', node.content ?? '', lines);
-  prop('emotion', node.emotion, lines);
   if (node.choices?.length) {
     lines.push('    choices: [');
     for (const choice of node.choices) {
@@ -517,6 +495,7 @@ function renderNode(node) {
   prop('memoryAnchor', node.memoryAnchor, lines);
   prop('requiresAnchor', node.requiresAnchor, lines);
   prop('contactStage', node.contactStage, lines);
+  prop('deliveryEvent', node.deliveryEvent, lines);
   prop('displayOptionContext', node.displayOptionContext, lines);
   prop('archiveEntry', node.archiveEntry, lines);
   prop('externalEntry', node.externalEntry, lines);
@@ -536,7 +515,7 @@ function renderNode(node) {
   }
   prop('endingUnlock', node.endingUnlock, lines);
   prop('displayName', node.displayName, lines);
-  prop('avatarProfile', node.avatarProfile, lines);
+  prop('speakerIdentity', node.speakerIdentity, lines);
   lines.push('  }');
   return lines.join('\n');
 }

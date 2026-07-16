@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
-import type { GlitchLevel } from '../types';
+import type { GlitchLevel, NovaAvatarPresentation, NovaAvatarTransition } from '../types';
 import { useI18n } from '../../i18n';
+import { NovaAvatar } from './NovaAvatar';
 
 export function TypingIndicator() {
   return (
@@ -17,17 +18,25 @@ export function TypingIndicator() {
 }
 
 export function RemoteTypingRow({
-  avatarSrc,
+  avatarPresentation,
+  avatarTransition,
   showAvatar = true,
 }: {
-  avatarSrc: string;
+  avatarPresentation: NovaAvatarPresentation;
+  avatarTransition?: NovaAvatarTransition | null;
   showAvatar?: boolean;
 }) {
   const { t } = useI18n();
 
   return (
     <div className={`flex items-end gap-2.5 py-1 animate-fade-in ${showAvatar ? '' : 'pl-[46px]'}`}>
-      {showAvatar && <img src={avatarSrc} alt="" className="nova-chat-avatar shrink-0" />}
+      {showAvatar && (
+        <NovaAvatar
+          presentation={avatarPresentation}
+          transition={avatarTransition}
+          className="nova-chat-avatar shrink-0"
+        />
+      )}
       <div className="flex flex-col gap-0.5 items-start">
         <span className="remote-typing-label">{t('chat.typing')}</span>
         <TypingIndicator />

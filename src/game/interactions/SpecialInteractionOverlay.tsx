@@ -3,10 +3,12 @@ import type { Locale } from '../../i18n';
 import type { StoryNode } from '../story';
 import type {
   NovaHintStage,
+  NovaAvatarPresentation,
   SealableMemoryAnchor,
   SpecialInteractionCompletion,
   SpecialInteractionKind,
 } from '../types';
+import { NovaAvatar } from '../components/NovaAvatar';
 import { getSpecialInteractionCopy } from './copy';
 import { hasSeenNova06FullFx } from './guidance';
 import { MemoryCapacityInteraction } from './MemoryCapacityInteraction';
@@ -26,6 +28,7 @@ type SpecialInteractionOverlayProps = {
   signalCompletedByNova06: boolean;
   powerCompletedByNova06: boolean;
   memoryNova06NoteSeen: boolean;
+  avatarPresentation: NovaAvatarPresentation;
   onGuidanceStageChange: (kind: SpecialInteractionKind, stage: NovaHintStage) => void;
   onNova06OverrideStarted: (kind: SpecialInteractionKind) => void;
   onNova06ScriptApplied: (kind: SpecialInteractionKind) => void;
@@ -66,6 +69,7 @@ export function SpecialInteractionOverlay({
   signalCompletedByNova06,
   powerCompletedByNova06,
   memoryNova06NoteSeen,
+  avatarPresentation,
   onGuidanceStageChange,
   onNova06OverrideStarted,
   onNova06ScriptApplied,
@@ -119,6 +123,10 @@ export function SpecialInteractionOverlay({
         <div className="interaction-header-id">
           <span>OBSERVER-01</span>
           <strong>{node.interactionKind ? INTERACTION_TERMINAL_CODES[node.interactionKind] : 'INTERACTION TERMINAL'}</strong>
+        </div>
+        <div className="interaction-contact-mark">
+          <NovaAvatar presentation={avatarPresentation} size={40} reducedMotion={reducedMotion} />
+          <span>NOVA / CONTACT</span>
         </div>
         <div className="interaction-header-controls">
           <label className="interaction-switch">

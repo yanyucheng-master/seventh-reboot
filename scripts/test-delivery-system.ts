@@ -1,0 +1,185 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { storyNodeMap, storyNodes } from '../src/game/story.ts';
+import {
+  compressDeliverySpec,
+  createNormalDeliverySpec,
+  DELIVERY_EVENT_SPECS,
+  isCommittedWithinDeadline,
+  POWER_EMERGENCY_LINK_TIMELINE,
+  projectDeliverySpec,
+  SIGNAL_ASSISTED_LINK_TIMELINE,
+} from '../src/game/delivery/specs.ts';
+import {
+  createDefaultChatDeliveryRuntime,
+  migrateDeliveryState,
+} from '../src/game/delivery/state.ts';
+import type { DeliveryEventKey, DisplayMessage } from '../src/game/types.ts';
+
+const EXPECTED_EVENTS = new Map<string, DeliveryEventKey>([
+  ['p14', 'prologue_first_reply'],
+  ['ch3_dc7', 'chapter3_reconnect_reply'],
+  ['ch5a_fut17_choice', 'chapter5_explicit_failure'],
+  ['fin_last6', 'finale_last_answer'],
+]);
+
+const eventNodes = storyNodes.filter(node => node.deliveryEvent);
+assert.equal(eventNodes.length, EXPECTED_EVENTS.size, 'Only the four approved choice nodes may declare delivery events');
+for (const [nodeId, eventKey] of EXPECTED_EVENTS) {
+  const node = storyNodeMap.get(nodeId);
+  assert.ok(node, `Missing delivery node ${nodeId}`);
+  assert.equal(node.type, 'choice');
+  assert.equal(node.deliveryEvent, eventKey);
+  assert.ok(node.choices?.length, `${nodeId} must retain its original choices`);
+}
+
+assert.deepEqual(
+  DELIVERY_EVENT_SPECS.prologue_first_reply.phases.map(phase => [phase.atMs, phase.state]),
+  [[0, 'queued'], [60, 'sending'], [900, 'sending'], [1500, 'delivered']],
+);
+assert.deepEqual(
+  DELIVERY_EVENT_SPECS.chapter3_reconnect_reply.phases.map(phase => [phase.atMs, phase.state]),
+  [[0, 'queued'], [80, 'sending'], [1200, 'delayed'], [3800, 'delivered']],
+);
+assert.deepEqual(
+  DELIVERY_EVENT_SPECS.chapter5_explicit_failure.phases.map(phase => [phase.atMs, phase.state]),
+  [
+    [0, 'queued'],
+    [80, 'sending'],
+    [900, 'delayed'],
+    [4200, 'failed'],
+    [5100, 'sending'],
+    [5900, 'delivered'],
+  ],
+);
+assert.deepEqual(
+  DELIVERY_EVENT_SPECS.finale_last_answer.phases.map(phase => [phase.atMs, phase.state]),
+  [[0, 'queued'], [80, 'sending'], [1200, 'delayed'], [3000, 'delayed'], [3400, 'sending'], [4200, 'delivered']],
+);
+assert.equal(DELIVERY_EVENT_SPECS.finale_last_answer.completeAtMs, 4700);
+
+const failureSpecs = Object.values(DELIVERY_EVENT_SPECS).filter(spec =>
+  spec.phases.some(phase => phase.state === 'failed'));
+assert.deepEqual(failureSpecs.map(spec => spec.key), ['chapter5_explicit_failure']);
+
+for (const seed of ['p14__0', 'p_merge3__1', 'fin_action_choice__0']) {
+  const first = createNormalDeliverySpec(seed);
+  const second = createNormalDeliverySpec(seed);
+  const deliveredAt = first.phases.find(phase => phase.state === 'delivered')?.atMs ?? -1;
+  assert.deepEqual(first, second, `Normal delivery must be deterministic for ${seed}`);
+  assert.ok(deliveredAt >= 180 && deliveredAt <= 420, `Normal latency out of range for ${seed}`);
+}
+assert.equal(createNormalDeliverySpec('offline-choice', 'interrupted').finalLinkState, 'interrupted');
+
+const chapterFiveSpec = DELIVERY_EVENT_SPECS.chapter5_explicit_failure;
+assert.equal(projectDeliverySpec(chapterFiveSpec, 4199).phase.state, 'delayed');
+assert.equal(projectDeliverySpec(chapterFiveSpec, 4200).phase.state, 'failed');
+assert.equal(projectDeliverySpec(chapterFiveSpec, 5100).phase.retryCount, 1);
+assert.equal(projectDeliverySpec(chapterFiveSpec, 5900).phase.state, 'delivered');
+assert.equal(projectDeliverySpec(chapterFiveSpec, 5899).complete, false);
+assert.equal(projectDeliverySpec(chapterFiveSpec, 5900).complete, true);
+
+for (const spec of Object.values(DELIVERY_EVENT_SPECS)) {
+  const compressed = compressDeliverySpec(spec);
+  assert.ok(compressed.completeAtMs <= spec.completeAtMs);
+  for (let index = 1; index < compressed.phases.length; index += 1) {
+    assert.ok(compressed.phases[index].atMs > compressed.phases[index - 1].atMs);
+  }
+}
+
+assert.equal(isCommittedWithinDeadline(4999, 5000), true);
+assert.equal(isCommittedWithinDeadline(5000, 5000), true);
+assert.equal(isCommittedWithinDeadline(5001, 5000), false);
+
+assert.deepEqual(POWER_EMERGENCY_LINK_TIMELINE.phases.map(phase => [phase.atMs, phase.state]), [
+  [0, 'interrupted'],
+  [800, 'restoring'],
+]);
+assert.equal(POWER_EMERGENCY_LINK_TIMELINE.finalState, 'stable');
+assert.equal(SIGNAL_ASSISTED_LINK_TIMELINE.completeAtMs, 1200);
+
+const legacyChoice: DisplayMessage = {
+  id: 'legacy_choice',
+  speaker: 'player',
+  type: 'text',
+  content: '在',
+  sourceNodeId: 'ch3_dc7',
+  sourceChoiceIndex: 0,
+};
+const freeInput: DisplayMessage = {
+  id: 'legacy_input',
+  speaker: 'player',
+  type: 'text',
+  content: 'N7',
+};
+const migratedLegacy = migrateDeliveryState(
+  [legacyChoice, freeInput],
+  undefined,
+  'ch3_dc8',
+  1000,
+);
+assert.equal(migratedLegacy.messages[0].deliveryState, 'delivered');
+assert.equal(migratedLegacy.messages[0].choiceId, 'ch3_dc7__0');
+assert.equal(migratedLegacy.messages[1].deliveryState, undefined, 'Free input must not become an outgoing choice delivery');
+
+const failedMessage: DisplayMessage = {
+  id: 'failed_ch5',
+  speaker: 'player',
+  type: 'text',
+  content: '因为我也在里面？',
+  sourceNodeId: 'ch5a_fut17_choice',
+  sourceChoiceIndex: 0,
+  deliveryState: 'failed',
+  scriptedDeliveryEvent: 'chapter5_explicit_failure',
+  branchTargetNodeId: 'ch5a_fut17_a1',
+  committedAt: 2000,
+  branchCommitted: true,
+};
+const failedRuntime = {
+  ...createDefaultChatDeliveryRuntime(),
+  activeMessageId: failedMessage.id,
+};
+const restoredFailure = migrateDeliveryState(
+  [failedMessage],
+  failedRuntime,
+  'ch5a_fut17_a1',
+  3000,
+);
+assert.equal(restoredFailure.messages[0].deliveryState, 'failed');
+assert.equal(restoredFailure.runtime.activeMessageId, failedMessage.id);
+assert.deepEqual(restoredFailure.runtime.pendingAutoRetryIds, [failedMessage.id]);
+assert.equal(restoredFailure.pendingNodeId, 'ch5a_fut17_a1');
+
+const interruptedP14: DisplayMessage = {
+  id: 'p14_pending',
+  speaker: 'player',
+  type: 'text',
+  content: '你是谁？',
+  sourceNodeId: 'p14',
+  sourceChoiceIndex: 0,
+  deliveryState: 'sending',
+  scriptedDeliveryEvent: 'prologue_first_reply',
+  branchTargetNodeId: 'p15a',
+  committedAt: 2000,
+  branchCommitted: true,
+};
+const p14Runtime = { ...createDefaultChatDeliveryRuntime(), activeMessageId: interruptedP14.id };
+const restoredP14 = migrateDeliveryState([interruptedP14], p14Runtime, 'p15a', 3000);
+assert.equal(restoredP14.messages[0].deliveryState, 'delivered');
+assert.equal(restoredP14.runtime.activeMessageId, undefined);
+assert.equal(restoredP14.runtime.receipts.prologueFirstReply, 'completed');
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const deliveryDir = path.join(__dirname, '..', 'src', 'game', 'delivery');
+const deliverySource = fs.readdirSync(deliveryDir)
+  .filter(name => name.endsWith('.ts'))
+  .map(name => fs.readFileSync(path.join(deliveryDir, name), 'utf8'))
+  .join('\n');
+for (const forbidden of ['Math.random', 'navigator.onLine', 'fetch(', 'performance.now']) {
+  assert.equal(deliverySource.includes(forbidden), false, `Delivery runtime must not use ${forbidden}`);
+}
+assert.equal(deliverySource.includes('reordered: true'), false, 'Production delivery must never reorder messages');
+
+console.log('Delivery system tests passed: 4 scripted events, deterministic timing, migration, and deadline boundaries verified.');

@@ -1,6 +1,5 @@
-import { resolveAvatarProfile, resolveContactAvatar } from '../assets';
 import { cleanChatText } from '../format';
-import type { ContactStage, DisplayMessage } from '../types';
+import type { DisplayMessage, NovaAvatarPresentation, NovaAvatarTransition } from '../types';
 import {
   ChapterBanner,
   CommLog,
@@ -12,6 +11,8 @@ import {
   AnomalyRecordCard,
   SystemMessage,
 } from './ChatPrimitives';
+import { NovaAvatar } from './NovaAvatar';
+import { MessageDeliveryStatus } from './MessageDeliveryStatus';
 
 function isSignalSystemMessage(msg: DisplayMessage): boolean {
   return /Communications interrupted|Attempting reconnection|Reconnection failed|Reconnected/i.test(msg.content);
@@ -29,14 +30,20 @@ export function ChatMessage({
   isLastNovaMsg,
   typewriterText,
   showNovaAvatar = true,
-  currentContactStage,
+  avatarPresentation,
+  avatarTransition,
+  isCurrentDelivery = false,
+  currentSenderName,
   onImageClick,
 }: {
   msg: DisplayMessage;
   isLastNovaMsg: boolean;
   typewriterText: string;
   showNovaAvatar?: boolean;
-  currentContactStage: ContactStage;
+  avatarPresentation: NovaAvatarPresentation;
+  avatarTransition?: NovaAvatarTransition | null;
+  isCurrentDelivery?: boolean;
+  currentSenderName: string;
   onImageClick: (img: string, cap: string) => void;
 }) {
   if (msg.speaker === 'system') {
@@ -78,18 +85,22 @@ export function ChatMessage({
   }
 
   const isPlayer = msg.speaker === 'player';
-  const messageContactStage = msg.contactStage ?? currentContactStage;
-  const avatarSrc = msg.avatarProfile
-    ? resolveAvatarProfile(msg.avatarProfile, msg.emotion, msg.isGlitch)
-    : resolveContactAvatar(messageContactStage, msg.emotion, msg.isGlitch);
-  const senderName = msg.displayName ?? (messageContactStage === 'unknown' ? '???' : 'Nova');
+  const isResidual06 = msg.speakerIdentity === 'residual06';
+  const senderName = msg.displayName ?? currentSenderName;
 
   if (msg.type === 'image') {
     return (
       <div
         className={`media-message flex items-end gap-2 py-0.5 ${isPlayer ? 'justify-end' : 'justify-start'} ${showNovaAvatar && !isPlayer ? 'gap-2.5' : ''} ${!showNovaAvatar && !isPlayer ? 'pl-[46px]' : ''} ${msg.isNew ? 'animate-fade-in-up' : ''}`}
       >
-        {!isPlayer && showNovaAvatar && <img src={avatarSrc} alt="" className="nova-chat-avatar shrink-0" />}
+        {!isPlayer && showNovaAvatar && (
+          <NovaAvatar
+            presentation={avatarPresentation}
+            transition={avatarTransition}
+            residualSignature={isResidual06}
+            className="nova-chat-avatar shrink-0"
+          />
+        )}
         <div className={`media-message-body flex flex-col gap-1 ${isPlayer ? 'items-end' : 'items-start'}`}>
           {!isPlayer && showNovaAvatar && <span className="remote-sender-label">{senderName}</span>}
           <div className="media-message-trigger cursor-pointer group" onClick={() => onImageClick(msg.image!, msg.content)}>
@@ -117,7 +128,14 @@ export function ChatMessage({
     <div
       className={`flex items-end gap-2 py-0.5 ${isPlayer ? 'justify-end' : 'justify-start'} ${showNovaAvatar && !isPlayer ? 'gap-2.5' : ''} ${!showNovaAvatar && !isPlayer ? 'pl-[46px]' : ''} ${msg.isNew ? 'animate-fade-in-up' : ''}`}
     >
-      {!isPlayer && showNovaAvatar && <img src={avatarSrc} alt="" className="nova-chat-avatar shrink-0" />}
+      {!isPlayer && showNovaAvatar && (
+        <NovaAvatar
+          presentation={avatarPresentation}
+          transition={avatarTransition}
+          residualSignature={isResidual06}
+          className="nova-chat-avatar shrink-0"
+        />
+      )}
       <div className={`flex flex-col gap-1 max-w-[min(82%,320px)] ${isPlayer ? 'items-end' : 'items-start'}`}>
         {!isPlayer && showNovaAvatar && <span className="remote-sender-label">{senderName}</span>}
         <div className={`px-3 py-1.5 ${isPlayer ? 'bubble-player' : 'bubble-nova'}`}>
@@ -125,6 +143,7 @@ export function ChatMessage({
             {displayText}
           </p>
         </div>
+        {isPlayer && <MessageDeliveryStatus message={msg} isCurrent={isCurrentDelivery} />}
       </div>
     </div>
   );

@@ -41,13 +41,6 @@ const typeLabel: Record<string, string> = {
   signalError: '信号错误',
 };
 
-const emotionLabel: Record<string, string> = {
-  normal: '平常',
-  smile: '微笑',
-  sad: '悲伤',
-  glitch: '故障',
-};
-
 const endingLabel: Record<string, string> = {
   ending_true: '真结局',
   ending_normal: '普通结局',
@@ -70,13 +63,13 @@ function parsePipeContent(content: string): { title: string; body: string } {
 
 function formatMeta(node: StoryNode): string[] {
   const meta: string[] = [];
-  if (node.emotion) meta.push(`情绪=${emotionLabel[node.emotion] ?? node.emotion}`);
   if (node.image) meta.push(`图片=${node.image}`);
   if (node.isGlitch) meta.push('故障效果');
   if (node.glitchLevel) meta.push(`故障等级=${node.glitchLevel}`);
   if (node.memoryAnchor) meta.push(`记忆锚点=${node.memoryAnchor}`);
   if (node.requiresAnchor) meta.push(`需要锚点=${node.requiresAnchor}`);
   if (node.contactStage) meta.push(`联系人阶段=${node.contactStage}`);
+  if (node.deliveryEvent) meta.push(`投递事件=${node.deliveryEvent}`);
   if (node.displayOptionContext) meta.push(`显示选项=${node.displayOptionContext}`);
   if (node.archiveEntry) meta.push(`归档入口=${node.archiveEntry}`);
   if (node.externalEntry) meta.push(`外部入口=${node.externalEntry}`);

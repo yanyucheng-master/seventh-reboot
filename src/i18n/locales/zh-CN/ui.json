@@ -64,10 +64,56 @@
     "hint": "点击以推进时间",
     "mediaHint": "点击查看回复"
   },
+  "delivery": {
+    "queued": "等待进入链路",
+    "sending": "发送中",
+    "delayed": "链路延迟",
+    "failed": "暂未送达",
+    "retrying": "正在自动重试",
+    "delivered": "已送达",
+    "deliveredWithLatency": "已送达 · {latency}ms"
+  },
+  "link": {
+    "stable": "链路稳定",
+    "degraded": "信号衰减",
+    "unstable": "链路不稳定",
+    "interrupted": "链路中断",
+    "restoring": "链路恢复中"
+  },
   "contact": {
     "unknownName": "？？？",
     "unknownSubtitle": "在线 · 信号微弱 · 未知通讯链路",
-    "novaSubtitle": "在线 · 信号微弱 · Aurora 通讯链路"
+    "novaSubtitle": "在线 · Aurora 通讯链路",
+    "stableSubtitle": "在线 · Aurora 通讯链路稳定",
+    "weakSubtitle": "在线 · 信号微弱 · Aurora 通讯链路",
+    "offlineSubtitle": "离线 · 残留信号可读取",
+    "archivedSubtitle": "通讯结束 · 联系人记录已归档"
+  },
+  "avatar": {
+    "alt": {
+      "unknownSignal": "未认证的通讯信号头像",
+      "officialNavigator": "Nova 的官方导航员头像",
+      "n7Private": "Nova 使用的 N7 私人头像",
+      "whiteFlower": "Nova 使用的小白花临时头像"
+    },
+    "status": {
+      "signalWeak": "信号微弱",
+      "offline": "联系人离线，残留信号仍可读取",
+      "archived": "联系人记录已归档",
+      "nova06Interference": "NOVA-06 残留签名正在干扰头像",
+      "specialPassword": "联合密钥验证中",
+      "specialSignal": "三层信号分离中",
+      "specialPower": "供能路由调整中",
+      "specialMemory": "记忆锚点同步中",
+      "residual06": "第六次循环残留签名"
+    },
+    "connection": {
+      "unregistered": "【联系人资料未注册】\n【已启用未知信号标识】"
+    },
+    "badEnding": {
+      "profileReset": "【本轮私人资料已清除】\n【身份标识恢复为官方档案】"
+    },
+    "residualBadge": "第六次残留签名"
   },
   "memoryAnchors": {
     "n7": "N7",

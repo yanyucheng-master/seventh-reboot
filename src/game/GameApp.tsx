@@ -3,7 +3,12 @@ import { Archive, ArrowLeft, LogOut, SkipForward } from 'lucide-react';
 import { type Choice, type StoryNode } from './story';
 import { relocalizeChapterBanner, relocalizeDisplayMessages, useI18n } from '../i18n';
 import type { Locale } from '../i18n';
-import { resolveContactAvatar } from './assets';
+import {
+  applyNovaAvatarNodeEffect,
+  createDefaultNovaAvatarState,
+  createNovaAvatarStateForCheckpoint,
+  resolveNovaAvatarPresentation,
+} from './avatarState';
 import {
   clearSave,
   createNewGameStats,
@@ -18,17 +23,35 @@ import {
   saveGame,
 } from './storage';
 import type {
+  ChatDeliveryRuntime,
+  CommunicationLinkState,
   ContactStage,
   DisplayMessage,
   GameScreen,
   GameStats,
   GlitchLevel,
   MemoryAnchorId,
-  NovaEmotion,
+  NovaAvatarStoryState,
+  NovaAvatarTransition,
   NovaHintStage,
   SpecialInteractionCompletion,
   SpecialInteractionKind,
 } from './types';
+import { DeliveryController } from './delivery/controller';
+import {
+  createDefaultChatDeliveryRuntime,
+  setDeliveryReceipt,
+} from './delivery/state';
+import {
+  getNodeLinkStateEffect,
+  isCommittedWithinDeadline,
+  POWER_EMERGENCY_LINK_TIMELINE,
+  resolveDeliverySpec,
+  RESTORED_FAILURE_RETRY_SPEC,
+  SIGNAL_ASSISTED_LINK_TIMELINE,
+  type DeliverySpec,
+  type DeliveryTimelinePhase,
+} from './delivery/specs';
 import { StarBackground } from './components/StarBackground';
 import { ImageModal } from './components/ImageModal';
 import { ChatMessage } from './components/ChatMessage';
@@ -36,6 +59,9 @@ import { ChapterBanner, RemoteTypingRow } from './components/ChatPrimitives';
 import { RestartDialog } from './components/RestartDialog';
 import { MemoryArchiveOverlay } from './components/MemoryArchive';
 import { GameTitle } from './components/GameTitle';
+import { NovaAvatar } from './components/NovaAvatar';
+import { AvatarDebugPanel } from './components/AvatarDebugPanel';
+import { DeliveryDebugPanel } from './components/DeliveryDebugPanel';
 import { useVisualViewport } from '../hooks/useVisualViewport';
 import { getSaveProgressLabel } from './progress';
 import { formatChoiceText, shouldShowNovaAvatar, shouldShowTypingAvatar } from './format';
@@ -277,7 +303,9 @@ export default function GameApp() {
   const [choiceNodeId, setChoiceNodeId] = useState<string | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [modalImage, setModalImage] = useState<{ image: string; caption: string } | null>(null);
-  const [novaEmotion, setNovaEmotion] = useState<NovaEmotion>('normal');
+  const [avatarState, setAvatarState] = useState<NovaAvatarStoryState>(() => createDefaultNovaAvatarState());
+  const [avatarTransition, setAvatarTransition] = useState<NovaAvatarTransition | null>(null);
+  const [nova06AvatarInterferenceActive, setNova06AvatarInterferenceActive] = useState(false);
   const [signalGlitch, setSignalGlitch] = useState<ActiveSignalGlitch | null>(null);
   const [showChapterBanner, setShowChapterBanner] = useState<string | null>(null);
   const [typewriterText, setTypewriterText] = useState('');
@@ -294,6 +322,9 @@ export default function GameApp() {
   const [waitPrompt, setWaitPrompt] = useState<WaitPrompt | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isSkippingToChoice, setIsSkippingToChoice] = useState(false);
+  const [deliveryRuntime, setDeliveryRuntime] = useState<ChatDeliveryRuntime>(
+    () => createDefaultChatDeliveryRuntime(),
+  );
 
   const memoryAnchorLabels = useMemo<Record<MemoryAnchorId, string>>(
     () => ({
@@ -345,7 +376,11 @@ export default function GameApp() {
   const lastSignalGlitchRef = useRef({ at: 0, level: 0 });
   const skipToChoiceRef = useRef(false);
   const messagesRef = useRef(messages);
-  const emotionRef = useRef(novaEmotion);
+  const pendingNodeIdRef = useRef('p0');
+  const deliveryRuntimeRef = useRef(deliveryRuntime);
+  const deliveryControllerRef = useRef<DeliveryController | null>(null);
+  const avatarStateRef = useRef(avatarState);
+  const avatarTransitionTimeoutRef = useRef<number | null>(null);
   const statsRef = useRef(stats);
   const contactStageRef = useRef(contactStage);
   const internalTestBootstrappedRef = useRef(false);
@@ -360,8 +395,12 @@ export default function GameApp() {
   }, [messages]);
 
   useEffect(() => {
-    emotionRef.current = novaEmotion;
-  }, [novaEmotion]);
+    deliveryRuntimeRef.current = deliveryRuntime;
+  }, [deliveryRuntime]);
+
+  useEffect(() => {
+    avatarStateRef.current = avatarState;
+  }, [avatarState]);
 
   useEffect(() => {
     statsRef.current = stats;
@@ -447,10 +486,18 @@ export default function GameApp() {
       window.clearTimeout(signalGlitchTimeoutRef.current);
       signalGlitchTimeoutRef.current = null;
     }
+    if (avatarTransitionTimeoutRef.current !== null) {
+      window.clearTimeout(avatarTransitionTimeoutRef.current);
+      avatarTransitionTimeoutRef.current = null;
+    }
     setSignalGlitch(null);
+    setAvatarTransition(null);
+    setNova06AvatarInterferenceActive(false);
     setIsSyncing(false);
     setIsSkippingToChoice(false);
     setActiveInteraction(null);
+    deliveryControllerRef.current?.cancelDelivery();
+    deliveryControllerRef.current?.cancelLinkTimeline();
     return queueRunIdRef.current;
   }, []);
 
@@ -513,10 +560,27 @@ export default function GameApp() {
   });
 
   const persistState = useCallback((pendingNodeId: string, msgs: DisplayMessage[]) => {
-    saveGame(createSaveData(pendingNodeId, msgs, emotionRef.current, contactStageRef.current, statsRef.current));
+    pendingNodeIdRef.current = pendingNodeId;
+    saveGame(createSaveData(
+      pendingNodeId,
+      msgs,
+      avatarStateRef.current,
+      contactStageRef.current,
+      statsRef.current,
+      deliveryRuntimeRef.current,
+    ));
     setHasSave(true);
     setSaveTime(t('saveTime.justNow'));
   }, [t]);
+
+  const updateDeliveryRuntime = useCallback((
+    updater: (current: ChatDeliveryRuntime) => ChatDeliveryRuntime,
+  ) => {
+    const next = updater(deliveryRuntimeRef.current);
+    deliveryRuntimeRef.current = next;
+    setDeliveryRuntime(next);
+    return next;
+  }, []);
 
   const updateInteractionRuntimeStats = useCallback((
     updater: (current: GameStats) => GameStats,
@@ -540,6 +604,7 @@ export default function GameApp() {
   }, [updateInteractionRuntimeStats]);
 
   const handleNova06OverrideStarted = useCallback((kind: SpecialInteractionKind) => {
+    setNova06AvatarInterferenceActive(true);
     updateInteractionRuntimeStats(current => ({
       ...current,
       novaHintInteractionKind: kind,
@@ -550,6 +615,7 @@ export default function GameApp() {
   }, [updateInteractionRuntimeStats]);
 
   const handleNova06ScriptApplied = useCallback((kind: SpecialInteractionKind) => {
+    setNova06AvatarInterferenceActive(true);
     updateInteractionRuntimeStats(current => applyNova06OverrideCheckpoint(current, kind));
   }, [updateInteractionRuntimeStats]);
 
@@ -631,7 +697,14 @@ export default function GameApp() {
   }, []);
 
   const skipToNextChoice = useCallback(() => {
-    if (!INTERNAL_TEST_SKIP_ENABLED || choices || inputNode || activeInteraction || messagesRef.current.some(message => message.type === 'end')) return;
+    if (
+      !INTERNAL_TEST_SKIP_ENABLED
+      || choices
+      || inputNode
+      || activeInteraction
+      || deliveryRuntimeRef.current.activeMessageId
+      || messagesRef.current.some(message => message.type === 'end')
+    ) return;
     skipToChoiceRef.current = true;
     setIsSkippingToChoice(true);
     setWaitPrompt(null);
@@ -676,6 +749,44 @@ export default function GameApp() {
     setMessages(next);
     return next;
   }, []);
+
+  const commitAvatarNodeEffect = useCallback((nodeId: string, currentMessages: DisplayMessage[]) => {
+    const currentState = avatarStateRef.current;
+    const effect = applyNovaAvatarNodeEffect(currentState, nodeId);
+    const changed = effect.state !== currentState;
+    let nextMessages = currentMessages;
+
+    if (changed) {
+      avatarStateRef.current = effect.state;
+      setAvatarState(effect.state);
+    }
+
+    if (effect.transition) {
+      if (avatarTransitionTimeoutRef.current !== null) {
+        window.clearTimeout(avatarTransitionTimeoutRef.current);
+      }
+      setAvatarTransition(effect.transition);
+      avatarTransitionTimeoutRef.current = window.setTimeout(() => {
+        avatarTransitionTimeoutRef.current = null;
+        setAvatarTransition(null);
+      }, 820);
+    }
+
+    effect.noticeKeys.forEach((uiKey, index) => {
+      nextMessages = addMessage({
+        id: `avatar_notice_${nodeId}_${Date.now()}_${index}`,
+        speaker: 'system',
+        type: 'status',
+        content: t(uiKey),
+        isNew: true,
+        uiKind: 'avatarNotice',
+        uiKey,
+        sourceNodeId: nodeId,
+      });
+    });
+
+    return { messages: nextMessages, changed };
+  }, [addMessage, t]);
 
   const unlockArchives = useCallback((entryIds: string | string[]) => {
     const ids = Array.isArray(entryIds) ? entryIds : [entryIds];
@@ -737,7 +848,6 @@ export default function GameApp() {
         speaker: 'system',
         type: 'memory-anchor',
         content: t('game.memoryRecorded', { label: memoryAnchorLabels[anchor] }),
-        contactStage: contactStageRef.current,
         isNew: true,
         uiKind: 'memoryRecorded',
         memoryAnchor: anchor,
@@ -755,6 +865,29 @@ export default function GameApp() {
       const node = storyNodeMap.get(nodeId);
       if (!node) return false;
       const nodeArchiveUnlocks = getArchiveUnlocksForNode(node);
+      const nodeLinkState = getNodeLinkStateEffect(node.id);
+      if (nodeLinkState) {
+        if (deliveryControllerRef.current) {
+          deliveryControllerRef.current.setLinkState(nodeLinkState);
+        } else {
+          updateDeliveryRuntime(current => ({ ...current, linkState: nodeLinkState }));
+        }
+      }
+
+      if (
+        node.id === 'ch5b_power_emergency_glitch'
+        && deliveryRuntimeRef.current.receipts.powerEmergencyPacketLoss !== 'completed'
+      ) {
+        updateDeliveryRuntime(current => ({
+          ...current,
+          receipts: { ...current.receipts, powerEmergencyPacketLoss: 'in_progress' },
+        }));
+        deliveryControllerRef.current?.playLinkTimeline(
+          'power_emergency_packet_loss',
+          POWER_EMERGENCY_LINK_TIMELINE,
+        );
+        persistState(node.id, messagesRef.current);
+      }
 
       if (node.id === 'fin_action_save') markCommemorativeArchiveSaved();
 
@@ -779,7 +912,6 @@ export default function GameApp() {
           speaker: 'system',
           type: 'end',
           content: '',
-          contactStage: contactStageRef.current,
           isNew: true,
           sourceNodeId: node.id,
         });
@@ -798,7 +930,6 @@ export default function GameApp() {
               speaker: 'system',
               type: 'status',
               content: t('game.syncNext'),
-              contactStage: contactStageRef.current,
               isNew: true,
               uiKind: 'syncNext',
               sourceNodeId: node.id,
@@ -862,25 +993,14 @@ export default function GameApp() {
         speaker: node.speaker,
         type: node.type,
         content: node.content,
-        emotion: node.emotion,
         image: node.image,
-        contactStage: contactStageRef.current,
         displayName: node.displayName,
-        avatarProfile: node.avatarProfile,
+        speakerIdentity: node.speakerIdentity,
         isGlitch: node.isGlitch,
         glitchLevel: node.glitchLevel ?? signalGlitchLevel ?? undefined,
         isNew: true,
         sourceNodeId: node.id,
       };
-
-      if (node.speaker === 'nova' && node.emotion) {
-        setNovaEmotion(node.emotion);
-        emotionRef.current = node.emotion;
-      }
-      if (node.speaker === 'nova' && node.isGlitch) {
-        setNovaEmotion('glitch');
-        emotionRef.current = 'glitch';
-      }
 
       if (node.speaker === 'nova' && node.type === 'text' && !node.isGlitch) {
         setIsTyping(true);
@@ -888,7 +1008,9 @@ export default function GameApp() {
         if (!isCurrentRun()) return false;
         setIsTyping(false);
 
-        const currentMsgs = addMessage(displayMsg);
+        const withDisplayMessage = addMessage(displayMsg);
+        const avatarEffect = commitAvatarNodeEffect(nodeId, withDisplayMessage);
+        const currentMsgs = avatarEffect.messages;
         unlockArchives(nodeArchiveUnlocks);
 
         setIsTypewriterActive(true);
@@ -914,7 +1036,9 @@ export default function GameApp() {
         await waitForPlayback(getNovaPostMessageDelay(node));
         if (!isCurrentRun()) return false;
       } else {
-        const currentMsgs = addMessage(displayMsg);
+        const withDisplayMessage = addMessage(displayMsg);
+        const avatarEffect = commitAvatarNodeEffect(nodeId, withDisplayMessage);
+        const currentMsgs = avatarEffect.messages;
         unlockArchives(nodeArchiveUnlocks);
 
         setTimeout(() => {
@@ -929,7 +1053,8 @@ export default function GameApp() {
           node.type === 'draft' ||
           node.type === 'epilogue' ||
           node.type === 'ending-action' ||
-          nodeArchiveUnlocks.length > 0
+          nodeArchiveUnlocks.length > 0 ||
+          avatarEffect.changed
         ) {
           persistState(getPendingNodeIdAfterNode(nodeId), currentMsgs);
         }
@@ -958,7 +1083,6 @@ export default function GameApp() {
             speaker: 'system',
             type: 'status',
             content: t('game.syncNext'),
-            contactStage: contactStageRef.current,
             isNew: true,
             uiKind: 'syncNext',
             sourceNodeId: node.id,
@@ -972,12 +1096,16 @@ export default function GameApp() {
         const freshStats = createNewGameStats();
         messagesRef.current = [];
         statsRef.current = freshStats;
-        emotionRef.current = 'normal';
+        const freshAvatarState = createDefaultNovaAvatarState();
+        const freshDeliveryRuntime = createDefaultChatDeliveryRuntime();
+        avatarStateRef.current = freshAvatarState;
+        deliveryRuntimeRef.current = freshDeliveryRuntime;
         contactStageRef.current = defaultContactStage;
         lastSignalGlitchRef.current = { at: 0, level: 0 };
         setMessages([]);
         setStats(freshStats);
-        setNovaEmotion('normal');
+        setAvatarState(freshAvatarState);
+        setDeliveryRuntime(freshDeliveryRuntime);
         setContactStage(defaultContactStage);
         persistState(node.nextId ?? 'p0', []);
       }
@@ -987,7 +1115,7 @@ export default function GameApp() {
       }
       return true;
     },
-    [activateChoice, addMessage, markCommemorativeArchiveSaved, persistState, saveMemoryAnchor, stopFastForwardAtInteraction, storyNodeMap, t, triggerSignalGlitch, unlockArchives, waitForPlayback, waitForSignal],
+    [activateChoice, addMessage, commitAvatarNodeEffect, markCommemorativeArchiveSaved, persistState, saveMemoryAnchor, stopFastForwardAtInteraction, storyNodeMap, t, triggerSignalGlitch, unlockArchives, updateDeliveryRuntime, waitForPlayback, waitForSignal],
   );
 
   const processQueue = useCallback(async (runId: number) => {
@@ -1033,6 +1161,110 @@ export default function GameApp() {
     [startSequence],
   );
 
+  const handleLinkStateChange = useCallback((linkState: CommunicationLinkState) => {
+    if (deliveryRuntimeRef.current.linkState === linkState) return;
+    const nextRuntime = updateDeliveryRuntime(current => ({ ...current, linkState }));
+    saveGame(createSaveData(
+      pendingNodeIdRef.current,
+      messagesRef.current,
+      avatarStateRef.current,
+      contactStageRef.current,
+      statsRef.current,
+      nextRuntime,
+    ));
+  }, [updateDeliveryRuntime]);
+
+  const handleDeliveryPhase = useCallback((
+    messageId: string,
+    phase: DeliveryTimelinePhase,
+    elapsedMs: number,
+  ) => {
+    let targetNodeId = pendingNodeIdRef.current;
+    const updated = messagesRef.current.map(message => {
+      if (message.id !== messageId) return message;
+      targetNodeId = message.branchTargetNodeId ?? targetNodeId;
+      return {
+        ...message,
+        deliveryState: phase.state,
+        retryCount: phase.retryCount ?? message.retryCount ?? 0,
+        deliveryLatencyMs: Math.round(elapsedMs),
+        deliveryLabelVisible: phase.showLabel === true,
+        ...(phase.state === 'delivered' ? { deliveredAt: Date.now() } : {}),
+      };
+    });
+    messagesRef.current = updated;
+    setMessages(updated);
+    updateDeliveryRuntime(current => ({
+      ...current,
+      activeMessageId: messageId,
+      pendingAutoRetryIds: phase.state === 'failed'
+        ? [messageId]
+        : current.pendingAutoRetryIds,
+    }));
+    persistState(targetNodeId, updated);
+  }, [persistState, updateDeliveryRuntime]);
+
+  const handleDeliveryComplete = useCallback((
+    messageId: string,
+    spec: DeliverySpec,
+    elapsedMs: number,
+  ) => {
+    let targetNodeId = pendingNodeIdRef.current;
+    const updated = messagesRef.current.map(message => {
+      if (message.id !== messageId) return message;
+      targetNodeId = message.branchTargetNodeId ?? targetNodeId;
+      return {
+        ...message,
+        deliveryState: 'delivered' as const,
+        deliveredAt: message.deliveredAt ?? Date.now(),
+        deliveryLatencyMs: Math.round(elapsedMs),
+        deliveryLabelVisible: false,
+      };
+    });
+    messagesRef.current = updated;
+    setMessages(updated);
+    updateDeliveryRuntime(current => {
+      const completed = spec.key
+        ? setDeliveryReceipt(current, spec.key, 'completed')
+        : current;
+      return {
+        ...completed,
+        activeMessageId: undefined,
+        pendingAutoRetryIds: completed.pendingAutoRetryIds.filter(id => id !== messageId),
+      };
+    });
+    persistState(targetNodeId, updated);
+    scheduleSequence(targetNodeId, 120);
+  }, [persistState, scheduleSequence, updateDeliveryRuntime]);
+
+  const handleLinkTimelineComplete = useCallback((timelineId: string) => {
+    if (timelineId !== 'power_emergency_packet_loss') return;
+    updateDeliveryRuntime(current => ({
+      ...current,
+      receipts: { ...current.receipts, powerEmergencyPacketLoss: 'completed' },
+    }));
+    persistState(pendingNodeIdRef.current, messagesRef.current);
+  }, [persistState, updateDeliveryRuntime]);
+
+  useEffect(() => {
+    const callbacks = {
+      onDeliveryPhase: handleDeliveryPhase,
+      onDeliveryComplete: handleDeliveryComplete,
+      onLinkStateChange: handleLinkStateChange,
+      onLinkTimelineComplete: handleLinkTimelineComplete,
+    };
+    if (deliveryControllerRef.current) {
+      deliveryControllerRef.current.setCallbacks(callbacks);
+    } else {
+      deliveryControllerRef.current = new DeliveryController(callbacks);
+    }
+  }, [handleDeliveryComplete, handleDeliveryPhase, handleLinkStateChange, handleLinkTimelineComplete]);
+
+  useEffect(() => () => {
+    deliveryControllerRef.current?.dispose();
+    deliveryControllerRef.current = null;
+  }, []);
+
   useEffect(() => {
     if (!INTERNAL_TEST_NODE_ID || internalTestBootstrappedRef.current) return;
     if (!storyNodeMap.has(INTERNAL_TEST_NODE_ID)) return;
@@ -1059,12 +1291,25 @@ export default function GameApp() {
 
     messagesRef.current = [];
     statsRef.current = testStats;
-    emotionRef.current = 'normal';
-    contactStageRef.current = 'verified';
+    const testAvatarState = createNovaAvatarStateForCheckpoint(INTERNAL_TEST_NODE_ID);
+    const testContactStage: ContactStage = testAvatarState.novaIdentityVerified
+      ? 'verified'
+      : /^(?:p0|p9|p1[0-3])(?:_|$)/.test(INTERNAL_TEST_NODE_ID)
+        ? 'unknown'
+        : 'named';
+    avatarStateRef.current = testAvatarState;
+    contactStageRef.current = testContactStage;
+    const testDeliveryRuntime = {
+      ...createDefaultChatDeliveryRuntime(),
+      linkState: getNodeLinkStateEffect(INTERNAL_TEST_NODE_ID) ?? 'stable' as CommunicationLinkState,
+    };
+    deliveryRuntimeRef.current = testDeliveryRuntime;
+    pendingNodeIdRef.current = INTERNAL_TEST_NODE_ID;
     setMessages([]);
     setStats(testStats);
-    setNovaEmotion('normal');
-    setContactStage('verified');
+    setAvatarState(testAvatarState);
+    setContactStage(testContactStage);
+    setDeliveryRuntime(testDeliveryRuntime);
     setScreen('playing');
     startSequence(INTERNAL_TEST_NODE_ID);
   }, [cancelActiveSequence, startSequence, storyNodeMap]);
@@ -1094,13 +1339,16 @@ export default function GameApp() {
             memoryAnchorLabels,
           );
           messagesRef.current = localizedMessages;
-          emotionRef.current = save.novaEmotion;
+          avatarStateRef.current = save.avatarState;
           statsRef.current = save.stats;
           contactStageRef.current = save.contactStage;
+          deliveryRuntimeRef.current = save.deliveryRuntime;
+          pendingNodeIdRef.current = save.pendingNodeId;
           setMessages(localizedMessages);
-          setNovaEmotion(save.novaEmotion);
+          setAvatarState(save.avatarState);
           setStats(save.stats);
           setContactStage(save.contactStage);
+          setDeliveryRuntime(save.deliveryRuntime);
           setScreen('playing');
 
           const lastMsg = save.messages[save.messages.length - 1];
@@ -1109,6 +1357,19 @@ export default function GameApp() {
           }
 
           const resumeId = resolveResumeNodeId(save);
+          const activeDeliveryMessage = save.deliveryRuntime.activeMessageId
+            ? localizedMessages.find(message => message.id === save.deliveryRuntime.activeMessageId)
+            : undefined;
+          if (
+            activeDeliveryMessage?.scriptedDeliveryEvent === 'chapter5_explicit_failure'
+            && activeDeliveryMessage.branchTargetNodeId
+          ) {
+            deliveryControllerRef.current?.start(
+              activeDeliveryMessage.id,
+              RESTORED_FAILURE_RETRY_SPEC,
+            );
+            return;
+          }
           const resumeNode = storyNodeMap.get(resumeId);
           if (resumeNode?.type === 'choice') {
             activateChoice(resumeNode.id);
@@ -1135,13 +1396,18 @@ export default function GameApp() {
 
       clearSave();
       const freshStats = createNewGameStats();
+      const freshAvatarState = createDefaultNovaAvatarState();
+      const freshDeliveryRuntime = createDefaultChatDeliveryRuntime();
       messagesRef.current = [];
-      emotionRef.current = 'normal';
+      avatarStateRef.current = freshAvatarState;
       contactStageRef.current = defaultContactStage;
+      deliveryRuntimeRef.current = freshDeliveryRuntime;
+      pendingNodeIdRef.current = 'p0';
       setMessages([]);
-      setNovaEmotion('normal');
+      setAvatarState(freshAvatarState);
       setContactStage(defaultContactStage);
       setStats(freshStats);
+      setDeliveryRuntime(freshDeliveryRuntime);
       statsRef.current = freshStats;
       setInputNode(null);
       setPlayerInput('');
@@ -1165,6 +1431,21 @@ export default function GameApp() {
         ?? activeInteraction.nextId
         ?? activeInteraction.id;
       setActiveInteraction(null);
+      setNova06AvatarInterferenceActive(false);
+
+      if (completion.kind === 'signal-separation') {
+        if (completion.routeKey === 'clean') {
+          deliveryControllerRef.current?.setLinkState('stable');
+        } else {
+          deliveryControllerRef.current?.playLinkTimeline(
+            'signal_separation_assisted_restore',
+            SIGNAL_ASSISTED_LINK_TIMELINE,
+          );
+        }
+      }
+      if (completion.kind === 'power-routing' && completion.routeKey !== 'emergency_assist') {
+        deliveryControllerRef.current?.setLinkState('stable');
+      }
 
       const aftermath = getNova06CommsAftermath(completion, locale);
       if (!aftermath) {
@@ -1178,7 +1459,6 @@ export default function GameApp() {
       jumpToBottom();
 
       void (async () => {
-        setNovaEmotion('normal');
         for (let index = 0; index < aftermath.reactions.length; index += 1) {
           if (nova06BridgeRunRef.current !== bridgeRunId) return;
           setIsTyping(true);
@@ -1190,8 +1470,6 @@ export default function GameApp() {
             speaker: 'nova',
             type: 'text',
             content: aftermath.reactions[index],
-            emotion: 'normal',
-            contactStage: contactStageRef.current,
             isNew: true,
           });
           persistState(nextId, updated);
@@ -1237,86 +1515,6 @@ export default function GameApp() {
     return next;
   }, []);
 
-  const handleChoice = useCallback(
-    (choice: Choice) => {
-      const fromNodeId = choiceNodeId;
-      if (!fromNodeId || !claimChoiceResult(fromNodeId)) return;
-      if (choiceTimeoutRef.current !== null) {
-        window.clearTimeout(choiceTimeoutRef.current);
-        choiceTimeoutRef.current = null;
-      }
-      const choiceIndex =
-        fromNodeId && choices
-          ? choices.findIndex(item =>
-              item === choice ||
-              (item.id && choice.id ? item.id === choice.id : item.text === choice.text && item.nextId === choice.nextId))
-          : -1;
-      setChoices(null);
-      setChoiceNodeId(null);
-
-      const isNova06Bridge = choice.nextId.startsWith(NOVA06_BRIDGE_CHOICE_PREFIX);
-      const bridgePending = isNova06Bridge ? nova06BridgeRef.current : null;
-      if (isNova06Bridge) {
-        nova06BridgeRef.current = null;
-      }
-
-      const nextStats = isNova06Bridge ? statsRef.current : applyChoiceEffects(choice);
-      const nextId = isNova06Bridge && bridgePending
-        ? bridgePending.continueId
-        : resolveEndingStart(choice.nextId, nextStats);
-
-      const playerMsg: DisplayMessage = {
-        id: `player_${Date.now()}`,
-        speaker: 'player',
-        type: 'text',
-        content: formatChoiceText(choice.text),
-        contactStage: contactStageRef.current,
-        isNew: true,
-        sourceNodeId: fromNodeId ?? undefined,
-        sourceChoiceIndex: choiceIndex >= 0 ? choiceIndex : undefined,
-      };
-      const updated = [...messagesRef.current, playerMsg];
-      messagesRef.current = updated;
-      setMessages(updated);
-      persistState(nextId, updated);
-      jumpToBottom();
-
-      if (isNova06Bridge && bridgePending) {
-        const replyIndex = Number(choice.nextId.slice(NOVA06_BRIDGE_CHOICE_PREFIX.length));
-        const ack = bridgePending.replies[replyIndex]?.ack ?? '';
-        const ackLines = ack.split('\n').map(line => line.trim()).filter(Boolean);
-        const bridgeRunId = ++nova06BridgeRunRef.current;
-        void (async () => {
-          for (let index = 0; index < ackLines.length; index += 1) {
-            if (nova06BridgeRunRef.current !== bridgeRunId) return;
-            setIsTyping(true);
-            await waitForPlayback(420);
-            if (nova06BridgeRunRef.current !== bridgeRunId) return;
-            setIsTyping(false);
-            const withAck = addMessage({
-              id: `nova06_ack_${Date.now()}_${index}`,
-              speaker: 'nova',
-              type: 'text',
-              content: ackLines[index],
-              emotion: 'normal',
-              contactStage: contactStageRef.current,
-              isNew: true,
-            });
-            persistState(nextId, withAck);
-            jumpToBottom();
-            await waitForPlayback(280);
-          }
-          if (nova06BridgeRunRef.current !== bridgeRunId) return;
-          scheduleSequence(nextId, 400);
-        })();
-        return;
-      }
-
-      scheduleSequence(nextId, 550);
-    },
-    [addMessage, applyChoiceEffects, choiceNodeId, choices, claimChoiceResult, persistState, scheduleSequence, jumpToBottom, waitForPlayback],
-  );
-
   const handleChoiceTimeout = useCallback(
     (node: StoryNode) => {
       if (!node.timeoutNextId || !claimChoiceResult(node.id)) return;
@@ -1333,7 +1531,6 @@ export default function GameApp() {
           speaker: 'system',
           type: 'status',
           content: t('game.choiceTimeout'),
-          contactStage: contactStageRef.current,
           isNew: true,
           uiKind: 'choiceTimeout',
           sourceNodeId: node.id,
@@ -1344,6 +1541,175 @@ export default function GameApp() {
       scheduleSequence(node.timeoutNextId, 550);
     },
     [addMessage, claimChoiceResult, persistState, scheduleSequence, jumpToBottom, t],
+  );
+
+  const handleChoice = useCallback(
+    (choice: Choice) => {
+      const fromNodeId = choiceNodeId;
+      if (!fromNodeId) return;
+      const committedAt = Date.now();
+      const sourceNode = storyNodeMap.get(fromNodeId);
+      const deadline = choiceDeadlineRef.current?.nodeId === fromNodeId
+        ? choiceDeadlineRef.current.expiresAt
+        : undefined;
+      if (
+        sourceNode?.choiceTimeoutMs
+        && deadline != null
+        && !isCommittedWithinDeadline(committedAt, deadline)
+      ) {
+        handleChoiceTimeout(sourceNode);
+        return;
+      }
+      if (!claimChoiceResult(fromNodeId)) return;
+      if (choiceTimeoutRef.current !== null) {
+        window.clearTimeout(choiceTimeoutRef.current);
+        choiceTimeoutRef.current = null;
+      }
+      const choiceIndex = choices
+        ? choices.findIndex(item =>
+            item === choice
+            || (item.id && choice.id
+              ? item.id === choice.id
+              : item.text === choice.text && item.nextId === choice.nextId))
+        : -1;
+      setChoices(null);
+      setChoiceNodeId(null);
+
+      const isNova06Bridge = choice.nextId.startsWith(NOVA06_BRIDGE_CHOICE_PREFIX);
+      const bridgePending = isNova06Bridge ? nova06BridgeRef.current : null;
+      if (isNova06Bridge) nova06BridgeRef.current = null;
+
+      const nextStats = isNova06Bridge ? statsRef.current : applyChoiceEffects(choice);
+      const nextId = isNova06Bridge && bridgePending
+        ? bridgePending.continueId
+        : resolveEndingStart(choice.nextId, nextStats);
+      const deliverySequence = messagesRef.current.reduce(
+        (max, message) => Math.max(max, message.deliverySequence ?? 0),
+        0,
+      ) + 1;
+      const choiceId = choice.id ?? `${fromNodeId}__${Math.max(0, choiceIndex)}`;
+      const messageId = `player_${committedAt}_${deliverySequence}`;
+
+      if (isNova06Bridge && bridgePending) {
+        const playerMsg: DisplayMessage = {
+          id: messageId,
+          speaker: 'player',
+          type: 'text',
+          content: formatChoiceText(choice.text),
+          isNew: true,
+          sourceNodeId: fromNodeId,
+          sourceChoiceIndex: choiceIndex >= 0 ? choiceIndex : undefined,
+          choiceId,
+          committedAt,
+          deliveredAt: committedAt,
+          committedOrder: deliverySequence,
+          deliverySequence,
+          deliveryState: 'delivered',
+          retryCount: 0,
+          branchCommitted: true,
+          branchTargetNodeId: nextId,
+        };
+        const updated = [...messagesRef.current, playerMsg];
+        messagesRef.current = updated;
+        setMessages(updated);
+        persistState(nextId, updated);
+        jumpToBottom();
+
+        const replyIndex = Number(choice.nextId.slice(NOVA06_BRIDGE_CHOICE_PREFIX.length));
+        const ack = bridgePending.replies[replyIndex]?.ack ?? '';
+        const ackLines = ack.split('\n').map(line => line.trim()).filter(Boolean);
+        const bridgeRunId = ++nova06BridgeRunRef.current;
+        void (async () => {
+          for (let index = 0; index < ackLines.length; index += 1) {
+            if (nova06BridgeRunRef.current !== bridgeRunId) return;
+            setIsTyping(true);
+            await waitForPlayback(420);
+            if (nova06BridgeRunRef.current !== bridgeRunId) return;
+            setIsTyping(false);
+            const withAck = addMessage({
+              id: `nova06_ack_${Date.now()}_${index}`,
+              speaker: 'nova',
+              type: 'text',
+              content: ackLines[index],
+              isNew: true,
+            });
+            persistState(nextId, withAck);
+            jumpToBottom();
+            await waitForPlayback(280);
+          }
+          if (nova06BridgeRunRef.current !== bridgeRunId) return;
+          scheduleSequence(nextId, 400);
+        })();
+        return;
+      }
+
+      const spec = resolveDeliverySpec(
+        sourceNode ?? {},
+        choiceId,
+        false,
+        deliveryRuntimeRef.current.linkState,
+      );
+      const allowFail = sourceNode?.deliveryEvent === 'chapter5_explicit_failure';
+      const playerMsg: DisplayMessage = {
+        id: messageId,
+        speaker: 'player',
+        type: 'text',
+        content: formatChoiceText(choice.text),
+        isNew: true,
+        sourceNodeId: fromNodeId,
+        sourceChoiceIndex: choiceIndex >= 0 ? choiceIndex : undefined,
+        choiceId,
+        committedAt,
+        committedOrder: deliverySequence,
+        deliverySequence,
+        deliveryState: 'queued',
+        ...(sourceNode?.deliveryEvent ? { scriptedDeliveryEvent: sourceNode.deliveryEvent } : {}),
+        retryCount: 0,
+        autoRetry: allowFail,
+        allowFail,
+        branchCommitted: true,
+        branchTargetNodeId: nextId,
+        deliveryLatencyMs: 0,
+        deliveryLabelVisible: false,
+      };
+      const updated = [...messagesRef.current, playerMsg];
+      messagesRef.current = updated;
+      setMessages(updated);
+      updateDeliveryRuntime(current => {
+        const withReceipt = sourceNode?.deliveryEvent
+          ? setDeliveryReceipt(current, sourceNode.deliveryEvent, 'in_progress')
+          : current;
+        return {
+          ...withReceipt,
+          linkState: spec.phases[0].linkState ?? withReceipt.linkState,
+          activeMessageId: messageId,
+          pendingAutoRetryIds: [],
+        };
+      });
+      persistState(nextId, updated);
+      jumpToBottom();
+
+      if (deliveryControllerRef.current) {
+        deliveryControllerRef.current.start(messageId, spec, committedAt);
+      } else {
+        handleDeliveryComplete(messageId, spec, spec.completeAtMs);
+      }
+    },
+    [
+      addMessage,
+      applyChoiceEffects,
+      choiceNodeId,
+      choices,
+      claimChoiceResult,
+      handleChoiceTimeout,
+      handleDeliveryComplete,
+      jumpToBottom,
+      persistState,
+      scheduleSequence,
+      storyNodeMap,
+      updateDeliveryRuntime,
+      waitForPlayback,
+    ],
   );
 
   useEffect(() => {
@@ -1417,7 +1783,6 @@ export default function GameApp() {
       speaker: 'player',
       type: 'text',
       content: text,
-      contactStage: contactStageRef.current,
       isNew: true,
     };
     const updated = [...messagesRef.current, playerMsg];
@@ -1435,16 +1800,34 @@ export default function GameApp() {
     isTypewriterActive && lastMsg && lastMsg.speaker === 'nova' && lastMsg.type === 'text';
   const isInputReady = !inputNode?.inputMinLength || playerInput.trim().length >= inputNode.inputMinLength;
 
-  const saveSnapshot = hasSave ? loadGame() : null;
+  const saveSnapshot = screen === 'menu' && hasSave ? loadGame() : null;
   const saveProgress = saveSnapshot
     ? getSaveProgressLabel(saveSnapshot.pendingNodeId, saveSnapshot.messages, t)
     : t('progress.prologue');
   const menuContactStage = saveSnapshot?.contactStage ?? defaultContactStage;
   const contactMeta = contactMetaByStage[contactStage];
-  const contactAvatar = resolveContactAvatar(contactStage, novaEmotion);
+  const avatarPresentation = resolveNovaAvatarPresentation(avatarState, {
+    nova06AvatarInterferenceActive,
+    activeSpecialInteraction: activeInteraction?.interactionKind,
+    communicationLinkState: deliveryRuntime.linkState,
+  });
+  const menuAvatarPresentation = resolveNovaAvatarPresentation(
+    saveSnapshot?.avatarState ?? createDefaultNovaAvatarState(),
+  );
+  const contactSubtitle = contactStage === 'unknown'
+    ? t('contact.unknownSubtitle')
+    : avatarState.novaConnectionState === 'archived'
+      ? t('contact.archivedSubtitle')
+      : avatarState.novaConnectionState === 'offline'
+        ? t('contact.offlineSubtitle')
+        : deliveryRuntime.linkState !== 'stable'
+          ? t(`link.${deliveryRuntime.linkState}`)
+        : avatarState.novaConnectionState === 'weak'
+          ? t('contact.weakSubtitle')
+          : t('contact.stableSubtitle');
   const isEpilogueMode = messages.some(message => message.type === 'epilogue');
   const isFinished = messages.some(message => message.type === 'end');
-  const isSignalActive = isSyncing || isTyping || isTypewriterActive;
+  const isSignalActive = isSyncing || isTyping || isTypewriterActive || Boolean(deliveryRuntime.activeMessageId);
   const shouldShowMediaSafeSpace = Boolean(choices && hasRecentMediaMessage(messages));
 
   if (screen === 'menu') {
@@ -1537,6 +1920,7 @@ export default function GameApp() {
           <MemoryArchiveOverlay
             stats={saveSnapshot?.stats ?? stats}
             contactStage={menuContactStage}
+            avatarPresentation={menuAvatarPresentation}
             onClose={() => setShowArchive(false)}
             backLabel={t('archiveOverlay.backToMenu')}
           />
@@ -1549,6 +1933,12 @@ export default function GameApp() {
               setShowRestartConfirm(false);
               startGame('new');
             }}
+          />
+        )}
+        {import.meta.env.DEV && (
+          <AvatarDebugPanel
+            currentPresentation={menuAvatarPresentation}
+            currentState={saveSnapshot?.avatarState ?? createDefaultNovaAvatarState()}
           />
         )}
       </div>
@@ -1593,6 +1983,7 @@ export default function GameApp() {
         <MemoryArchiveOverlay
           stats={stats}
           contactStage={contactStage}
+          avatarPresentation={avatarPresentation}
           onClose={() => setShowArchive(false)}
         />
       )}
@@ -1608,6 +1999,7 @@ export default function GameApp() {
           signalCompletedByNova06={stats.signalCompletedByNova06}
           powerCompletedByNova06={stats.powerCompletedByNova06}
           memoryNova06NoteSeen={stats.memoryNova06NoteSeen}
+          avatarPresentation={avatarPresentation}
           onGuidanceStageChange={handleInteractionGuidanceStageChange}
           onNova06OverrideStarted={handleNova06OverrideStarted}
           onNova06ScriptApplied={handleNova06ScriptApplied}
@@ -1616,8 +2008,19 @@ export default function GameApp() {
           onSaveAndExit={saveInteractionAndExit}
         />
       )}
+      {import.meta.env.DEV && (
+        <>
+          <AvatarDebugPanel currentPresentation={avatarPresentation} currentState={avatarState} />
+          <DeliveryDebugPanel
+            runtime={deliveryRuntime}
+            messages={messages}
+            onSetLinkState={state => deliveryControllerRef.current?.setLinkState(state)}
+          />
+        </>
+      )}
 
       <div
+        data-link-state={deliveryRuntime.linkState}
         className={`game-layout relative z-10 flex flex-col flex-1 min-h-0 w-full max-w-[1160px] mx-auto bg-[#080A0D]/84 backdrop-blur-sm ${
           signalGlitch ? `signal-glitch-frame signal-glitch-frame-level-${signalGlitch.level}` : ''
         }`}
@@ -1634,21 +2037,30 @@ export default function GameApp() {
             ) : (
               <>
                 <div className="relative shrink-0">
-                  <img
-                    src={contactAvatar}
-                    alt={contactMeta.name}
+                  <NovaAvatar
+                    presentation={avatarPresentation}
+                    transition={avatarTransition}
                     className={`nova-header-avatar ${signalGlitch ? `signal-glitch-avatar signal-glitch-avatar-${signalGlitch.tone}` : ''}`}
                   />
-                  <span className="contact-status-dot" />
+                  <span
+                    className="contact-status-dot"
+                    data-connection={avatarState.novaConnectionState}
+                    data-link-state={deliveryRuntime.linkState}
+                  />
                 </div>
                 <div className="flex flex-col min-w-0 flex-1">
                   <span className="text-[#E8EEF4] text-[15px] font-medium leading-tight">{contactMeta.name}</span>
-                  <span className="text-[#6E8498] text-[11px] leading-snug truncate">{contactMeta.subtitle}</span>
+                  <span className="text-[#6E8498] text-[11px] leading-snug truncate">{contactSubtitle}</span>
                 </div>
               </>
               )}
-              <div className="chat-link-readout" aria-hidden="true">
-                <span>LINK / 07</span>
+              <div
+                className="chat-link-readout"
+                data-link-state={deliveryRuntime.linkState}
+                role="status"
+                aria-live="polite"
+              >
+                <span>{t(`link.${deliveryRuntime.linkState}`)}</span>
                 <span className="chat-link-bars"><i /><i /><i /><i /></span>
               </div>
               <div className="ml-auto flex items-center gap-1.5 shrink-0">
@@ -1657,7 +2069,13 @@ export default function GameApp() {
                   type="button"
                   onClick={skipToNextChoice}
                   className={`header-tool-btn internal-skip-btn text-[11px] px-2.5 py-1.5 rounded transition-colors ${isSkippingToChoice ? 'internal-skip-btn-active' : ''}`}
-                  disabled={Boolean(choices || inputNode || activeInteraction || isFinished)}
+                  disabled={Boolean(
+                    choices
+                    || inputNode
+                    || activeInteraction
+                    || isFinished
+                    || deliveryRuntime.activeMessageId
+                  )}
                   title="Internal test: skip to next choice/input"
                   aria-label={isSkippingToChoice ? t('game.skipping') : t('game.skip')}
                 >
@@ -1707,7 +2125,10 @@ export default function GameApp() {
                 isLastNovaMsg={isLastNovaTyping && index === messages.length - 1}
                 typewriterText={typewriterText}
                 showNovaAvatar={shouldShowNovaAvatar(messages, index)}
-                currentContactStage={contactStage}
+                avatarPresentation={avatarPresentation}
+                avatarTransition={index === messages.length - 1 ? avatarTransition : null}
+                isCurrentDelivery={deliveryRuntime.activeMessageId === msg.id}
+                currentSenderName={contactMeta.name}
                 onImageClick={(img, cap) => setModalImage({ image: img, caption: cap })}
               />
             ))}
@@ -1736,7 +2157,8 @@ export default function GameApp() {
 
             {isTyping && (
               <RemoteTypingRow
-                avatarSrc={resolveContactAvatar(contactStage, novaEmotion)}
+                avatarPresentation={avatarPresentation}
+                avatarTransition={avatarTransition}
                 showAvatar={shouldShowTypingAvatar(messages)}
               />
             )}
