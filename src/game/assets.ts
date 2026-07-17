@@ -1,13 +1,10 @@
 import type { NovaBaseAvatar } from './types';
 
-/**
- * Formal art drops into this map later. A null entry intentionally selects the
- * built-in vector placeholder, so missing art can never show a broken image.
- */
+/** A null entry intentionally selects the built-in vector fallback. */
 export const novaAvatarAssets: Record<NovaBaseAvatar, string | null> = {
   unknown_signal: null,
-  official_navigator: null,
-  n7_private: null,
+  official_navigator: '/assets/nova_avatar_official_navigator.png',
+  n7_private: '/assets/nova_avatar_n7_private.png',
   white_flower: null,
 };
 

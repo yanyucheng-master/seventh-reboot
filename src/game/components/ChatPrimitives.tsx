@@ -71,11 +71,28 @@ function getGlitchTextTone(content: string) {
   return 'neutral';
 }
 
-export function GlitchText({ content, glitchLevel = 1 }: { content: string; glitchLevel?: GlitchLevel }) {
+export function GlitchText({
+  content,
+  glitchLevel = 1,
+  presentation = 'standard',
+}: {
+  content: string;
+  glitchLevel?: GlitchLevel;
+  presentation?: 'standard' | 'dropout';
+}) {
   const tone = getGlitchTextTone(content);
   return (
-    <div className={`comm-glitch-wrap comm-glitch-wrap-${tone} comm-glitch-wrap-level-${glitchLevel} animate-glitch`}>
-      <span className={`comm-glitch-text comm-glitch-text-${tone} comm-glitch-text-level-${glitchLevel} font-mono`}>
+    <div
+      className={`comm-glitch-wrap comm-glitch-wrap-${tone} comm-glitch-wrap-level-${glitchLevel} ${
+        presentation === 'dropout' ? 'comm-glitch-wrap-dropout' : 'animate-glitch'
+      }`}
+    >
+      <span
+        className={`comm-glitch-text comm-glitch-text-${tone} comm-glitch-text-level-${glitchLevel} ${
+          presentation === 'dropout' ? 'comm-glitch-text-dropout' : ''
+        } font-mono`}
+        data-text={presentation === 'dropout' ? content : undefined}
+      >
         {content}
       </span>
     </div>

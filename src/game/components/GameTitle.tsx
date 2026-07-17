@@ -1,11 +1,14 @@
+import type { Locale } from '../../i18n';
+
 type GameTitleProps = {
   title: string;
   subtitle: string;
   phaseLabel: string;
+  locale: Locale;
 };
 
-export function GameTitle({ title, subtitle, phaseLabel }: GameTitleProps) {
-  const compactTitle = title.length > 8;
+export function GameTitle({ title, subtitle, phaseLabel, locale }: GameTitleProps) {
+  const englishWordmark = locale === 'en-US';
 
   return (
     <div className="menu-wordmark">
@@ -21,14 +24,12 @@ export function GameTitle({ title, subtitle, phaseLabel }: GameTitleProps) {
         <i />
         <span>OBS-01</span>
       </div>
-      <h1 className={`menu-title ${compactTitle ? 'menu-title-compact' : ''}`} aria-label={title}>
-        <span className="menu-title-phase menu-title-phase-cyan" aria-hidden="true">
-          {title}
-        </span>
-        <span className="menu-title-core">{title}</span>
-        <span className="menu-title-phase menu-title-phase-amber" aria-hidden="true">
-          {title}
-        </span>
+      <h1 className="menu-title" aria-label={title}>
+        <span
+          className={`menu-title-art ${englishWordmark ? 'menu-title-art-en' : ''}`}
+          aria-hidden="true"
+        />
+        <span className="sr-only">{title}</span>
       </h1>
       <div className="menu-wordmark-subline">
         <span aria-hidden="true" />

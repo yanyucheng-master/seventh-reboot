@@ -108,15 +108,27 @@ type WaitConfig = WaitPrompt & {
 type WaitResult = 'elapsed' | 'skipped' | 'fast-forward';
 
 type SignalGlitchTone = 'error' | 'success' | 'neutral';
+type SignalGlitchStyle = 'standard' | 'fragment' | 'disconnect';
 
 const CHAT_NEAR_BOTTOM_PX = 112;
 
 type ActiveSignalGlitch = {
   level: GlitchLevel;
   tone: SignalGlitchTone;
+  style: SignalGlitchStyle;
   pulse: number;
   /** 短时间内重复触发时进入柔化模式：无雪花噪点，仅保留轻量扫线 */
   soft: boolean;
+};
+
+type SignalGlitchCue = {
+  level: GlitchLevel;
+  tone: SignalGlitchTone;
+  style: SignalGlitchStyle;
+  duration: number;
+  bypassCooldown: boolean;
+  affectsCooldown: boolean;
+  haptic: boolean;
 };
 
 type ActiveInputNode = {
@@ -238,6 +250,49 @@ function getSignalGlitchDuration(level: GlitchLevel, tone: SignalGlitchTone, con
   if (level === 3) return 1600;
   if (level === 2) return 1250;
   return 880;
+}
+
+function getSignalGlitchCue(node: StoryNode): SignalGlitchCue | null {
+  const level = getSignalGlitchLevel(node);
+  if (!level) return null;
+
+  const tone = getSignalGlitchTone(node.content);
+
+  // The prologue is one escalating incident: 30% local corruption, a text-only
+  // dropout, then a 70% disconnect. Full-strength flashes remain for later acts.
+  if (node.id === 'p10') {
+    return {
+      level,
+      tone,
+      style: 'fragment',
+      duration: 680,
+      bypassCooldown: true,
+      affectsCooldown: false,
+      haptic: false,
+    };
+  }
+  if (node.id === 'p12') return null;
+  if (node.id === 'p13b_u06') {
+    return {
+      level,
+      tone,
+      style: 'disconnect',
+      duration: 980,
+      bypassCooldown: true,
+      affectsCooldown: true,
+      haptic: false,
+    };
+  }
+
+  return {
+    level,
+    tone,
+    style: 'standard',
+    duration: getSignalGlitchDuration(level, tone, node.content),
+    bypassCooldown: false,
+    affectsCooldown: true,
+    haptic: tone === 'error',
+  };
 }
 
 /** 两次全屏故障特效之间的最小间隔；期间的重复触发会被跳过或柔化 */
@@ -714,33 +769,40 @@ export default function GameApp() {
   }, [activeInteraction, choices, inputNode]);
 
   const triggerSignalGlitch = useCallback((node: StoryNode) => {
-    const level = getSignalGlitchLevel(node);
-    if (!level) return;
+    const cue = getSignalGlitchCue(node);
+    if (!cue) return;
 
     // 冷却窗口内：同级/更低级的重复故障直接跳过，避免连续花屏刺眼
     const now = Date.now();
     const sinceLast = now - lastSignalGlitchRef.current.at;
     const inCooldown = sinceLast < SIGNAL_GLITCH_COOLDOWN_MS;
-    if (inCooldown && level <= lastSignalGlitchRef.current.level) return;
-    const soft = inCooldown;
-    lastSignalGlitchRef.current = { at: now, level };
+    if (!cue.bypassCooldown && inCooldown && cue.level <= lastSignalGlitchRef.current.level) return;
+    const soft = !cue.bypassCooldown && inCooldown;
+    if (cue.affectsCooldown) {
+      lastSignalGlitchRef.current = { at: now, level: cue.level };
+    }
 
     if (signalGlitchTimeoutRef.current !== null) {
       window.clearTimeout(signalGlitchTimeoutRef.current);
       signalGlitchTimeoutRef.current = null;
     }
 
-    const tone = getSignalGlitchTone(node.content);
     signalGlitchPulseRef.current += 1;
-    setSignalGlitch({ level, tone, pulse: signalGlitchPulseRef.current, soft });
-    if (!soft && tone === 'error' && 'vibrate' in navigator) {
-      navigator.vibrate(level === 3 ? [18, 28, 24] : 18);
+    setSignalGlitch({
+      level: cue.level,
+      tone: cue.tone,
+      style: cue.style,
+      pulse: signalGlitchPulseRef.current,
+      soft,
+    });
+    if (!soft && cue.haptic && 'vibrate' in navigator) {
+      navigator.vibrate(cue.level === 3 ? [18, 28, 24] : 18);
     }
 
     signalGlitchTimeoutRef.current = window.setTimeout(() => {
       signalGlitchTimeoutRef.current = null;
       setSignalGlitch(null);
-    }, getSignalGlitchDuration(level, tone, node.content));
+    }, cue.duration);
   }, []);
 
   const addMessage = useCallback((msg: DisplayMessage) => {
@@ -1854,6 +1916,7 @@ export default function GameApp() {
               title={t('menu.title')}
               subtitle={t('menu.subtitle')}
               phaseLabel={t('menu.phaseArchive')}
+              locale={locale}
             />
             <div className="menu-language-selector" role="group" aria-label={t('menu.language')}>
               {(['zh-CN', 'en-US'] as Locale[]).map(code => (
@@ -1952,7 +2015,7 @@ export default function GameApp() {
       {signalGlitch && (
         <div
           key={signalGlitch.pulse}
-          className={`signal-glitch-layer signal-glitch-level-${signalGlitch.level} signal-glitch-${signalGlitch.tone} ${
+          className={`signal-glitch-layer signal-glitch-level-${signalGlitch.level} signal-glitch-${signalGlitch.tone} signal-glitch-style-${signalGlitch.style} ${
             signalGlitch.soft ? 'signal-glitch-soft' : ''
           }`}
           aria-hidden
@@ -2022,7 +2085,7 @@ export default function GameApp() {
       <div
         data-link-state={deliveryRuntime.linkState}
         className={`game-layout relative z-10 flex flex-col flex-1 min-h-0 w-full max-w-[1160px] mx-auto bg-[#080A0D]/84 backdrop-blur-sm ${
-          signalGlitch ? `signal-glitch-frame signal-glitch-frame-level-${signalGlitch.level}` : ''
+          signalGlitch ? `signal-glitch-frame signal-glitch-frame-level-${signalGlitch.level} signal-glitch-frame-style-${signalGlitch.style}` : ''
         }`}
       >
           <header className="game-header chat-header flex items-center gap-3 px-3 sm:px-4 py-3 bg-[#151A26]/92 border-b border-[#1A2236]/80 shrink-0">
@@ -2040,7 +2103,7 @@ export default function GameApp() {
                   <NovaAvatar
                     presentation={avatarPresentation}
                     transition={avatarTransition}
-                    className={`nova-header-avatar ${signalGlitch ? `signal-glitch-avatar signal-glitch-avatar-${signalGlitch.tone}` : ''}`}
+                    className={`nova-header-avatar ${signalGlitch ? `signal-glitch-avatar signal-glitch-avatar-${signalGlitch.tone} signal-glitch-avatar-style-${signalGlitch.style}` : ''}`}
                   />
                   <span
                     className="contact-status-dot"
@@ -2114,7 +2177,7 @@ export default function GameApp() {
             <div
               ref={chatScrollRef}
               className={`game-chat chat-scroll flex-1 min-h-0 overflow-y-auto px-3 sm:px-4 py-2 space-y-0 ${
-                signalGlitch ? `signal-glitch-chat signal-glitch-chat-level-${signalGlitch.level}` : ''
+                signalGlitch ? `signal-glitch-chat signal-glitch-chat-level-${signalGlitch.level} signal-glitch-chat-style-${signalGlitch.style}` : ''
               }`}
               onScroll={updateNearBottomState}
             >

@@ -1,4 +1,7 @@
 import assert from 'node:assert/strict';
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { novaAvatarAssets } from '../src/game/assets.ts';
 import {
   applyNovaAvatarNodeEffect,
@@ -139,7 +142,19 @@ assert.deepEqual(Object.keys(novaAvatarAssets).sort(), [
   'unknown_signal',
   'white_flower',
 ]);
-assert.equal(Object.values(novaAvatarAssets).every(asset => asset === null), true, 'Formal avatar art must remain explicit placeholders');
+assert.deepEqual(novaAvatarAssets, {
+  unknown_signal: null,
+  official_navigator: '/assets/nova_avatar_official_navigator.png',
+  n7_private: '/assets/nova_avatar_n7_private.png',
+  white_flower: null,
+});
+
+const projectRoot = fileURLToPath(new URL('../', import.meta.url));
+for (const asset of Object.values(novaAvatarAssets)) {
+  if (!asset) continue;
+  const assetPath = resolve(projectRoot, 'public', asset.replace(/^\/+/, ''));
+  assert.equal(existsSync(assetPath), true, `Configured avatar asset is missing: ${asset}`);
+}
 
 for (const node of storyNodes) {
   const legacy = node as unknown as Record<string, unknown>;

@@ -48,7 +48,13 @@ export function ChatMessage({
 }) {
   if (msg.speaker === 'system') {
     if (msg.type === 'glitch' || msg.isGlitch || isSignalSystemMessage(msg)) {
-      return <GlitchText content={msg.content} glitchLevel={getMessageGlitchLevel(msg)} />;
+      return (
+        <GlitchText
+          content={msg.content}
+          glitchLevel={getMessageGlitchLevel(msg)}
+          presentation={msg.sourceNodeId === 'p12' ? 'dropout' : 'standard'}
+        />
+      );
     }
     if (msg.type === 'comm-log') {
       return <CommLog content={msg.content} />;
@@ -86,6 +92,7 @@ export function ChatMessage({
 
   const isPlayer = msg.speaker === 'player';
   const isResidual06 = msg.speakerIdentity === 'residual06';
+  const isResidualDropout = msg.sourceNodeId === 'p13_u06';
   const senderName = msg.displayName ?? currentSenderName;
 
   if (msg.type === 'image') {
@@ -126,7 +133,7 @@ export function ChatMessage({
 
   return (
     <div
-      className={`flex items-end gap-2 py-0.5 ${isPlayer ? 'justify-end' : 'justify-start'} ${showNovaAvatar && !isPlayer ? 'gap-2.5' : ''} ${!showNovaAvatar && !isPlayer ? 'pl-[46px]' : ''} ${msg.isNew ? 'animate-fade-in-up' : ''}`}
+      className={`flex items-end gap-2 py-0.5 ${isPlayer ? 'justify-end' : 'justify-start'} ${showNovaAvatar && !isPlayer ? 'gap-2.5' : ''} ${!showNovaAvatar && !isPlayer ? 'pl-[46px]' : ''} ${isResidualDropout ? 'residual-message-dropout' : ''} ${msg.isNew ? 'animate-fade-in-up' : ''}`}
     >
       {!isPlayer && showNovaAvatar && (
         <NovaAvatar
@@ -139,7 +146,10 @@ export function ChatMessage({
       <div className={`flex flex-col gap-1 max-w-[min(82%,320px)] ${isPlayer ? 'items-end' : 'items-start'}`}>
         {!isPlayer && showNovaAvatar && <span className="remote-sender-label">{senderName}</span>}
         <div className={`px-3 py-1.5 ${isPlayer ? 'bubble-player' : 'bubble-nova'}`}>
-          <p className={`leading-relaxed whitespace-pre-line ${isPlayer ? 'player-msg-text' : 'nova-msg-text'}`}>
+          <p
+            className={`leading-relaxed whitespace-pre-line ${isPlayer ? 'player-msg-text' : 'nova-msg-text'}`}
+            data-text={isResidualDropout ? displayText : undefined}
+          >
             {displayText}
           </p>
         </div>
