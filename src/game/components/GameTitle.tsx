@@ -24,11 +24,12 @@ export function GameTitle({ title, subtitle, phaseLabel, locale }: GameTitleProp
         <i />
         <span>OBS-01</span>
       </div>
-      <h1 className="menu-title" aria-label={title}>
-        <span
-          className={`menu-title-art ${englishWordmark ? 'menu-title-art-en' : ''}`}
-          aria-hidden="true"
-        />
+      <h1 className={`menu-title ${englishWordmark ? 'menu-title-en' : ''}`} aria-label={title}>
+        <span className="menu-title-art" aria-hidden="true" />
+        <span className="menu-title-native-particles menu-title-native-particles-left-a" aria-hidden="true" />
+        <span className="menu-title-native-particles menu-title-native-particles-left-b" aria-hidden="true" />
+        <span className="menu-title-native-particles menu-title-native-particles-right-a" aria-hidden="true" />
+        <span className="menu-title-native-particles menu-title-native-particles-right-b" aria-hidden="true" />
         <span className="sr-only">{title}</span>
       </h1>
       <div className="menu-wordmark-subline">

@@ -5255,6 +5255,11 @@ html, body, #root {
 }
 
 .menu-title {
+  --menu-title-image: url('/assets/seventh_reboot_title_wordmark_zh_base.png');
+  --menu-title-particles-left-a: url('/assets/seventh_reboot_title_wordmark_zh_particles_left_a.png');
+  --menu-title-particles-left-b: url('/assets/seventh_reboot_title_wordmark_zh_particles_left_b.png');
+  --menu-title-particles-right-a: url('/assets/seventh_reboot_title_wordmark_zh_particles_right_a.png');
+  --menu-title-particles-right-b: url('/assets/seventh_reboot_title_wordmark_zh_particles_right_b.png');
   position: relative;
   display: block;
   width: min(100%, 620px);
@@ -5263,12 +5268,20 @@ html, body, #root {
   filter: drop-shadow(0 13px 28px rgba(0, 0, 0, 0.55));
 }
 
+.menu-title-en {
+  --menu-title-image: url('/assets/seventh_reboot_title_wordmark_en_base.png');
+  --menu-title-particles-left-a: url('/assets/seventh_reboot_title_wordmark_en_particles_left_a.png');
+  --menu-title-particles-left-b: url('/assets/seventh_reboot_title_wordmark_en_particles_left_b.png');
+  --menu-title-particles-right-a: url('/assets/seventh_reboot_title_wordmark_en_particles_right_a.png');
+  --menu-title-particles-right-b: url('/assets/seventh_reboot_title_wordmark_en_particles_right_b.png');
+}
+
 .menu-title-art,
 .menu-title-art::before,
 .menu-title-art::after {
   position: absolute;
   inset: 0;
-  background-image: url('/assets/seventh_reboot_title_wordmark_zh_transparent.png');
+  background-image: var(--menu-title-image);
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
@@ -5292,6 +5305,7 @@ html, body, #root {
   opacity: 0.2;
   clip-path: polygon(0 28%, 100% 28%, 100% 45%, 0 45%);
   animation: menuTitlePhaseCyan 7.6s steps(1, end) infinite;
+  will-change: opacity, transform;
 }
 
 .menu-title-art::after {
@@ -5299,20 +5313,70 @@ html, body, #root {
   opacity: 0.18;
   clip-path: polygon(0 72%, 100% 72%, 100% 78%, 0 78%);
   animation: menuTitlePhaseAmber 9.2s steps(1, end) infinite;
+  will-change: opacity, transform;
 }
 
-.menu-title-art-en {
-  inset: 50% 0 auto;
-  height: 72%;
-  transform: translateY(-50%);
-}
-
-.menu-title-art-en,
-.menu-title-art-en::before,
-.menu-title-art-en::after {
-  background-image: url('/assets/seventh_reboot_title_wordmark_en_transparent.png');
+.menu-title-native-particles {
+  --particle-mid-x: 0;
+  --particle-mid-y: 0;
+  --particle-end-x: 0;
+  --particle-end-y: 0;
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  filter:
+    brightness(1.08)
+    saturate(1.1)
+    drop-shadow(0 0 2px rgba(89, 194, 255, 0.46));
+  animation-name: menuTitleNativeParticleDrift;
+  animation-timing-function: cubic-bezier(0.22, 0.68, 0.2, 1);
+  animation-iteration-count: infinite;
+  will-change: opacity, transform;
+}
+
+.menu-title-native-particles-left-a {
+  --particle-mid-x: -3px;
+  --particle-mid-y: -1px;
+  --particle-end-x: -12px;
+  --particle-end-y: -4px;
+  background-image: var(--menu-title-particles-left-a);
+  animation-duration: 8.6s;
+  animation-delay: -2.2s;
+}
+
+.menu-title-native-particles-left-b {
+  --particle-mid-x: -2px;
+  --particle-mid-y: 1px;
+  --particle-end-x: -8px;
+  --particle-end-y: 3px;
+  background-image: var(--menu-title-particles-left-b);
+  animation-duration: 6.9s;
+  animation-delay: -4.4s;
+}
+
+.menu-title-native-particles-right-a {
+  --particle-mid-x: 3px;
+  --particle-mid-y: -1px;
+  --particle-end-x: 12px;
+  --particle-end-y: -4px;
+  background-image: var(--menu-title-particles-right-a);
+  animation-duration: 7.4s;
+  animation-delay: -3.8s;
+}
+
+.menu-title-native-particles-right-b {
+  --particle-mid-x: 2px;
+  --particle-mid-y: 1px;
+  --particle-end-x: 8px;
+  --particle-end-y: 3px;
+  background-image: var(--menu-title-particles-right-b);
+  animation-duration: 9.1s;
+  animation-delay: -1.5s;
 }
 
 .menu-wordmark-subline {
@@ -5604,6 +5668,29 @@ html, body, #root {
 @keyframes menuSystemPulse {
   0%, 100% { opacity: 0.45; }
   50% { opacity: 1; }
+}
+
+@keyframes menuTitleNativeParticleDrift {
+  0%, 7% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0);
+  }
+  14%, 52% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  67% {
+    opacity: 0.82;
+    transform: translate3d(var(--particle-mid-x), var(--particle-mid-y), 0);
+  }
+  83% {
+    opacity: 0.32;
+    transform: translate3d(var(--particle-end-x), var(--particle-end-y), 0);
+  }
+  94%, 100% {
+    opacity: 0;
+    transform: translate3d(var(--particle-end-x), var(--particle-end-y), 0);
+  }
 }
 
 @keyframes menuTitlePhaseCyan {
@@ -6972,6 +7059,19 @@ html, body, #root {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .menu-title-native-particles {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .menu-title-art::before,
+  .menu-title-art::after {
+    animation: none;
+    opacity: 0;
+    transform: none;
   }
 }
 
