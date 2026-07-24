@@ -32,12 +32,10 @@ const PHOTO_ARCHIVE_BY_IMAGE: Record<string, string> = {
   '/assets/photo_observatory.jpg': 'photo_observatory',
   '/assets/nova_observatory.png': 'photo_observation_room_back',
   '/assets/nova_id_photo.png': 'photo_nova_id',
+  '/assets/nova_id_photo_en.png': 'photo_nova_id',
 };
 
 const ANOMALY_ARCHIVE_BY_NODE_ID: Record<string, string[]> = {
-  ch1_draft1: ['anomaly_unsent_n7_draft'],
-  ch2_draft1: ['anomaly_unsent_n7_draft'],
-  ch3_draft1: ['anomaly_encrypted_observatory_draft'],
   ch4_log1: ['anomaly_hidden_log_nova07'],
   ch5a_msg3: ['anomaly_nova06_warning'],
   ch5b_file10: ['anomaly_observer_file', 'profile_truth'],
@@ -190,22 +188,6 @@ export const ARCHIVE_ENTRIES: ArchiveDefinition[] = [
     order: 180,
   },
   {
-    id: 'anomaly_unsent_n7_draft',
-    category: 'anomaly',
-    title: '未发送草稿 / 02:17',
-    description: '不对\n我明明是第一次和对方说起 N7',
-    chapter: '章末异常草稿',
-    order: 210,
-  },
-  {
-    id: 'anomaly_encrypted_observatory_draft',
-    category: 'anomaly',
-    title: '加密草稿 / 03:07',
-    description: '我又看见那个影子了\n它还在观测室',
-    chapter: '第三章：异常',
-    order: 220,
-  },
-  {
     id: 'anomaly_hidden_log_nova07',
     category: 'anomaly',
     title: '隐藏日志：NOVA-07',
@@ -258,7 +240,7 @@ export const ARCHIVE_ENTRIES: ArchiveDefinition[] = [
     category: 'profile',
     title: '姓名：NOVA ARLEN',
     subtitle: '身份状态：已确认',
-    description: '年龄：20\n职位：Aurora 导航员\nObserver 链路：已确认\n备注：对象与第七协议关联',
+    description: '年龄：23\n职位：Aurora 领航员\n部门：领航部\n档案编号：NA-0523-19\n权限等级：LEVEL 5',
     image: '/assets/nova_id_photo.png',
     order: 330,
   },

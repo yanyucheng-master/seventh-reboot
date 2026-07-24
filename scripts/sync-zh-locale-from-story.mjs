@@ -52,16 +52,17 @@ console.log(`Wrote ${Object.keys(zhLocale.nodes).length} → zh-CN/story.json`);
 
 const enPath = path.join(root, 'src/i18n/locales/en-US/story.json');
 const enLocale = JSON.parse(fs.readFileSync(enPath, 'utf8'));
+const previousEnglishNodes = enLocale.nodes ?? {};
+const nextEnglishNodes = {};
 let added = 0;
 for (const [id, entry] of Object.entries(zhLocale.nodes)) {
-  if (!enLocale.nodes[id]) {
-    enLocale.nodes[id] = entry;
+  if (!previousEnglishNodes[id]) {
+    nextEnglishNodes[id] = entry;
     added += 1;
+  } else {
+    nextEnglishNodes[id] = previousEnglishNodes[id];
   }
 }
-if (added > 0) {
-  fs.writeFileSync(enPath, `${JSON.stringify(enLocale, null, 2)}\n`, 'utf8');
-  console.log(`Patched en-US with ${added} missing nodes (ZH fallback until translated)`);
-} else {
-  console.log('en-US already covers all ZH node ids');
-}
+const removed = Object.keys(previousEnglishNodes).filter(id => !zhLocale.nodes[id]).length;
+fs.writeFileSync(enPath, `${JSON.stringify({ version: 'V1.0', nodes: nextEnglishNodes }, null, 2)}\n`, 'utf8');
+console.log(`Synced en-US topology: ${added} ZH fallbacks added, ${removed} stale nodes removed`);

@@ -229,7 +229,7 @@ function checkLocaleCoverage(label, sourceNodes, localeNodes) {
   return { label, missingContent, missingChoices, cjkLeaks };
 }
 
-const zhScript = path.join(root, '..', '第七次重启_剧情文本_V1_0_航线因果闭环与自然语言精修版.txt');
+const zhScript = path.join(root, '..', '第七次重启_剧情文本_V1_0_联合密钥修订最终版.txt');
 const enScript = process.env.SEVENTH_REBOOT_EN_SOURCE;
 
 if (!fs.existsSync(zhScript)) throw new Error(`Missing ZH script: ${zhScript}`);

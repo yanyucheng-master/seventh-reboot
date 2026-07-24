@@ -1,67 +1,23 @@
 {
   "version": "V1.0-special-interactions",
   "nodes": {
-    "ch5a_auth1": { "content": "There is another sealed layer beside the outer index." },
-    "ch5a_auth2": { "content": "It is marked ‘NOVA-06 / SEALED.’" },
-    "ch5a_auth3": { "content": "She left a hint beside the verification field." },
-    "ch5a_auth4": { "content": "‘Current link number / external index number.’" },
-    "ch5a_auth5": { "content": "Looks like this time, you have to enter it for both of us." },
-    "ch5a_auth_interaction": { "content": "Joint authorization key verification" },
-    "ch5a_auth_ok1": { "content": "NOVA-06 sealed record unlocked" },
-    "ch5a_auth_ok2": { "content": "07 is the seventh link. It is this version of me." },
-    "ch5a_auth_ok3": { "content": "01 is what the system has always called you: Observer-01." },
-    "ch5a_auth_ok4": { "content": "This seal was meant for the two of us to open together from the beginning." },
-    "ch5a_auth_file": { "content": "NOVA-06 Sealed Record / Index Header||AUTHORIZATION · Current Nova outer authorization + Observer-01 index key\nACCESS · Signal layering and read-only records only\nRESIDUAL · NOVA-06 is a conditional residual, not a live consciousness\nRESTRICTION · Grants no control over the Seventh Protocol or phase core" },
-
-    "ch5a_sep_intro1": { "content": "Three signal layers detected on one carrier" },
-    "ch5a_sep_intro2": { "content": "Signal Layers Awaiting Separation||LAYER-01 · Current Nova live carrier / weak signal / no response\nLAYER-02 · NOVA-06 conditional residual / sixth-cycle preset\nLAYER-03 · Local phase-anchor core telemetry / read only" },
-    "ch5a_sep_intro3": { "content": "Signal-layer interface from the sealed record activated" },
-    "ch5a_signal_separation": { "content": "Three-layer signal separation and shared timeline alignment" },
-    "ch5a_sep_clean1": { "content": "Signal separation complete / original data intact" },
-    "ch5a_sep_clean2": { "content": "Three-Layer Signal Recovery Report||Current Nova · live carrier identified / weak link\nNOVA-06 · conditional residual identified / not a live consciousness\nPhase core · telemetry identified / no control channel\nShared timeline · aligned" },
-    "ch5a_sep_assisted1": { "content": "Signal separation complete / recovery-script stabilization enabled" },
-    "ch5a_sep_assisted2": { "content": "Three-Layer Signal Recovery Report||Current Nova · live carrier identified / weak link\nNOVA-06 · conditional residual identified / not a live consciousness\nPhase core · telemetry identified / no control channel\nShared timeline · aligned through recovery-script correction" },
-    "ch5a_sep_conclusion": { "content": "Shared Timeline / Alignment Conclusion||Current cycle · Nova enters observatory / residual appears / communications anomaly\nSixth cycle · continuity signature written / phase core pre-activation / UNKNOWN-06 message sealed\nConclusion · The observatory residual is not random. The sixth Nova’s continuity signature is being retriggered under the same conditions." },
-
-    "ch5b_power_intro1": { "content": "But the observatory does not have enough main power right now." },
-    "ch5b_power_intro2": { "content": "Life support, communications, and the core scan cannot all run at full load." },
-    "ch5b_power_intro3": { "content": "I can open a one-time power proxy for you." },
-    "ch5b_power_intro4": { "content": "You can only allocate power inside this one window." },
-    "ch5b_power_intro5": { "content": "You are not controlling the Seventh Protocol, and you cannot touch the phase core itself." },
-    "ch5b_power_interaction": { "content": "One-time power proxy / three-phase routing" },
-    "ch5b_power_excellent1": { "content": "One-time power proxy complete / all three phases stabilized quickly" },
-    "ch5b_power_excellent2": { "content": "Nicely done. Not one branch left its safe window." },
-    "ch5b_power_excellent3": { "content": "NOVA-06 preset residual: Full data delivered. Do not treat me as another living version of her." },
-    "ch5b_power_stable1": { "content": "One-time power proxy complete / routing stable" },
-    "ch5b_power_stable2": { "content": "It is stable. That is enough for us to go in and look." },
-    "ch5b_power_emergency1": { "content": "One-time power proxy complete / Nova emergency balance engaged" },
-    "ch5b_power_emergency_glitch": { "content": "Packet loss: 0.8 seconds / link recovered automatically" },
-    "ch5b_power_emergency2": { "content": "I handled the last bit of balancing. Do not worry." },
-    "ch5b_power_emergency3": { "content": "No one is hurt and the link is still up. Let’s keep going." },
-
-    "ch5b_capacity1": { "content": "OBSERVER-01 INDEX CAPACITY INSUFFICIENT\nADDITIONAL SPACE REQUIRED\nExternal memory index capacity: 99.97%" },
-    "ch5b_capacity2": { "content": "There is one more block of core-scan data to write." },
-    "ch5b_capacity3": { "content": "We have to place one anchor in the temporary seal first." },
-    "ch5b_capacity4": { "content": "It will only go quiet for a while. It is not being deleted." },
-    "ch5b_capacity5": { "content": "Whichever one you choose cannot change how far we make it in the end." },
-    "ch5b_memory_seal": { "content": "Temporary memory capacity management" },
-    "ch5b_seal_board1": { "content": "Why does this photo make me want to laugh?" },
-    "ch5b_seal_board2": { "content": "I cannot remember what the joke was." },
-    "ch5b_seal_flower1": { "content": "I know it should not have been there." },
-    "ch5b_seal_flower2": { "content": "But I forgot why seeing it made me so happy." },
-    "ch5b_seal_goodnight1": { "content": "Did we used to say something around this time?" },
-    "ch5b_seal_goodnight2": { "content": "Never mind. Maybe I forgot again." },
-    "ch5b_capacity_merge": { "content": "The temporary location is recorded. Let’s continue." },
-
-    "fin_temp_restore1": { "content": "One temporarily sealed memory anchor detected" },
-    "fin_temp_restore2": { "content": "Wait. There is still one we left outside for a while." },
-    "fin_temp_restore3": { "content": "Let’s bring it back first." },
-    "fin_memory_restore": { "content": "Temporary sealed-anchor restoration" },
-    "fin_restore_board1": { "content": "Temporary anchor restored / maintenance_board" },
-    "fin_restore_board2": { "content": "Wait. I put those eyes on it myself?\nI actually got scared by yesterday’s version of me." },
-    "fin_restore_flower1": { "content": "Temporary anchor restored / white_flower" },
-    "fin_restore_flower2": { "content": "I remember.\nIt should not have survived, but it bloomed anyway." },
-    "fin_restore_goodnight1": { "content": "Temporary anchor restored / goodnight" },
-    "fin_restore_goodnight2": { "content": "So that was the phrase.\nNo wonder every time we disconnected, I felt as though something was still missing." }
+    "ch3_airlock_interaction": {
+      "content": "Observation isolation and manual equalization"
+    },
+    "ch5a_auth_input": {
+      "content": "Joint authorization key"
+    },
+    "ch5b_power_interaction": {
+      "content": "Emergency power routing / first submission"
+    },
+    "ch5b_power_retry_interaction": {
+      "content": "Emergency power routing / final submission"
+    },
+    "ch5b_memory_seal": {
+      "content": "Temporary memory capacity"
+    },
+    "fin_memory_restore": {
+      "content": "Restore temporarily sealed anchor"
+    }
   }
 }

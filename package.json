@@ -19,7 +19,9 @@
     "test:interactions": "npx tsx scripts/test-special-interactions.ts",
     "test:integrity": "npx tsx scripts/test-game-integrity.ts",
     "test:avatar": "npx tsx scripts/test-avatar-system.ts",
-    "test:delivery": "npx tsx scripts/test-delivery-system.ts"
+    "test:delivery": "npx tsx scripts/test-delivery-system.ts",
+    "test:reboot-cycle": "npx tsx scripts/test-fatal-reboot-cycle.ts",
+    "test:immersive-story": "npx tsx scripts/test-immersive-story.ts"
   },
   "dependencies": {
     "lucide-react": "^1.24.0",

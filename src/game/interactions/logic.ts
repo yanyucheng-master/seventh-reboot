@@ -1,18 +1,55 @@
+import type { InteractionCondition, InteractionPrerequisite } from '../story';
 import type {
+  BulkheadFailureReason,
+  BulkheadResult,
   GameStats,
-  PowerRoutingResult,
+  PowerFailureReason,
   SealableMemoryAnchor,
   SpecialInteractionCompletion,
-  SpecialInteractionKind,
 } from '../types';
 
+export type BulkheadSealTarget = 'observation' | 'hallway';
+export type BulkheadEqualizeTarget = 'hallway' | 'observation' | 'purge';
+
+export type BulkheadDecision = {
+  sealTarget: BulkheadSealTarget;
+  equalizeTarget: BulkheadEqualizeTarget;
+  elapsedMs: number;
+  timedOut?: boolean;
+};
+
+export type BulkheadEvaluation = {
+  result: BulkheadResult;
+  failureReason?: BulkheadFailureReason;
+};
+
+const BULKHEAD_INJURY_AFTER_MS = 15_000;
+
+export function evaluateBulkheadDecision(decision: BulkheadDecision): BulkheadEvaluation {
+  if (decision.timedOut) return { result: 'fatal', failureReason: 'seal_timeout' };
+  if (decision.sealTarget === 'hallway') {
+    return { result: 'fatal', failureReason: 'hallway_sealed' };
+  }
+  if (decision.equalizeTarget === 'purge') {
+    return { result: 'fatal', failureReason: 'transition_purged' };
+  }
+  if (decision.equalizeTarget === 'observation') {
+    return { result: 'fatal', failureReason: 'wrong_observation_door' };
+  }
+  return { result: decision.elapsedMs >= BULKHEAD_INJURY_AFTER_MS ? 'injured' : 'safe' };
+}
+
 export type PowerChannel = 'lifeSupport' | 'communications' | 'coreScan';
-
 export type PowerAllocation = Record<PowerChannel, number>;
+export type PowerThresholds = Record<PowerChannel, number>;
+export type PowerStage = 'transit' | 'core_read';
 
-export type PowerThresholds = Partial<Record<PowerChannel, number>>;
+export const POWER_CHANNELS: PowerChannel[] = ['lifeSupport', 'communications', 'coreScan'];
 
-const POWER_CHANNELS: PowerChannel[] = ['lifeSupport', 'communications', 'coreScan'];
+export const POWER_STAGE_THRESHOLDS: Record<PowerStage, PowerThresholds> = {
+  transit: { lifeSupport: 50, communications: 20, coreScan: 10 },
+  core_read: { lifeSupport: 30, communications: 25, coreScan: 35 },
+};
 
 export function normalizeAuthorizationKey(value: string): string {
   return value
@@ -50,44 +87,56 @@ export function rebalancePowerAllocation(
   };
 }
 
-/** 在线性动画中保持三个通道为整数，且每一帧总和严格等于 100。 */
-export function interpolatePowerAllocation(
-  from: PowerAllocation,
-  to: PowerAllocation,
-  progress: number,
-): PowerAllocation {
-  const ratio = Math.max(0, Math.min(1, Number.isFinite(progress) ? progress : 0));
-  const raw = POWER_CHANNELS.map(channel => {
-    const value = from[channel] + (to[channel] - from[channel]) * ratio;
-    return { channel, value, base: Math.floor(value), fraction: value - Math.floor(value) };
-  });
-  let remainder = 100 - raw.reduce((sum, item) => sum + item.base, 0);
-  const ranked = [...raw].sort((a, b) => b.fraction - a.fraction);
-  for (let index = 0; index < ranked.length && remainder > 0; index += 1, remainder -= 1) {
-    ranked[index].base += 1;
-  }
-  return Object.fromEntries(raw.map(item => [item.channel, item.base])) as PowerAllocation;
-}
-
 export function isPowerAllocationStable(
   allocation: PowerAllocation,
   thresholds: PowerThresholds,
 ): boolean {
-  return POWER_CHANNELS.every(channel => allocation[channel] >= (thresholds[channel] ?? 0));
+  return POWER_CHANNELS.every(channel => allocation[channel] >= thresholds[channel]);
 }
 
-export function classifyPowerRoutingResult(
-  usedEmergencyAssist: boolean,
-  phaseElapsedSeconds: number[],
-): PowerRoutingResult {
-  if (usedEmergencyAssist) return 'emergency_assist';
-  return phaseElapsedSeconds.length === 3 && phaseElapsedSeconds.every(seconds => seconds <= 10)
-    ? 'excellent'
-    : 'stable';
+export function findPowerFailureReason(
+  stages: Record<PowerStage, PowerAllocation>,
+  timedOut = false,
+): PowerFailureReason | undefined {
+  if (timedOut) return 'timeout';
+  for (const stage of ['transit', 'core_read'] as const) {
+    const allocation = stages[stage];
+    const thresholds = POWER_STAGE_THRESHOLDS[stage];
+    if (allocation.lifeSupport < thresholds.lifeSupport) return 'life_support_below_minimum';
+    if (allocation.communications < thresholds.communications) return 'communications_interrupted';
+    if (allocation.coreScan === 0) return 'return_core_cutoff';
+    if (allocation.coreScan < thresholds.coreScan) return 'core_scan_underpowered';
+  }
+  return undefined;
 }
 
-export function isSignalAligned(value: number, target: number, tolerance: number): boolean {
-  return Math.abs(value - target) <= tolerance;
+function interactionResultForStats(current: GameStats, kind: InteractionCondition['kind']): string | undefined {
+  switch (kind) {
+    case 'bulkhead-isolation':
+      return current.bulkheadResult;
+    case 'critical-log-password':
+      return current.jointAuthorizationCompleted ? 'success' : undefined;
+    case 'power-routing':
+      return current.powerRoutingResult;
+    case 'memory-seal':
+      return current.temporaryAnchorSealed;
+    case 'memory-restore':
+      return current.memoryRestoreResult;
+  }
+}
+
+export function matchesInteractionCondition(
+  current: GameStats,
+  condition: InteractionCondition,
+): boolean {
+  return interactionResultForStats(current, condition.kind) === condition.routeKey;
+}
+
+export function matchesInteractionPrerequisite(
+  current: GameStats,
+  prerequisite: InteractionPrerequisite,
+): boolean {
+  return (current as unknown as Record<string, unknown>)[prerequisite.key] === prerequisite.value;
 }
 
 export function applySpecialInteractionCompletion(
@@ -95,91 +144,73 @@ export function applySpecialInteractionCompletion(
   completion: SpecialInteractionCompletion,
 ): GameStats {
   switch (completion.kind) {
+    case 'bulkhead-isolation':
+      return {
+        ...current,
+        bulkheadResult: completion.routeKey,
+        bulkheadInjured: completion.routeKey === 'injured',
+        ...(completion.failureReason ? { bulkheadFailureReason: completion.failureReason } : {}),
+        ...(completion.routeKey === 'fatal'
+          ? {
+              earlyFailureCause: 'bulkhead_failure' as const,
+              pendingReboot08: true,
+            }
+          : {}),
+      };
     case 'critical-log-password':
+      if (completion.routeKey === 'retry') return current;
       return {
         ...current,
+        jointAuthorizationCompleted: true,
         criticalLogUnlocked: true,
-        novaHintStage: 0,
-        novaHintInteractionKind: undefined,
-        passwordBypassedByNova06: current.passwordBypassedByNova06 || completion.completedByNova06 === true,
-        nova06FirstOverrideSeen: current.nova06FirstOverrideSeen || completion.completedByNova06 === true,
-        nova06OverrideTriggered: current.nova06OverrideTriggered || completion.completedByNova06 === true,
       };
-    case 'signal-separation':
+    case 'power-routing': {
+      if (completion.attempt === 1 && completion.routeKey === 'success') {
+        return {
+          ...current,
+          powerRoutingAttempt: 1,
+          powerRoutingResult: 'first_success',
+          nova06PowerOverrideExpired: true,
+        };
+      }
+      if (completion.attempt === 1) {
+        return {
+          ...current,
+          powerRoutingAttempt: 1,
+          ...(completion.failureReason ? { powerFirstFailureReason: completion.failureReason } : {}),
+          nova06PowerOverrideUsed: true,
+          nova06PowerOverrideExpired: true,
+        };
+      }
+      if (completion.routeKey === 'success') {
+        return {
+          ...current,
+          powerRoutingAttempt: 2,
+          powerRoutingResult: 'retry_success',
+        };
+      }
       return {
         ...current,
-        signalSeparationResult: completion.routeKey,
-        signalCurrentNovaRecovered: true,
-        signalNova06Recovered: true,
-        signalCoreTelemetryRecovered: true,
-        timelineAlignmentCompleted: true,
-        novaHintStage: 0,
-        novaHintInteractionKind: undefined,
-        signalCompletedByNova06: current.signalCompletedByNova06 || completion.completedByNova06 === true,
-        timelineCompletedByNova06: current.timelineCompletedByNova06 || completion.completedByNova06 === true,
-        nova06FirstOverrideSeen: current.nova06FirstOverrideSeen || completion.completedByNova06 === true,
-        nova06OverrideTriggered: current.nova06OverrideTriggered || completion.completedByNova06 === true,
+        powerRoutingAttempt: 2,
+        powerRoutingResult: 'fatal',
+        earlyFailureCause: 'power_routing_failure',
+        pendingReboot08: true,
       };
-    case 'power-routing':
-      return {
-        ...current,
-        powerRoutingResult: completion.routeKey,
-        novaHintStage: 0,
-        novaHintInteractionKind: undefined,
-        powerCompletedByNova06: current.powerCompletedByNova06 || completion.completedByNova06 === true,
-        nova06FirstOverrideSeen: current.nova06FirstOverrideSeen || completion.completedByNova06 === true,
-        nova06OverrideTriggered: current.nova06OverrideTriggered || completion.completedByNova06 === true,
-      };
+    }
     case 'memory-seal':
       return {
         ...current,
         temporaryAnchorSealed: completion.anchor,
         temporaryAnchorRestored: false,
-        novaHintStage: 0,
-        novaHintInteractionKind: undefined,
+        memoryRestoreResult: undefined,
       };
-    case 'memory-restore': {
-      const next: GameStats = {
+    case 'memory-restore':
+      return {
         ...current,
-        temporaryAnchorRestored: true,
-        novaHintStage: 0,
-        novaHintInteractionKind: undefined,
+        temporaryAnchorRestored: completion.routeKey !== 'none',
+        memoryRestoreResult: completion.routeKey,
       };
-      delete next.temporaryAnchorSealed;
-      return next;
-    }
   }
-}
-
-/** 接管脚本已经真正写入，但演出尚未结束时先落盘，防止刷新后重复执行。 */
-export function applyNova06OverrideCheckpoint(
-  current: GameStats,
-  kind: SpecialInteractionKind,
-): GameStats {
-  const common = {
-    ...current,
-    nova06FirstOverrideSeen: true,
-    nova06OverrideTriggered: true,
-  };
-  if (kind === 'critical-log-password') {
-    return { ...common, criticalLogUnlocked: true, passwordBypassedByNova06: true };
-  }
-  if (kind === 'signal-separation') {
-    return {
-      ...common,
-      signalSeparationResult: 'clean',
-      signalCurrentNovaRecovered: true,
-      signalNova06Recovered: true,
-      signalCoreTelemetryRecovered: true,
-      timelineAlignmentCompleted: true,
-      signalCompletedByNova06: true,
-      timelineCompletedByNova06: true,
-    };
-  }
-  if (kind === 'power-routing') {
-    return { ...common, powerRoutingResult: 'stable', powerCompletedByNova06: true };
-  }
-  return common;
 }
 
 export function isSealableMemoryAnchor(value: string): value is SealableMemoryAnchor {

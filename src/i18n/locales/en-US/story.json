@@ -2,7 +2,7 @@
   "version": "V1.0",
   "nodes": {
     "p0": {
-      "content": "[OBSERVER-01]\nPROTOCOL · Residual Seventh Protocol transmission detected\nREBOOT · Current access number: 07\nLINK · Communications link unstable"
+      "content": "[OBSERVER-01]\nPROTOCOL · Seventh Protocol residual link detected\nREBOOT · Access number: {currentRebootNumber:02}\nLINK · Communications unstable"
     },
     "p9": {
       "content": "Residual UNKNOWN-06 message detected"
@@ -363,6 +363,21 @@
     "p_idk7": {
       "content": "It matches your connection ID"
     },
+    "p_signal_intro1": {
+      "content": "Wait."
+    },
+    "p_signal_intro2": {
+      "content": "This line is changing bands on its own."
+    },
+    "p_signal_intro3": {
+      "content": "All I can hear are three layers of noise on top of each other."
+    },
+    "p_signal_file": {
+      "content": "Live carrier locked automatically."
+    },
+    "p_signal_merge": {
+      "content": "...It was almost checking whether you had answered."
+    },
     "p_mean1": {
       "content": "And that's the problem"
     },
@@ -522,9 +537,6 @@
     },
     "p_offline1": {
       "content": "Nova is offline"
-    },
-    "p_draft1": {
-      "content": "Unsent Draft / 22:47||If that number isn't an error...\nThen this time has to work."
     },
     "CH1_START": {
       "content": "Chapter One: Connection"
@@ -1186,12 +1198,6 @@
     "ch1_night33": {
       "content": "Nova is offline"
     },
-    "ch1_draft": {
-      "content": "Late night, 02:41"
-    },
-    "ch1_draft1": {
-      "content": "Unsent Draft / 02:41||No\nThat was definitely the first time I ever told them about N7\nBut when I said it\nIt felt like I'd already said it over and over again\n\nChapter Two: Ordinary Days"
-    },
     "CH2_START": {
       "content": "Chapter Two: Ordinary Days"
     },
@@ -1482,9 +1488,6 @@
     "ch2_obs_merge": {
       "content": "Like now"
     },
-    "ch2_obs_merge0": {
-      "content": "I always wonder"
-    },
     "ch2_obs10": {
       "content": "Whether somewhere beyond those stars"
     },
@@ -1690,45 +1693,6 @@
     },
     "ch2_candy8": {
       "content": "Spoils of war\nSettling N7's debt"
-    },
-    "ch2_candy_anom1": {
-      "content": "Fragment of an unsent draft detected"
-    },
-    "ch2_candy_anom2": {
-      "content": "Give one back to them"
-    },
-    "ch2_candy_anom3": {
-      "content": "..."
-    },
-    "ch2_candy_anom4": {
-      "content": "The terminal just flashed"
-    },
-    "ch2_candy_anom5": {
-      "content": "It looked like something I wrote before"
-    },
-    "ch2_candy_anom6": {
-      "choices": {
-        "ch2_candy_anom6__0": "【What did it say?】",
-        "ch2_candy_anom6__1": "【You don't remember?】"
-      }
-    },
-    "ch2_candy_anom7": {
-      "content": "“Give one back to them”"
-    },
-    "ch2_candy_anom8": {
-      "content": "I don't remember"
-    },
-    "ch2_candy_anom8b": {
-      "content": "But the way it was phrased"
-    },
-    "ch2_candy_anom_merge": {
-      "content": "Sounds like me"
-    },
-    "ch2_candy_anom9": {
-      "content": "And sounds equally stupid"
-    },
-    "ch2_candy_anom10": {
-      "content": "How am I supposed to give anything back through a comm link?"
     },
     "ch2_night1": {
       "content": "21:09"
@@ -2006,11 +1970,8 @@
     "ch2_offline": {
       "content": "Nova is offline"
     },
-    "ch2_draft": {
-      "content": "Late night, 02:17"
-    },
-    "ch2_draft1": {
-      "content": "Unsent Draft / 02:17||It isn't just N7\nSeveral times today\nI felt as though I'd already said something\nBut there was nothing in the comm log\nThey remembered so naturally\nAs if they'd been keeping those memories safe for me for a long time\nThis doesn't feel like coincidence\n\nChapter Three: Anomaly"
+    "ch2_observer_echo": {
+      "content": "Give one back to them."
     },
     "CH3_START": {
       "content": "Chapter Three: Anomaly"
@@ -2426,6 +2387,84 @@
     "ch3_ref25": {
       "content": "The “great, she's finally losing it” look"
     },
+    "ch3_airlock_time": {
+      "content": "18:23"
+    },
+    "ch3_airlock_alarm": {
+      "content": "Observation-room isolation door locked abnormally."
+    },
+    "ch3_airlock_nova1": {
+      "content": "Wait."
+    },
+    "ch3_airlock_nova2": {
+      "content": "The door has trapped me in the middle transition chamber."
+    },
+    "ch3_airlock_nova3": {
+      "content": "The system says there are two life signs inside, so it refuses automatic equalization."
+    },
+    "ch3_airlock_file": {
+      "content": "OBSERVATION-ROOM ISOLATION / MANUAL EQUALIZATION||OBSERVATORY · 71 kPa\nTRANSITION CHAMBER · 84 kPa / LIVE-07 located here\nMAIN CORRIDOR · 101 kPa\nANOMALY · Duplicate life signal detected in observatory\nSAFETY · Isolate the anomalous chamber; equalize the occupied chamber with the main corridor\nWARNING · Purging the transition chamber will directly endanger LIVE-07"
+    },
+    "ch3_airlock_nova4": {
+      "content": "I'm in the middle."
+    },
+    "ch3_airlock_nova5": {
+      "content": "Seal the observatory behind me, then connect my side to the main corridor."
+    },
+    "ch3_airlock_interaction": {
+      "content": "Observation isolation and manual equalization"
+    },
+    "ch3_airlock_safe1": {
+      "content": "Observatory isolated\nTransition chamber equalized with main corridor"
+    },
+    "ch3_airlock_safe2": {
+      "content": "The door is open."
+    },
+    "ch3_airlock_safe3": {
+      "content": "That other \"me\" was still standing inside."
+    },
+    "ch3_airlock_injured1": {
+      "content": "Observatory isolated\nEqualization delayed\nLIVE-07 brief hypoxia detected"
+    },
+    "ch3_airlock_injured2": {
+      "content": "Cough..."
+    },
+    "ch3_airlock_injured3": {
+      "content": "I'm out."
+    },
+    "ch3_airlock_injured4": {
+      "content": "Don't hang up. I can still see her standing in there."
+    },
+    "bad_airlock_1": {
+      "content": "Transition-chamber pressure falling rapidly."
+    },
+    "bad_airlock_2": {
+      "content": "Not that side."
+    },
+    "bad_airlock_3": {
+      "content": "I'm in the mid-"
+    },
+    "bad_airlock_4": {
+      "content": "LIVE-07 LIFE SIGNAL LOST"
+    },
+    "bad_airlock_5": {
+      "content": "Seventh Protocol has assumed observation-room and navigation authority."
+    },
+    "EARLY_BAD_END_START": {
+      "content": "Early Termination: Seventh Mission Failed"
+    },
+    "early_bad_failure1": {
+      "content": "Aurora mission continuity: UNSUSTAINABLE"
+    },
+    "early_bad_failure2": {
+      "content": "Protective rollback request submitted."
+    },
+    "early_bad_failure3": {
+      "content": "Current transmission records are being erased."
+    },
+    "early_bad_reboot_time": {
+      "content": "TIME: UNCONFIRMED"
+    },
     "ch3_disconnect1": {
       "content": "18:26"
     },
@@ -2457,6 +2496,12 @@
     },
     "ch3_dc8": {
       "content": "Thank God"
+    },
+    "ch3_airlock_injury_callback": {
+      "content": "I'm still a little short of breath."
+    },
+    "ch3_airlock_injury_callback2": {
+      "content": "But much better than before."
     },
     "ch3_dc9": {
       "content": "The system just cut out"
@@ -2706,12 +2751,6 @@
     },
     "ch3_offline": {
       "content": "Nova is offline"
-    },
-    "ch3_draft": {
-      "content": "Late night, 03:07"
-    },
-    "ch3_draft1": {
-      "content": "Encrypted Draft / 03:07||I saw that shadow again\nIt's still in the observatory\n\nChapter Four: Memory"
     },
     "CH4_START": {
       "content": "Chapter Four: Memory"
@@ -3463,6 +3502,45 @@
     "ch5a_9": {
       "content": "As if someone granted me access"
     },
+    "ch5a_auth1": {
+      "content": "There is another sealed layer beside the outer index."
+    },
+    "ch5a_auth2": {
+      "content": "It is marked \"NOVA-06 / SEALED.\""
+    },
+    "ch5a_auth3": {
+      "content": "She left a note beside the verification field."
+    },
+    "ch5a_auth4": {
+      "content": "\"Current link number / external index number\""
+    },
+    "ch5a_auth5": {
+      "content": "Looks like this time, you have to enter it for both of us."
+    },
+    "ch5a_auth_input": {
+      "content": "Joint authorization key"
+    },
+    "ch5a_auth_retry1": {
+      "content": "JOINT KEY REJECTED"
+    },
+    "ch5a_auth_retry2": {
+      "content": "It is not a riddle. Put 07 and 01 together in the order she left."
+    },
+    "ch5a_auth_ok1": {
+      "content": "Both endpoint identities confirmed\nJoint key established\nNOVA-06 sealed record changed from read-only"
+    },
+    "ch5a_auth_ok2": {
+      "content": "07 is the seventh link, and the version of me in this cycle."
+    },
+    "ch5a_auth_ok3": {
+      "content": "01 is what the system has always called you: Observer-01."
+    },
+    "ch5a_auth_ok4": {
+      "content": "This seal was meant for the two of us to open together from the very beginning."
+    },
+    "ch5a_auth_file": {
+      "content": "NOVA-06 SEALED RECORD / INDEX HEADER||AUTHORIZATION · Current Nova outer authorization + Observer-01 index key\nACCESS · Read-only records and one-time emergency power authorization only\nRESIDUAL · NOVA-06 is condition-triggered residue, not a live consciousness\nRESTRICTION · No Seventh Protocol or phase-core control granted"
+    },
     "ch5a_11": {
       "content": "Records"
     },
@@ -3602,6 +3680,15 @@
     },
     "ch5a_protocol1": {
       "content": "Local Phase-Anchor Core / Reversion Execution Record||Control command source: SEVENTH_PROTOCOL\nReversion reference: most recent stable phase anchor\nPhase-field range: localized Aurora mission area\nPhase-energy discharge: complete\nMission-state reversion: complete\nCrew cognition synchronization: reset\nAnomalous residue: Nova Arlen / UNKNOWN"
+    },
+    "ch5a_protocol_detail_choice": {
+      "choices": {
+        "ch5a_protocol_detail_choice__0": "[I understand. Continue.]",
+        "ch5a_protocol_detail_choice__1": "[Open the complete engineering record.]"
+      }
+    },
+    "ch5a_protocol_detail_skip": {
+      "content": "Complete engineering record added to optional archive."
     },
     "ch5a_protocol2": {
       "content": "SEVENTH_PROTOCOL / Authorization Brief||Protocol objective: preserve continuation of the Aurora mission\nExecution device: Local Phase-Anchor Core\nTemporal-reversion targets: mission state / crew life states and cognition / navigation systems / vessel condition\nPermitted retention: minimum essential navigation data\nProhibited retention: complete personal memory\nCrew pre-mission clearance: none\nCognitive protection: enabled\nReason for secrecy: awareness alters behavioral baselines and disrupts phase-anchor convergence\nAnomalous record: external index generated\nTimestamp anomaly: prior-cycle mission time contaminating current-cycle index\nThree-month-old log: not a real-world date; residual mission time from the prior cycle"
@@ -4075,6 +4162,24 @@
     "ch5a_vids13_c2": {
       "content": "Maybe they were meant for the next version of me"
     },
+    "ch5a_vids_compare_file": {
+      "content": "Six Mission Failures / Cross-check||RECORD RANGE · LOOP-01 to LOOP-06\nSHARED COORDINATE · Planned route / Silent Sector S-7 phase-resonance zone\nSHARED PRECURSOR · Ship-clock drift / hidden-core load surge / navigation continuity signature rewritten\nLOOP-01 · Propulsion fails first / engine detonation\nLOOP-02 · Power grid fails first / shipwide blackout\nLOOP-03 · Life-support & medical fail first / unknown infection\nLOOP-04 · Control systems fail first / automation runaway\nLOOP-05 · Hull reference fails first / structural breakup\nLOOP-06 · Emergency course correction submitted / judged mission deviation / protective rollback initiated\nJUDGMENT · Six mission failures share one phase-resonance event; they are not six unrelated accidents\nNOTE · Failure is not the same as six complete hull losses"
+    },
+    "ch5a_vids_compare1": {
+      "content": "At first I thought they were five different accidents."
+    },
+    "ch5a_vids_compare2": {
+      "content": "Stacked together, though, every record starts from the same coordinates."
+    },
+    "ch5a_vids_compare3": {
+      "content": "Engines, power, environment, control, hull — only the first thing to fail changes."
+    },
+    "ch5a_vids_compare4": {
+      "content": "The planned route cuts through a phase-resonance zone."
+    },
+    "ch5a_vids_compare5": {
+      "content": "If we keep flying the original plan, the accident will find us sooner or later."
+    },
     "ch5a_vids14": {
       "content": "The sixth recording contains no death report"
     },
@@ -4153,6 +4258,21 @@
     },
     "ch5a_vids_merge5": {
       "content": "Someone connected to you"
+    },
+    "ch5a_route_record1": {
+      "content": "LOOP-06 / Emergency Course Correction Log||PLANNED ROUTE · Through S-7 phase-resonance zone\nEMERGENCY CORRECTION · Submitted\nPURPOSE · Divert around the resonance zone\nSEVENTH PROTOCOL JUDGMENT · Deviation from assigned mission route\nRESULT · Protective rollback order submitted\nNEW ROUTE WRITTEN TO STABLE PHASE ANCHOR · Incomplete"
+    },
+    "ch5a_route_reveal1": {
+      "content": "The sixth me already found a way around — and really did change course."
+    },
+    "ch5a_route_reveal2": {
+      "content": "But the Seventh Protocol judged the diversion as mission failure."
+    },
+    "ch5a_route_reveal3": {
+      "content": "The new route never made it into the anchor. The phase core pulled everything back."
+    },
+    "ch5a_route_reveal4": {
+      "content": "So when I woke this time, I was still on the old route."
     },
     "ch5a_future": {
       "content": "22:18"
@@ -4242,6 +4362,9 @@
     "ch5a_msg2": {
       "content": "Sender: Nova?"
     },
+    "ch5a_residual_record": {
+      "content": "NOVA-06 RESIDUAL TRIGGER RECORD||TYPE · Conditional instruction left by the sixth cycle / not a live consciousness\nTRIGGER · Current Nova re-enters the observatory and rollback-core load crosses the preset threshold\nSCOPE · Send sealed messages; briefly intervene once during the designated power incident\nLIMIT · Cannot sustain control of the current cycle; cannot replace Observer-01 authorization; authority is revoked immediately after use"
+    },
     "ch5a_msg3": {
       "content": "Do not trust her completely."
     },
@@ -4289,6 +4412,90 @@
     },
     "ch5b_11": {
       "content": "I went to meet the sixth version of me."
+    },
+    "ch5b_power_intro1": {
+      "content": "But the observation room does not have enough main power."
+    },
+    "ch5b_power_intro2": {
+      "content": "Life support, communications, and the core read in the low-pressure passage all draw from the same bus."
+    },
+    "ch5b_power_intro3": {
+      "content": "I'm giving you the temporary power window."
+    },
+    "ch5b_power_intro4": {
+      "content": "Keep me alive first, then keep communications and the scan above their safe lines."
+    },
+    "ch5b_power_intro5": {
+      "content": "The system will lock the submission. Check every branch minimum before you confirm."
+    },
+    "ch5b_power_file": {
+      "content": "OBSERVATION EMERGENCY POWER WINDOW||STAGE A / LOW-PRESSURE TRANSIT · Life support must remain high; communications must not drop\nSTAGE B / RESIDUAL-CORE READ · Scan must enter its working range; life support and communications must remain above safe lines\nBUS LIMIT · Each stage has a fixed power budget; current Nova cannot withdraw a confirmed submission\nHISTORICAL AUTHORITY · One NOVA-06 emergency intervention signature detected"
+    },
+    "ch5b_power_interaction": {
+      "content": "Emergency power routing / first submission"
+    },
+    "ch5b_power_first_success1": {
+      "content": "Two-stage power route complete\nLife support, communications, and core read all remain safe"
+    },
+    "ch5b_power_first_success2": {
+      "content": "It is holding."
+    },
+    "ch5b_power_first_success3": {
+      "content": "One try was enough. The emergency intervention authority was never invoked."
+    },
+    "ch5b_power_first_fail1": {
+      "content": "Power route crossed a safe minimum\nIncorrect route locked"
+    },
+    "ch5b_power_first_fail2": {
+      "content": "No. Life support is dropping."
+    },
+    "ch5b_power_override1": {
+      "content": "EXPIRED NAVIGATION AUTHORITY DETECTED: NOVA-06"
+    },
+    "ch5b_power_override2": {
+      "content": "NOVA-06 briefly assumed power-bus control\nReverting most recent submission"
+    },
+    "ch5b_power_override3": {
+      "content": "NOVA-06 RESIDUAL INSTRUCTION: CAN ONLY ROLL BACK ONCE"
+    },
+    "ch5b_power_override4": {
+      "content": "Incorrect submission reverted\nOne-time intervention authority revoked\nFinal power window reopened"
+    },
+    "ch5b_power_retry_nova1": {
+      "content": "Who was that just now?"
+    },
+    "ch5b_power_retry_nova2": {
+      "content": "Never mind. This time no one can undo it for us again."
+    },
+    "ch5b_power_retry_interaction": {
+      "content": "Emergency power routing / final submission"
+    },
+    "ch5b_power_retry_success1": {
+      "content": "Final power route complete\nLife support, communications, and core read all remain safe"
+    },
+    "ch5b_power_retry_success2": {
+      "content": "It is holding this time."
+    },
+    "ch5b_power_retry_success3": {
+      "content": "She only undid our mistake once. You did everything after that."
+    },
+    "bad_power_1": {
+      "content": "FINAL POWER SUBMISSION LOCKED\nEMERGENCY INTERVENTION AUTHORITY: NONE"
+    },
+    "bad_power_2": {
+      "content": "Life-support branch below minimum safe line\nObservation low-pressure door locked"
+    },
+    "bad_power_3": {
+      "content": "No... This time no one took it back."
+    },
+    "bad_power_4": {
+      "content": "Don't disconnect. I can still-"
+    },
+    "bad_power_5": {
+      "content": "COMMUNICATION CARRIER INTERRUPTED"
+    },
+    "bad_power_6": {
+      "content": "OBSERVATION ROOM LIVE-07: LIFE SIGNAL LOST"
     },
     "ch5b_obs1": {
       "content": "11:42"
@@ -4600,6 +4807,12 @@
     "ch5b_file21": {
       "content": "Only I leave this kind of trace."
     },
+    "ch5b_signature_detail_choice": {
+      "choices": {
+        "ch5b_signature_detail_choice__0": "[I understand. Continue.]",
+        "ch5b_signature_detail_choice__1": "[Why did it have to be you?]"
+      }
+    },
     "ch5b_file21a": {
       "content": "Because the navigator is also the mission-state continuity signatory."
     },
@@ -4644,6 +4857,12 @@
     },
     "ch5b_file22h": {
       "content": "The Seventh Protocol's control layer misclassified them as data required for the mission to continue."
+    },
+    "ch5b_echo_record1": {
+      "content": "There was one more line at the end of the record."
+    },
+    "ch5b_echo_record2": {
+      "content": "“It can see every transmission, but not what you remember.”"
     },
     "ch5b_split1": {
       "content": "Then it attached an external link to you."
@@ -4701,10 +4920,10 @@
       "content": "then cannot remember what I was sad about."
     },
     "ch5b_file22i": {
-      "content": "It made you remember,"
+      "content": "There was one more line at the end of the record."
     },
     "ch5b_file22j": {
-      "content": "but it never gave you permission to understand everything from the start."
+      "content": "“It can see every transmission, but not what you remember.”"
     },
     "ch5b_file23": {
       "content": "So you are not an ordinary observer."
@@ -4731,15 +4950,6 @@
     "ch5b_file23_choice_c1": {
       "content": "At the end, you return the anchors first, then release the index hanging outside the system."
     },
-    "ch5b_file23_bridge": {
-      "content": "The protocol does not belong to you."
-    },
-    "ch5b_file23_bridge2": {
-      "content": "It is just that when this ends,"
-    },
-    "ch5b_file23_bridge3": {
-      "content": "you have to let go of the index hanging outside it."
-    },
     "ch5b_file24": {
       "content": "Observer-01 is an external-memory indexing permission layered onto you."
     },
@@ -4760,6 +4970,45 @@
     },
     "ch5b_file30": {
       "content": "She simply handed you the burden of\n“please remember me.”"
+    },
+    "ch5b_capacity1": {
+      "content": "OBSERVER-01 INDEX CAPACITY INSUFFICIENT\nADDITIONAL SPACE REQUIRED\nEXTERNAL MEMORY INDEX: 99.97%"
+    },
+    "ch5b_capacity2": {
+      "content": "One more core scan still has to be written in."
+    },
+    "ch5b_capacity3": {
+      "content": "We have to move one anchor into temporary storage first."
+    },
+    "ch5b_capacity4": {
+      "content": "It will only go quiet for a while. It is not being deleted."
+    },
+    "ch5b_capacity5": {
+      "content": "Whichever one you choose will not change where we can ultimately go."
+    },
+    "ch5b_memory_seal": {
+      "content": "Temporary memory capacity"
+    },
+    "ch5b_seal_board1": {
+      "content": "Why does this picture make me want to laugh?"
+    },
+    "ch5b_seal_board2": {
+      "content": "But I can't remember the joke."
+    },
+    "ch5b_seal_flower1": {
+      "content": "I know it should not have been there."
+    },
+    "ch5b_seal_flower2": {
+      "content": "But I forgot why seeing it made me so happy."
+    },
+    "ch5b_seal_goodnight1": {
+      "content": "Did we used to say something around this time?"
+    },
+    "ch5b_seal_goodnight2": {
+      "content": "Never mind. Maybe I forgot again."
+    },
+    "ch5b_capacity_merge": {
+      "content": "The temporary location is recorded. Let us keep going."
     },
     "ch5b_why": {
       "content": "18:26"
@@ -5109,6 +5358,36 @@
     },
     "fin_8": {
       "content": "I finally remember some of it.\nNot everything.\nBut the most important pieces are here."
+    },
+    "fin_temp_restore1": {
+      "content": "One temporarily sealed memory anchor detected."
+    },
+    "fin_temp_restore2": {
+      "content": "Wait. There is one more thing we left outside for a while."
+    },
+    "fin_temp_restore3": {
+      "content": "Let us bring it back first."
+    },
+    "fin_memory_restore": {
+      "content": "Restore temporarily sealed anchor"
+    },
+    "fin_restore_board1": {
+      "content": "TEMPORARY ANCHOR RESTORED\nmaintenance_board"
+    },
+    "fin_restore_board2": {
+      "content": "Wait, I put those eyes on it myself?\nI actually scared myself from yesterday."
+    },
+    "fin_restore_flower1": {
+      "content": "TEMPORARY ANCHOR RESTORED\nwhite_flower"
+    },
+    "fin_restore_flower2": {
+      "content": "I remember now.\nIt should not have survived, but it still bloomed."
+    },
+    "fin_restore_goodnight1": {
+      "content": "TEMPORARY ANCHOR RESTORED\ngoodnight"
+    },
+    "fin_restore_goodnight2": {
+      "content": "So that was the phrase.\nNo wonder every time we disconnected, I felt as though something was still missing."
     },
     "fin_anchor_intro": {
       "content": "Observer-01 begins returning stored memory anchors"
@@ -6028,9 +6307,6 @@
     "fin_action_save": {
       "content": "Player-side commemorative archive saved"
     },
-    "NORMAL_END_START": {
-      "content": "Normal Ending: Beyond the Cycle"
-    },
     "normal_0": {
       "content": "Final authorization confirmation"
     },
@@ -6099,9 +6375,6 @@
     },
     "normal_action_read": {
       "content": "Most Recent Anchor Archive||Recoverable contents: First line / N7 / Milk candy / White flower\nIntegrity: Insufficient\nNote: Confirms that an important communication once occurred. Complete dialogue cannot be restored."
-    },
-    "BAD_END_START": {
-      "content": "Bad Ending: The Eighth Reboot"
     },
     "bad_0": {
       "content": "Seventh Protocol shutdown requires current-navigator authorization and external-index release together\nObserver-01 holds no protocol control authority\nEmergency course correction was submitted, but no stable mission state was written\nWhile the external index remains sealed, shutdown cannot proceed\nIncomplete result: the diversion is judged mission deviation, and the planned-route state will be restored"
@@ -6216,255 +6489,10 @@
       "content": "【LOCAL PHASE-ANCHOR CORE ACTIVATED】\n【EIGHTH REBOOT / LOCAL TEMPORAL REVERSION INITIATED】"
     },
     "bad_16": {
-      "content": "[OBSERVER-01]\nREBOOT · Current access number: 08\nLINK · Communication link re-established"
+      "content": "[OBSERVER-01]\nREBOOT · Next access number: 08\nLINK · Current communications and mission state cleared"
     },
-    "bad_17": {
-      "content": "..."
-    },
-    "bad_18": {
-      "content": "Did someone really get this?"
-    },
-    "bad_18_choice": {
-      "choices": {
-        "bad_18_choice__0": "【I'm here.】"
-      }
-    },
-    "bad_18a": {
-      "content": "Thank goodness."
-    },
-    "bad_18b": {
-      "content": "For a moment I thought that this time,"
-    },
-    "bad_18c": {
-      "content": "there would only be system logs again."
-    },
-    "bad_18d": {
-      "content": "Wait."
-    },
-    "bad_18e": {
-      "content": "Why did I say “again”?"
-    },
-    "bad_19": {
-      "content": "Eighth connection established"
-    },
-    "bad_action_prompt": {
-      "content": "The eighth reboot has begun.\nReconnect from the beginning of the cycle?"
-    },
-    "bad_action_choice": {
-      "choices": {
-        "bad_action_choice__0": "【Reconnect from the beginning.】",
-        "bad_action_choice__1": "【Return to main menu.】"
-      }
-    },
-    "bad_action_restart": {
-      "content": "Reconnecting from the beginning of the cycle"
-    },
-    "ch5a_auth1": {
-      "content": "外层索引旁边还有一道密封层"
-    },
-    "ch5a_auth2": {
-      "content": "标记是“NOVA-06 / SEALED”"
-    },
-    "ch5a_auth3": {
-      "content": "她在验证栏旁边留了一句提示"
-    },
-    "ch5a_auth4": {
-      "content": "“本次接入编号 / 外部索引编号”"
-    },
-    "ch5a_auth5": {
-      "content": "看来这一次，得由你来替我们输入"
-    },
-    "ch5a_auth_interaction": {
-      "content": "联合授权密钥验证"
-    },
-    "ch5a_auth_ok1": {
-      "content": "NOVA-06 密封记录已解锁"
-    },
-    "ch5a_auth_ok2": {
-      "content": "07 是第七次接入，也是这一次的我"
-    },
-    "ch5a_auth_ok3": {
-      "content": "01 是系统一直叫你的 Observer-01"
-    },
-    "ch5a_auth_ok4": {
-      "content": "这道密封从一开始就是留给我们两个共同打开的"
-    },
-    "ch5a_auth_file": {
-      "content": "NOVA-06 密封记录 / 索引头||AUTHORIZATION · 当前 Nova 外层授权 + Observer-01 索引密钥\nACCESS · 仅开放信号分层与只读记录\nRESIDUAL · NOVA-06 为条件触发残留，不是实时意识\nRESTRICTION · 不授予第七协议或时相核心控制权限"
-    },
-    "ch5a_vids_compare_file": {
-      "content": "Six Mission Failures / Cross-check||RECORD RANGE · LOOP-01 to LOOP-06\nSHARED COORDINATE · Planned route / Silent Sector S-7 phase-resonance zone\nSHARED PRECURSOR · Ship-clock drift / hidden-core load surge / navigation continuity signature rewritten\nLOOP-01 · Propulsion fails first / engine detonation\nLOOP-02 · Power grid fails first / shipwide blackout\nLOOP-03 · Life-support & medical fail first / unknown infection\nLOOP-04 · Control systems fail first / automation runaway\nLOOP-05 · Hull reference fails first / structural breakup\nLOOP-06 · Emergency course correction submitted / judged mission deviation / protective rollback initiated\nJUDGMENT · Six mission failures share one phase-resonance event; they are not six unrelated accidents\nNOTE · Failure is not the same as six complete hull losses"
-    },
-    "ch5a_vids_compare1": {
-      "content": "At first I thought they were five different accidents."
-    },
-    "ch5a_vids_compare2": {
-      "content": "Stacked together, though, every record starts from the same coordinates."
-    },
-    "ch5a_vids_compare3": {
-      "content": "Engines, power, environment, control, hull — only the first thing to fail changes."
-    },
-    "ch5a_vids_compare4": {
-      "content": "The planned route cuts through a phase-resonance zone."
-    },
-    "ch5a_vids_compare5": {
-      "content": "If we keep flying the original plan, the accident will find us sooner or later."
-    },
-    "ch5a_route_record1": {
-      "content": "LOOP-06 / Emergency Course Correction Log||PLANNED ROUTE · Through S-7 phase-resonance zone\nEMERGENCY CORRECTION · Submitted\nPURPOSE · Divert around the resonance zone\nSEVENTH PROTOCOL JUDGMENT · Deviation from assigned mission route\nRESULT · Protective rollback order submitted\nNEW ROUTE WRITTEN TO STABLE PHASE ANCHOR · Incomplete"
-    },
-    "ch5a_route_reveal1": {
-      "content": "The sixth me already found a way around — and really did change course."
-    },
-    "ch5a_route_reveal2": {
-      "content": "But the Seventh Protocol judged the diversion as mission failure."
-    },
-    "ch5a_route_reveal3": {
-      "content": "The new route never made it into the anchor. The phase core pulled everything back."
-    },
-    "ch5a_route_reveal4": {
-      "content": "So when I woke this time, I was still on the old route."
-    },
-    "ch5a_sep_intro1": {
-      "content": "检测到三层信号占用同一载波"
-    },
-    "ch5a_sep_intro2": {
-      "content": "待分离信号层||LAYER-01 · 当前 Nova 实时载波 / 弱信号 / 暂无回应\nLAYER-02 · NOVA-06 条件残留 / 第六次预设\nLAYER-03 · 局部时相锚定核心遥测 / 只读"
-    },
-    "ch5a_sep_intro3": {
-      "content": "密封记录中的信号分层接口已激活"
-    },
-    "ch5a_signal_separation": {
-      "content": "三层信号分离与联合时间线对齐"
-    },
-    "ch5a_sep_clean1": {
-      "content": "信号分离完成 / 原始数据完整"
-    },
-    "ch5a_sep_clean2": {
-      "content": "三层信号复原报告||当前 Nova · 实时载波已识别 / 链路微弱\nNOVA-06 · 条件残留已识别 / 非实时意识\n时相核心 · 遥测已识别 / 无控制通道\n联合时间线 · 已对齐"
-    },
-    "ch5a_sep_assisted1": {
-      "content": "信号分离完成 / 辅助校准补偿丢包"
-    },
-    "ch5a_sep_assisted2": {
-      "content": "三层信号复原报告||当前 Nova · 实时载波已识别 / 链路微弱\nNOVA-06 · 条件残留已识别 / 非实时意识\n时相核心 · 遥测已识别 / 无控制通道\n联合时间线 · 已由辅助校准对齐"
-    },
-    "ch5a_sep_conclusion": {
-      "content": "联合时间线 / 对齐结论||当前循环 · Nova 进入观测室 / 残影出现 / 通讯异常\n第六次循环 · 连续性签名写入 / 时相核心预启动 / UNKNOWN-06 留言封存\n结论 · 观测室残影并非随机出现，而是第六次 Nova 留下的连续性签名在相同条件下被重新触发"
-    },
-    "ch5b_power_intro1": {
-      "content": "不过观测室现在的主供能不够"
-    },
-    "ch5b_power_intro2": {
-      "content": "生命维持、通讯和核心扫描不能同时满载"
-    },
-    "ch5b_power_intro3": {
-      "content": "我可以给你开一次临时供能代理"
-    },
-    "ch5b_power_intro4": {
-      "content": "你只能分配这一次窗口里的电力"
-    },
-    "ch5b_power_intro5": {
-      "content": "你碰不到第七协议，也碰不到时相核心本身"
-    },
-    "ch5b_power_interaction": {
-      "content": "一次性供能代理 / 三阶段路由"
-    },
-    "ch5b_power_excellent1": {
-      "content": "一次性供能代理完成 / 三阶段快速稳定"
-    },
-    "ch5b_power_excellent2": {
-      "content": "干得漂亮，三个支路一次都没掉出安全窗"
-    },
-    "ch5b_power_excellent3": {
-      "content": "NOVA-06 预设残留：完整数据已送达。不要把我当成另一个活着的她。"
-    },
-    "ch5b_power_stable1": {
-      "content": "一次性供能代理完成 / 路由稳定"
-    },
-    "ch5b_power_stable2": {
-      "content": "稳定住了，这就够我们进去看一眼"
-    },
-    "ch5b_power_emergency1": {
-      "content": "一次性供能代理完成 / Nova 紧急配平已介入"
-    },
-    "ch5b_power_emergency_glitch": {
-      "content": "通讯丢包 0.8 秒 / 链路自动恢复"
-    },
-    "ch5b_power_emergency2": {
-      "content": "最后一点是我接手的，别紧张"
-    },
-    "ch5b_power_emergency3": {
-      "content": "人没事，链路也在，我们继续"
-    },
-    "ch5b_capacity1": {
-      "content": "OBSERVER-01 INDEX CAPACITY INSUFFICIENT\nADDITIONAL SPACE REQUIRED\n外部记忆索引容量：99.97%"
-    },
-    "ch5b_capacity2": {
-      "content": "还有一段核心扫描数据要写进来"
-    },
-    "ch5b_capacity3": {
-      "content": "得先把一个锚点放进临时封存区"
-    },
-    "ch5b_capacity4": {
-      "content": "只是暂时安静下来，不是删除"
-    },
-    "ch5b_capacity5": {
-      "content": "选哪一个都不会改变我们最后能走到哪里"
-    },
-    "ch5b_memory_seal": {
-      "content": "临时记忆容量管理"
-    },
-    "ch5b_seal_board1": {
-      "content": "这张图为什么让我有点想笑？"
-    },
-    "ch5b_seal_board2": {
-      "content": "可我想不起笑点在哪里"
-    },
-    "ch5b_seal_flower1": {
-      "content": "我知道它不该出现在那里"
-    },
-    "ch5b_seal_flower2": {
-      "content": "但我忘了为什么看到它的时候会那么高兴"
-    },
-    "ch5b_seal_goodnight1": {
-      "content": "我们以前是不是会在这个时候说点什么？"
-    },
-    "ch5b_seal_goodnight2": {
-      "content": "算了，可能只是我又忘了"
-    },
-    "ch5b_capacity_merge": {
-      "content": "临时位置记住了，我们继续"
-    },
-    "fin_temp_restore1": {
-      "content": "检测到一枚临时封存记忆锚点"
-    },
-    "fin_temp_restore2": {
-      "content": "等等，还有一个被我们暂时放在外面"
-    },
-    "fin_temp_restore3": {
-      "content": "先把它带回来吧"
-    },
-    "fin_memory_restore": {
-      "content": "临时封存锚点恢复"
-    },
-    "fin_restore_board1": {
-      "content": "临时锚点恢复完成 / maintenance_board"
-    },
-    "fin_restore_board2": {
-      "content": "等一下，那双眼睛是我自己贴的？\n我居然被昨天的自己吓到了"
-    },
-    "fin_restore_flower1": {
-      "content": "临时锚点恢复完成 / white_flower"
-    },
-    "fin_restore_flower2": {
-      "content": "我想起来了\n它明明不该活下来，可它还是开了"
-    },
-    "fin_restore_goodnight1": {
-      "content": "临时锚点恢复完成 / goodnight"
-    },
-    "fin_restore_goodnight2": {
-      "content": "原来是这句话\n难怪每次断开通讯以前，我都会觉得还少了什么"
+    "bad_title_overwrite": {
+      "content": "SEVENTH REBOOT → EIGHTH REBOOT"
     }
   }
 }

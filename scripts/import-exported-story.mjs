@@ -19,8 +19,11 @@ const SPEAKER = new Map([
   ['Nova', 'nova'],
   ['系统', 'system'],
   ['玩家', 'player'],
+  ['无来源', 'observer'],
   ['System', 'system'],
   ['Player', 'player'],
+  ['Observer', 'observer'],
+  ['No Source', 'observer'],
 ]);
 
 const TYPE = new Map([
@@ -33,6 +36,11 @@ const TYPE = new Map([
   ['状态', 'status'],
   ['时间戳', 'timestamp'],
   ['章节', 'chapter'],
+  ['内部章节标记', 'internal-chapter-marker'],
+  ['内部结局标记', 'internal-ending-marker'],
+  ['观察者残响', 'observer-echo'],
+  ['结局标题', 'ending-title'],
+  ['标题状态', 'title-state'],
   ['草稿', 'draft'],
   ['故障', 'glitch'],
   ['文件', 'file'],
@@ -57,6 +65,11 @@ const TYPE = new Map([
   ['Status', 'status'],
   ['Timestamp', 'timestamp'],
   ['Chapter', 'chapter'],
+  ['Internal Chapter Marker', 'internal-chapter-marker'],
+  ['Internal Ending Marker', 'internal-ending-marker'],
+  ['Observer Echo', 'observer-echo'],
+  ['Ending Title', 'ending-title'],
+  ['Title State', 'title-state'],
   ['Draft', 'draft'],
   ['Fault', 'glitch'],
   ['File', 'file'],
@@ -94,6 +107,11 @@ const DEFAULT_DELAY = {
   delay: 1000,
   timestamp: 400,
   chapter: 400,
+  'internal-chapter-marker': 0,
+  'internal-ending-marker': 0,
+  'observer-echo': 2000,
+  'ending-title': 400,
+  'title-state': 0,
   file: 400,
   draft: 400,
   image: 400,
@@ -151,6 +169,27 @@ function parseInteractionNextIds(value) {
   return entries.length ? Object.fromEntries(entries) : undefined;
 }
 
+function parseScalar(value) {
+  if (value === 'true') return true;
+  if (value === 'false') return false;
+  if (/^-?\d+(?:\.\d+)?$/.test(value)) return Number(value);
+  return value;
+}
+
+function parsePair(value) {
+  const separator = value.indexOf(':');
+  if (separator === -1) return undefined;
+  const key = value.slice(0, separator).trim();
+  const rawValue = value.slice(separator + 1).trim();
+  return key && rawValue ? { key, value: parseScalar(rawValue) } : undefined;
+}
+
+function parseInteractionCondition(value) {
+  const pair = parsePair(value);
+  if (!pair || typeof pair.value !== 'string') return undefined;
+  return { kind: pair.key, routeKey: pair.value };
+}
+
 function parseMeta(metaText, node) {
   for (const raw of metaText.split('|')) {
     const part = raw.trim();
@@ -163,10 +202,13 @@ function parseMeta(metaText, node) {
     // Legacy emotion metadata is accepted but intentionally ignored. Avatar
     // identity now follows narrative events instead of mood labels.
     if (key === '图片' || key === 'image') node.image = value;
+    if (key === '延迟' || key === 'delay') node.delay = Number(value.replace(/ms$/i, ''));
     if (key === '故障等级' || key === 'glitch_level') node.glitchLevel = Number(value);
     if (key === '记忆锚点' || key === 'memory_anchor') node.memoryAnchor = value;
     if (key === '需要锚点' || key === 'required_anchor' || key === 'requires_anchor') node.requiresAnchor = value;
     if (key === '联系人阶段' || key === 'contact_stage') node.contactStage = value;
+    if (key === '显示名称' || key === 'display_name') node.displayName = value;
+    if (key === '说话身份' || key === 'speaker_identity') node.speakerIdentity = value;
     if (key === '投递事件' || key === 'delivery_event') node.deliveryEvent = value;
     if (key === '档案解锁' || key === 'archive_unlock') node.archiveUnlock = parsePipeList(value);
     if (key === '显示选项' || key === 'display_choice' || key === 'display_option') node.displayOptionContext = value;
@@ -174,14 +216,36 @@ function parseMeta(metaText, node) {
     if (key === '外部入口' || key === 'external_entry') node.externalEntry = value;
     if (key === '结局' || key === 'ending') node.endingUnlock = ENDING.get(value) ?? value;
     if (key === '限时' || key === 'time_limit') node.choiceTimeoutMs = Number(value.replace(/ms$/i, ''));
-    if (key === '超时跳转' || key === '超时' || key === 'timeout' || key === 'timeout_target') {
-      node.timeoutNextId = cleanNextId(value);
+    if (
+      key === '超时跳转'
+      || key === '超时'
+      || key === '超时结果'
+      || key === 'timeout'
+      || key === 'timeout_target'
+      || key === 'timeout_result'
+    ) {
+      if (value && value !== '无' && value.toLowerCase() !== 'none') {
+        node.timeoutNextId = cleanNextId(value);
+      }
     }
     if (key === '记录变量' || key === 'record_variable') node.recordVariable = value;
     if (key === '输入变量' || key === 'input_variable') node.inputVariable = value;
     if (key === '自动聚焦' || key === 'auto_focus') node.inputAutoFocus = value === 'true';
     if (key === '长度' || key === 'length') parseLengthRange(value, node);
     if (key === '特殊互动' || key === 'interaction_kind') node.interactionKind = value;
+    if (key === '尝试' || key === 'attempt') {
+      const attempt = Number(value);
+      if (attempt === 1 || attempt === 2) node.interactionAttempt = attempt;
+    }
+    if (key === '前置状态' || key === 'prerequisite_state') {
+      node.interactionPrerequisite = parsePair(value);
+    }
+    if (key === '条件结果' || key === 'condition_result') {
+      node.interactionCondition = parseInteractionCondition(value);
+    }
+    if (key === '不满足则跳转' || key === 'condition_else') {
+      node.conditionElseNextId = cleanNextId(value);
+    }
     if (key === '结果跳转' || key === 'interaction_next') {
       node.interactionNextIds = parseInteractionNextIds(value);
     }
@@ -201,6 +265,11 @@ function parseChoiceMeta(metaText, choice) {
     if (!part) continue;
     const [key, value = ''] = part.split('=').map(s => s.trim());
     if (key === '状态影响' || key === 'state_effect' || key === 'stat_effect') choice.statEffect = value;
+    if (key === '信任变化' || key === 'trust_delta') choice.trustDelta = Number(value);
+    if (key === '记忆变化' || key === 'memory_delta') choice.memoryDelta = Number(value);
+    if (key === '依恋变化' || key === 'attachment_delta') choice.attachmentDelta = Number(value);
+    if (key === '接受告别' || key === 'accept_farewell') choice.acceptFarewell = value === 'true';
+    if (key === '最终选择' || key === 'final_choice') choice.finalChoice = value;
     if (key === '限时演出' || key === 'timed_scene' || key === 'timed_response') choice.timedResponse = value;
     if (key === '限时证明' || key === 'timed_proof') choice.timedProof = value;
     if (key === '告别语气' || key === 'farewell_tone' || key === 'final_farewell_tone') {
@@ -259,7 +328,9 @@ function parseExport(text) {
         continue;
       }
       current = { id, speaker, type, content: '' };
-      if (type === 'chapter' && pendingHeading) current.content = pendingHeading;
+      if ((type === 'chapter' || type === 'internal-chapter-marker' || type === 'ending-title') && pendingHeading) {
+        current.content = pendingHeading;
+      }
       pendingHeading = '';
       continue;
     }
@@ -324,8 +395,16 @@ function preserveNodeRuntime(parsed) {
   const old = storyNodeMap.get(parsed.id);
   const node = { ...parsed };
 
-  if (!node.content && old?.content && node.type === 'chapter') node.content = old.content;
-  if (old?.delay !== undefined) node.delay = old.delay;
+  if (!node.content && old?.content && (node.type === 'chapter' || node.type === 'ending-title')) {
+    node.content = old.content;
+  }
+  if (
+    node.type === 'internal-chapter-marker'
+    || node.type === 'internal-ending-marker'
+    || node.type === 'title-state'
+  ) {
+    delete node.delay;
+  } else if (old?.delay !== undefined) node.delay = old.delay;
   else if (DEFAULT_DELAY[node.type] !== undefined && node.type !== 'choice' && node.type !== 'end') node.delay = DEFAULT_DELAY[node.type];
 
   if (node.choices?.length) {
@@ -507,6 +586,10 @@ function renderNode(node) {
   propJson('specialInputNextIds', node.specialInputNextIds, lines);
   prop('interactionKind', node.interactionKind, lines);
   propJson('interactionNextIds', node.interactionNextIds, lines);
+  propRaw('interactionAttempt', node.interactionAttempt, lines);
+  propJson('interactionPrerequisite', node.interactionPrerequisite, lines);
+  propJson('interactionCondition', node.interactionCondition, lines);
+  prop('conditionElseNextId', node.conditionElseNextId, lines);
   prop('inputSubmitText', node.inputSubmitText, lines);
   if (Array.isArray(node.archiveUnlock)) {
     lines.push(`    archiveUnlock: ${JSON.stringify(node.archiveUnlock)},`);

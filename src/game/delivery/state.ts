@@ -42,7 +42,6 @@ export function createDefaultDeliveryReceipts(): DeliveryEventReceipts {
     chapter3ReconnectReply: 'not_started',
     chapter5ExplicitFailure: 'not_started',
     finaleLastAnswer: 'not_started',
-    powerEmergencyPacketLoss: 'not_started',
   };
 }
 
@@ -83,7 +82,6 @@ export function normalizeChatDeliveryRuntime(value: unknown): ChatDeliveryRuntim
       chapter3ReconnectReply: normalizeEventPhase(rawReceipts.chapter3ReconnectReply),
       chapter5ExplicitFailure: normalizeEventPhase(rawReceipts.chapter5ExplicitFailure),
       finaleLastAnswer: normalizeEventPhase(rawReceipts.finaleLastAnswer),
-      powerEmergencyPacketLoss: normalizeEventPhase(rawReceipts.powerEmergencyPacketLoss),
     },
   };
 }

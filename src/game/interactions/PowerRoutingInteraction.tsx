@@ -1,471 +1,211 @@
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
-import type { NovaHintStage, PowerRoutingResult, SpecialInteractionCompletion } from '../types';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type {
+  PowerFailureReason,
+  SpecialInteractionCompletion,
+} from '../types';
 import type { SpecialInteractionCopy } from './copy';
 import {
-  classifyPowerRoutingResult,
-  interpolatePowerAllocation,
+  findPowerFailureReason,
   isPowerAllocationStable,
+  POWER_CHANNELS,
+  POWER_STAGE_THRESHOLDS,
   rebalancePowerAllocation,
   type PowerAllocation,
   type PowerChannel,
-  type PowerThresholds,
+  type PowerStage,
 } from './logic';
-import { markNova06FullFxSeen } from './guidance';
-import { useInteractionGuidance } from './useInteractionGuidance';
-import { animateValue, waitForAbortableDelay } from './animateValue';
-import { NovaTicker } from './NovaTicker';
 import { InteractionTitle } from './InteractionTitle';
-import { Nova06OverrideSequence } from './Nova06OverrideSequence';
 
 type PowerRoutingInteractionProps = {
   copy: SpecialInteractionCopy;
-  reducedMotion: boolean;
-  nova06FxSeen: boolean;
-  nova06OverrideUsed: boolean;
-  initialGuidanceStage: NovaHintStage;
-  onGuidanceStageChange: (stage: NovaHintStage) => void;
-  onOverrideStarted: () => void;
-  onOverrideScriptApplied: () => void;
+  attempt: 1 | 2;
+  previousFailure?: PowerFailureReason;
+  onResultLocked: (result: SpecialInteractionCompletion) => void;
   onComplete: (result: SpecialInteractionCompletion) => void;
 };
 
-type PowerPhase = {
-  thresholds: PowerThresholds;
+type PowerRoutingCompletion = Extract<SpecialInteractionCompletion, { kind: 'power-routing' }>;
+
+const POWER_WINDOW_MS = 60_000;
+const INITIAL_ALLOCATION: PowerAllocation = {
+  lifeSupport: 34,
+  communications: 33,
+  coreScan: 33,
 };
 
-const PHASE_DURATION_SECONDS = 24;
-const HOLD_DURATION_MS = 8000;
-
-const POWER_PHASES: PowerPhase[] = [
-  { thresholds: { lifeSupport: 25, communications: 20, coreScan: 45 } },
-  { thresholds: { lifeSupport: 50, communications: 25, coreScan: 10 } },
-  { thresholds: { lifeSupport: 20, communications: 30, coreScan: 45 } },
-];
-
-const NOVA06_PRESETS: PowerAllocation[] = [
-  { lifeSupport: 25, communications: 20, coreScan: 55 },
-  { lifeSupport: 55, communications: 25, coreScan: 20 },
-  { lifeSupport: 20, communications: 35, coreScan: 45 },
-];
-
-const CHANNELS: PowerChannel[] = ['lifeSupport', 'communications', 'coreScan'];
-
-const POWER_THRESHOLDS = {
-  hint1Ms: 28000,
-  hint1Invalid: 3,
-  hint2Ms: 30000,
-  hint2Invalid: 3,
-  overrideMs: 100000,
-  overrideInvalid: 7,
-  overrideMinValid: 5,
-  overrideEmergencies: 3,
-};
-
-type OverrideState = 'none' | 'sequence';
-
-function findLowChannel(allocation: PowerAllocation, thresholds: PowerThresholds): PowerChannel | null {
-  return CHANNELS.find(channel => allocation[channel] < (thresholds[channel] ?? 0)) ?? null;
-}
-
-function buildNovaHint(
-  stage: number,
-  phaseIndex: number,
-  allocation: PowerAllocation,
-  thresholds: PowerThresholds,
-  copy: SpecialInteractionCopy,
-): string | null {
-  if (stage < 1) return null;
-  const low = findLowChannel(allocation, thresholds);
-  if (stage >= 2) {
-    if (allocation.communications > 45 && (
-      allocation.lifeSupport < (thresholds.lifeSupport ?? 0)
-      || allocation.coreScan < (thresholds.coreScan ?? 0)
-    )) {
-      return copy.power.steadyHint;
-    }
-    if (low) return copy.power.urgentMessages[low];
-    return copy.power.liveMessages.stable[phaseIndex] ?? copy.power.steadyHint;
-  }
-  if (low === 'lifeSupport') return copy.power.urgentMessages.lifeSupport;
-  if (low === 'coreScan') return copy.power.urgentMessages.coreScan;
-  if (low === 'communications') return copy.power.urgentMessages.communications;
-  return copy.power.liveMessages.stable[phaseIndex] ?? copy.power.steadyHint;
+function createInitialStages(): Record<PowerStage, PowerAllocation> {
+  return {
+    transit: { ...INITIAL_ALLOCATION },
+    core_read: { ...INITIAL_ALLOCATION },
+  };
 }
 
 export function PowerRoutingInteraction({
   copy,
-  reducedMotion,
-  nova06FxSeen,
-  nova06OverrideUsed,
-  initialGuidanceStage,
-  onGuidanceStageChange,
-  onOverrideStarted,
-  onOverrideScriptApplied,
+  attempt,
+  previousFailure,
+  onResultLocked,
   onComplete,
 }: PowerRoutingInteractionProps) {
-  const [allocation, setAllocation] = useState<PowerAllocation>({
-    lifeSupport: 34,
-    communications: 33,
-    coreScan: 33,
-  });
-  const [phaseIndex, setPhaseIndex] = useState(0);
-  const [secondsLeft, setSecondsLeft] = useState(PHASE_DURATION_SECONDS);
-  const [heldMs, setHeldMs] = useState(0);
-  const [transitioning, setTransitioning] = useState(false);
-  const [windowFeedback, setWindowFeedback] = useState('');
-  const [result, setResult] = useState<PowerRoutingResult | null>(nova06OverrideUsed ? 'stable' : null);
-  const [elapsedPhases, setElapsedPhases] = useState<number[]>(nova06OverrideUsed ? [6, 6, 6] : []);
-  const [overrideState, setOverrideState] = useState<OverrideState>(
-    initialGuidanceStage === 3 && !nova06OverrideUsed ? 'sequence' : 'none',
-  );
-  const [scriptLocked, setScriptLocked] = useState(initialGuidanceStage === 3 && !nova06OverrideUsed);
-  const [overrideMode] = useState<'full' | 'light'>(() => nova06FxSeen ? 'light' : 'full');
-  const [resumedByNova06] = useState(nova06OverrideUsed);
-  const allocationRef = useRef(allocation);
-  const phaseStartedAtRef = useRef(0);
-  const heldMsRef = useRef(0);
-  const elapsedPhasesRef = useRef<number[]>(nova06OverrideUsed ? [6, 6, 6] : []);
-  const transitioningRef = useRef(false);
-  const transitionTimeoutRef = useRef<number | null>(null);
-  const emergencyActiveRef = useRef(true);
-  const scriptAbortRef = useRef<AbortController | null>(null);
-
-  const handleGuidanceStageChange = useCallback((stage: NovaHintStage) => {
-    onGuidanceStageChange(stage);
-    if (stage === 3 && overrideState === 'none' && !nova06OverrideUsed && !result) {
-      if (overrideMode === 'full') markNova06FullFxSeen();
-      onOverrideStarted();
-      setScriptLocked(true);
-      setOverrideState('sequence');
-    }
-  }, [nova06OverrideUsed, onGuidanceStageChange, onOverrideStarted, overrideMode, overrideState, result]);
-
-  const guidance = useInteractionGuidance({
-    thresholds: POWER_THRESHOLDS,
-    enabled: !result && overrideState === 'none' && !nova06OverrideUsed,
-    initialStage: initialGuidanceStage,
-    onStageChange: handleGuidanceStageChange,
-  });
-
-  const phase = POWER_PHASES[phaseIndex];
+  const [stages, setStages] = useState(createInitialStages);
+  const stagesRef = useRef(stages);
+  const startedAtRef = useRef(0);
+  const finishedRef = useRef(false);
+  const [remainingMs, setRemainingMs] = useState(POWER_WINDOW_MS);
+  const [result, setResult] = useState<PowerRoutingCompletion | null>(null);
 
   useEffect(() => {
-    allocationRef.current = allocation;
-  }, [allocation]);
-
-  useEffect(() => {
-    phaseStartedAtRef.current = Date.now();
-    heldMsRef.current = 0;
-  }, [phaseIndex]);
-
-  useEffect(() => () => {
-    scriptAbortRef.current?.abort();
-    if (transitionTimeoutRef.current !== null) {
-      window.clearTimeout(transitionTimeoutRef.current);
-    }
+    startedAtRef.current = performance.now();
   }, []);
 
-  const advancePhase = useCallback((fromOverride = false) => {
-    if (transitioningRef.current || result) return;
-    transitioningRef.current = true;
-    setTransitioning(true);
+  useEffect(() => {
+    stagesRef.current = stages;
+  }, [stages]);
 
-    const elapsed = Math.min(
-      PHASE_DURATION_SECONDS,
-      Math.max(0.1, (Date.now() - phaseStartedAtRef.current) / 1000),
-    );
-    const nextElapsed = [...elapsedPhasesRef.current, elapsed];
-    elapsedPhasesRef.current = nextElapsed;
-    setElapsedPhases(nextElapsed);
-
-    transitionTimeoutRef.current = window.setTimeout(() => {
-      transitionTimeoutRef.current = null;
-      if (phaseIndex === POWER_PHASES.length - 1) {
-        setResult(classifyPowerRoutingResult(fromOverride, nextElapsed));
-      } else {
-        heldMsRef.current = 0;
-        setHeldMs(0);
-        setSecondsLeft(PHASE_DURATION_SECONDS);
-        setWindowFeedback('');
-        setPhaseIndex(index => index + 1);
-        guidance.noteProgress();
-      }
-      transitioningRef.current = false;
-      setTransitioning(false);
-    }, reducedMotion ? 0 : 650);
-  }, [guidance, phaseIndex, reducedMotion, result]);
+  const lockResult = useCallback((failureReason?: PowerFailureReason) => {
+    if (finishedRef.current) return;
+    finishedRef.current = true;
+    const completion: PowerRoutingCompletion = failureReason
+      ? {
+          kind: 'power-routing',
+          routeKey: attempt === 1 ? 'fail' : 'fatal',
+          attempt,
+          failureReason,
+        }
+      : { kind: 'power-routing', routeKey: 'success', attempt };
+    onResultLocked(completion);
+    setResult(completion);
+  }, [attempt, onResultLocked]);
 
   useEffect(() => {
-    if (result || transitioning || overrideState !== 'none') return undefined;
+    if (result) return;
+    const timer = window.setInterval(() => {
+      const nextRemaining = Math.max(0, POWER_WINDOW_MS - (performance.now() - startedAtRef.current));
+      setRemainingMs(nextRemaining);
+      if (nextRemaining === 0) lockResult('timeout');
+    }, 150);
+    return () => window.clearInterval(timer);
+  }, [lockResult, result]);
 
-    const intervalId = window.setInterval(() => {
-      const elapsedMs = Date.now() - phaseStartedAtRef.current;
-      const stable = isPowerAllocationStable(allocationRef.current, phase.thresholds);
-
-      const low = findLowChannel(allocationRef.current, phase.thresholds);
-      if (low && !emergencyActiveRef.current) {
-        emergencyActiveRef.current = true;
-        guidance.noteEmergency();
-      } else if (!low) {
-        emergencyActiveRef.current = false;
-      }
-
-      heldMsRef.current = stable
-        ? Math.min(HOLD_DURATION_MS, heldMsRef.current + 500)
-        : Math.max(0, heldMsRef.current - 500);
-      setHeldMs(heldMsRef.current);
-      setSecondsLeft(Math.max(0, Math.ceil(PHASE_DURATION_SECONDS - elapsedMs / 1000)));
-
-      if (heldMsRef.current >= HOLD_DURATION_MS) {
-        advancePhase(false);
-      } else if (elapsedMs >= PHASE_DURATION_SECONDS * 1000) {
-        guidance.noteInvalidAttempt();
-        phaseStartedAtRef.current = Date.now();
-        heldMsRef.current = 0;
-        setHeldMs(0);
-        setSecondsLeft(PHASE_DURATION_SECONDS);
-        setWindowFeedback(copy.power.windowExpired);
-      }
-    }, 500);
-
-    return () => window.clearInterval(intervalId);
-  }, [
-    advancePhase,
-    copy.power.windowExpired,
-    guidance,
-    overrideState,
-    phase.thresholds,
-    result,
-    transitioning,
-  ]);
-
-  function updateChannel(channel: PowerChannel, value: number) {
-    if (transitioning || scriptLocked) return;
-    const previous = allocationRef.current;
-    const next = rebalancePowerAllocation(previous, channel, value);
-    const changed = CHANNELS.some(key => Math.abs(next[key] - previous[key]) >= 2);
-    allocationRef.current = next;
-    setWindowFeedback('');
-    setAllocation(next);
-    if (changed) guidance.noteValidAttempt();
-  }
-
-  async function animateAllocation(target: PowerAllocation, signal: AbortSignal) {
-    const duration = reducedMotion ? 380 : overrideMode === 'light' ? 260 : 720;
-    const start = allocationRef.current;
-    await animateValue(0, 100, duration, value => {
-      const next = interpolatePowerAllocation(start, target, value / 100);
-      allocationRef.current = next;
-      setAllocation(next);
-    }, reducedMotion, signal);
-  }
-
-  async function runNova06Script() {
-    if (!scriptAbortRef.current || scriptAbortRef.current.signal.aborted) {
-      scriptAbortRef.current = new AbortController();
-    }
-    const signal = scriptAbortRef.current.signal;
-    for (let index = phaseIndex; index < POWER_PHASES.length; index += 1) {
-      if (signal.aborted) return;
-      if (index !== phaseIndex) {
-        setPhaseIndex(index);
-        phaseStartedAtRef.current = Date.now();
-        heldMsRef.current = 0;
-        setHeldMs(0);
-        setSecondsLeft(PHASE_DURATION_SECONDS);
-        await waitForAbortableDelay(
-          reducedMotion ? 120 : overrideMode === 'light' ? 70 : 280,
-          signal,
-        );
-      }
-      await animateAllocation(NOVA06_PRESETS[index]!, signal);
-      if (signal.aborted) return;
-      heldMsRef.current = HOLD_DURATION_MS;
-      setHeldMs(HOLD_DURATION_MS);
-      await waitForAbortableDelay(
-        reducedMotion ? 260 : overrideMode === 'light' ? 90 : 520,
-        signal,
-      );
-      if (signal.aborted) return;
-      if (index < POWER_PHASES.length - 1) {
-        const elapsed = Math.min(PHASE_DURATION_SECONDS, 6);
-        elapsedPhasesRef.current = [...elapsedPhasesRef.current, elapsed];
-        setElapsedPhases([...elapsedPhasesRef.current]);
-        setPhaseIndex(index + 1);
-        phaseStartedAtRef.current = Date.now();
-      }
-    }
-    elapsedPhasesRef.current = [...elapsedPhasesRef.current.slice(0, 2), 6];
-    setElapsedPhases([...elapsedPhasesRef.current]);
-  }
-
-  if (result && overrideState === 'none') {
-    const title = result === 'excellent'
-      ? copy.power.excellentTitle
-      : result === 'stable'
-        ? copy.power.stableTitle
-        : copy.power.emergencyTitle;
-    const detail = result === 'excellent'
-      ? copy.power.excellentDetail
-      : result === 'stable'
-        ? copy.power.stableDetail
-        : copy.power.emergencyDetail;
+  if (result) {
+    const succeeded = result.routeKey === 'success';
+    const title = succeeded
+      ? attempt === 1 ? copy.power.firstSuccessTitle : copy.power.retrySuccessTitle
+      : attempt === 1 ? copy.power.failureTitle : copy.power.fatalTitle;
+    const detail = succeeded
+      ? copy.power.successDetail
+      : attempt === 1 ? copy.power.failureDetail : copy.power.fatalDetail;
 
     return (
-      <section className="interaction-result" aria-live="polite" data-testid="power-result">
-        <div className="interaction-result-mark" aria-hidden>100%</div>
-        <p className="interaction-kicker">{copy.power.kicker}</p>
-        <InteractionTitle state="resolved">{title}</InteractionTitle>
-        <p>{detail}</p>
-        <div className="power-result-ledger">
-          {elapsedPhases.map((seconds, index) => (
-            <span key={copy.power.phases[index].title}>
-              <b>{copy.common.phase} {index + 1}</b>
-              {copy.power.phases[index].title} · {seconds.toFixed(1)}s
-            </span>
-          ))}
+      <section
+        className="interaction-result power-routing-result"
+        aria-live="assertive"
+        data-testid={`power-result-${result.routeKey}`}
+      >
+        <div className="interaction-result-mark" aria-hidden>
+          {succeeded ? '100%' : 'FAULT'}
         </div>
+        <p className="interaction-kicker">POWER ROUTE / ATTEMPT 0{attempt}</p>
+        <InteractionTitle state={succeeded ? 'resolved' : 'warning'}>{title}</InteractionTitle>
+        <p>{detail}</p>
+        {result.failureReason && (
+          <div className="power-failure-readout" role="status">
+            <span>FAULT ORIGIN</span>
+            <strong>{copy.power.failureReasons[result.failureReason]}</strong>
+          </div>
+        )}
         <button
           type="button"
           className="interaction-primary-btn"
-          onClick={() => onComplete({
-            kind: 'power-routing',
-            routeKey: result,
-            completedByNova06: resumedByNova06 || undefined,
-          })}
+          onClick={() => onComplete(result)}
         >
-          {copy.power.reconnect}
+          {succeeded ? copy.common.continue : copy.power.acknowledgeFailure}
         </button>
       </section>
     );
   }
 
-  const holdPercent = Math.min(100, heldMs / HOLD_DURATION_MS * 100);
-  const total = CHANNELS.reduce((sum, channel) => sum + allocation[channel], 0);
-  const lowChannel = findLowChannel(allocation, phase.thresholds);
-  const liveMessage = lowChannel === 'lifeSupport'
-    ? copy.power.liveMessages.lowLifeSupport
-    : lowChannel === 'communications'
-      ? copy.power.liveMessages.lowCommunications
-      : lowChannel === 'coreScan'
-        ? copy.power.liveMessages.lowCoreScan
-        : copy.power.liveMessages.stable[phaseIndex];
-  const hintText = buildNovaHint(guidance.stage, phaseIndex, allocation, phase.thresholds, copy);
-  const bypassing = overrideState === 'sequence';
+  const remainingSeconds = Math.ceil(remainingMs / 1000);
+
+  function updateAllocation(stage: PowerStage, channel: PowerChannel, value: number) {
+    setStages(current => ({
+      ...current,
+      [stage]: rebalancePowerAllocation(current[stage], channel, value),
+    }));
+  }
 
   return (
-    <section
-      className="power-router"
-      aria-labelledby="power-interaction-title"
-      data-alert={lowChannel ?? 'stable'}
-      data-nova06={bypassing || undefined}
-    >
+    <section className="power-routing" aria-labelledby="power-routing-title">
       <p className="interaction-kicker">{copy.power.kicker}</p>
-      <InteractionTitle id="power-interaction-title">{copy.power.title}</InteractionTitle>
+      <InteractionTitle id="power-routing-title">{copy.power.title}</InteractionTitle>
       <p className="interaction-mission">{copy.power.mission}</p>
 
-      <div className="power-phase-strip" aria-label={`${copy.common.phase} ${phaseIndex + 1}`}>
-        {POWER_PHASES.map((_, index) => (
-          <span key={index} data-state={index < phaseIndex ? 'complete' : index === phaseIndex ? 'active' : 'pending'}>
-            {index < phaseIndex ? 'DONE' : `${index + 1}`}
-          </span>
-        ))}
+      <div className="power-attempt-strip" data-final={attempt === 2 || undefined}>
+        <span>{attempt === 1 ? copy.power.firstAttempt : copy.power.finalAttempt}</span>
+        <strong>{copy.power.remaining} / {remainingSeconds.toString().padStart(2, '0')} s</strong>
       </div>
 
-      <NovaTicker
-        text={liveMessage}
-        alert={(lowChannel ?? 'stable') as 'stable' | 'lifeSupport' | 'communications' | 'coreScan'}
-      />
-
-      <div className="power-objective">
-        <div>
-          <span>{copy.common.phase} {phaseIndex + 1} / {POWER_PHASES.length}</span>
-          <h3>{copy.power.phases[phaseIndex].title}</h3>
-          <p>{copy.power.phases[phaseIndex].order}</p>
+      {attempt === 2 && (
+        <div className="power-previous-failure" role="note">
+          <span>{copy.power.previousFailure}</span>
+          <strong>{previousFailure ? copy.power.failureReasons[previousFailure] : 'ROUTE FAULT / UNKNOWN'}</strong>
+          <small>{copy.power.rollbackConsumed}</small>
         </div>
-        <div className="power-countdown" aria-live="polite">
-          <b>{secondsLeft}s</b>
-          <span>{copy.power.remaining}</span>
-        </div>
-      </div>
+      )}
 
-      <div className="power-allocation-summary">
-        <span>{copy.power.total}<b>{total}%</b></span>
-        <span>{copy.power.sustained}<b>{Math.round(holdPercent)}%</b></span>
-      </div>
-
-      <div
-        className="power-hold-meter"
-        style={{ '--hold-progress': `${holdPercent}%` } as CSSProperties}
-        role="progressbar"
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-valuenow={Math.round(holdPercent)}
-        aria-label={copy.power.sustained}
-      >
-        <span />
-      </div>
-
-      <div className="power-channel-list">
-        {CHANNELS.map(channel => {
-          const threshold = phase.thresholds[channel] ?? 0;
-          const stable = allocation[channel] >= threshold;
+      <div className="power-stage-list">
+        {(['transit', 'core_read'] as const).map(stage => {
+          const allocation = stages[stage];
+          const thresholds = POWER_STAGE_THRESHOLDS[stage];
+          const stable = isPowerAllocationStable(allocation, thresholds);
           return (
-            <label className="power-channel" key={channel} data-state={stable ? 'stable' : 'low'}>
-              <span>
-                <strong>{copy.power.channels[channel]}</strong>
-                <b>{allocation[channel]}%</b>
-              </span>
-              <small>MIN {threshold}% · {stable ? 'STABLE' : 'BELOW WINDOW'}</small>
-              <input
-                data-testid={`power-slider-${channel}`}
-                className="interaction-range"
-                type="range"
-                min="0"
-                max="100"
-                step="1"
-                value={allocation[channel]}
-                disabled={transitioning || bypassing}
-                onChange={event => updateChannel(channel, Number(event.target.value))}
-                aria-valuetext={`${allocation[channel]}%, minimum ${threshold}%`}
-              />
-            </label>
+            <article className="power-stage-card" key={stage} data-stable={stable || undefined}>
+              <header>
+                <div>
+                  <span>{copy.power.stages[stage].title}</span>
+                  <p>{copy.power.stages[stage].order}</p>
+                </div>
+                <strong>{copy.power.total} / 100%</strong>
+              </header>
+              <div className="power-channel-list">
+                {POWER_CHANNELS.map(channel => {
+                  const safe = allocation[channel] >= thresholds[channel];
+                  return (
+                    <label className="power-channel-control" key={channel}>
+                      <span>
+                        <b>{copy.power.channels[channel]}</b>
+                        <small>{copy.power.minimum} {thresholds[channel]}%</small>
+                      </span>
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        step="1"
+                        value={allocation[channel]}
+                        data-testid={`power-${stage}-${channel}`}
+                        onChange={event => updateAllocation(stage, channel, Number(event.target.value))}
+                      />
+                      <output data-safe={safe || undefined}>
+                        {allocation[channel]}%
+                        <small>{safe ? copy.power.stable : copy.power.below}</small>
+                      </output>
+                    </label>
+                  );
+                })}
+              </div>
+            </article>
           );
         })}
       </div>
 
-      {windowFeedback && (
-        <p className="interaction-feedback power-window-feedback" role="status">
-          {windowFeedback}
-        </p>
-      )}
-
-      {hintText && !bypassing && (
-        <div className="interaction-nova-hint">
-          <NovaTicker text={hintText} alert="hint" liveLabel="LIVE" />
-        </div>
-      )}
-
-      {bypassing && (
-        <Nova06OverrideSequence
-          mode={overrideMode}
-          reducedMotion={reducedMotion}
-          copy={copy.nova06}
-          detectLines={copy.power.override.systemDetect}
-          unknownLines={copy.power.override.unknownLines}
-          scriptLines={[copy.power.override.systemLoaded]}
-          noteLines={copy.power.override.routingNote}
-          runScript={runNova06Script}
-          onScriptApplied={onOverrideScriptApplied}
-          onDone={() => onComplete({
-            kind: 'power-routing',
-            routeKey: 'stable',
-            completedByNova06: true,
-          })}
-        />
-      )}
-
-      <p className="power-safety-note">PROXY LIMIT / 100% · NO PROTOCOL CONTROL · NO CORE CONTROL</p>
+      <button
+        type="button"
+        className="interaction-primary-btn power-submit"
+        data-testid="power-submit"
+        onClick={() => lockResult(findPowerFailureReason(stagesRef.current))}
+      >
+        {copy.power.submit}
+      </button>
     </section>
   );
 }

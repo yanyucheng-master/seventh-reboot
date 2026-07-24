@@ -55,6 +55,17 @@ export function ChapterBanner({ title }: { title: string }) {
   );
 }
 
+export function EndingTitleBanner({ title }: { title: string }) {
+  return (
+    <div className="ending-title-wrap animate-fade-in" role="status">
+      <span className="ending-title-code">AURORA / FINAL RECORD</span>
+      <div className="ending-title-rule" aria-hidden="true" />
+      <h2 className="ending-title-text">{title}</h2>
+      <div className="ending-title-rule ending-title-rule-lower" aria-hidden="true" />
+    </div>
+  );
+}
+
 export function EpilogueText({ content }: { content: string }) {
   return (
     <div className="epilogue-line-wrap animate-fade-in">
@@ -232,30 +243,6 @@ function getFileSummary(title: string, entries: FileLineEntry[]): string[] {
     .slice(0, 2)
     .map(entry => (entry.kind === 'row' ? `${entry.label}: ${entry.value}` : entry.text.trim()))
     .filter(Boolean);
-}
-
-export function AnomalyRecordCard({
-  content,
-  fallbackTitle = 'Anomaly Record',
-  tone = 'amber',
-}: {
-  content: string;
-  fallbackTitle?: string;
-  tone?: 'amber' | 'blue' | 'red';
-}) {
-  const { title, body } = splitRecordContent(content, fallbackTitle);
-  const toneClass = tone === 'red' ? 'anomaly-card-red' : tone === 'blue' ? 'anomaly-card-blue' : 'anomaly-card-amber';
-
-  return (
-    <div className="anomaly-card-wrap animate-fade-in">
-      <div className={`anomaly-record-card ${toneClass}`}>
-        <div className="anomaly-card-line" />
-        <p className="anomaly-card-title">【{title}】</p>
-        <div className="anomaly-card-body whitespace-pre-line">{body}</div>
-        <div className="anomaly-card-line" />
-      </div>
-    </div>
-  );
 }
 
 export function FileDisplay({ content }: { content: string }) {

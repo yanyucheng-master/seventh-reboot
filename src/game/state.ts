@@ -82,6 +82,8 @@ export function applyTimedChoiceTimeoutEffects(current: GameStats, nodeId: strin
 }
 
 export function applyPersistentStoryNodeEffects(current: GameStats, nodeId: string): GameStats {
-  if (nodeId !== 'fin_action_save' || current.commemorativeArchiveSaved) return current;
-  return { ...current, commemorativeArchiveSaved: true };
+  if (nodeId === 'fin_action_save' && !current.commemorativeArchiveSaved) {
+    return { ...current, commemorativeArchiveSaved: true };
+  }
+  return current;
 }

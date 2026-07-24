@@ -10,7 +10,12 @@ import {
   resolveNovaAvatarPresentation,
 } from '../src/game/avatarState.ts';
 import { storyNodes } from '../src/game/story.ts';
-import { defaultStats, migrateSaveData } from '../src/game/storage.ts';
+import {
+  defaultStats,
+  migrateSaveData,
+  SAVE_STATE_VERSION,
+  STORY_CONTENT_VERSION,
+} from '../src/game/storage.ts';
 import type { DisplayMessage, NovaAvatarStoryState } from '../src/game/types.ts';
 
 class MemoryStorage implements Storage {
@@ -96,6 +101,7 @@ assert.equal(resolveNovaAvatarOverlay(state, {
   activeSpecialInteraction: 'power-routing',
 }), 'nova06_interference', 'NOVA-06 must outrank special-interaction overlays');
 assert.equal(resolveNovaAvatarOverlay(state, { activeSpecialInteraction: 'power-routing' }), 'special_power');
+assert.equal(resolveNovaAvatarOverlay(state, { activeSpecialInteraction: 'bulkhead-isolation' }), 'special_bulkhead');
 
 const legacyMessages = [
   {
@@ -127,6 +133,8 @@ const migrated = migrateSaveData({
   stats: { ...defaultStats, memoryAnchors: ['n7'] },
   timestamp: Date.now(),
   storyVersion: 'V1.0',
+  storyContentVersion: STORY_CONTENT_VERSION,
+  saveStateVersion: SAVE_STATE_VERSION,
 });
 assert.ok(migrated);
 assert.equal(resolveNovaAvatarPresentation(migrated.avatarState).base, 'n7_private');

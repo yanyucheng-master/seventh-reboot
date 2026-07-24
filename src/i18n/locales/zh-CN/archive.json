@@ -106,17 +106,8 @@
     "photo_nova_id": {
       "title": "NOVA ARLEN",
       "subtitle": "通讯档案已恢复",
-      "chapter": "身份已确认"
-    },
-    "anomaly_unsent_n7_draft": {
-      "title": "未发送草稿 / 02:17",
-      "description": "不对\n我明明是第一次和对方说起 N7",
-      "chapter": "章末异常草稿"
-    },
-    "anomaly_encrypted_observatory_draft": {
-      "title": "加密草稿 / 03:07",
-      "description": "我又看见那个影子了\n它还在观测室",
-      "chapter": "第三章：异常"
+      "chapter": "身份已确认",
+      "image": "/assets/nova_id_photo.png"
     },
     "anomaly_hidden_log_nova07": {
       "title": "隐藏日志：NOVA-07",
@@ -151,7 +142,8 @@
     "profile_verified": {
       "title": "姓名：NOVA ARLEN",
       "subtitle": "身份状态：已确认",
-      "description": "年龄：20\n职位：Aurora 导航员\nObserver 链路：已确认\n备注：对象与第七协议关联"
+      "description": "年龄：23\n职位：Aurora 领航员\n部门：领航部\n档案编号：NA-0523-19\n权限等级：LEVEL 5",
+      "image": "/assets/nova_id_photo.png"
     },
     "profile_truth": {
       "title": "Observer 链路：深度确认",

@@ -6,13 +6,14 @@ import {
   CommStatus,
   EpilogueText,
   FileDisplay,
+  EndingTitleBanner,
   GlitchText,
   MemoryAnchorNotice,
-  AnomalyRecordCard,
   SystemMessage,
 } from './ChatPrimitives';
 import { NovaAvatar } from './NovaAvatar';
 import { MessageDeliveryStatus } from './MessageDeliveryStatus';
+import { getResponsiveImageAttributes, isNovaProfileImage } from '../mediaAssets';
 
 function isSignalSystemMessage(msg: DisplayMessage): boolean {
   return /Communications interrupted|Attempting reconnection|Reconnection failed|Reconnected/i.test(msg.content);
@@ -46,6 +47,14 @@ export function ChatMessage({
   currentSenderName: string;
   onImageClick: (img: string, cap: string) => void;
 }) {
+  if (
+    msg.type === 'internal-chapter-marker'
+    || msg.type === 'internal-ending-marker'
+    || msg.type === 'observer-echo'
+    || msg.type === 'title-state'
+    || msg.type === 'draft'
+  ) return null;
+
   if (msg.speaker === 'system') {
     if (msg.type === 'glitch' || msg.isGlitch || isSignalSystemMessage(msg)) {
       return (
@@ -78,11 +87,11 @@ export function ChatMessage({
     if (msg.type === 'chapter') {
       return <ChapterBanner title={msg.content} />;
     }
+    if (msg.type === 'ending-title') {
+      return <EndingTitleBanner title={msg.content} />;
+    }
     if (msg.type === 'epilogue') {
       return <EpilogueText content={msg.content} />;
-    }
-    if (msg.type === 'draft') {
-      return <AnomalyRecordCard content={msg.content} fallbackTitle="Unsent Draft" tone="amber" />;
     }
     if (msg.type === 'end') {
       return null;
@@ -96,6 +105,8 @@ export function ChatMessage({
   const senderName = msg.displayName ?? currentSenderName;
 
   if (msg.type === 'image') {
+    const responsiveImage = getResponsiveImageAttributes(msg.image!);
+    const isSquareProfile = isNovaProfileImage(msg.image);
     return (
       <div
         className={`media-message flex items-end gap-2 py-0.5 ${isPlayer ? 'justify-end' : 'justify-start'} ${showNovaAvatar && !isPlayer ? 'gap-2.5' : ''} ${!showNovaAvatar && !isPlayer ? 'pl-[46px]' : ''} ${msg.isNew ? 'animate-fade-in-up' : ''}`}
@@ -110,14 +121,16 @@ export function ChatMessage({
         )}
         <div className={`media-message-body flex flex-col gap-1 ${isPlayer ? 'items-end' : 'items-start'}`}>
           {!isPlayer && showNovaAvatar && <span className="remote-sender-label">{senderName}</span>}
-          <div className="media-message-trigger cursor-pointer group" onClick={() => onImageClick(msg.image!, msg.content)}>
+          <div className="media-message-trigger cursor-pointer group" onClick={() => onImageClick(responsiveImage.src, msg.content)}>
             <div className="media-message-frame relative overflow-hidden rounded-xl">
               <img
-                src={msg.image}
+                src={responsiveImage.src}
+                srcSet={responsiveImage.srcSet}
+                sizes="(max-width: 760px) min(82vw, 320px), 420px"
                 alt={cleanChatText(msg.content) || 'Comm image'}
                 loading="lazy"
                 decoding="async"
-                className="media-message-img w-full object-contain rounded-xl group-hover:brightness-110 transition-all"
+                className={`media-message-img ${isSquareProfile ? 'media-message-img-square' : ''} w-full object-contain rounded-xl group-hover:brightness-110 transition-all`}
               />
             </div>
             {msg.content && (

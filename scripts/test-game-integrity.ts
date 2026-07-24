@@ -60,6 +60,7 @@ function targets(node: StoryNode): string[] {
   return [
     node.nextId,
     node.timeoutNextId,
+    node.conditionElseNextId,
     ...Object.values(node.interactionNextIds ?? {}),
     ...(node.choices ?? []).map(choice => choice.nextId),
   ].filter((value): value is string => Boolean(value));
@@ -93,7 +94,7 @@ function linearPath(from: string, stopAt: string, max = 80): string[] {
 assert.equal(storyNodeMap.size, storyNodes.length, 'Story node IDs must be unique');
 const archiveIds = new Set(ARCHIVE_ENTRIES.map(entry => entry.id));
 assert.equal(archiveIds.size, ARCHIVE_ENTRIES.length, 'Archive IDs must be unique');
-assert.equal(ARCHIVE_ENTRIES.length, 29, 'Archive total must remain 29');
+assert.equal(ARCHIVE_ENTRIES.length, 27, 'Archive total must reflect the two removed draft records');
 
 const choiceIds = new Set<string>();
 for (const node of storyNodes) {
@@ -130,7 +131,11 @@ function assertAcyclic(id: string): void {
   visiting.add(id);
   const node = storyNodeMap.get(id);
   assert.ok(node);
-  const nextTargets = node.id === 'bad_action_restart' ? [] : targets(node);
+  const nextTargets = node.id === 'bad_action_restart'
+    ? []
+    : node.id === 'ch5a_auth_input'
+      ? targets(node).filter(target => target !== 'ch5a_auth_retry1')
+      : targets(node);
   nextTargets.forEach(assertAcyclic);
   visiting.delete(id);
   visited.add(id);
@@ -208,7 +213,7 @@ assert.equal(canReach('BAD_END_START', 'bad_end'), true);
 assert.equal(storyNodeMap.get('fin_the_end')?.nextId, 'MENU');
 assert.equal(storyNodeMap.get('normal_end')?.nextId, 'MENU');
 assert.equal(storyNodeMap.get('bad_end')?.nextId, 'MENU');
-assert.ok(getArchiveUnlocksForNode(storyNodeMap.get('bad_action_prompt')!).includes('ending_bad'));
+assert.ok(getArchiveUnlocksForNode(storyNodeMap.get('bad_end')!).includes('ending_bad'));
 
 for (const [index, choice] of finalMemoryQuestion.choices!.entries()) {
   const next = applyStoryChoiceEffects({ ...accepted }, choice);
@@ -232,9 +237,9 @@ for (const choice of storyNodeMap.get('fin_q6')!.choices!) {
 }
 
 const interactionCompletions: SpecialInteractionCompletion[] = [
-  { kind: 'critical-log-password', routeKey: 'success', completedByNova06: true },
-  { kind: 'signal-separation', routeKey: 'assisted', completedByNova06: true },
-  { kind: 'power-routing', routeKey: 'emergency_assist', completedByNova06: true },
+  { kind: 'bulkhead-isolation', routeKey: 'safe' },
+  { kind: 'critical-log-password', routeKey: 'success' },
+  { kind: 'power-routing', routeKey: 'success', attempt: 1 },
   { kind: 'memory-seal', routeKey: 'goodnight', anchor: 'goodnight' },
   { kind: 'memory-restore', routeKey: 'goodnight', anchor: 'goodnight' },
 ];
@@ -251,11 +256,11 @@ const trueRunArchiveStats: GameStats = {
   endingsUnlocked: ['ending_true'],
 };
 const trueRunEntries = getArchiveEntries(trueRunArchiveStats, 'verified');
-assert.equal(trueRunEntries.filter(entry => entry.unlocked).length, 27);
+assert.equal(trueRunEntries.filter(entry => entry.unlocked).length, ARCHIVE_ENTRIES.length - 2);
 assert.deepEqual(
   trueRunEntries.filter(entry => !entry.unlocked).map(entry => entry.id),
   ['ending_normal', 'ending_bad'],
-  '27/29 must mean two unobserved ending branches',
+  'The only locked records must be the two unobserved ending branches',
 );
 
 const productionText = [
@@ -306,10 +311,7 @@ localStorage.setItem(SAVE_KEY, JSON.stringify({
   timestamp: Date.now() - 1000,
 }));
 const migrated = loadGame();
-assert.ok(migrated, 'Legacy save without new fields must migrate');
-assert.equal(migrated.pendingNodeId, 'p14');
-assert.equal(migrated.stats.memory, 0);
-assert.equal(migrated.stats.commemorativeArchiveSaved, true);
+assert.equal(migrated, null, 'Legacy active saves must fail closed after the interaction state upgrade');
 
 localStorage.setItem(SAVE_KEY, JSON.stringify({
   currentNodeId: 'p13e',
@@ -317,9 +319,7 @@ localStorage.setItem(SAVE_KEY, JSON.stringify({
   timestamp: Date.now() - 1000,
 }));
 const migratedWithoutMessages = loadGame();
-assert.ok(migratedWithoutMessages, 'Legacy save without a messages field must migrate');
-assert.equal(migratedWithoutMessages.pendingNodeId, 'p13e');
-assert.deepEqual(migratedWithoutMessages.messages, []);
+assert.equal(migratedWithoutMessages, null, 'Incomplete legacy saves must not enter the new branch topology');
 
 localStorage.setItem(SAVE_KEY, JSON.stringify({
   pendingNodeId: 'p0',
@@ -332,5 +332,5 @@ assert.equal(loadGame(), null, 'Incompatible topology versions must still be rej
 clearAllData();
 
 console.log(
-  `Game integrity tests passed: ${storyNodes.length} nodes, ${choiceIds.size} choices, ${timedNodes.length} timed nodes, 29 archives.`,
+  `Game integrity tests passed: ${storyNodes.length} nodes, ${choiceIds.size} choices, ${timedNodes.length} timed nodes, ${ARCHIVE_ENTRIES.length} archives.`,
 );

@@ -8,9 +8,7 @@ import {
   createNormalDeliverySpec,
   DELIVERY_EVENT_SPECS,
   isCommittedWithinDeadline,
-  POWER_EMERGENCY_LINK_TIMELINE,
   projectDeliverySpec,
-  SIGNAL_ASSISTED_LINK_TIMELINE,
 } from '../src/game/delivery/specs.ts';
 import {
   createDefaultChatDeliveryRuntime,
@@ -92,13 +90,6 @@ for (const spec of Object.values(DELIVERY_EVENT_SPECS)) {
 assert.equal(isCommittedWithinDeadline(4999, 5000), true);
 assert.equal(isCommittedWithinDeadline(5000, 5000), true);
 assert.equal(isCommittedWithinDeadline(5001, 5000), false);
-
-assert.deepEqual(POWER_EMERGENCY_LINK_TIMELINE.phases.map(phase => [phase.atMs, phase.state]), [
-  [0, 'interrupted'],
-  [800, 'restoring'],
-]);
-assert.equal(POWER_EMERGENCY_LINK_TIMELINE.finalState, 'stable');
-assert.equal(SIGNAL_ASSISTED_LINK_TIMELINE.completeAtMs, 1200);
 
 const legacyChoice: DisplayMessage = {
   id: 'legacy_choice',

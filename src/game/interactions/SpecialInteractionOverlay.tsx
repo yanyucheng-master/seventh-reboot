@@ -1,38 +1,27 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Locale } from '../../i18n';
+import { NovaAvatar } from '../components/NovaAvatar';
 import type { StoryNode } from '../story';
 import type {
-  NovaHintStage,
   NovaAvatarPresentation,
+  PowerFailureReason,
   SealableMemoryAnchor,
   SpecialInteractionCompletion,
   SpecialInteractionKind,
 } from '../types';
-import { NovaAvatar } from '../components/NovaAvatar';
+import { BulkheadIsolationInteraction } from './BulkheadIsolationInteraction';
 import { getSpecialInteractionCopy } from './copy';
-import { hasSeenNova06FullFx } from './guidance';
 import { MemoryCapacityInteraction } from './MemoryCapacityInteraction';
 import { PasswordInteraction } from './PasswordInteraction';
 import { PowerRoutingInteraction } from './PowerRoutingInteraction';
-import { SignalSeparationInteraction } from './SignalSeparationInteraction';
 
 type SpecialInteractionOverlayProps = {
   node: StoryNode;
   locale: Locale;
   sealedAnchor?: SealableMemoryAnchor;
-  /** 本周目是否已经播放过完整黑入演出（存档字段；会话内以 localStorage 兜底） */
-  nova06FirstOverrideSeen: boolean;
-  novaHintStage: NovaHintStage;
-  novaHintInteractionKind?: SpecialInteractionKind;
-  passwordBypassedByNova06: boolean;
-  signalCompletedByNova06: boolean;
-  powerCompletedByNova06: boolean;
-  memoryNova06NoteSeen: boolean;
+  powerFirstFailureReason?: PowerFailureReason;
   avatarPresentation: NovaAvatarPresentation;
-  onGuidanceStageChange: (kind: SpecialInteractionKind, stage: NovaHintStage) => void;
-  onNova06OverrideStarted: (kind: SpecialInteractionKind) => void;
-  onNova06ScriptApplied: (kind: SpecialInteractionKind) => void;
-  onMemoryNova06NoteSeen: () => void;
+  onResultLocked: (result: SpecialInteractionCompletion) => void;
   onComplete: (result: SpecialInteractionCompletion) => void;
   onSaveAndExit: () => void;
 };
@@ -42,8 +31,8 @@ const FORCE_REDUCED_MOTION_FOR_TEST = import.meta.env.DEV
   && new URLSearchParams(window.location.search).get('testReducedMotion') === '1';
 
 const INTERACTION_TERMINAL_CODES: Record<SpecialInteractionKind, string> = {
-  'critical-log-password': 'ARCHIVE AUTH / 07',
-  'signal-separation': 'SIGNAL RESTORE / 03-LAYER',
+  'bulkhead-isolation': 'PRESSURE CONTROL / LIVE-07',
+  'critical-log-password': 'JOINT AUTH / 07+01',
   'power-routing': 'POWER PROXY / AURORA',
   'memory-seal': 'MEMORY INDEX / SEAL',
   'memory-restore': 'MEMORY INDEX / RESTORE',
@@ -62,18 +51,9 @@ export function SpecialInteractionOverlay({
   node,
   locale,
   sealedAnchor,
-  nova06FirstOverrideSeen,
-  novaHintStage,
-  novaHintInteractionKind,
-  passwordBypassedByNova06,
-  signalCompletedByNova06,
-  powerCompletedByNova06,
-  memoryNova06NoteSeen,
+  powerFirstFailureReason,
   avatarPresentation,
-  onGuidanceStageChange,
-  onNova06OverrideStarted,
-  onNova06ScriptApplied,
-  onMemoryNova06NoteSeen,
+  onResultLocked,
   onComplete,
   onSaveAndExit,
 }: SpecialInteractionOverlayProps) {
@@ -83,8 +63,6 @@ export function SpecialInteractionOverlay({
     window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false,
   ));
   const overlayRef = useRef<HTMLDivElement>(null);
-  const nova06FxSeen = nova06FirstOverrideSeen || hasSeenNova06FullFx();
-  const initialGuidanceStage = node.interactionKind === novaHintInteractionKind ? novaHintStage : 0;
 
   useEffect(() => {
     overlayRef.current?.focus();
@@ -98,10 +76,10 @@ export function SpecialInteractionOverlay({
     }
   }, [reducedMotion]);
 
-  const title = node.interactionKind === 'critical-log-password'
-    ? copy.password.title
-    : node.interactionKind === 'signal-separation'
-      ? copy.signal.title
+  const title = node.interactionKind === 'bulkhead-isolation'
+    ? copy.bulkhead.title
+    : node.interactionKind === 'critical-log-password'
+      ? copy.password.title
       : node.interactionKind === 'power-routing'
         ? copy.power.title
         : node.interactionKind === 'memory-restore'
@@ -145,65 +123,37 @@ export function SpecialInteractionOverlay({
       </header>
 
       <main className="interaction-main">
-        {node.interactionKind === 'critical-log-password' && (
-          <PasswordInteraction
+        {node.interactionKind === 'bulkhead-isolation' && (
+          <BulkheadIsolationInteraction
             copy={copy}
-            reducedMotion={reducedMotion}
-            nova06FxSeen={nova06FxSeen}
-            nova06OverrideUsed={passwordBypassedByNova06}
-            initialGuidanceStage={initialGuidanceStage}
-            onGuidanceStageChange={stage => onGuidanceStageChange('critical-log-password', stage)}
-            onOverrideStarted={() => onNova06OverrideStarted('critical-log-password')}
-            onOverrideScriptApplied={() => onNova06ScriptApplied('critical-log-password')}
+            onResultLocked={onResultLocked}
             onComplete={onComplete}
           />
         )}
-        {node.interactionKind === 'signal-separation' && (
-          <SignalSeparationInteraction
+        {node.interactionKind === 'critical-log-password' && (
+          <PasswordInteraction
             copy={copy}
-            reducedMotion={reducedMotion}
-            nova06FxSeen={nova06FxSeen}
-            nova06OverrideUsed={signalCompletedByNova06}
-            initialGuidanceStage={initialGuidanceStage}
-            onGuidanceStageChange={stage => onGuidanceStageChange('signal-separation', stage)}
-            onOverrideStarted={() => onNova06OverrideStarted('signal-separation')}
-            onOverrideScriptApplied={() => onNova06ScriptApplied('signal-separation')}
+            onResultLocked={onResultLocked}
             onComplete={onComplete}
           />
         )}
         {node.interactionKind === 'power-routing' && (
           <PowerRoutingInteraction
             copy={copy}
-            reducedMotion={reducedMotion}
-            nova06FxSeen={nova06FxSeen}
-            nova06OverrideUsed={powerCompletedByNova06}
-            initialGuidanceStage={initialGuidanceStage}
-            onGuidanceStageChange={stage => onGuidanceStageChange('power-routing', stage)}
-            onOverrideStarted={() => onNova06OverrideStarted('power-routing')}
-            onOverrideScriptApplied={() => onNova06ScriptApplied('power-routing')}
+            attempt={node.interactionAttempt ?? 1}
+            previousFailure={powerFirstFailureReason}
+            onResultLocked={onResultLocked}
             onComplete={onComplete}
           />
         )}
         {node.interactionKind === 'memory-seal' && (
-          <MemoryCapacityInteraction
-            mode="seal"
-            copy={copy}
-            initialGuidanceStage={initialGuidanceStage}
-            memoryNova06NoteSeen={memoryNova06NoteSeen}
-            onGuidanceStageChange={stage => onGuidanceStageChange('memory-seal', stage)}
-            onMemoryNova06NoteSeen={onMemoryNova06NoteSeen}
-            onComplete={onComplete}
-          />
+          <MemoryCapacityInteraction mode="seal" copy={copy} onComplete={onComplete} />
         )}
         {node.interactionKind === 'memory-restore' && (
           <MemoryCapacityInteraction
             mode="restore"
             copy={copy}
             sealedAnchor={sealedAnchor}
-            initialGuidanceStage={0}
-            memoryNova06NoteSeen={memoryNova06NoteSeen}
-            onGuidanceStageChange={() => undefined}
-            onMemoryNova06NoteSeen={() => undefined}
             onComplete={onComplete}
           />
         )}

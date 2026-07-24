@@ -14,8 +14,8 @@ export type NovaAvatarOverlay =
   | 'offline_residual'
   | 'archived'
   | 'nova06_interference'
+  | 'special_bulkhead'
   | 'special_password'
-  | 'special_signal'
   | 'special_power'
   | 'special_memory_seal';
 
@@ -53,7 +53,6 @@ export type DeliveryEventReceipts = {
   chapter3ReconnectReply: DeliveryEventPhase;
   chapter5ExplicitFailure: DeliveryEventPhase;
   finaleLastAnswer: DeliveryEventPhase;
-  powerEmergencyPacketLoss: DeliveryEventPhase;
 };
 
 export type ChatDeliveryRuntime = {
@@ -107,7 +106,7 @@ export type NovaAvatarPresentation = {
   overlay: NovaAvatarOverlay;
 };
 
-export type Speaker = 'nova' | 'system' | 'player';
+export type Speaker = 'nova' | 'system' | 'player' | 'observer';
 
 export type GlitchLevel = 1 | 2 | 3;
 
@@ -139,26 +138,115 @@ export type TimedResponse = 'calm_nova' | 'investigate_log';
 export type TimedProof = 'n7_core_anchor';
 
 export type SpecialInteractionKind =
+  | 'bulkhead-isolation'
   | 'critical-log-password'
-  | 'signal-separation'
   | 'power-routing'
   | 'memory-seal'
   | 'memory-restore';
 
-export type NovaHintStage = 0 | 1 | 2 | 3;
+export type BulkheadResult = 'safe' | 'injured' | 'fatal';
 
-export type SignalSeparationResult = 'clean' | 'assisted';
+export type BulkheadFailureReason =
+  | 'wrong_observation_door'
+  | 'hallway_sealed'
+  | 'transition_purged'
+  | 'seal_timeout';
 
-export type PowerRoutingResult = 'excellent' | 'stable' | 'emergency_assist';
+export type PowerRoutingAttempt = 0 | 1 | 2;
+
+export type PowerFailureReason =
+  | 'life_support_below_minimum'
+  | 'communications_interrupted'
+  | 'core_scan_underpowered'
+  | 'return_core_cutoff'
+  | 'timeout';
+
+export type PowerRoutingResult = 'first_success' | 'retry_success' | 'fatal';
 
 export type SealableMemoryAnchor = 'maintenance_board' | 'white_flower' | 'goodnight';
 
 export type SpecialInteractionCompletion =
-  | { kind: 'critical-log-password'; routeKey: 'success'; completedByNova06?: boolean }
-  | { kind: 'signal-separation'; routeKey: SignalSeparationResult; completedByNova06?: boolean }
-  | { kind: 'power-routing'; routeKey: PowerRoutingResult; completedByNova06?: boolean }
+  | {
+      kind: 'bulkhead-isolation';
+      routeKey: BulkheadResult;
+      failureReason?: BulkheadFailureReason;
+    }
+  | { kind: 'critical-log-password'; routeKey: 'success' | 'retry' }
+  | {
+      kind: 'power-routing';
+      routeKey: 'success' | 'fail' | 'fatal';
+      attempt: 1 | 2;
+      failureReason?: PowerFailureReason;
+    }
   | { kind: 'memory-seal'; routeKey: SealableMemoryAnchor; anchor: SealableMemoryAnchor }
   | { kind: 'memory-restore'; routeKey: SealableMemoryAnchor | 'none'; anchor?: SealableMemoryAnchor };
+
+export type FatalFailureCause = 'bulkhead_failure' | 'power_routing_failure' | 'protocol_rollback';
+
+export type CycleChoiceRecord = {
+  nodeId: string;
+  choiceId: string;
+  choiceIndex: number;
+  nextId: string;
+  committedAt: number;
+};
+
+export type CycleInteractionRecord = {
+  nodeId: string;
+  kind: SpecialInteractionKind;
+  routeKey: string;
+  attempt?: 1 | 2;
+  failureReason?: BulkheadFailureReason | PowerFailureReason;
+  anchor?: SealableMemoryAnchor;
+};
+
+export type CycleTimedResult = {
+  nodeId: string;
+  outcome: 'choice' | 'timeout';
+  choiceId?: string;
+  nextId: string;
+};
+
+export type CycleFreeInputRecord = {
+  nodeId: string;
+  value: string;
+  nextId: string;
+};
+
+export type CurrentCycleState = {
+  cycleStateVersion: 1;
+  cycleId: string;
+  currentRebootNumber: number;
+  completedNodeIds: string[];
+  maxCompletedNodeId?: string;
+  choiceHistory: CycleChoiceRecord[];
+  interactionResults: CycleInteractionRecord[];
+  timedResults: CycleTimedResult[];
+  freeInputs: CycleFreeInputRecord[];
+  syncAvailable: boolean;
+  syncActive: boolean;
+  syncInterrupted: boolean;
+  syncBoundaryNodeId?: string;
+  syncCursor: number;
+  currentCycleDeviationStarted: boolean;
+  observerCandyEchoPlayed: boolean;
+  previousCycleId?: string;
+};
+
+export type FailedCycleRecord = {
+  cycleId: string;
+  rebootNumber: number;
+  failedAt: number;
+  fatalEndingTriggered: true;
+  failedInteractionId: string;
+  failureCause: FatalFailureCause;
+  previousCycleMaxNodeId?: string;
+  completedNodeIds: string[];
+  choiceHistory: CycleChoiceRecord[];
+  interactionResults: CycleInteractionRecord[];
+  timedResults: CycleTimedResult[];
+  freeInputs: CycleFreeInputRecord[];
+};
 
 export interface ArchiveEntry {
   id: string;
@@ -184,6 +272,11 @@ export type MessageType =
   | 'interaction'
   | 'timestamp'
   | 'chapter'
+  | 'internal-chapter-marker'
+  | 'internal-ending-marker'
+  | 'observer-echo'
+  | 'ending-title'
+  | 'title-state'
   | 'draft'
   | 'glitch'
   | 'file'
@@ -223,32 +316,24 @@ export interface GameStats {
   endingsUnlocked: EndingId[];
   /** 玩家端纪念归档已确认保存；跨周目保留。 */
   commemorativeArchiveSaved: boolean;
+  bulkheadResult?: BulkheadResult;
+  bulkheadInjured: boolean;
+  bulkheadFailureReason?: BulkheadFailureReason;
+  jointAuthorizationCompleted: boolean;
   criticalLogUnlocked: boolean;
-  signalSeparationResult?: SignalSeparationResult;
-  signalCurrentNovaRecovered: boolean;
-  signalNova06Recovered: boolean;
-  signalCoreTelemetryRecovered: boolean;
-  timelineAlignmentCompleted: boolean;
+  powerRoutingAttempt: PowerRoutingAttempt;
+  powerFirstFailureReason?: PowerFailureReason;
   powerRoutingResult?: PowerRoutingResult;
+  nova06PowerOverrideUsed: boolean;
+  nova06PowerOverrideExpired: boolean;
   temporaryAnchorSealed?: SealableMemoryAnchor;
   temporaryAnchorRestored: boolean;
-  /** NOVA-06 残留签名越权接管：完整黑入演出是否已在本周目播放过 */
-  nova06FirstOverrideSeen: boolean;
-  /** 当前特殊互动已经出现的 Nova 主动提示阶段；与互动类型一起保存 */
-  novaHintStage: NovaHintStage;
-  novaHintInteractionKind?: SpecialInteractionKind;
-  /** 本周目是否曾进入过一次 NOVA-06 条件式越权流程 */
-  nova06OverrideTriggered: boolean;
-  /** 联合密钥互动由 NOVA-06 后门绕过验证 */
-  passwordBypassedByNova06: boolean;
-  /** 三层信号分离由 NOVA-06 预留恢复脚本完成 */
-  signalCompletedByNova06: boolean;
-  /** 联合时间线对齐由 NOVA-06 预留恢复脚本完成（与信号分离同一脚本） */
-  timelineCompletedByNova06: boolean;
-  /** 供能路由由 NOVA-06 预留配平脚本完成 */
-  powerCompletedByNova06: boolean;
-  /** 记忆封存中的 NOVA-06 预留留言是否已出现；它永远不代表代选完成 */
-  memoryNova06NoteSeen: boolean;
+  memoryRestoreResult?: SealableMemoryAnchor | 'none';
+  earlyFailureCause?: FatalFailureCause;
+  pendingReboot08: boolean;
+  fatalEndingTriggered: boolean;
+  fatalRebootCount: number;
+  reboot08TitleUnlocked: boolean;
 }
 
 /** UI 生成的系统提示（非剧情节点正文），切语言时按 key 重算 */
@@ -256,7 +341,28 @@ export type AvatarNoticeKey =
   | 'avatar.connection.unregistered'
   | 'avatar.badEnding.profileReset';
 
-export type DisplayMessageUiKind = 'memoryRecorded' | 'syncNext' | 'choiceTimeout' | 'avatarNotice';
+export type CycleNoticeKey =
+  | 'cycle.reboot08Link'
+  | 'cycle.previousRecordDetected'
+  | 'cycle.previousRecordSource'
+  | 'cycle.previousRecordCycle'
+  | 'cycle.memoryProjection'
+  | 'cycle.projectionWarning'
+  | 'cycle.protocolTakeover'
+  | 'cycle.rollbackStarted'
+  | 'cycle.syncCompleted'
+  | 'cycle.syncInterrupted'
+  | 'cycle.deviationDetected'
+  | 'cycle.deviationConfirmed';
+
+export type RuntimeNoticeKey = AvatarNoticeKey | CycleNoticeKey;
+
+export type DisplayMessageUiKind =
+  | 'memoryRecorded'
+  | 'syncNext'
+  | 'choiceTimeout'
+  | 'avatarNotice'
+  | 'cycleNotice';
 
 export type DisplayMessage = {
   id: string;
@@ -278,7 +384,7 @@ export type DisplayMessage = {
   /** memoryRecorded 对应的记忆锚点 */
   memoryAnchor?: MemoryAnchorId;
   /** avatarNotice uses a stable i18n key so saved notices follow language changes. */
-  uiKey?: AvatarNoticeKey;
+  uiKey?: RuntimeNoticeKey;
   /** Player-choice fact and delivery state. The branch is committed before transport begins. */
   choiceId?: string;
   committedAt?: number;
@@ -304,11 +410,14 @@ export interface SaveData {
   avatarState: NovaAvatarStoryState;
   deliveryRuntime: ChatDeliveryRuntime;
   stats: GameStats;
+  cycleState: CurrentCycleState;
   timestamp: number;
   /** 剧情拓扑版本；节点分支变更后递增，旧存档将失效 */
   storyVersion?: string;
   /** 内部剧情内容版本；玩家可见版本仍保持 V1.0 */
   storyContentVersion?: string;
+  /** 内部存档结构版本；与玩家可见版本号无关。 */
+  saveStateVersion?: 3;
   deliveryStateVersion?: 1;
   /** @deprecated 旧版存档字段，仅用于兼容 */
   currentNodeId?: string;

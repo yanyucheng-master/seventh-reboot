@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Anchor,
   ArrowLeft,
+  History,
   Image as ImageIcon,
   RadioTower,
   ScanLine,
@@ -10,7 +11,14 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { ARCHIVE_ENTRIES } from '../archive';
-import type { ArchiveCategory, ArchiveEntry, ContactStage, GameStats, NovaAvatarPresentation } from '../types';
+import type {
+  ArchiveCategory,
+  ArchiveEntry,
+  ContactStage,
+  FailedCycleRecord,
+  GameStats,
+  NovaAvatarPresentation,
+} from '../types';
 import { useI18n } from '../../i18n';
 import { NovaAvatar } from './NovaAvatar';
 import {
@@ -18,21 +26,26 @@ import {
   getLocalizedArchiveEntries,
   getLockedArchiveCopy,
 } from '../../i18n/archiveResolver';
+import { getResponsiveImageAttributes, isNovaProfileImage } from '../mediaAssets';
 
-const TAB_IDS: ArchiveCategory[] = ['anchor', 'photo', 'anomaly', 'profile', 'ending'];
-const TAB_EN: Record<ArchiveCategory, string> = {
+type ArchiveTabId = ArchiveCategory | 'history';
+
+const TAB_IDS: ArchiveTabId[] = ['anchor', 'photo', 'anomaly', 'profile', 'ending', 'history'];
+const TAB_EN: Record<ArchiveTabId, string> = {
   anchor: 'ANCHOR',
   photo: 'PHOTO',
   anomaly: 'ANOMALY',
   profile: 'PROFILE',
   ending: 'ENDING',
+  history: 'HISTORY',
 };
-const TAB_ICONS: Record<ArchiveCategory, LucideIcon> = {
+const TAB_ICONS: Record<ArchiveTabId, LucideIcon> = {
   anchor: Anchor,
   photo: ImageIcon,
   anomaly: RadioTower,
   profile: UserRound,
   ending: Waypoints,
+  history: History,
 };
 
 function ArchiveCard({
@@ -55,6 +68,7 @@ function ArchiveCard({
   const description = locked ? lockedCopy.description : entry.description;
   const subtitle = locked ? undefined : entry.subtitle;
   const quote = locked ? undefined : entry.quote;
+  const responsiveImage = entry.image ? getResponsiveImageAttributes(entry.image) : null;
 
   return (
     <button
@@ -66,8 +80,15 @@ function ArchiveCard({
       <span className="archive-card-scan" aria-hidden="true" />
       {entry.category === 'photo' && (
         <div className="archive-thumb">
-          {!locked && entry.image ? (
-            <img src={entry.image} alt="" loading="lazy" decoding="async" />
+          {!locked && responsiveImage ? (
+            <img
+              src={responsiveImage.src}
+              srcSet={responsiveImage.srcSet}
+              sizes="88px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />
           ) : (
             <span>NO IMAGE</span>
           )}
@@ -103,6 +124,9 @@ function ArchiveDetail({
   backLabel: string;
   categoryLabel: string;
 }) {
+  const responsiveImage = entry.image ? getResponsiveImageAttributes(entry.image) : null;
+  const isSquareProfile = isNovaProfileImage(entry.image);
+
   return (
     <div className="archive-detail-panel">
       <button type="button" className="archive-detail-close" onClick={onClose}>
@@ -112,8 +136,16 @@ function ArchiveDetail({
       <p className="archive-detail-kicker">{categoryLabel} / {archiveCode}</p>
       <h3>{entry.title}</h3>
       {entry.subtitle && <p className="archive-detail-subtitle">{entry.subtitle}</p>}
-      {entry.image && (
-        <img className="archive-detail-image" src={entry.image} alt={entry.title} loading="lazy" decoding="async" />
+      {responsiveImage && (
+        <img
+          className={`archive-detail-image ${isSquareProfile ? 'archive-detail-image-square' : ''}`}
+          src={responsiveImage.src}
+          srcSet={responsiveImage.srcSet}
+          sizes="(max-width: 760px) calc(100vw - 48px), 900px"
+          alt={entry.title}
+          loading="lazy"
+          decoding="async"
+        />
       )}
       {entry.quote && <p className="archive-detail-quote">“{entry.quote}”</p>}
       {entry.description && <p className="archive-detail-description whitespace-pre-line">{entry.description}</p>}
@@ -128,15 +160,19 @@ export function MemoryArchiveOverlay({
   avatarPresentation,
   onClose,
   backLabel,
+  failedCycles = [],
+  currentRebootNumber = 7,
 }: {
   stats: GameStats;
   contactStage: ContactStage;
   avatarPresentation: NovaAvatarPresentation;
   onClose: () => void;
   backLabel?: string;
+  failedCycles?: FailedCycleRecord[];
+  currentRebootNumber?: number;
 }) {
   const { t, locale } = useI18n();
-  const [activeTab, setActiveTab] = useState<ArchiveCategory>('anchor');
+  const [activeTab, setActiveTab] = useState<ArchiveTabId>('anchor');
   const [selectedEntry, setSelectedEntry] = useState<ArchiveEntry | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const triggerElementRef = useRef<HTMLElement | null>(null);
@@ -148,7 +184,9 @@ export function MemoryArchiveOverlay({
     if (!selectedEntry) return null;
     return entries.find(entry => entry.id === selectedEntry.id) ?? null;
   }, [entries, selectedEntry]);
-  const tabEntries = entries.filter(entry => entry.category === activeTab);
+  const tabEntries = activeTab === 'history'
+    ? []
+    : entries.filter(entry => entry.category === activeTab);
   const unlockedCount = entries.filter(entry => entry.unlocked).length;
   const unobservedEndingCount = entries.filter(entry => entry.category === 'ending' && !entry.unlocked).length;
   const showBranchArchiveNote = stats.endingsUnlocked.length > 0 && unobservedEndingCount > 0;
@@ -188,7 +226,7 @@ export function MemoryArchiveOverlay({
         <span className="archive-shell-corner archive-shell-corner-br" aria-hidden="true" />
         <header className="archive-header">
           <div className="archive-header-index" aria-hidden="true">
-            <strong>07</strong>
+            <strong>{String(currentRebootNumber).padStart(2, '0')}</strong>
             <span>PHASE<br />VAULT</span>
           </div>
           <div className="archive-heading-block">
@@ -271,7 +309,42 @@ export function MemoryArchiveOverlay({
         </nav>
 
         <main className="archive-content">
-          {selectedLocalized ? (
+          {activeTab === 'history' ? (
+            <div className="archive-history-list">
+              {failedCycles.length === 0 ? (
+                <div className="archive-history-empty">
+                  <History size={22} strokeWidth={1.2} aria-hidden="true" />
+                  <strong>{t('archiveOverlay.historyEmpty')}</strong>
+                  <p>{t('archiveOverlay.historyEmptyBody')}</p>
+                </div>
+              ) : [...failedCycles].reverse().map((record, index) => (
+                <article className="archive-history-entry" key={record.cycleId}>
+                  <header>
+                    <span>FAILED LOOP / {String(record.rebootNumber).padStart(2, '0')}</span>
+                    <small>{new Intl.DateTimeFormat(locale, {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    }).format(record.failedAt)}</small>
+                  </header>
+                  <div className="archive-history-code">{String(failedCycles.length - index).padStart(2, '0')}</div>
+                  <h3>{t(`archiveOverlay.failureCauses.${record.failureCause}`)}</h3>
+                  <p>{t('archiveOverlay.failedCycleSummary', {
+                    nodes: record.completedNodeIds.length,
+                    choices: record.choiceHistory.length,
+                    interactions: record.interactionResults.length,
+                  })}</p>
+                  <dl>
+                    <div><dt>{t('archiveOverlay.failedInteraction')}</dt><dd>{record.failedInteractionId}</dd></div>
+                    <div><dt>{t('archiveOverlay.lastNode')}</dt><dd>{record.previousCycleMaxNodeId ?? 'UNKNOWN'}</dd></div>
+                    <div><dt>{t('archiveOverlay.recordMode')}</dt><dd>{t('archiveOverlay.readOnly')}</dd></div>
+                  </dl>
+                </article>
+              ))}
+            </div>
+          ) : selectedLocalized ? (
             <ArchiveDetail
               entry={selectedLocalized}
               archiveCode={`${TAB_EN[selectedLocalized.category]}-${String(

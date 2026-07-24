@@ -6,12 +6,13 @@ import { storyNodeMap } from '../src/game/story.ts';
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const enPath = path.join(root, 'src/i18n/locales/en-US/interactions.json');
 const zhPath = path.join(root, 'src/i18n/locales/zh-CN/interactions.json');
-const en = JSON.parse(fs.readFileSync(enPath, 'utf8'));
+const enStory = JSON.parse(fs.readFileSync(path.join(root, 'src/i18n/locales/en-US/story.json'), 'utf8'));
 const zhNodes = {};
+const enNodes = {};
 
-for (const id of Object.keys(en.nodes)) {
-  const node = storyNodeMap.get(id);
-  if (!node) throw new Error(`English interaction overlay references missing node: ${id}`);
+for (const node of storyNodeMap.values()) {
+  if (!node.interactionKind) continue;
+  const id = node.id;
   const localized = {};
   if (node.content) localized.content = node.content;
   if (node.choices?.length) {
@@ -20,6 +21,7 @@ for (const id of Object.keys(en.nodes)) {
     );
   }
   zhNodes[id] = localized;
+  enNodes[id] = enStory.nodes[id] ?? localized;
 }
 
 const zh = {
@@ -28,4 +30,5 @@ const zh = {
 };
 
 fs.writeFileSync(zhPath, `${JSON.stringify(zh, null, 2)}\n`, 'utf8');
+fs.writeFileSync(enPath, `${JSON.stringify({ version: 'V1.0-special-interactions', nodes: enNodes }, null, 2)}\n`, 'utf8');
 console.log(`Wrote ${Object.keys(zhNodes).length} Chinese interaction locale nodes to ${zhPath}`);

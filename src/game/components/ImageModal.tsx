@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useI18n } from '../../i18n';
+import { getResponsiveImageAttributes } from '../mediaAssets';
 
 export function ImageModal({
   image,
@@ -11,6 +12,7 @@ export function ImageModal({
   onClose: () => void;
 }) {
   const { t } = useI18n();
+  const responsiveImage = getResponsiveImageAttributes(image);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -31,7 +33,9 @@ export function ImageModal({
         onClick={e => e.stopPropagation()}
       >
         <img
-          src={image}
+          src={responsiveImage.src}
+          srcSet={responsiveImage.srcSet}
+          sizes="min(100vw - 2rem, 768px)"
           alt=""
           decoding="async"
           className="max-w-full max-h-[65dvh] object-contain rounded-lg shadow-2xl"

@@ -11,6 +11,7 @@ type ArchiveEntryLocale = {
   description?: string;
   quote?: string;
   chapter?: string;
+  image?: string;
 };
 
 type ArchiveLocaleData = {
@@ -54,6 +55,7 @@ export function localizeArchiveDefinition(
     description: localized.description ?? entry.description,
     quote: localized.quote ?? entry.quote,
     chapter: localized.chapter ?? entry.chapter,
+    image: localized.image ?? entry.image,
   };
 }
 

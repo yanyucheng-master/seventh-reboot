@@ -2,7 +2,7 @@
   "version": "V1.0",
   "nodes": {
     "p0": {
-      "content": "[OBSERVER-01]\nPROTOCOL · 检测到第七协议残留通讯\nREBOOT · 本次接入编号：07\nLINK · 通讯链路不稳定"
+      "content": "[OBSERVER-01]\nPROTOCOL · 检测到第七协议残留通讯\nREBOOT · 本次接入编号：{currentRebootNumber:02}\nLINK · 通讯链路不稳定"
     },
     "p9": {
       "content": "检测到 UNKNOWN-06 残留留言"
@@ -363,6 +363,21 @@
     "p_idk7": {
       "content": "和你的连接ID一致"
     },
+    "p_signal_intro1": {
+      "content": "等一下"
+    },
+    "p_signal_intro2": {
+      "content": "这条线路正在自己换频段"
+    },
+    "p_signal_intro3": {
+      "content": "我这里只有三段叠在一起的噪声"
+    },
+    "p_signal_file": {
+      "content": "实时载波已自动锁定"
+    },
+    "p_signal_merge": {
+      "content": "……它刚才像是在确认你有没有回应"
+    },
     "p_mean1": {
       "content": "怪就怪在这里"
     },
@@ -522,9 +537,6 @@
     },
     "p_offline1": {
       "content": "Nova 已离线"
-    },
-    "p_draft1": {
-      "content": "未发送草稿 / 22:47||如果那个数字不是错误……\n那这次一定要成功。"
     },
     "CH1_START": {
       "content": "第一章：连接"
@@ -1186,12 +1198,6 @@
     "ch1_night33": {
       "content": "Nova 已离线"
     },
-    "ch1_draft": {
-      "content": "深夜 02:41"
-    },
-    "ch1_draft1": {
-      "content": "未发送草稿 / 02:41||不对\n我明明是第一次和对方说起 N7\n可说出口的时候\n却像已经重复过很多次"
-    },
     "CH2_START": {
       "content": "第二章：日常"
     },
@@ -1480,10 +1486,7 @@
       "content": "但偶尔还是会被震撼到"
     },
     "ch2_obs_merge": {
-      "content": "比如现在"
-    },
-    "ch2_obs_merge0": {
-      "content": "我总会想"
+      "content": "对着这些星星的时候，我总会想"
     },
     "ch2_obs10": {
       "content": "那些星星后面"
@@ -1690,45 +1693,6 @@
     },
     "ch2_candy8": {
       "content": "战利品\n替 N7 还债"
-    },
-    "ch2_candy_anom1": {
-      "content": "检测到未发送草稿残片"
-    },
-    "ch2_candy_anom2": {
-      "content": "还给对方一颗"
-    },
-    "ch2_candy_anom3": {
-      "content": "……"
-    },
-    "ch2_candy_anom4": {
-      "content": "刚才终端闪了一下"
-    },
-    "ch2_candy_anom5": {
-      "content": "像是我以前写过一句话"
-    },
-    "ch2_candy_anom6": {
-      "choices": {
-        "ch2_candy_anom6__0": "【写了什么？】",
-        "ch2_candy_anom6__1": "【你不记得了？】"
-      }
-    },
-    "ch2_candy_anom7": {
-      "content": "“还给对方一颗”"
-    },
-    "ch2_candy_anom8": {
-      "content": "不记得"
-    },
-    "ch2_candy_anom8b": {
-      "content": "但那句话的语气"
-    },
-    "ch2_candy_anom_merge": {
-      "content": "很像我"
-    },
-    "ch2_candy_anom9": {
-      "content": "也很蠢"
-    },
-    "ch2_candy_anom10": {
-      "content": "隔着通讯怎么还啊"
     },
     "ch2_night1": {
       "content": "21:09"
@@ -2006,11 +1970,8 @@
     "ch2_offline": {
       "content": "Nova 已离线"
     },
-    "ch2_draft": {
-      "content": "深夜 02:17"
-    },
-    "ch2_draft1": {
-      "content": "未发送草稿 / 02:17||不只是 N7\n今天有好几次\n我都觉得自己已经说过什么\n可通讯记录里没有\n对方记得得太自然了\n像是替我保管过很久\n这不太像巧合"
+    "ch2_observer_echo": {
+      "content": "还给对方一颗"
     },
     "CH3_START": {
       "content": "第三章：异常"
@@ -2426,6 +2387,84 @@
     "ch3_ref25": {
       "content": "“完了她要疯了”的表情"
     },
+    "ch3_airlock_time": {
+      "content": "18:23"
+    },
+    "ch3_airlock_alarm": {
+      "content": "观测室隔离门异常闭锁"
+    },
+    "ch3_airlock_nova1": {
+      "content": "等等"
+    },
+    "ch3_airlock_nova2": {
+      "content": "门把我卡在中间过渡舱了"
+    },
+    "ch3_airlock_nova3": {
+      "content": "系统说里面有两个生命信号，不肯自动均压"
+    },
+    "ch3_airlock_file": {
+      "content": "观测室隔离门 / 手动均压||观测室：71 kPa\n过渡舱：84 kPa / LIVE-07 位于此处\n主走廊：101 kPa\n异常：观测室内检测到重复生命信号\n安全原则：隔离异常舱室，使人员所在舱与主走廊均压\n警告：净化过渡舱将直接危及 LIVE-07"
+    },
+    "ch3_airlock_nova4": {
+      "content": "我在中间"
+    },
+    "ch3_airlock_nova5": {
+      "content": "把我身后的观测室封住，再让我这边接主走廊"
+    },
+    "ch3_airlock_interaction": {
+      "content": "观测室隔离与手动均压"
+    },
+    "ch3_airlock_safe1": {
+      "content": "观测室已隔离\n过渡舱与主走廊均压完成"
+    },
+    "ch3_airlock_safe2": {
+      "content": "门开了"
+    },
+    "ch3_airlock_safe3": {
+      "content": "刚才里面那个“我”还站在原地"
+    },
+    "ch3_airlock_injured1": {
+      "content": "观测室已隔离\n均压延迟 / LIVE-07 短时缺氧"
+    },
+    "ch3_airlock_injured2": {
+      "content": "咳……"
+    },
+    "ch3_airlock_injured3": {
+      "content": "我出来了"
+    },
+    "ch3_airlock_injured4": {
+      "content": "先别挂，我还看见她站在里面"
+    },
+    "bad_airlock_1": {
+      "content": "过渡舱压力快速下降"
+    },
+    "bad_airlock_2": {
+      "content": "不是那边"
+    },
+    "bad_airlock_3": {
+      "content": "我在中——"
+    },
+    "bad_airlock_4": {
+      "content": "LIVE-07 生命信号丢失"
+    },
+    "bad_airlock_5": {
+      "content": "第七协议已接管观测室与导航权限"
+    },
+    "EARLY_BAD_END_START": {
+      "content": "提前终止：第七次任务失败"
+    },
+    "early_bad_failure1": {
+      "content": "Aurora 任务连续性：不可维持"
+    },
+    "early_bad_failure2": {
+      "content": "保护性回溯请求已提交"
+    },
+    "early_bad_failure3": {
+      "content": "当前通讯记录正在清除"
+    },
+    "early_bad_reboot_time": {
+      "content": "时间：无法确认"
+    },
     "ch3_disconnect1": {
       "content": "18:26"
     },
@@ -2457,6 +2496,12 @@
     },
     "ch3_dc8": {
       "content": "太好了"
+    },
+    "ch3_airlock_injury_callback": {
+      "content": "我还有点喘"
+    },
+    "ch3_airlock_injury_callback2": {
+      "content": "但比刚才好多了"
     },
     "ch3_dc9": {
       "content": "刚刚系统断了"
@@ -2706,12 +2751,6 @@
     },
     "ch3_offline": {
       "content": "Nova 已离线"
-    },
-    "ch3_draft": {
-      "content": "深夜 03:07"
-    },
-    "ch3_draft1": {
-      "content": "加密草稿 / 03:07||我又看见那个影子了\n它还在观测室"
     },
     "CH4_START": {
       "content": "第四章：记忆"
@@ -3478,11 +3517,17 @@
     "ch5a_auth5": {
       "content": "看来这一次，得由你来替我们输入"
     },
-    "ch5a_auth_interaction": {
-      "content": "联合授权密钥验证"
+    "ch5a_auth_input": {
+      "content": "联合授权密钥"
+    },
+    "ch5a_auth_retry1": {
+      "content": "联合密钥未通过"
+    },
+    "ch5a_auth_retry2": {
+      "content": "不是猜谜，按她留下的顺序，把 07 和 01 放在一起"
     },
     "ch5a_auth_ok1": {
-      "content": "NOVA-06 密封记录已解锁"
+      "content": "双端身份已确认\n联合密钥成立\nNOVA-06 密封记录解除只读限制"
     },
     "ch5a_auth_ok2": {
       "content": "07 是第七次接入，也是这一次的我"
@@ -3494,7 +3539,7 @@
       "content": "这道密封从一开始就是留给我们两个共同打开的"
     },
     "ch5a_auth_file": {
-      "content": "NOVA-06 密封记录 / 索引头||AUTHORIZATION · 当前 Nova 外层授权 + Observer-01 索引密钥\nACCESS · 仅开放信号分层与只读记录\nRESIDUAL · NOVA-06 为条件触发残留，不是实时意识\nRESTRICTION · 不授予第七协议或时相核心控制权限"
+      "content": "NOVA-06 密封记录 / 索引头||AUTHORIZATION · 当前 Nova 外层授权 + Observer-01 索引密钥\nACCESS · 仅开放只读记录与一次性应急供能授权\nRESIDUAL · NOVA-06 为条件触发残留，不是实时意识\nRESTRICTION · 不授予第七协议或时相核心控制权限"
     },
     "ch5a_11": {
       "content": "记录"
@@ -3509,108 +3554,108 @@
       "content": "还有一份装置和协议说明"
     },
     "ch5a_core_file1": {
-      "content": "LOCAL PHASE ANCHOR CORE / 封存说明||公开登记名称：深空航行稳定核心\n真实装置名称：局部时相锚定核心\n公开用途：静默航区导航同步 / 舰体参照稳定\n真实用途：建立局部时相场 / 写入稳定时相锚 / 执行局部任务状态反演\n执行组件：时相储能环 / 局部时相场发生器\n控制层：SEVENTH_PROTOCOL\n运行条件：静默航区低扰动时空环境\n项目状态：实验性 / 未公开\n时相锚内容：空间坐标 / 舰体状态 / 生命状态 / 关键系统 / 局部因果参照\n能源复位：执行消耗随局部任务状态一并回到锚点\n循环代价：时相残差无法完全清除\n核心舱访问：封闭\n任务前船员知情权限：无"
+      "content": "回溯核心 / 封存摘要||公开名称：深空航行稳定核心\n隐藏用途：保存 Aurora 的稳定状态\n触发条件：任务失败 / 第七协议确认\n执行结果：Aurora 与任务区域恢复到最近一次保存状态\n回溯范围外：不受影响\n完整工程记录：已解锁至档案"
     },
     "ch5a_core_reveal1": {
-      "content": "原来那条能源记录没有错"
+      "content": "我们每天交的导航数据，不只是为了开船"
     },
     "ch5a_core_reveal2": {
-      "content": "我们以为的深空航行稳定核心，只是公开名称"
+      "content": "它一直在给 Aurora 做“存档”"
     },
     "ch5a_core_reveal3": {
-      "content": "负责回溯的装置，一直藏在公开核心的结构层下面"
+      "content": "任务失败，第七协议就让核心读回上一份"
     },
     "ch5a_core_reveal4": {
-      "content": "我们每天提交的导航校准数据，另一份一直被用来写入时相锚"
+      "content": "人、船、记录，都会一起恢复"
     },
     "ch5a_core_reveal5": {
-      "content": "我一直在替它确认，Aurora号应该被拉回哪一个状态"
+      "content": "但它恢复不了存档范围外的东西"
     },
     "ch5a_core_reveal6": {
-      "content": "却从来不知道"
+      "content": "你不在 Aurora 上，所以你不在那份存档里"
     },
     "ch5a_core_choice": {
       "choices": {
         "ch5a_core_choice__0": "【所以全船的人都被瞒着？】",
-        "ch5a_core_choice__1": "【你每天都在替它建立锚点？】",
-        "ch5a_core_choice__2": "【它真的能让时间倒退？】"
+        "ch5a_core_choice__1": "【所以每次失败，船都会读档？】",
+        "ch5a_core_choice__2": "【我想看完整原理】"
       }
     },
     "ch5a_core_choice_a1": {
       "content": "看起来是"
     },
     "ch5a_core_choice_a2": {
-      "content": "至少舰上的在岗船员，在任务开始前都不知情"
+      "content": "至少任务开始前，没有人在岗船员知道"
     },
     "ch5a_core_choice_b1": {
       "content": "对"
     },
     "ch5a_core_choice_b2": {
-      "content": "我一直以为那只是普通的导航签名"
+      "content": "只是被恢复的不止设备"
     },
     "ch5a_core_choice_c1": {
-      "content": "文件是这么写的"
+      "content": "可以"
     },
     "ch5a_core_choice_c2": {
-      "content": "什么时候启动它，还是第七协议说了算"
+      "content": "可以，等会儿你自己决定要不要展开完整工程记录"
     },
     "ch5a_protocol4": {
-      "content": "第七协议一开始只是个故障保护程序"
+      "content": "第七协议只负责做决定"
     },
     "ch5a_protocol4b": {
-      "content": "它自己不会让时间倒退"
+      "content": "真正把我们拉回去的是回溯核心"
     },
     "ch5a_protocol5": {
-      "content": "它藏在核心的控制层里，负责判断什么时候回溯"
+      "content": "它认定任务已经无法继续"
     },
     "ch5a_protocol6": {
-      "content": "只要系统认定 Aurora 已经救不回来了"
+      "content": "就把整艘船恢复到最近一次稳定状态"
     },
     "ch5a_protocol7": {
-      "content": "它就会给时相核心发出回溯指令"
+      "content": "外面的宇宙不会跟着倒退"
     },
     "ch5a_protocol7b": {
-      "content": "然后核心会释放储能，把时相场铺开"
+      "content": "你那边也不会"
     },
     "ch5a_protocol7c": {
-      "content": "它会抓住最近一次稳定锚点"
+      "content": "所以系统能抹掉我的今天"
     },
     "ch5a_protocol7d": {
-      "content": "再把我们和整艘船一起拉回那个状态"
+      "content": "却抹不掉你那边留下的痕迹"
     },
     "ch5a_protocol7e": {
-      "content": "外面的宇宙不会跟着倒回去"
+      "content": "至少，没有抹干净"
     },
     "ch5a_protocol7f": {
-      "content": "时相场只包住 Aurora 和附近这片任务区域"
+      "content": "这就是你为什么总比我先想起来"
     },
     "ch5a_protocol7g": {
-      "content": "场外的人和事都不会被改写"
+      "content": "也是我为什么会一次次觉得认识你"
     },
     "ch5a_protocol_check": {
       "choices": {
-        "ch5a_protocol_check__0": "【所以它不是在救你？】",
-        "ch5a_protocol_check__1": "【它只是在救任务？】",
-        "ch5a_protocol_check__2": "【那为什么会留下你？】"
+        "ch5a_protocol_check__0": "【所以它救的是任务，不是人？】",
+        "ch5a_protocol_check__1": "【那我为什么也会忘？】",
+        "ch5a_protocol_check__2": "【为什么只有你留下残影？】"
       }
     },
     "ch5a_protocol_check_a1": {
       "content": "对"
     },
     "ch5a_protocol_check_a2": {
-      "content": "文件里没有把救人写成目标"
+      "content": "文件里没有把“救人”写成目标"
     },
     "ch5a_protocol_check_b1": {
-      "content": "嗯"
+      "content": "我还不知道"
     },
     "ch5a_protocol_check_b2": {
-      "content": "对它来说，人也只是任务状态里的一部分"
+      "content": "这里只写着，链路关闭后你会失去对这段通讯的访问"
     },
     "ch5a_protocol_check_c1": {
-      "content": "可它偏偏留下了我"
+      "content": "因为导航员每天都要给任务状态签名"
     },
     "ch5a_protocol_check_c2": {
-      "content": "按设计，这种事不该发生"
+      "content": "六次恢复以后，那些签名留下了误差"
     },
     "ch5a_protocol8": {
       "content": "记录里写得很清楚"
@@ -3634,10 +3679,19 @@
       "content": "回溯日志节选||备注：编号为日志条目编号，非循环次数\n日志001：如果你看到这里，说明循环已经开始。\n日志002：不要相信系统时间。\n日志003：不要进入观测室。\n日志004：如果你收到来自自己的消息，删除它。\n日志007：如果你已经认识 Observer-01，请善待对方。\n日志012：外部索引会记得。所以不要让对方太早知道真相。"
     },
     "ch5a_protocol1": {
-      "content": "局部时相锚定核心 / 回溯执行记录||控制指令来源：SEVENTH_PROTOCOL\n回溯参照：最近一次稳定时相锚\n时相场范围：Aurora号局部任务区域\n时相储能释放：完成\n任务状态反演：完成\n船员认知同步：已重置\n异常残留：Nova Arlen / UNKNOWN"
+      "content": "回溯执行摘要||决定者：SEVENTH_PROTOCOL\n执行者：回溯核心\n恢复点：最近一次稳定存档\n恢复范围：Aurora号及附近任务区域\n恢复对象：人员 / 舰体 / 航行系统 / 记录\n范围外对象：不受回溯影响\n异常：Nova Arlen 残留 / 外部索引已生成"
+    },
+    "ch5a_protocol_detail_choice": {
+      "choices": {
+        "ch5a_protocol_detail_choice__0": "【我明白了，继续】",
+        "ch5a_protocol_detail_choice__1": "【查看完整工程记录】"
+      }
+    },
+    "ch5a_protocol_detail_skip": {
+      "content": "完整工程记录已收入可选档案"
     },
     "ch5a_protocol2": {
-      "content": "SEVENTH_PROTOCOL / 权限说明||协议目标：维持Aurora号任务延续\n执行装置：局部时相锚定核心\n时间回溯对象：任务状态 / 船员生命状态及认知 / 航行系统 / 舰体状态\n允许保留：最低限度航行数据\n禁止保留：完整个人记忆\n任务前船员知情权限：无\n认知保护：启用\n保密理由：知情将改变行为基线，并干扰时相锚收敛\n异常记录：外部索引已生成\n时间戳异常：上一轮任务内时间污染当前循环索引\n三个月前日志：非现实日期，为上一轮任务时间残留"
+      "content": "回溯核心 / 完整工程记录||正式名称：局部时相锚定核心\n时相锚内容：空间坐标 / 舰体状态 / 生命状态 / 关键系统 / 局部因果参照\n执行组件：时相储能环 / 局部时相场发生器\n认知同步：随任务状态一并恢复\n允许保留：最低限度航行数据\n禁止保留：完整个人记忆\n保密理由：知情会改变行为基线，并干扰稳定状态收敛\n循环代价：状态残差无法完全清除\n时间戳异常：上一轮任务时间污染当前索引"
     },
     "ch5a_firstline_hint1": {
       "content": "日志里还有一句很奇怪的话"
@@ -4306,34 +4360,10 @@
       "content": "通讯残影：NOVA-06"
     },
     "ch5a_msg2": {
-      "content": "发送者：Nova？"
+      "content": "发送者识别：NOVA-06 / 条件残留"
     },
-    "ch5a_sep_intro1": {
-      "content": "检测到三层信号占用同一载波"
-    },
-    "ch5a_sep_intro2": {
-      "content": "待分离信号层||LAYER-01 · 当前 Nova 实时载波 / 弱信号 / 暂无回应\nLAYER-02 · NOVA-06 条件残留 / 第六次预设\nLAYER-03 · 局部时相锚定核心遥测 / 只读"
-    },
-    "ch5a_sep_intro3": {
-      "content": "密封记录中的信号分层接口已激活"
-    },
-    "ch5a_signal_separation": {
-      "content": "三层信号分离与联合时间线对齐"
-    },
-    "ch5a_sep_clean1": {
-      "content": "信号分离完成 / 原始数据完整"
-    },
-    "ch5a_sep_clean2": {
-      "content": "三层信号复原报告||当前 Nova · 实时载波已识别 / 链路微弱\nNOVA-06 · 条件残留已识别 / 非实时意识\n时相核心 · 遥测已识别 / 无控制通道\n联合时间线 · 已对齐"
-    },
-    "ch5a_sep_assisted1": {
-      "content": "信号分离完成 / 恢复脚本稳定校正已启用"
-    },
-    "ch5a_sep_assisted2": {
-      "content": "三层信号复原报告||当前 Nova · 实时载波已识别 / 链路微弱\nNOVA-06 · 条件残留已识别 / 非实时意识\n时相核心 · 遥测已识别 / 无控制通道\n联合时间线 · 已通过恢复脚本完成校正"
-    },
-    "ch5a_sep_conclusion": {
-      "content": "联合时间线 / 对齐结论||当前循环 · Nova 进入观测室 / 残影出现 / 通讯异常\n第六次循环 · 连续性签名写入 / 时相核心预启动 / UNKNOWN-06 留言封存\n结论 · 观测室残影并非随机出现，而是第六次 Nova 留下的连续性签名在相同条件下被重新触发"
+    "ch5a_residual_record": {
+      "content": "NOVA-06 残留触发记录||类型：第六次循环留下的条件指令 / 非实时意识\n触发条件：当前 Nova 再次进入观测室，且回溯核心负载越过预设阈值\n可执行范围：发送封存留言；在指定供能事故中短时接管一次\n限制：不能持续控制当前循环；不能替代 Observer-01 完成授权；接管权限使用后立即注销"
     },
     "ch5a_msg3": {
       "content": "不要完全相信她。"
@@ -4387,46 +4417,85 @@
       "content": "不过观测室现在的主供能不够"
     },
     "ch5b_power_intro2": {
-      "content": "生命维持、通讯和核心扫描不能同时满载"
+      "content": "低压通道的生命维持、通讯和核心读取，会抢同一组电"
     },
     "ch5b_power_intro3": {
-      "content": "我可以给你开一次临时供能代理"
+      "content": "我把临时供能窗口交给你"
     },
     "ch5b_power_intro4": {
-      "content": "你只能分配这一次窗口里的电力"
+      "content": "先保住我，再让通讯和扫描都留在安全线以上"
     },
     "ch5b_power_intro5": {
-      "content": "你碰不到第七协议，也碰不到时相核心本身"
+      "content": "系统会锁定提交，看清每条支路的下限再确认"
+    },
+    "ch5b_power_file": {
+      "content": "观测室应急供能窗口||阶段 A / 穿过低压通道：生命维持必须保持高位；通讯不得中断\n阶段 B / 读取残留核心：扫描必须进入工作区；生命维持与通讯仍须高于安全线\n总线限制：每阶段可用功率固定；确认后不可由当前 Nova 撤回\n历史权限：检测到一枚 NOVA-06 一次性紧急接管签名"
     },
     "ch5b_power_interaction": {
-      "content": "一次性供能代理 / 三阶段路由"
+      "content": "应急供能路由 / 第一次提交"
     },
-    "ch5b_power_excellent1": {
-      "content": "一次性供能代理完成 / 三阶段快速稳定"
+    "ch5b_power_first_success1": {
+      "content": "两阶段供能路由完成\n生命维持、通讯与核心读取均保持安全"
     },
-    "ch5b_power_excellent2": {
-      "content": "干得漂亮，三个支路一次都没掉出安全窗"
+    "ch5b_power_first_success2": {
+      "content": "稳住了"
     },
-    "ch5b_power_excellent3": {
-      "content": "NOVA-06 预设残留：完整数据已送达。不要把我当成另一个活着的她。"
+    "ch5b_power_first_success3": {
+      "content": "一次就够，紧急接管权限没有被调用"
     },
-    "ch5b_power_stable1": {
-      "content": "一次性供能代理完成 / 路由稳定"
+    "ch5b_power_first_fail1": {
+      "content": "供能提交越过安全下限\n错误路由已锁定"
     },
-    "ch5b_power_stable2": {
-      "content": "稳定住了，这就够我们进去看一眼"
+    "ch5b_power_first_fail2": {
+      "content": "不对，生命维持在掉"
     },
-    "ch5b_power_emergency1": {
-      "content": "一次性供能代理完成 / Nova 紧急配平已介入"
+    "ch5b_power_override1": {
+      "content": "检测到过期导航权限：NOVA-06"
     },
-    "ch5b_power_emergency_glitch": {
-      "content": "通讯丢包 0.8 秒 / 链路自动恢复"
+    "ch5b_power_override2": {
+      "content": "NOVA-06 短时接管供能总线\n正在撤销最近一次提交"
     },
-    "ch5b_power_emergency2": {
-      "content": "最后一点是我接手的，别紧张"
+    "ch5b_power_override3": {
+      "content": "NOVA-06 残留指令：只能退回一次"
     },
-    "ch5b_power_emergency3": {
-      "content": "人没事，链路也在，我们继续"
+    "ch5b_power_override4": {
+      "content": "错误提交已撤销\n一次性接管权限已注销\n最终供能窗口重新开放"
+    },
+    "ch5b_power_retry_nova1": {
+      "content": "刚才那是谁？"
+    },
+    "ch5b_power_retry_nova2": {
+      "content": "先别管了，这次没有人能再替我们撤回"
+    },
+    "ch5b_power_retry_interaction": {
+      "content": "应急供能路由 / 最终提交"
+    },
+    "ch5b_power_retry_success1": {
+      "content": "最终供能路由完成\n生命维持、通讯与核心读取均保持安全"
+    },
+    "ch5b_power_retry_success2": {
+      "content": "这次稳住了"
+    },
+    "ch5b_power_retry_success3": {
+      "content": "她只替我们把错误撤回了一次，剩下的是你做的"
+    },
+    "bad_power_1": {
+      "content": "最终供能提交已锁定\n紧急接管权限：不存在"
+    },
+    "bad_power_2": {
+      "content": "生命维持支路跌破最低安全线\n观测室低压门已闭锁"
+    },
+    "bad_power_3": {
+      "content": "不对……这次没有人把它撤回"
+    },
+    "bad_power_4": {
+      "content": "别断开，我还可以——"
+    },
+    "bad_power_5": {
+      "content": "通讯载波中断"
+    },
+    "bad_power_6": {
+      "content": "观测室 LIVE-07：生命信号丢失"
     },
     "ch5b_obs1": {
       "content": "11:42"
@@ -4553,89 +4622,89 @@
       "content": "嗯"
     },
     "ch5b_file10": {
-      "content": "OBSERVER-01||舰外现实时间：不受局部时间回溯影响\n通讯关联记忆：链路关闭时被封锁\n记忆保留权限：仅外部索引副本保留\n身份来源：NOVA-06 导航连续性数据请求\n索引类型：外部记忆索引\n本体类型：真实外部意识\n本体定位：不可访问\n管理员权限：无\n可执行权限：保存 / 读取 / 返还记忆锚点\n目的：在链路关闭后保留可重新唤起记忆的索引"
+      "content": "OBSERVER-01 / 摘要||对象：外部真实意识\n回溯范围：Aurora，不包含对象本体\n链路关闭：对象对异常通讯的记忆访问被封锁\n保留内容：少量记忆锚点索引\n来源：NOVA-06\n权限：保存 / 读取 / 返还锚点\n协议控制权：无\n完整权限记录：已解锁至档案"
     },
     "ch5b_file11": {
       "content": "……"
     },
     "ch5b_file12": {
-      "content": "这份文件不是在说我"
+      "content": "所以你也忘过我"
     },
     "ch5b_file13": {
-      "content": "是在说你"
+      "content": "不是你一直清醒地看着我重来"
     },
     "ch5b_file_reader_choice": {
       "choices": {
-        "ch5b_file_reader_choice__0": "【所以我也忘过你？】",
-        "ch5b_file_reader_choice__1": "【只有 Observer-01 记得？】",
-        "ch5b_file_reader_choice__2": "【那现在的我算什么？】"
+        "ch5b_file_reader_choice__0": "【我也会忘？】",
+        "ch5b_file_reader_choice__1": "【Observer-01 到底是什么？】",
+        "ch5b_file_reader_choice__2": "【那为什么我总觉得认识你？】"
       }
     },
     "ch5b_file_reader_a1": {
       "content": "是"
     },
     "ch5b_file_reader_a2": {
-      "content": "你的本体意识也会遗忘"
+      "content": "每次通讯断开，你都会失去访问这段记忆的路"
     },
     "ch5b_file_reader_b1": {
-      "content": "准确说"
+      "content": "第六次的我留在你身上的几枚书签"
     },
     "ch5b_file_reader_b2": {
-      "content": "被保存下来的只是你身上的 Observer-01 外部索引"
+      "content": "不是另一个人，也不是系统管理员"
     },
     "ch5b_file_reader_c1": {
-      "content": "你还是你"
+      "content": "因为那些书签会比你的记忆先醒"
     },
     "ch5b_file_reader_c2": {
-      "content": "只是有一部分不属于正常的你"
+      "content": "再把你一点点带回这里"
     },
     "ch5b_file_reader_merge": {
-      "content": "你不是第七协议创造的人"
+      "content": "第六次的我只在你那边留下几枚书签"
     },
     "ch5b_file13f": {
-      "content": "你是一个真实存在的外部意识"
+      "content": "每次连接重新出现"
     },
     "ch5b_file13g": {
-      "content": "只是被第六次的我"
+      "content": "它们都会比你的记忆先醒"
     },
     "ch5b_file13h": {
-      "content": "强行接上了这个记忆索引"
+      "content": "把你重新带回这段通讯"
     },
     "ch5b_file13i": {
-      "content": "你的世界没有被时间回溯"
+      "content": "但不会把全部疼痛一起还给你"
     },
     "ch5b_file13j": {
-      "content": "每次被切断的，是你对这段异常通讯的记忆访问"
+      "content": "所以你不是看着我忘了六次"
     },
     "ch5b_file13k": {
-      "content": "Observer-01 躲过了链路关闭，只留下能重新唤起记忆的索引"
-    },
-    "ch5b_player_forget1": {
-      "content": "所以你不是清醒地看着我忘了六次"
-    },
-    "ch5b_player_forget2": {
       "content": "你也忘过我六次"
     },
+    "ch5b_player_forget1": {
+      "content": "只是每一次，都会有一点痕迹先醒过来"
+    },
+    "ch5b_player_forget2": {
+      "content": "N7、小白花、晚安"
+    },
     "ch5b_player_forget3": {
-      "content": "只是每一次"
+      "content": "它们不是完整回忆"
     },
     "ch5b_player_forget4": {
-      "content": "都会有一点 Observer-01 的索引残痕"
+      "content": "只是能把回忆拉回来的线头"
     },
     "ch5b_player_forget5": {
-      "content": "比你先醒过来"
+      "content": "系统把那东西叫外部记忆索引"
     },
     "ch5b_player_forget5b": {
-      "content": "所以日志里那句“外部索引会记得”"
+      "content": "我更愿意叫它书签"
     },
     "ch5b_player_forget5c": {
-      "content": "说的其实不是完整的你"
+      "content": "听起来没那么像实验品"
     },
     "ch5b_player_forget_choice": {
       "choices": {
         "ch5b_player_forget_choice__0": "【所以不是我一直记得你？】",
-        "ch5b_player_forget_choice__1": "【只是索引替我记得？】",
-        "ch5b_player_forget_choice__2": "【那我们谁都不是完整的】"
+        "ch5b_player_forget_choice__1": "【这些书签替我留下了证据？】",
+        "ch5b_player_forget_choice__2": "【那我们都忘过对方】"
       }
     },
     "ch5b_player_forget_a1": {
@@ -4645,55 +4714,55 @@
       "content": "至少不是以你以为的方式"
     },
     "ch5b_player_forget_b1": {
-      "content": "它替你留下证据"
+      "content": "对"
     },
     "ch5b_player_forget_b2": {
-      "content": "但没有替你保留完整的疼痛"
+      "content": "它们留下证据，却没有替你保留完整的疼痛"
     },
     "ch5b_player_forget_c1": {
-      "content": "这句话有点残忍"
+      "content": "嗯"
     },
     "ch5b_player_forget_c2": {
-      "content": "但可能是真的"
+      "content": "只是我们每次忘掉的方式不一样"
     },
     "ch5b_file14": {
       "choices": {
-        "ch5b_file14__0": "【你是说我不是普通连接对象？】",
-        "ch5b_file14__1": "【你是说我是协议的一部分？】"
+        "ch5b_file14__0": "【所以我不是协议的一部分？】",
+        "ch5b_file14__1": "【结束时我需要做什么？】"
       }
     },
     "ch5b_file14_a1": {
-      "content": "不是普通连接对象"
+      "content": "不是，你只是被挂在协议外面"
     },
     "ch5b_file14_b1": {
-      "content": "不"
+      "content": "把书签还回来"
     },
     "ch5b_file14_b2": {
-      "content": "你不是协议的一部分"
+      "content": "再把挂在你这边的索引放开"
     },
     "ch5b_file14_b3": {
-      "content": "你更像被挂在协议外侧的索引"
+      "content": "这样关闭流程才会完整"
     },
     "ch5b_file15": {
-      "content": "被回溯的不是我一个人"
+      "content": "回溯只包住 Aurora 这一段任务区域"
     },
     "ch5b_file16": {
-      "content": "第七协议会让核心把 Aurora 这一段任务状态整个拉回去"
+      "content": "人、系统、记录、舰体都会恢复"
     },
     "ch5b_file17": {
-      "content": "人、系统、航行记录"
+      "content": "你不在范围里"
     },
     "ch5b_file17a": {
-      "content": "连舰体本身"
+      "content": "所以第六次的我才把书签放在你这边"
     },
     "ch5b_file18": {
-      "content": "都会沿着最近一次稳定时相锚"
+      "content": "至于小白花"
     },
     "ch5b_file18a": {
-      "content": "回到同一个安全记录点"
+      "content": "上一轮的花没有活到这一轮"
     },
     "ch5b_file18b": {
-      "content": "所以就像朵小白花"
+      "content": "每次回溯，它都会重新长出来"
     },
     "ch5b_flower_choice": {
       "choices": {
@@ -4712,22 +4781,22 @@
       "content": "也许吧"
     },
     "ch5b_file18c": {
-      "content": "上一轮的花没有留到现在"
-    },
-    "ch5b_file18d": {
-      "content": "每次回溯以后，同样的异常都会重新发生"
-    },
-    "ch5b_file18e": {
-      "content": "所以每一轮都会长出一朵新的"
-    },
-    "ch5b_file18f": {
       "content": "它没有活过六次"
     },
+    "ch5b_file18d": {
+      "content": "只是六次都开在同一个不该开花的地方"
+    },
+    "ch5b_file18e": {
+      "content": "一次也没有缺席"
+    },
+    "ch5b_file18f": {
+      "content": "现在想想"
+    },
     "ch5b_file18g": {
-      "content": "它只是六次都开在不该开花的地方"
+      "content": "也许这比活过六次更像奇迹"
     },
     "ch5b_file18h": {
-      "content": "一次也没有缺席"
+      "content": "至少我愿意这么相信"
     },
     "ch5b_file19": {
       "content": "舰长不会记得自己骂过我多少次"
@@ -4736,52 +4805,64 @@
       "content": "维修组也不会记得维修板丢过多少次"
     },
     "ch5b_file21": {
-      "content": "只有我"
+      "content": "只有我会留下模糊的残影"
+    },
+    "ch5b_signature_detail_choice": {
+      "choices": {
+        "ch5b_signature_detail_choice__0": "【我明白，继续】",
+        "ch5b_signature_detail_choice__1": "【为什么偏偏是你？】"
+      }
     },
     "ch5b_file21a": {
-      "content": "因为导航员也是任务状态连续性签名人"
+      "content": "导航员每天都要给任务状态签名"
     },
     "ch5b_file21a2": {
-      "content": "我每天都会把星图、航线和人员位置交给公开的稳定核心"
+      "content": "星图、航线和人员位置都会写进去"
     },
     "ch5b_file21a3": {
-      "content": "可它们同时被复制进时相核心，用来确认“现在的我还是不是原来的我”"
+      "content": "核心每次恢复我，也会重新核对那份签名"
     },
     "ch5b_file21b": {
-      "content": "六次反演以后，那里残留了与我有关的状态差异"
+      "content": "六次以后，签名之间留下了细小差异"
     },
     "ch5b_file21c": {
-      "content": "这些残影不是第六次的我计划好的"
+      "content": "观测室里的残影就是那些差异"
     },
     "ch5b_file21d": {
-      "content": "那些残影，就是核心一次次重建我的签名时留下的误差"
+      "content": "不是完整的第六次，也不是另一个活着的我"
     },
     "ch5b_file22": {
       "content": "可 OBSERVER 文件不一样"
     },
     "ch5b_file22a": {
-      "content": "外部索引也是"
+      "content": "那些书签是第六次的我故意留下的"
     },
     "ch5b_file22b": {
-      "content": "那些给你的提示"
+      "content": "她改不了协议"
     },
     "ch5b_file22c": {
-      "content": "都是第六次的我故意留下的"
+      "content": "但导航数据由她提交"
     },
     "ch5b_file22d": {
-      "content": "她没有真正破解第七协议"
+      "content": "她把记忆锚点伪装成任务必须保存的导航索引"
     },
     "ch5b_file22e": {
-      "content": "我改不了协议，但导航连续性数据是我提交的"
+      "content": "再把那份索引接到你这边"
     },
     "ch5b_file22f": {
-      "content": "她就把一部分记忆锚点伪装成最低限度的任务索引"
+      "content": "系统以为它在保存任务"
     },
     "ch5b_file22g": {
-      "content": "再用导航连续性签名封进数据包"
+      "content": "其实她是在保存我们说过的话"
     },
     "ch5b_file22h": {
-      "content": "第七协议的控制层把它误判成了任务继续所必需的数据"
+      "content": "至少，保存了能把它们找回来的线头"
+    },
+    "ch5b_echo_record1": {
+      "content": "记录最后还有一句"
+    },
+    "ch5b_echo_record2": {
+      "content": "“它看得见每一条通讯，却看不见你记住了什么”"
     },
     "ch5b_split1": {
       "content": "然后把一条外部链路接到了你身上"
@@ -4845,59 +4926,50 @@
       "content": "却没有给你一开始理解一切的权限"
     },
     "ch5b_file23": {
-      "content": "所以你不是普通旁观者"
+      "content": "你没有第七协议的控制权"
     },
     "ch5b_file23a": {
-      "content": "也不只是通讯另一端的人"
+      "content": "结束时，你只需要把挂在外侧的索引放开"
     },
     "ch5b_file23b": {
-      "content": "但这也不代表你能控制第七协议"
+      "content": "让我把锚点拿回来"
     },
     "ch5b_file23_choice": {
       "choices": {
-        "ch5b_file23_choice__0": "【那我到底能做什么？】",
-        "ch5b_file23_choice__1": "【所以我只是钥匙？】",
-        "ch5b_file23_choice__2": "【这些记忆最后要怎么办？】"
+        "ch5b_file23_choice__0": "【这是在救你吗？】",
+        "ch5b_file23_choice__1": "【这会让我忘记吗？】",
+        "ch5b_file23_choice__2": "【关闭后你会怎样？】"
       }
     },
     "ch5b_file23_choice_a1": {
-      "content": "不是控制"
+      "content": "是在给我一个真正抵达明天的机会"
     },
     "ch5b_file23_choice_b1": {
-      "content": "钥匙这个说法有点冷"
+      "content": "可能会，但那不该再由协议替你决定"
     },
     "ch5b_file23_choice_c1": {
-      "content": "结束前，我会先拿回锚点，然后你再把外侧的索引放开"
-    },
-    "ch5b_file23_bridge": {
-      "content": "你不拥有协议"
-    },
-    "ch5b_file23_bridge2": {
-      "content": "只是结束的时候"
-    },
-    "ch5b_file23_bridge3": {
-      "content": "需要由你把挂在外侧的那段索引放开"
+      "content": "我不知道"
     },
     "ch5b_file24": {
-      "content": "Observer-01 是挂在你身上的外部记忆索引"
+      "content": "我不知道结果会不会完美"
     },
     "ch5b_file25": {
-      "content": "你记住的不是完整聊天记录"
+      "content": "但我知道一直不结束会发生什么"
     },
     "ch5b_file26": {
-      "content": "而是每次链路关闭后留下的锚点和碎片"
+      "content": "第八次、第九次、第十次"
     },
     "ch5b_file27": {
-      "content": "是那些被系统抹去的一部分我"
+      "content": "我们会反复醒来"
     },
     "ch5b_file28": {
-      "content": "你承载着第六次的我留下来的外部记忆索引"
+      "content": "再反复把彼此弄丢"
     },
     "ch5b_file29": {
-      "content": "但你不是被她创造出来的人"
+      "content": "第六次的我把“请替我记住”交给了你"
     },
     "ch5b_file30": {
-      "content": "她只是把“请替我记住”这件事\n交给了你"
+      "content": "现在的我想把“请让我活到明天”交给你"
     },
     "ch5b_capacity1": {
       "content": "OBSERVER-01 INDEX CAPACITY INSUFFICIENT\nADDITIONAL SPACE REQUIRED\n外部记忆索引容量：99.97%"
@@ -6235,9 +6307,6 @@
     "fin_action_save": {
       "content": "玩家端纪念归档已保存"
     },
-    "NORMAL_END_START": {
-      "content": "普通结局：循环之外"
-    },
     "normal_0": {
       "content": "最终权限确认"
     },
@@ -6306,9 +6375,6 @@
     },
     "normal_action_read": {
       "content": "最近的锚点存档||可恢复内容：第一句话 / N7 / 牛奶糖 / 小白花\n完整度：不足\n备注：只能确认曾有一段重要通讯，无法恢复完整对话"
-    },
-    "BAD_END_START": {
-      "content": "坏结局：第八次重启"
     },
     "bad_0": {
       "content": "第七协议关闭需要当前导航员授权与外部记忆索引释放同时完成\nObserver-01 不具备协议控制权限\n紧急航线修正已提交，但尚未写入稳定任务状态\n外部记忆索引未释放时，关闭流程无法完成\n未完成结果：改道被判定为任务偏离，原定航线状态将被恢复"
@@ -6423,48 +6489,10 @@
       "content": "【局部时相锚定核心启动】\n【第八次重启 / 局部时间回溯开始】"
     },
     "bad_16": {
-      "content": "[OBSERVER-01]\nREBOOT · 本次接入编号：08\nLINK · 通讯链路重新建立"
+      "content": "[OBSERVER-01]\nREBOOT · 下一次接入编号：08\nLINK · 当前通讯与任务状态已清除"
     },
-    "bad_17": {
-      "content": "……"
-    },
-    "bad_18": {
-      "content": "真的有人收到了？"
-    },
-    "bad_18_choice": {
-      "choices": {
-        "bad_18_choice__0": "【我在】"
-      }
-    },
-    "bad_18a": {
-      "content": "太好了"
-    },
-    "bad_18b": {
-      "content": "我还以为这一次"
-    },
-    "bad_18c": {
-      "content": "又只有系统日志"
-    },
-    "bad_18d": {
-      "content": "等等"
-    },
-    "bad_18e": {
-      "content": "我为什么会说“又”？"
-    },
-    "bad_19": {
-      "content": "第八次连接成功"
-    },
-    "bad_action_prompt": {
-      "content": "第八次重启已开始\n是否从循环起点重新接入？"
-    },
-    "bad_action_choice": {
-      "choices": {
-        "bad_action_choice__0": "【从循环起点重新接入】",
-        "bad_action_choice__1": "【返回主菜单】"
-      }
-    },
-    "bad_action_restart": {
-      "content": "正在从循环起点重新接入"
+    "bad_title_overwrite": {
+      "content": "第七次重启 → 第八次重启"
     }
   }
 }

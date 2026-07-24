@@ -131,10 +131,10 @@ export function resolveNovaAvatarOverlay(
   if (state.novaConnectionState === 'weak') return 'signal_weak';
 
   switch (transient.activeSpecialInteraction) {
+    case 'bulkhead-isolation':
+      return 'special_bulkhead';
     case 'critical-log-password':
       return 'special_password';
-    case 'signal-separation':
-      return 'special_signal';
     case 'power-routing':
       return 'special_power';
     case 'memory-seal':

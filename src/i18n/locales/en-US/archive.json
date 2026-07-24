@@ -106,17 +106,8 @@
     "photo_nova_id": {
       "title": "NOVA ARLEN",
       "subtitle": "Communications archive restored",
-      "chapter": "Identity confirmed"
-    },
-    "anomaly_unsent_n7_draft": {
-      "title": "Unsent Draft / 02:17",
-      "description": "No\nThat was definitely the first time I ever told them about N7",
-      "chapter": "Chapter-end anomaly draft"
-    },
-    "anomaly_encrypted_observatory_draft": {
-      "title": "Encrypted Draft / 03:07",
-      "description": "I saw that shadow again\nIt's still in the observation room",
-      "chapter": "Chapter Three: Anomaly"
+      "chapter": "Identity confirmed",
+      "image": "/assets/nova_id_photo_en.png"
     },
     "anomaly_hidden_log_nova07": {
       "title": "Hidden Log: NOVA-07",
@@ -151,7 +142,8 @@
     "profile_verified": {
       "title": "Name: NOVA ARLEN",
       "subtitle": "Identity status: Confirmed",
-      "description": "Age: 20\nPosition: Aurora Navigator\nObserver link: Confirmed\nNote: Subject linked to the Seventh Protocol"
+      "description": "Age: 23\nPosition: Aurora Navigator\nDepartment: Navigation\nFile ID: NA-0523-19\nClearance: LEVEL 5",
+      "image": "/assets/nova_id_photo_en.png"
     },
     "profile_truth": {
       "title": "Observer Link: Deep Confirmation",

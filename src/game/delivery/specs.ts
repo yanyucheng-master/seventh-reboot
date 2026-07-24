@@ -106,21 +106,6 @@ export const RESTORED_FAILURE_RETRY_SPEC: DeliverySpec = {
   finalLinkState: 'stable',
 };
 
-export const POWER_EMERGENCY_LINK_TIMELINE: LinkTimelineSpec = {
-  phases: [
-    { atMs: 0, state: 'interrupted' },
-    { atMs: 800, state: 'restoring' },
-  ],
-  completeAtMs: 1300,
-  finalState: 'stable',
-};
-
-export const SIGNAL_ASSISTED_LINK_TIMELINE: LinkTimelineSpec = {
-  phases: [{ atMs: 0, state: 'restoring' }],
-  completeAtMs: 1200,
-  finalState: 'stable',
-};
-
 const NODE_LINK_STATE_EFFECTS: Record<string, CommunicationLinkState> = {
   ch3_dc1: 'interrupted',
   ch3_dc2: 'interrupted',
@@ -129,7 +114,6 @@ const NODE_LINK_STATE_EFFECTS: Record<string, CommunicationLinkState> = {
   ch3_dc5: 'restoring',
   ch3_dc9: 'stable',
   ch5a_offline: 'interrupted',
-  ch5a_signal_separation: 'unstable',
   fin_disconnect3: 'unstable',
   fin_disconnect4: 'unstable',
   fin_disconnect5: 'unstable',

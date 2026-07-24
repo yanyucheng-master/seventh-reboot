@@ -10,32 +10,54 @@ import {
   resolveNovaAvatarPresentation,
 } from './avatarState';
 import {
+  archiveFatalCycle,
   clearSave,
   createNewGameStats,
   createSaveData,
   defaultContactStage,
   defaultStats,
+  getLatestFailedCycle,
   getPendingNodeIdAfterNode,
   getSaveTimeString,
   hasSaveFile,
   loadGame,
+  loadPersistentProgress,
   resolveResumeNodeId,
   saveGame,
 } from './storage';
+import {
+  choiceDeviatesFromRecord,
+  createCycleInteractionRecord,
+  createCurrentCycleState,
+  getStoryNodeForReboot,
+  inputDeviatesFromRecord,
+  interactionDeviatesFromRecord,
+  markCycleNodeCompleted,
+  recordCycleChoice,
+  recordCycleFreeInput,
+  recordCycleInteraction,
+  recordCycleTimedResult,
+  replayFailedCycle,
+  shouldStopReadSkip,
+  type CycleReplayResult,
+  type CycleSyncEvent,
+} from './cycleState';
 import type {
   ChatDeliveryRuntime,
   CommunicationLinkState,
   ContactStage,
+  CycleNoticeKey,
+  CurrentCycleState,
   DisplayMessage,
+  FailedCycleRecord,
+  FatalFailureCause,
   GameScreen,
   GameStats,
   GlitchLevel,
   MemoryAnchorId,
   NovaAvatarStoryState,
   NovaAvatarTransition,
-  NovaHintStage,
   SpecialInteractionCompletion,
-  SpecialInteractionKind,
 } from './types';
 import { DeliveryController } from './delivery/controller';
 import {
@@ -45,10 +67,8 @@ import {
 import {
   getNodeLinkStateEffect,
   isCommittedWithinDeadline,
-  POWER_EMERGENCY_LINK_TIMELINE,
   resolveDeliverySpec,
   RESTORED_FAILURE_RETRY_SPEC,
-  SIGNAL_ASSISTED_LINK_TIMELINE,
   type DeliverySpec,
   type DeliveryTimelinePhase,
 } from './delivery/specs';
@@ -59,9 +79,11 @@ import { ChapterBanner, RemoteTypingRow } from './components/ChatPrimitives';
 import { RestartDialog } from './components/RestartDialog';
 import { MemoryArchiveOverlay } from './components/MemoryArchive';
 import { GameTitle } from './components/GameTitle';
+import { CycleSyncOverlay } from './components/CycleSyncOverlay';
 import { NovaAvatar } from './components/NovaAvatar';
 import { AvatarDebugPanel } from './components/AvatarDebugPanel';
 import { DeliveryDebugPanel } from './components/DeliveryDebugPanel';
+import { ObserverEchoLayer } from './components/ObserverEchoLayer';
 import { useVisualViewport } from '../hooks/useVisualViewport';
 import { getSaveProgressLabel } from './progress';
 import { formatChoiceText, shouldShowNovaAvatar, shouldShowTypingAvatar } from './format';
@@ -75,14 +97,11 @@ import {
 } from './state';
 import { SpecialInteractionOverlay } from './interactions/SpecialInteractionOverlay';
 import {
-  applyNova06OverrideCheckpoint,
   applySpecialInteractionCompletion,
   isSealableMemoryAnchor,
+  matchesInteractionCondition,
+  matchesInteractionPrerequisite,
 } from './interactions/logic';
-import {
-  getNova06CommsAftermath,
-  NOVA06_BRIDGE_CHOICE_PREFIX,
-} from './interactions/nova06CommsAftermath';
 
 type Translate = (key: string, params?: Record<string, string | number>) => string;
 
@@ -143,6 +162,19 @@ type ActiveInputNode = {
   inputAutoFocus?: boolean;
   specialInputNextIds?: Record<string, string>;
 };
+
+function createCycleNoticeMessages(keys: CycleNoticeKey[], t: Translate): DisplayMessage[] {
+  const timestamp = Date.now();
+  return keys.map((uiKey, index) => ({
+    id: `cycle_notice_${uiKey.replaceAll('.', '_')}_${timestamp}_${index}`,
+    speaker: 'system',
+    type: 'status',
+    content: t(uiKey),
+    isNew: true,
+    uiKind: 'cycleNotice',
+    uiKey,
+  }));
+}
 
 function getWaitConfig(node: StoryNode, t: Translate): WaitConfig | null {
   if (!node.nextId) return null;
@@ -360,7 +392,6 @@ export default function GameApp() {
   const [modalImage, setModalImage] = useState<{ image: string; caption: string } | null>(null);
   const [avatarState, setAvatarState] = useState<NovaAvatarStoryState>(() => createDefaultNovaAvatarState());
   const [avatarTransition, setAvatarTransition] = useState<NovaAvatarTransition | null>(null);
-  const [nova06AvatarInterferenceActive, setNova06AvatarInterferenceActive] = useState(false);
   const [signalGlitch, setSignalGlitch] = useState<ActiveSignalGlitch | null>(null);
   const [showChapterBanner, setShowChapterBanner] = useState<string | null>(null);
   const [typewriterText, setTypewriterText] = useState('');
@@ -370,6 +401,11 @@ export default function GameApp() {
   const [showRestartConfirm, setShowRestartConfirm] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
   const [stats, setStats] = useState<GameStats>(defaultStats);
+  const [persistentProgress, setPersistentProgress] = useState(() => loadPersistentProgress());
+  const [cycleState, setCycleState] = useState<CurrentCycleState>(() => {
+    const progress = loadPersistentProgress();
+    return createCurrentCycleState(progress.currentRebootNumber);
+  });
   const [contactStage, setContactStage] = useState<ContactStage>(defaultContactStage);
   const [inputNode, setInputNode] = useState<ActiveInputNode | null>(null);
   const [activeInteraction, setActiveInteraction] = useState<StoryNode | null>(null);
@@ -377,6 +413,12 @@ export default function GameApp() {
   const [waitPrompt, setWaitPrompt] = useState<WaitPrompt | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isSkippingToChoice, setIsSkippingToChoice] = useState(false);
+  const [isSkippingRead, setIsSkippingRead] = useState(false);
+  const [syncOfferVisible, setSyncOfferVisible] = useState(false);
+  const [activeSyncEvents, setActiveSyncEvents] = useState<CycleSyncEvent[]>([]);
+  const [syncVisibleCount, setSyncVisibleCount] = useState(0);
+  const [showMenuSettings, setShowMenuSettings] = useState(false);
+  const [observerEcho, setObserverEcho] = useState<string | null>(null);
   const [deliveryRuntime, setDeliveryRuntime] = useState<ChatDeliveryRuntime>(
     () => createDefaultChatDeliveryRuntime(),
   );
@@ -430,6 +472,7 @@ export default function GameApp() {
   const signalGlitchPulseRef = useRef(0);
   const lastSignalGlitchRef = useRef({ at: 0, level: 0 });
   const skipToChoiceRef = useRef(false);
+  const forceFastForwardBottomRef = useRef(false);
   const messagesRef = useRef(messages);
   const pendingNodeIdRef = useRef('p0');
   const deliveryRuntimeRef = useRef(deliveryRuntime);
@@ -437,13 +480,14 @@ export default function GameApp() {
   const avatarStateRef = useRef(avatarState);
   const avatarTransitionTimeoutRef = useRef<number | null>(null);
   const statsRef = useRef(stats);
+  const cycleStateRef = useRef(cycleState);
+  const persistentProgressRef = useRef(persistentProgress);
+  const previousCycleRecordRef = useRef<FailedCycleRecord | null>(null);
+  const syncPlanRef = useRef<CycleReplayResult | null>(null);
+  const syncTimerRef = useRef<number | null>(null);
+  const skipReadRef = useRef(false);
   const contactStageRef = useRef(contactStage);
   const internalTestBootstrappedRef = useRef(false);
-  const nova06BridgeRunRef = useRef(0);
-  const nova06BridgeRef = useRef<{
-    continueId: string;
-    replies: Array<{ text: string; ack: string }>;
-  } | null>(null);
 
   useEffect(() => {
     messagesRef.current = messages;
@@ -462,12 +506,24 @@ export default function GameApp() {
   }, [stats]);
 
   useEffect(() => {
+    cycleStateRef.current = cycleState;
+  }, [cycleState]);
+
+  useEffect(() => {
+    persistentProgressRef.current = persistentProgress;
+  }, [persistentProgress]);
+
+  useEffect(() => {
     contactStageRef.current = contactStage;
   }, [contactStage]);
 
   useEffect(() => {
     setSaveTime(getSaveTimeString(t));
   }, [locale, t]);
+
+  useEffect(() => {
+    document.title = t(persistentProgress.reboot08TitleUnlocked ? 'menu.title08' : 'menu.title');
+  }, [persistentProgress.reboot08TitleUnlocked, t]);
 
   const applyLocalizedMessages = useCallback(
     (msgs: DisplayMessage[]) => {
@@ -519,10 +575,9 @@ export default function GameApp() {
 
   const cancelActiveSequence = useCallback(() => {
     queueRunIdRef.current += 1;
-    nova06BridgeRunRef.current += 1;
-    nova06BridgeRef.current = null;
     nodeQueueRef.current = [];
     skipToChoiceRef.current = false;
+    forceFastForwardBottomRef.current = false;
     delayResolverRef.current?.();
     delayResolverRef.current = null;
     if (waitTimeoutRef.current !== null) {
@@ -546,10 +601,19 @@ export default function GameApp() {
       avatarTransitionTimeoutRef.current = null;
     }
     setSignalGlitch(null);
+    setObserverEcho(null);
     setAvatarTransition(null);
-    setNova06AvatarInterferenceActive(false);
     setIsSyncing(false);
     setIsSkippingToChoice(false);
+    skipReadRef.current = false;
+    setIsSkippingRead(false);
+    if (syncTimerRef.current !== null) {
+      window.clearTimeout(syncTimerRef.current);
+      syncTimerRef.current = null;
+    }
+    syncPlanRef.current = null;
+    setActiveSyncEvents([]);
+    setSyncVisibleCount(0);
     setActiveInteraction(null);
     deliveryControllerRef.current?.cancelDelivery();
     deliveryControllerRef.current?.cancelLinkTimeline();
@@ -570,6 +634,10 @@ export default function GameApp() {
     setWaitPrompt(null);
     setHasSave(hasSaveFile());
     setSaveTime(getSaveTimeString(t));
+    const progress = loadPersistentProgress();
+    persistentProgressRef.current = progress;
+    setPersistentProgress(progress);
+    setShowMenuSettings(false);
     setScreen('menu');
   }, [cancelActiveSequence, t]);
 
@@ -591,6 +659,10 @@ export default function GameApp() {
 
   /** Follow Nova only while pinned near the bottom; otherwise show the jump affordance. */
   const stickChatToBottom = useCallback(() => {
+    if (skipToChoiceRef.current || forceFastForwardBottomRef.current) {
+      jumpToBottom(false);
+      return;
+    }
     if (!isNearBottomRef.current) {
       setShowJumpBottom(true);
       return;
@@ -602,6 +674,32 @@ export default function GameApp() {
     const frame = window.requestAnimationFrame(stickChatToBottom);
     return () => window.cancelAnimationFrame(frame);
   }, [messages, isTyping, typewriterText, choices, choiceNodeId, stickChatToBottom]);
+
+  useEffect(() => {
+    if (!forceFastForwardBottomRef.current || skipToChoiceRef.current) return undefined;
+    const reachedStop = Boolean(
+      choices
+      || inputNode
+      || activeInteraction
+      || messages.at(-1)?.type === 'end'
+    );
+    if (!reachedStop) return undefined;
+
+    forceFastForwardBottomRef.current = false;
+    isNearBottomRef.current = true;
+    setShowJumpBottom(false);
+
+    let settleFrame = 0;
+    const renderFrame = window.requestAnimationFrame(() => {
+      jumpToBottom(false);
+      settleFrame = window.requestAnimationFrame(() => jumpToBottom(false));
+    });
+
+    return () => {
+      window.cancelAnimationFrame(renderFrame);
+      if (settleFrame) window.cancelAnimationFrame(settleFrame);
+    };
+  }, [activeInteraction, choices, inputNode, jumpToBottom, messages]);
 
   useEffect(() => {
     if (screen !== 'playing') return undefined;
@@ -623,10 +721,30 @@ export default function GameApp() {
       contactStageRef.current,
       statsRef.current,
       deliveryRuntimeRef.current,
+      cycleStateRef.current,
     ));
     setHasSave(true);
     setSaveTime(t('saveTime.justNow'));
   }, [t]);
+
+  const updateCurrentCycle = useCallback((
+    updater: (current: CurrentCycleState) => CurrentCycleState,
+  ) => {
+    const next = updater(cycleStateRef.current);
+    cycleStateRef.current = next;
+    setCycleState(next);
+    return next;
+  }, []);
+
+  const markCurrentCycleNode = useCallback((nodeId: string) => (
+    updateCurrentCycle(current => markCycleNodeCompleted(current, nodeId))
+  ), [updateCurrentCycle]);
+
+  const stopReadSkip = useCallback(() => {
+    if (!skipReadRef.current) return;
+    skipReadRef.current = false;
+    setIsSkippingRead(false);
+  }, []);
 
   const updateDeliveryRuntime = useCallback((
     updater: (current: ChatDeliveryRuntime) => ChatDeliveryRuntime,
@@ -637,57 +755,8 @@ export default function GameApp() {
     return next;
   }, []);
 
-  const updateInteractionRuntimeStats = useCallback((
-    updater: (current: GameStats) => GameStats,
-  ) => {
-    const current = statsRef.current;
-    const next = updater(current);
-    if (next === current) return;
-    statsRef.current = next;
-    setStats(next);
-    if (activeInteraction) persistState(activeInteraction.id, messagesRef.current);
-  }, [activeInteraction, persistState]);
-
-  const handleInteractionGuidanceStageChange = useCallback((
-    kind: SpecialInteractionKind,
-    stage: NovaHintStage,
-  ) => {
-    updateInteractionRuntimeStats(current => {
-      if (current.novaHintInteractionKind === kind && current.novaHintStage >= stage) return current;
-      return { ...current, novaHintInteractionKind: kind, novaHintStage: stage };
-    });
-  }, [updateInteractionRuntimeStats]);
-
-  const handleNova06OverrideStarted = useCallback((kind: SpecialInteractionKind) => {
-    setNova06AvatarInterferenceActive(true);
-    updateInteractionRuntimeStats(current => ({
-      ...current,
-      novaHintInteractionKind: kind,
-      novaHintStage: 3,
-      nova06OverrideTriggered: true,
-      nova06FirstOverrideSeen: true,
-    }));
-  }, [updateInteractionRuntimeStats]);
-
-  const handleNova06ScriptApplied = useCallback((kind: SpecialInteractionKind) => {
-    setNova06AvatarInterferenceActive(true);
-    updateInteractionRuntimeStats(current => applyNova06OverrideCheckpoint(current, kind));
-  }, [updateInteractionRuntimeStats]);
-
-  const handleMemoryNova06NoteSeen = useCallback(() => {
-    updateInteractionRuntimeStats(current => current.memoryNova06NoteSeen
-      ? current
-      : {
-        ...current,
-        novaHintInteractionKind: 'memory-seal',
-        novaHintStage: 3,
-        nova06OverrideTriggered: true,
-        memoryNova06NoteSeen: true,
-      });
-  }, [updateInteractionRuntimeStats]);
-
   const waitForPlayback = useCallback((duration: number): Promise<void> => {
-    if (duration <= 0 || skipToChoiceRef.current) return Promise.resolve();
+    if (duration <= 0 || skipToChoiceRef.current || skipReadRef.current) return Promise.resolve();
 
     return new Promise(resolve => {
       let settled = false;
@@ -708,7 +777,7 @@ export default function GameApp() {
   }, []);
 
   const waitForSignal = useCallback((config: WaitConfig, runId: number): Promise<WaitResult> => {
-    if (skipToChoiceRef.current) {
+    if (skipToChoiceRef.current || skipReadRef.current) {
       setWaitPrompt(null);
       return Promise.resolve('fast-forward');
     }
@@ -757,16 +826,42 @@ export default function GameApp() {
       || choices
       || inputNode
       || activeInteraction
+      || observerEcho
       || deliveryRuntimeRef.current.activeMessageId
       || messagesRef.current.some(message => message.type === 'end')
     ) return;
     skipToChoiceRef.current = true;
+    forceFastForwardBottomRef.current = true;
+    isNearBottomRef.current = true;
     setIsSkippingToChoice(true);
+    setShowJumpBottom(false);
     setWaitPrompt(null);
     setIsTyping(false);
+    jumpToBottom(false);
     delayResolverRef.current?.();
     waitResolverRef.current?.('fast-forward');
-  }, [activeInteraction, choices, inputNode]);
+  }, [activeInteraction, choices, inputNode, jumpToBottom, observerEcho]);
+
+  const skipReadText = useCallback(() => {
+    if (
+      !cycleStateRef.current.syncInterrupted
+      || choices
+      || inputNode
+      || activeInteraction
+      || deliveryRuntimeRef.current.activeMessageId
+      || messagesRef.current.some(message => message.type === 'end')
+    ) return;
+    skipReadRef.current = true;
+    forceFastForwardBottomRef.current = true;
+    isNearBottomRef.current = true;
+    setIsSkippingRead(true);
+    setShowJumpBottom(false);
+    setWaitPrompt(null);
+    setIsTyping(false);
+    jumpToBottom(false);
+    delayResolverRef.current?.();
+    waitResolverRef.current?.('fast-forward');
+  }, [activeInteraction, choices, inputNode, jumpToBottom]);
 
   const triggerSignalGlitch = useCallback((node: StoryNode) => {
     const cue = getSignalGlitchCue(node);
@@ -811,6 +906,14 @@ export default function GameApp() {
     setMessages(next);
     return next;
   }, []);
+
+  const appendCycleNotices = useCallback((keys: CycleNoticeKey[]) => {
+    let current = messagesRef.current;
+    createCycleNoticeMessages(keys, t).forEach(message => {
+      current = addMessage(message);
+    });
+    return current;
+  }, [addMessage, t]);
 
   const commitAvatarNodeEffect = useCallback((nodeId: string, currentMessages: DisplayMessage[]) => {
     const currentState = avatarStateRef.current;
@@ -919,13 +1022,91 @@ export default function GameApp() {
     [addMessage, memoryAnchorLabels, persistState, t],
   );
 
+  const archiveCurrentFatalCycle = useCallback((
+    currentMessages: DisplayMessage[],
+    causeOverride?: FatalFailureCause,
+  ) => {
+    const current = statsRef.current;
+    const failureCause = causeOverride ?? current.earlyFailureCause;
+    if (!failureCause) return false;
+
+    const fatalStats: GameStats = {
+      ...current,
+      earlyFailureCause: failureCause,
+      ending: 'bad',
+      fatalEndingTriggered: true,
+      pendingReboot08: true,
+      unlockedArchives: [...new Set([...current.unlockedArchives, 'ending_bad'])],
+      endingsUnlocked: [...new Set([...current.endingsUnlocked, 'ending_bad' as const])],
+    };
+    statsRef.current = fatalStats;
+    setStats(fatalStats);
+
+    const snapshot = createSaveData(
+      'MENU',
+      currentMessages,
+      avatarStateRef.current,
+      contactStageRef.current,
+      fatalStats,
+      deliveryRuntimeRef.current,
+      cycleStateRef.current,
+    );
+    const progress = archiveFatalCycle(snapshot, failureCause);
+    persistentProgressRef.current = progress;
+    setPersistentProgress(progress);
+    previousCycleRecordRef.current = getLatestFailedCycle(progress) ?? null;
+
+    const freshStats = createNewGameStats();
+    statsRef.current = freshStats;
+    setStats(freshStats);
+    setHasSave(false);
+    goToMenu();
+    return true;
+  }, [goToMenu]);
+
   const processSingleNode = useCallback(
     async (nodeId: string, runId: number): Promise<boolean> => {
       const isCurrentRun = () => queueRunIdRef.current === runId;
       if (!isCurrentRun()) return false;
 
-      const node = storyNodeMap.get(nodeId);
-      if (!node) return false;
+      const sourceNode = storyNodeMap.get(nodeId);
+      if (!sourceNode) return false;
+      const node = getStoryNodeForReboot(sourceNode, cycleStateRef.current.currentRebootNumber);
+
+      if (
+        skipReadRef.current
+        && shouldStopReadSkip(sourceNode, persistentProgressRef.current.readNodeIds)
+      ) {
+        stopReadSkip();
+      }
+
+      const persistentStats = applyPersistentStoryNodeEffects(statsRef.current, node.id);
+      if (persistentStats !== statsRef.current) {
+        statsRef.current = persistentStats;
+        setStats(persistentStats);
+        persistState(node.id, messagesRef.current);
+      }
+
+      if (node.interactionCondition && !matchesInteractionCondition(statsRef.current, node.interactionCondition)) {
+        const fallbackId = node.conditionElseNextId ?? node.nextId;
+        if (fallbackId) {
+          persistState(fallbackId, messagesRef.current);
+          nodeQueueRef.current.push(fallbackId);
+        }
+        return true;
+      }
+
+      if (node.interactionPrerequisite && !matchesInteractionPrerequisite(statsRef.current, node.interactionPrerequisite)) {
+        const fallbackId = node.id === 'ch5b_power_retry_interaction'
+          ? 'ch5b_power_interaction'
+          : node.nextId;
+        if (fallbackId) {
+          persistState(fallbackId, messagesRef.current);
+          nodeQueueRef.current.push(fallbackId);
+        }
+        return true;
+      }
+
       const nodeArchiveUnlocks = getArchiveUnlocksForNode(node);
       const nodeLinkState = getNodeLinkStateEffect(node.id);
       if (nodeLinkState) {
@@ -936,26 +1117,71 @@ export default function GameApp() {
         }
       }
 
-      if (
-        node.id === 'ch5b_power_emergency_glitch'
-        && deliveryRuntimeRef.current.receipts.powerEmergencyPacketLoss !== 'completed'
-      ) {
-        updateDeliveryRuntime(current => ({
-          ...current,
-          receipts: { ...current.receipts, powerEmergencyPacketLoss: 'in_progress' },
-        }));
-        deliveryControllerRef.current?.playLinkTimeline(
-          'power_emergency_packet_loss',
-          POWER_EMERGENCY_LINK_TIMELINE,
-        );
-        persistState(node.id, messagesRef.current);
-      }
-
       if (node.id === 'fin_action_save') markCommemorativeArchiveSaved();
 
       if (node.requiresAnchor && !statsRef.current.memoryAnchors.includes(node.requiresAnchor)) {
         if (node.nextId) nodeQueueRef.current.push(node.nextId);
         return true;
+      }
+
+      if (node.type === 'internal-chapter-marker') {
+        markCurrentCycleNode(node.id);
+        persistState(node.nextId ?? node.id, messagesRef.current);
+        if (node.nextId) nodeQueueRef.current.push(node.nextId);
+        return true;
+      }
+
+      if (node.type === 'internal-ending-marker') {
+        let currentMessages = messagesRef.current;
+        if (node.content) {
+          currentMessages = addMessage({
+            id: `${node.id}_${Date.now()}`,
+            speaker: 'system',
+            type: 'status',
+            content: node.content,
+            isNew: true,
+            sourceNodeId: node.id,
+          });
+        }
+        markCurrentCycleNode(node.id);
+        persistState(node.nextId ?? node.id, currentMessages);
+        if (node.nextId) nodeQueueRef.current.push(node.nextId);
+        return true;
+      }
+
+      if (node.type === 'observer-echo') {
+        stopFastForwardAtInteraction();
+        stopReadSkip();
+        if (cycleStateRef.current.observerCandyEchoPlayed) {
+          persistState(node.nextId ?? node.id, messagesRef.current);
+          if (node.nextId) nodeQueueRef.current.push(node.nextId);
+          return true;
+        }
+
+        const nextCycle = {
+          ...cycleStateRef.current,
+          observerCandyEchoPlayed: true,
+        };
+        cycleStateRef.current = nextCycle;
+        setCycleState(nextCycle);
+        persistState(node.nextId ?? node.id, messagesRef.current);
+
+        await waitForPlayback(1500);
+        if (!isCurrentRun()) return false;
+        setObserverEcho(node.content);
+        await waitForPlayback(node.delay ?? 2000);
+        if (!isCurrentRun()) return false;
+        setObserverEcho(null);
+
+        if (node.nextId) nodeQueueRef.current.push(node.nextId);
+        return true;
+      }
+
+      if (node.type === 'title-state') {
+        await waitForPlayback(500);
+        if (!isCurrentRun()) return false;
+        archiveCurrentFatalCycle(messagesRef.current, statsRef.current.earlyFailureCause ?? 'protocol_rollback');
+        return false;
       }
 
       if (node.type === 'interaction' && node.interactionKind) {
@@ -969,6 +1195,7 @@ export default function GameApp() {
       if (node.type === 'end') {
         stopFastForwardAtInteraction();
         unlockArchives(nodeArchiveUnlocks);
+        markCurrentCycleNode(node.id);
         addMessage({
           id: `${node.id}_${Date.now()}`,
           speaker: 'system',
@@ -1002,6 +1229,8 @@ export default function GameApp() {
           await waitForPlayback(node.delay || 1000);
         }
         if (!isCurrentRun()) return false;
+        markCurrentCycleNode(node.id);
+        persistState(node.nextId ?? nodeId, messagesRef.current);
         if (node.nextId) nodeQueueRef.current.push(node.nextId);
         return true;
       }
@@ -1011,6 +1240,8 @@ export default function GameApp() {
         await waitForPlayback(node.delay || 2000);
         if (!isCurrentRun()) return false;
         setIsTyping(false);
+        markCurrentCycleNode(node.id);
+        persistState(node.nextId ?? nodeId, messagesRef.current);
         if (node.nextId) nodeQueueRef.current.push(node.nextId);
         return true;
       }
@@ -1080,7 +1311,7 @@ export default function GameApp() {
         setTypewriterText('');
         for (let i = 1; i <= text.length; i++) {
           if (!isCurrentRun()) return false;
-          if (skipToChoiceRef.current) {
+          if (skipToChoiceRef.current || skipReadRef.current) {
             setTypewriterText(text);
             break;
           }
@@ -1089,6 +1320,7 @@ export default function GameApp() {
         }
         setIsTypewriterActive(false);
         setTypewriterText('');
+        markCurrentCycleNode(node.id);
 
         setTimeout(() => {
           setMessages(prev => prev.map(m => (m.id === displayMsg.id ? { ...m, isNew: false } : m)));
@@ -1102,24 +1334,13 @@ export default function GameApp() {
         const avatarEffect = commitAvatarNodeEffect(nodeId, withDisplayMessage);
         const currentMsgs = avatarEffect.messages;
         unlockArchives(nodeArchiveUnlocks);
+        markCurrentCycleNode(node.id);
 
         setTimeout(() => {
           setMessages(prev => prev.map(m => (m.id === displayMsg.id ? { ...m, isNew: false } : m)));
         }, 500);
 
-        if (
-          node.type === 'status' ||
-          node.type === 'timestamp' ||
-          node.type === 'image' ||
-          node.type === 'file' ||
-          node.type === 'draft' ||
-          node.type === 'epilogue' ||
-          node.type === 'ending-action' ||
-          nodeArchiveUnlocks.length > 0 ||
-          avatarEffect.changed
-        ) {
-          persistState(getPendingNodeIdAfterNode(nodeId), currentMsgs);
-        }
+        persistState(getPendingNodeIdAfterNode(nodeId), currentMsgs);
 
         await waitForPlayback(node.delay || 200);
         if (!isCurrentRun()) return false;
@@ -1153,31 +1374,12 @@ export default function GameApp() {
         }
       }
 
-      if (node.id === 'bad_action_restart') {
-        clearSave();
-        const freshStats = createNewGameStats();
-        messagesRef.current = [];
-        statsRef.current = freshStats;
-        const freshAvatarState = createDefaultNovaAvatarState();
-        const freshDeliveryRuntime = createDefaultChatDeliveryRuntime();
-        avatarStateRef.current = freshAvatarState;
-        deliveryRuntimeRef.current = freshDeliveryRuntime;
-        contactStageRef.current = defaultContactStage;
-        lastSignalGlitchRef.current = { at: 0, level: 0 };
-        setMessages([]);
-        setStats(freshStats);
-        setAvatarState(freshAvatarState);
-        setDeliveryRuntime(freshDeliveryRuntime);
-        setContactStage(defaultContactStage);
-        persistState(node.nextId ?? 'p0', []);
-      }
-
       if (node.nextId) {
         nodeQueueRef.current.push(node.nextId);
       }
       return true;
     },
-    [activateChoice, addMessage, commitAvatarNodeEffect, markCommemorativeArchiveSaved, persistState, saveMemoryAnchor, stopFastForwardAtInteraction, storyNodeMap, t, triggerSignalGlitch, unlockArchives, updateDeliveryRuntime, waitForPlayback, waitForSignal],
+    [activateChoice, addMessage, archiveCurrentFatalCycle, commitAvatarNodeEffect, markCommemorativeArchiveSaved, markCurrentCycleNode, persistState, saveMemoryAnchor, stopFastForwardAtInteraction, stopReadSkip, storyNodeMap, t, triggerSignalGlitch, unlockArchives, updateDeliveryRuntime, waitForPlayback, waitForSignal],
   );
 
   const processQueue = useCallback(async (runId: number) => {
@@ -1233,6 +1435,7 @@ export default function GameApp() {
       contactStageRef.current,
       statsRef.current,
       nextRuntime,
+      cycleStateRef.current,
     ));
   }, [updateDeliveryRuntime]);
 
@@ -1299,28 +1502,18 @@ export default function GameApp() {
     scheduleSequence(targetNodeId, 120);
   }, [persistState, scheduleSequence, updateDeliveryRuntime]);
 
-  const handleLinkTimelineComplete = useCallback((timelineId: string) => {
-    if (timelineId !== 'power_emergency_packet_loss') return;
-    updateDeliveryRuntime(current => ({
-      ...current,
-      receipts: { ...current.receipts, powerEmergencyPacketLoss: 'completed' },
-    }));
-    persistState(pendingNodeIdRef.current, messagesRef.current);
-  }, [persistState, updateDeliveryRuntime]);
-
   useEffect(() => {
     const callbacks = {
       onDeliveryPhase: handleDeliveryPhase,
       onDeliveryComplete: handleDeliveryComplete,
       onLinkStateChange: handleLinkStateChange,
-      onLinkTimelineComplete: handleLinkTimelineComplete,
     };
     if (deliveryControllerRef.current) {
       deliveryControllerRef.current.setCallbacks(callbacks);
     } else {
       deliveryControllerRef.current = new DeliveryController(callbacks);
     }
-  }, [handleDeliveryComplete, handleDeliveryPhase, handleLinkStateChange, handleLinkTimelineComplete]);
+  }, [handleDeliveryComplete, handleDeliveryPhase, handleLinkStateChange]);
 
   useEffect(() => () => {
     deliveryControllerRef.current?.dispose();
@@ -1350,6 +1543,16 @@ export default function GameApp() {
     if (INTERNAL_TEST_ANCHOR_ID && isSealableMemoryAnchor(INTERNAL_TEST_ANCHOR_ID)) {
       testStats.temporaryAnchorSealed = INTERNAL_TEST_ANCHOR_ID;
     }
+    const testNode = storyNodeMap.get(INTERNAL_TEST_NODE_ID);
+    if (testNode?.interactionKind === 'memory-restore' && !testStats.temporaryAnchorSealed) {
+      testStats.temporaryAnchorSealed = 'maintenance_board';
+    }
+    if (testNode?.interactionKind === 'power-routing' && testNode.interactionAttempt === 2) {
+      testStats.powerRoutingAttempt = 1;
+      testStats.powerFirstFailureReason = 'life_support_below_minimum';
+      testStats.nova06PowerOverrideUsed = true;
+      testStats.nova06PowerOverrideExpired = true;
+    }
 
     messagesRef.current = [];
     statsRef.current = testStats;
@@ -1376,8 +1579,154 @@ export default function GameApp() {
     startSequence(INTERNAL_TEST_NODE_ID);
   }, [cancelActiveSequence, startSequence, storyNodeMap]);
 
+  const completeCycleSync = useCallback((plan: CycleReplayResult) => {
+    const completedCycle: CurrentCycleState = {
+      ...plan.cycleState,
+      syncAvailable: false,
+      syncActive: false,
+      syncInterrupted: false,
+      syncCursor: plan.events.length,
+    };
+    statsRef.current = plan.stats;
+    avatarStateRef.current = plan.avatarState;
+    contactStageRef.current = plan.contactStage;
+    cycleStateRef.current = completedCycle;
+    pendingNodeIdRef.current = plan.nextNodeId;
+    setStats(plan.stats);
+    setAvatarState(plan.avatarState);
+    setContactStage(plan.contactStage);
+    setCycleState(completedCycle);
+    setActiveSyncEvents([]);
+    setSyncVisibleCount(0);
+    syncPlanRef.current = null;
+    syncTimerRef.current = null;
+
+    const currentMessages = appendCycleNotices(['cycle.syncCompleted']);
+    persistState(plan.nextNodeId, currentMessages);
+    scheduleSequence(plan.nextNodeId, 420);
+  }, [appendCycleNotices, persistState, scheduleSequence]);
+
+  const beginCycleSync = useCallback((record: FailedCycleRecord, resumeCursor = 0) => {
+    previousCycleRecordRef.current = record;
+    const baseCycle: CurrentCycleState = {
+      ...cycleStateRef.current,
+      currentRebootNumber: 8,
+      syncAvailable: true,
+      syncActive: true,
+      syncInterrupted: false,
+      syncBoundaryNodeId: cycleStateRef.current.syncBoundaryNodeId,
+      syncCursor: Math.max(0, resumeCursor),
+      previousCycleId: record.cycleId,
+    };
+    const plan = replayFailedCycle(record, storyNodeMap, createNewGameStats(), baseCycle);
+    syncPlanRef.current = plan;
+    const initialCursor = Math.min(Math.max(0, resumeCursor), plan.events.length);
+    const activeCycle = { ...baseCycle, syncCursor: initialCursor };
+    cycleStateRef.current = activeCycle;
+    setCycleState(activeCycle);
+    setSyncOfferVisible(false);
+    setActiveSyncEvents(plan.events);
+    setSyncVisibleCount(initialCursor);
+
+    if (
+      initialCursor === 0
+      && !messagesRef.current.some(message => message.uiKey === 'cycle.memoryProjection')
+    ) {
+      const currentMessages = appendCycleNotices([
+        'cycle.memoryProjection',
+        'cycle.projectionWarning',
+      ]);
+      persistState('p0', currentMessages);
+    } else {
+      persistState('p0', messagesRef.current);
+    }
+
+    if (plan.events.length === 0 || initialCursor >= plan.events.length) {
+      completeCycleSync(plan);
+      return;
+    }
+
+    const step = Math.max(1, Math.ceil(plan.events.length / 88));
+    const advance = () => {
+      const currentPlan = syncPlanRef.current;
+      if (!currentPlan) return;
+      const nextCursor = Math.min(
+        currentPlan.events.length,
+        cycleStateRef.current.syncCursor + step,
+      );
+      const nextCycle = { ...cycleStateRef.current, syncCursor: nextCursor };
+      cycleStateRef.current = nextCycle;
+      setCycleState(nextCycle);
+      setSyncVisibleCount(nextCursor);
+
+      if (nextCursor >= currentPlan.events.length) {
+        completeCycleSync(currentPlan);
+        return;
+      }
+
+      if (nextCursor % Math.max(step * 8, 1) === 0) {
+        persistState('p0', messagesRef.current);
+      }
+      syncTimerRef.current = window.setTimeout(advance, 46);
+    };
+    syncTimerRef.current = window.setTimeout(advance, 180);
+  }, [appendCycleNotices, completeCycleSync, persistState, storyNodeMap]);
+
+  const interruptCycleSyncAt = useCallback((eventLimit: number, showNotice: boolean) => {
+    const record = previousCycleRecordRef.current;
+    if (!record) return;
+    if (syncTimerRef.current !== null) {
+      window.clearTimeout(syncTimerRef.current);
+      syncTimerRef.current = null;
+    }
+    syncPlanRef.current = null;
+
+    const replay = replayFailedCycle(
+      record,
+      storyNodeMap,
+      createNewGameStats(),
+      cycleStateRef.current,
+      Math.max(0, eventLimit),
+    );
+    const interruptedCycle: CurrentCycleState = {
+      ...replay.cycleState,
+      syncAvailable: false,
+      syncActive: false,
+      syncInterrupted: true,
+      syncCursor: Math.max(0, eventLimit),
+      currentCycleDeviationStarted: false,
+      previousCycleId: record.cycleId,
+    };
+    statsRef.current = replay.stats;
+    avatarStateRef.current = replay.avatarState;
+    contactStageRef.current = replay.contactStage;
+    cycleStateRef.current = interruptedCycle;
+    pendingNodeIdRef.current = replay.nextNodeId;
+    setStats(replay.stats);
+    setAvatarState(replay.avatarState);
+    setContactStage(replay.contactStage);
+    setCycleState(interruptedCycle);
+    setSyncOfferVisible(false);
+    setActiveSyncEvents([]);
+    setSyncVisibleCount(0);
+
+    const currentMessages = showNotice
+      ? appendCycleNotices(['cycle.syncInterrupted'])
+      : messagesRef.current;
+    persistState(replay.nextNodeId, currentMessages);
+    scheduleSequence(replay.nextNodeId, 360);
+  }, [appendCycleNotices, persistState, scheduleSequence, storyNodeMap]);
+
+  const interruptCycleSync = useCallback(() => {
+    interruptCycleSyncAt(syncVisibleCount, true);
+  }, [interruptCycleSyncAt, syncVisibleCount]);
+
+  const declineCycleSync = useCallback(() => {
+    interruptCycleSyncAt(0, false);
+  }, [interruptCycleSyncAt]);
+
   const startGame = useCallback(
-    (mode: 'new' | 'continue') => {
+    (mode: 'new' | 'continue' | 'reconnect08') => {
       cancelActiveSequence();
       setChoices(null);
       setChoiceNodeId(null);
@@ -1389,11 +1738,19 @@ export default function GameApp() {
       setShowChapterBanner(null);
       setShowArchive(false);
       setShowRestartConfirm(false);
+      setShowMenuSettings(false);
+      setSyncOfferVisible(false);
+      setActiveSyncEvents([]);
+      setSyncVisibleCount(0);
       setActiveInteraction(null);
 
       if (mode === 'continue') {
         const save = loadGame();
         if (save) {
+          const progress = loadPersistentProgress();
+          const previousCycle = progress.failedCycles.find(
+            record => record.cycleId === save.cycleState.previousCycleId,
+          ) ?? getLatestFailedCycle(progress) ?? null;
           const localizedMessages = relocalizeDisplayMessages(
             save.messages,
             storyNodeMap,
@@ -1403,18 +1760,32 @@ export default function GameApp() {
           messagesRef.current = localizedMessages;
           avatarStateRef.current = save.avatarState;
           statsRef.current = save.stats;
+          cycleStateRef.current = save.cycleState;
+          persistentProgressRef.current = progress;
+          previousCycleRecordRef.current = previousCycle;
           contactStageRef.current = save.contactStage;
           deliveryRuntimeRef.current = save.deliveryRuntime;
           pendingNodeIdRef.current = save.pendingNodeId;
           setMessages(localizedMessages);
           setAvatarState(save.avatarState);
           setStats(save.stats);
+          setCycleState(save.cycleState);
+          setPersistentProgress(progress);
           setContactStage(save.contactStage);
           setDeliveryRuntime(save.deliveryRuntime);
           setScreen('playing');
 
           const lastMsg = save.messages[save.messages.length - 1];
           if (lastMsg?.type === 'end') {
+            return;
+          }
+
+          if (previousCycle && save.cycleState.syncActive) {
+            beginCycleSync(previousCycle, save.cycleState.syncCursor);
+            return;
+          }
+          if (previousCycle && save.cycleState.syncAvailable) {
+            setSyncOfferVisible(true);
             return;
           }
 
@@ -1457,18 +1828,35 @@ export default function GameApp() {
       }
 
       clearSave();
+      const progress = loadPersistentProgress();
+      const rebootNumber = mode === 'reconnect08' || progress.reboot08TitleUnlocked ? 8 : 7;
+      const previousCycle = rebootNumber >= 8 ? getLatestFailedCycle(progress) ?? null : null;
       const freshStats = createNewGameStats();
       const freshAvatarState = createDefaultNovaAvatarState();
       const freshDeliveryRuntime = createDefaultChatDeliveryRuntime();
-      messagesRef.current = [];
+      const freshCycle = createCurrentCycleState(rebootNumber, previousCycle ?? undefined);
+      const initialMessages = previousCycle
+        ? createCycleNoticeMessages([
+            'cycle.reboot08Link',
+            'cycle.previousRecordDetected',
+            'cycle.previousRecordSource',
+            'cycle.previousRecordCycle',
+          ], t)
+        : [];
+      messagesRef.current = initialMessages;
       avatarStateRef.current = freshAvatarState;
       contactStageRef.current = defaultContactStage;
       deliveryRuntimeRef.current = freshDeliveryRuntime;
+      cycleStateRef.current = freshCycle;
+      persistentProgressRef.current = progress;
+      previousCycleRecordRef.current = previousCycle;
       pendingNodeIdRef.current = 'p0';
-      setMessages([]);
+      setMessages(initialMessages);
       setAvatarState(freshAvatarState);
       setContactStage(defaultContactStage);
       setStats(freshStats);
+      setCycleState(freshCycle);
+      setPersistentProgress(progress);
       setDeliveryRuntime(freshDeliveryRuntime);
       statsRef.current = freshStats;
       setInputNode(null);
@@ -1477,95 +1865,87 @@ export default function GameApp() {
       setActiveInteraction(null);
       setShowArchive(false);
       setScreen('playing');
-      startSequence('p0');
+      saveGame(createSaveData(
+        'p0',
+        initialMessages,
+        freshAvatarState,
+        defaultContactStage,
+        freshStats,
+        freshDeliveryRuntime,
+        freshCycle,
+      ));
+      setHasSave(true);
+      setSaveTime(t('saveTime.justNow'));
+      if (previousCycle) {
+        setSyncOfferVisible(true);
+      } else {
+        startSequence('p0');
+      }
     },
-    [activateChoice, cancelActiveSequence, memoryAnchorLabels, scheduleSequence, startSequence, storyNodeMap, t],
+    [activateChoice, beginCycleSync, cancelActiveSequence, memoryAnchorLabels, scheduleSequence, startSequence, storyNodeMap, t],
+  );
+
+  const appendDeviationNoticeIfNeeded = useCallback((deviated: boolean) => {
+    const current = cycleStateRef.current;
+    if (!deviated || !current.syncInterrupted || current.currentCycleDeviationStarted) {
+      return messagesRef.current;
+    }
+    updateCurrentCycle(cycle => ({ ...cycle, currentCycleDeviationStarted: true }));
+    return appendCycleNotices([
+      'cycle.deviationDetected',
+      'cycle.deviationConfirmed',
+    ]);
+  }, [appendCycleNotices, updateCurrentCycle]);
+
+  const handleSpecialInteractionResultLocked = useCallback(
+    (completion: SpecialInteractionCompletion) => {
+      if (!activeInteraction) return;
+      const interactionRecord = createCycleInteractionRecord(activeInteraction.id, completion);
+      updateCurrentCycle(current => recordCycleInteraction(current, interactionRecord));
+      const currentMessages = appendDeviationNoticeIfNeeded(
+        interactionDeviatesFromRecord(previousCycleRecordRef.current, interactionRecord),
+      );
+      const nextStats = applySpecialInteractionCompletion(statsRef.current, completion);
+      statsRef.current = nextStats;
+      setStats(nextStats);
+      const nextId = activeInteraction.interactionNextIds?.[completion.routeKey]
+        ?? activeInteraction.nextId
+        ?? activeInteraction.id;
+      if (completion.kind === 'power-routing' && completion.routeKey === 'success') {
+        deliveryControllerRef.current?.setLinkState('stable');
+      }
+      persistState(nextId, currentMessages);
+    },
+    [activeInteraction, appendDeviationNoticeIfNeeded, persistState, updateCurrentCycle],
   );
 
   const handleSpecialInteractionComplete = useCallback(
     (completion: SpecialInteractionCompletion) => {
       if (!activeInteraction) return;
+      const interactionRecord = createCycleInteractionRecord(activeInteraction.id, completion);
+      updateCurrentCycle(current => recordCycleInteraction(current, interactionRecord));
+      const currentMessages = appendDeviationNoticeIfNeeded(
+        interactionDeviatesFromRecord(previousCycleRecordRef.current, interactionRecord),
+      );
       const nextStats = applySpecialInteractionCompletion(statsRef.current, completion);
       statsRef.current = nextStats;
       setStats(nextStats);
-
       const nextId = activeInteraction.interactionNextIds?.[completion.routeKey]
         ?? activeInteraction.nextId
         ?? activeInteraction.id;
       setActiveInteraction(null);
-      setNova06AvatarInterferenceActive(false);
-
-      if (completion.kind === 'signal-separation') {
-        if (completion.routeKey === 'clean') {
-          deliveryControllerRef.current?.setLinkState('stable');
-        } else {
-          deliveryControllerRef.current?.playLinkTimeline(
-            'signal_separation_assisted_restore',
-            SIGNAL_ASSISTED_LINK_TIMELINE,
-          );
-        }
-      }
-      if (completion.kind === 'power-routing' && completion.routeKey !== 'emergency_assist') {
+      if (completion.kind === 'power-routing' && completion.routeKey === 'success') {
         deliveryControllerRef.current?.setLinkState('stable');
       }
-
-      const aftermath = getNova06CommsAftermath(completion, locale);
-      if (!aftermath) {
-        persistState(nextId, messagesRef.current);
-        scheduleSequence(nextId, 350);
-        return;
-      }
-
-      const bridgeRunId = ++nova06BridgeRunRef.current;
-      persistState(nextId, messagesRef.current);
-      jumpToBottom();
-
-      void (async () => {
-        for (let index = 0; index < aftermath.reactions.length; index += 1) {
-          if (nova06BridgeRunRef.current !== bridgeRunId) return;
-          setIsTyping(true);
-          await waitForPlayback(520);
-          if (nova06BridgeRunRef.current !== bridgeRunId) return;
-          setIsTyping(false);
-          const updated = addMessage({
-            id: `nova06_react_${Date.now()}_${index}`,
-            speaker: 'nova',
-            type: 'text',
-            content: aftermath.reactions[index],
-            isNew: true,
-          });
-          persistState(nextId, updated);
-          jumpToBottom();
-          await waitForPlayback(360);
-        }
-
-        if (nova06BridgeRunRef.current !== bridgeRunId) return;
-
-        if (aftermath.replies && aftermath.replies.length > 0) {
-          nova06BridgeRef.current = {
-            continueId: nextId,
-            replies: aftermath.replies,
-          };
-          activateChoice(NOVA06_BRIDGE_CHOICE_PREFIX);
-          setChoiceNodeId(NOVA06_BRIDGE_CHOICE_PREFIX);
-          setChoices(aftermath.replies.map((reply, index) => ({
-            id: `${NOVA06_BRIDGE_CHOICE_PREFIX}${index}`,
-            text: reply.text,
-            nextId: `${NOVA06_BRIDGE_CHOICE_PREFIX}${index}`,
-            statEffect: 'none' as const,
-          })));
-          return;
-        }
-
-        scheduleSequence(nextId, 350);
-      })();
+      persistState(nextId, currentMessages);
+      scheduleSequence(nextId, 350);
     },
-    [activateChoice, activeInteraction, addMessage, jumpToBottom, locale, persistState, scheduleSequence, waitForPlayback],
+    [activeInteraction, appendDeviationNoticeIfNeeded, persistState, scheduleSequence, updateCurrentCycle],
   );
 
   const saveInteractionAndExit = useCallback(() => {
     if (activeInteraction) {
-      persistState(activeInteraction.id, messagesRef.current);
+      persistState(pendingNodeIdRef.current || activeInteraction.id, messagesRef.current);
     }
     goToMenu();
   }, [activeInteraction, goToMenu, persistState]);
@@ -1586,6 +1966,11 @@ export default function GameApp() {
       const nextStats = applyTimedChoiceTimeoutEffects(statsRef.current, node.id);
       statsRef.current = nextStats;
       setStats(nextStats);
+      updateCurrentCycle(current => markCycleNodeCompleted(recordCycleTimedResult(current, {
+        nodeId: node.id,
+        outcome: 'timeout',
+        nextId: node.timeoutNextId!,
+      }), node.id));
 
       const updated = node.id === 'fin_last6'
         ? addMessage({
@@ -1602,7 +1987,7 @@ export default function GameApp() {
       jumpToBottom();
       scheduleSequence(node.timeoutNextId, 550);
     },
-    [addMessage, claimChoiceResult, persistState, scheduleSequence, jumpToBottom, t],
+    [addMessage, claimChoiceResult, persistState, scheduleSequence, jumpToBottom, t, updateCurrentCycle],
   );
 
   const handleChoice = useCallback(
@@ -1637,73 +2022,14 @@ export default function GameApp() {
       setChoices(null);
       setChoiceNodeId(null);
 
-      const isNova06Bridge = choice.nextId.startsWith(NOVA06_BRIDGE_CHOICE_PREFIX);
-      const bridgePending = isNova06Bridge ? nova06BridgeRef.current : null;
-      if (isNova06Bridge) nova06BridgeRef.current = null;
-
-      const nextStats = isNova06Bridge ? statsRef.current : applyChoiceEffects(choice);
-      const nextId = isNova06Bridge && bridgePending
-        ? bridgePending.continueId
-        : resolveEndingStart(choice.nextId, nextStats);
+      const nextStats = applyChoiceEffects(choice);
+      const nextId = resolveEndingStart(choice.nextId, nextStats);
       const deliverySequence = messagesRef.current.reduce(
         (max, message) => Math.max(max, message.deliverySequence ?? 0),
         0,
       ) + 1;
       const choiceId = choice.id ?? `${fromNodeId}__${Math.max(0, choiceIndex)}`;
       const messageId = `player_${committedAt}_${deliverySequence}`;
-
-      if (isNova06Bridge && bridgePending) {
-        const playerMsg: DisplayMessage = {
-          id: messageId,
-          speaker: 'player',
-          type: 'text',
-          content: formatChoiceText(choice.text),
-          isNew: true,
-          sourceNodeId: fromNodeId,
-          sourceChoiceIndex: choiceIndex >= 0 ? choiceIndex : undefined,
-          choiceId,
-          committedAt,
-          deliveredAt: committedAt,
-          committedOrder: deliverySequence,
-          deliverySequence,
-          deliveryState: 'delivered',
-          retryCount: 0,
-          branchCommitted: true,
-          branchTargetNodeId: nextId,
-        };
-        const updated = [...messagesRef.current, playerMsg];
-        messagesRef.current = updated;
-        setMessages(updated);
-        persistState(nextId, updated);
-        jumpToBottom();
-
-        const replyIndex = Number(choice.nextId.slice(NOVA06_BRIDGE_CHOICE_PREFIX.length));
-        const ack = bridgePending.replies[replyIndex]?.ack ?? '';
-        const ackLines = ack.split('\n').map(line => line.trim()).filter(Boolean);
-        const bridgeRunId = ++nova06BridgeRunRef.current;
-        void (async () => {
-          for (let index = 0; index < ackLines.length; index += 1) {
-            if (nova06BridgeRunRef.current !== bridgeRunId) return;
-            setIsTyping(true);
-            await waitForPlayback(420);
-            if (nova06BridgeRunRef.current !== bridgeRunId) return;
-            setIsTyping(false);
-            const withAck = addMessage({
-              id: `nova06_ack_${Date.now()}_${index}`,
-              speaker: 'nova',
-              type: 'text',
-              content: ackLines[index],
-              isNew: true,
-            });
-            persistState(nextId, withAck);
-            jumpToBottom();
-            await waitForPlayback(280);
-          }
-          if (nova06BridgeRunRef.current !== bridgeRunId) return;
-          scheduleSequence(nextId, 400);
-        })();
-        return;
-      }
 
       const spec = resolveDeliverySpec(
         sourceNode ?? {},
@@ -1737,6 +2063,27 @@ export default function GameApp() {
       const updated = [...messagesRef.current, playerMsg];
       messagesRef.current = updated;
       setMessages(updated);
+      updateCurrentCycle(current => {
+        let nextCycle = recordCycleChoice(current, {
+          nodeId: fromNodeId,
+          choiceId,
+          choiceIndex: Math.max(0, choiceIndex),
+          nextId,
+          committedAt,
+        });
+        if (sourceNode?.choiceTimeoutMs) {
+          nextCycle = recordCycleTimedResult(nextCycle, {
+            nodeId: fromNodeId,
+            outcome: 'choice',
+            choiceId,
+            nextId,
+          });
+        }
+        return nextCycle;
+      });
+      const persistedMessages = appendDeviationNoticeIfNeeded(
+        choiceDeviatesFromRecord(previousCycleRecordRef.current, fromNodeId, choiceId),
+      );
       updateDeliveryRuntime(current => {
         const withReceipt = sourceNode?.deliveryEvent
           ? setDeliveryReceipt(current, sourceNode.deliveryEvent, 'in_progress')
@@ -1748,7 +2095,7 @@ export default function GameApp() {
           pendingAutoRetryIds: [],
         };
       });
-      persistState(nextId, updated);
+      persistState(nextId, persistedMessages);
       jumpToBottom();
 
       if (deliveryControllerRef.current) {
@@ -1758,7 +2105,6 @@ export default function GameApp() {
       }
     },
     [
-      addMessage,
       applyChoiceEffects,
       choiceNodeId,
       choices,
@@ -1767,10 +2113,10 @@ export default function GameApp() {
       handleDeliveryComplete,
       jumpToBottom,
       persistState,
-      scheduleSequence,
       storyNodeMap,
       updateDeliveryRuntime,
-      waitForPlayback,
+      updateCurrentCycle,
+      appendDeviationNoticeIfNeeded,
     ],
   );
 
@@ -1804,11 +2150,16 @@ export default function GameApp() {
       if (!node.timeoutNextId) return;
       setInputNode(null);
       setPlayerInput('');
+      updateCurrentCycle(current => markCycleNodeCompleted(recordCycleTimedResult(current, {
+        nodeId: node.id,
+        outcome: 'timeout',
+        nextId: node.timeoutNextId!,
+      }), node.id));
       persistState(node.timeoutNextId, messagesRef.current);
       jumpToBottom();
       scheduleSequence(node.timeoutNextId, 550);
     },
-    [persistState, scheduleSequence, jumpToBottom],
+    [persistState, scheduleSequence, jumpToBottom, updateCurrentCycle],
   );
 
   useEffect(() => {
@@ -1846,16 +2197,25 @@ export default function GameApp() {
       type: 'text',
       content: text,
       isNew: true,
+      sourceNodeId: inputNode.id,
     };
     const updated = [...messagesRef.current, playerMsg];
     messagesRef.current = updated;
     setMessages(updated);
+    updateCurrentCycle(current => recordCycleFreeInput(current, {
+      nodeId: inputNode.id,
+      value: text,
+      nextId,
+    }));
+    const persistedMessages = appendDeviationNoticeIfNeeded(
+      inputDeviatesFromRecord(previousCycleRecordRef.current, inputNode.id, text),
+    );
     setInputNode(null);
     setPlayerInput('');
-    persistState(nextId, updated);
+    persistState(nextId, persistedMessages);
     jumpToBottom(true);
     scheduleSequence(nextId, 400);
-  }, [inputNode, jumpToBottom, persistState, playerInput, scheduleSequence]);
+  }, [appendDeviationNoticeIfNeeded, inputNode, jumpToBottom, persistState, playerInput, scheduleSequence, updateCurrentCycle]);
 
   const lastMsg = messages[messages.length - 1];
   const isLastNovaTyping =
@@ -1869,7 +2229,6 @@ export default function GameApp() {
   const menuContactStage = saveSnapshot?.contactStage ?? defaultContactStage;
   const contactMeta = contactMetaByStage[contactStage];
   const avatarPresentation = resolveNovaAvatarPresentation(avatarState, {
-    nova06AvatarInterferenceActive,
     activeSpecialInteraction: activeInteraction?.interactionKind,
     communicationLinkState: deliveryRuntime.linkState,
   });
@@ -1891,6 +2250,8 @@ export default function GameApp() {
   const isFinished = messages.some(message => message.type === 'end');
   const isSignalActive = isSyncing || isTyping || isTypewriterActive || Boolean(deliveryRuntime.activeMessageId);
   const shouldShowMediaSafeSpace = Boolean(choices && hasRecentMediaMessage(messages));
+  const isReboot08Menu = persistentProgress.reboot08TitleUnlocked;
+  const menuRebootNumber = isReboot08Menu ? 8 : 7;
 
   if (screen === 'menu') {
     return (
@@ -1906,19 +2267,20 @@ export default function GameApp() {
           <div className="menu-system-ident">
             <span className="menu-system-dot" aria-hidden="true" />
             <span>{t('menu.terminal')}</span>
-            <small>PHASE-LINK / 07</small>
+            <small>PHASE-LINK / {String(menuRebootNumber).padStart(2, '0')}</small>
           </div>
           <span className="menu-topbar-code">OBSERVER-01 / LOCAL INDEX</span>
         </div>
         <main className="menu-stage relative z-10">
           <section className="menu-primary-zone animate-fade-in">
             <GameTitle
-              title={t('menu.title')}
+              title={t(isReboot08Menu ? 'menu.title08' : 'menu.title')}
               subtitle={t('menu.subtitle')}
               phaseLabel={t('menu.phaseArchive')}
               locale={locale}
+              rebootNumber={menuRebootNumber}
             />
-            <div className="menu-language-selector" role="group" aria-label={t('menu.language')}>
+            {!isReboot08Menu && <div className="menu-language-selector" role="group" aria-label={t('menu.language')}>
               {(['zh-CN', 'en-US'] as Locale[]).map(code => (
                 <button
                   type="button"
@@ -1930,9 +2292,33 @@ export default function GameApp() {
                   {code === 'zh-CN' ? t('menu.languageZh') : t('menu.languageEn')}
                 </button>
               ))}
-            </div>
+            </div>}
             <nav className="menu-command-list" aria-label={t('menu.commandAria')}>
-              {hasSave ? (
+              {isReboot08Menu ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => startGame(
+                      saveSnapshot?.cycleState.currentRebootNumber === 8 ? 'continue' : 'reconnect08'
+                    )}
+                    className="menu-command menu-command-primary menu-command-reconnect08"
+                  >
+                    <span aria-hidden="true" className="menu-command-corner menu-command-corner-left" />
+                    <strong>{t('menu.reconnect08')}</strong>
+                    <span aria-hidden="true" className="menu-command-corner menu-command-corner-right" />
+                  </button>
+                  {saveSnapshot?.cycleState.currentRebootNumber === 8 && (
+                    <div className="menu-save-meta">
+                      <span>{t('menu.lastConnection', { time: saveTime })}</span>
+                      <span>{t('menu.currentProgress', { progress: saveProgress })}</span>
+                    </div>
+                  )}
+                  <div className="menu-secondary-actions menu-reboot08-actions">
+                    <button type="button" onClick={() => setShowArchive(true)}>{t('menu.records')}</button>
+                    <button type="button" onClick={() => setShowMenuSettings(true)}>{t('menu.settings')}</button>
+                  </div>
+                </>
+              ) : hasSave ? (
                 <>
                   <button
                     type="button"
@@ -1974,8 +2360,8 @@ export default function GameApp() {
           <div className="menu-footer-status">
             <span className="menu-footer-dot" aria-hidden="true" />
             <div>
-              <span>{t('menu.memoryStandby')}</span>
-              <small>{t('menu.protocolTagline')}</small>
+              <span>{t(isReboot08Menu ? 'menu.memoryStandby08' : 'menu.memoryStandby')}</span>
+              <small>{t(isReboot08Menu ? 'menu.protocolTagline08' : 'menu.protocolTagline')}</small>
             </div>
           </div>
         </footer>
@@ -1986,7 +2372,34 @@ export default function GameApp() {
             avatarPresentation={menuAvatarPresentation}
             onClose={() => setShowArchive(false)}
             backLabel={t('archiveOverlay.backToMenu')}
+            failedCycles={persistentProgress.failedCycles}
+            currentRebootNumber={menuRebootNumber}
           />
+        )}
+        {showMenuSettings && (
+          <div className="menu-settings-overlay" role="dialog" aria-modal="true" aria-label={t('menu.settings')}>
+            <section className="menu-settings-panel">
+              <span>OBSERVER-01 / LOCAL SETTINGS</span>
+              <h2>{t('menu.settings')}</h2>
+              <label>{t('menu.language')}</label>
+              <div className="menu-settings-languages" role="group" aria-label={t('menu.language')}>
+                {(['zh-CN', 'en-US'] as Locale[]).map(code => (
+                  <button
+                    type="button"
+                    key={code}
+                    onClick={() => setLocale(code)}
+                    aria-pressed={locale === code}
+                    className={locale === code ? 'menu-settings-language-active' : ''}
+                  >
+                    {code === 'zh-CN' ? t('menu.languageZh') : t('menu.languageEn')}
+                  </button>
+                ))}
+              </div>
+              <button type="button" className="menu-settings-close" onClick={() => setShowMenuSettings(false)}>
+                {t('menu.close')}
+              </button>
+            </section>
+          </div>
         )}
         {showRestartConfirm && (
           <RestartDialog
@@ -2035,6 +2448,7 @@ export default function GameApp() {
           <ChapterBanner title={showChapterBanner} />
         </div>
       )}
+      <ObserverEchoLayer content={observerEcho} />
       {modalImage && (
         <ImageModal
           image={modalImage.image}
@@ -2048,6 +2462,36 @@ export default function GameApp() {
           contactStage={contactStage}
           avatarPresentation={avatarPresentation}
           onClose={() => setShowArchive(false)}
+          failedCycles={persistentProgress.failedCycles}
+          currentRebootNumber={cycleState.currentRebootNumber}
+        />
+      )}
+      {syncOfferVisible && (
+        <div className="cycle-sync-offer" role="dialog" aria-modal="true" aria-label={t('cycle.offerTitle')}>
+          <span className="cycle-sync-offer-code">OBSERVER-01 / PREVIOUS LINK 07</span>
+          <h2>{t('cycle.offerTitle')}</h2>
+          <p>{t('cycle.offerBody')}</p>
+          <div className="cycle-sync-offer-warning">{t('cycle.offerWarning')}</div>
+          <div className="cycle-sync-offer-actions">
+            <button
+              type="button"
+              className="cycle-sync-offer-primary"
+              onClick={() => {
+                const record = previousCycleRecordRef.current;
+                if (record) beginCycleSync(record);
+              }}
+            >
+              {t('cycle.beginSync')}
+            </button>
+            <button type="button" onClick={declineCycleSync}>{t('cycle.enterManually')}</button>
+          </div>
+        </div>
+      )}
+      {activeSyncEvents.length > 0 && (
+        <CycleSyncOverlay
+          events={activeSyncEvents}
+          visibleCount={syncVisibleCount}
+          onInterrupt={interruptCycleSync}
         />
       )}
       {activeInteraction && (
@@ -2055,23 +2499,14 @@ export default function GameApp() {
           node={activeInteraction}
           locale={locale}
           sealedAnchor={stats.temporaryAnchorSealed}
-          nova06FirstOverrideSeen={stats.nova06FirstOverrideSeen}
-          novaHintStage={stats.novaHintStage}
-          novaHintInteractionKind={stats.novaHintInteractionKind}
-          passwordBypassedByNova06={stats.passwordBypassedByNova06}
-          signalCompletedByNova06={stats.signalCompletedByNova06}
-          powerCompletedByNova06={stats.powerCompletedByNova06}
-          memoryNova06NoteSeen={stats.memoryNova06NoteSeen}
+          powerFirstFailureReason={stats.powerFirstFailureReason}
           avatarPresentation={avatarPresentation}
-          onGuidanceStageChange={handleInteractionGuidanceStageChange}
-          onNova06OverrideStarted={handleNova06OverrideStarted}
-          onNova06ScriptApplied={handleNova06ScriptApplied}
-          onMemoryNova06NoteSeen={handleMemoryNova06NoteSeen}
+          onResultLocked={handleSpecialInteractionResultLocked}
           onComplete={handleSpecialInteractionComplete}
           onSaveAndExit={saveInteractionAndExit}
         />
       )}
-      {import.meta.env.DEV && (
+      {import.meta.env.DEV && !activeInteraction && (
         <>
           <AvatarDebugPanel currentPresentation={avatarPresentation} currentState={avatarState} />
           <DeliveryDebugPanel
@@ -2127,7 +2562,7 @@ export default function GameApp() {
                 <span className="chat-link-bars"><i /><i /><i /><i /></span>
               </div>
               <div className="ml-auto flex items-center gap-1.5 shrink-0">
-              {INTERNAL_TEST_SKIP_ENABLED && !activeInteraction && (
+              {INTERNAL_TEST_SKIP_ENABLED && !activeInteraction && !observerEcho && (
                 <button
                   type="button"
                   onClick={skipToNextChoice}
@@ -2144,6 +2579,25 @@ export default function GameApp() {
                 >
                   <SkipForward size={14} strokeWidth={1.7} aria-hidden="true" />
                   <span className="header-btn-label">{isSkippingToChoice ? t('game.skipping') : t('game.skip')}</span>
+                </button>
+              )}
+              {cycleState.syncInterrupted && !activeInteraction && !syncOfferVisible && !observerEcho && (
+                <button
+                  type="button"
+                  onClick={skipReadText}
+                  className={`header-tool-btn read-skip-btn text-[11px] px-2.5 py-1.5 rounded transition-colors ${isSkippingRead ? 'read-skip-btn-active' : ''}`}
+                  disabled={Boolean(
+                    choices
+                    || inputNode
+                    || isFinished
+                    || deliveryRuntime.activeMessageId
+                    || isSkippingRead
+                  )}
+                  title={t('game.skipReadHint')}
+                  aria-label={isSkippingRead ? t('game.skippingRead') : t('game.skipRead')}
+                >
+                  <SkipForward size={14} strokeWidth={1.7} aria-hidden="true" />
+                  <span className="header-btn-label">{isSkippingRead ? t('game.skippingRead') : t('game.skipRead')}</span>
                 </button>
               )}
               <button

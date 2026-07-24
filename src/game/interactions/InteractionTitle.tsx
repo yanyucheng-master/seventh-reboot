@@ -1,7 +1,7 @@
 type InteractionTitleProps = {
   children: string;
   id?: string;
-  state?: 'active' | 'resolved';
+  state?: 'active' | 'resolved' | 'warning';
 };
 
 export function InteractionTitle({

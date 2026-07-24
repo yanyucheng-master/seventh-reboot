@@ -23,7 +23,7 @@ const OVERLAYS: NovaAvatarOverlay[] = [
   'archived',
   'nova06_interference',
   'special_password',
-  'special_signal',
+  'special_bulkhead',
   'special_power',
   'special_memory_seal',
 ];

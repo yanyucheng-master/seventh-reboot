@@ -148,6 +148,8 @@ function resolveUiContent(
     }
     case 'avatarNotice':
       return uiKey ? t(uiKey) : '';
+    case 'cycleNotice':
+      return uiKey ? t(uiKey) : '';
     default:
       return '';
   }
@@ -168,6 +170,7 @@ export function relocalizeDisplayMessages(
     const uiKey = inferred.uiKey ?? message.uiKey;
 
     let content = message.content;
+    let image = message.image;
 
     if (uiKind) {
       content = resolveUiContent(uiKind, memoryAnchor, uiKey, t, memoryAnchorLabels);
@@ -178,11 +181,13 @@ export function relocalizeDisplayMessages(
       const node = storyNodeMap.get(sourceNodeId);
       if (node && message.type !== 'end') {
         content = node.content;
+        image = node.image ?? image;
       }
     }
 
     if (
       content === message.content &&
+      image === message.image &&
       sourceNodeId === message.sourceNodeId &&
       sourceChoiceIndex === message.sourceChoiceIndex &&
       uiKind === message.uiKind &&
@@ -195,6 +200,7 @@ export function relocalizeDisplayMessages(
     return {
       ...message,
       content,
+      image,
       sourceNodeId,
       sourceChoiceIndex,
       uiKind,

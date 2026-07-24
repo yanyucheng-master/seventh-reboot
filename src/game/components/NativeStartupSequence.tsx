@@ -47,7 +47,7 @@ export function NativeStartupSequence() {
       <div className="native-startup-core">
         <span className="native-startup-phase">PHASE-LINK / 07</span>
         <div className="native-startup-emblem">
-          <img src="/assets/nova_avatar_official_navigator.png" alt="" draggable={false} />
+          <img src="/icons/app-icon-512.png" alt="" draggable={false} />
           <span className="native-startup-emblem-ring" />
         </div>
         <strong className="native-startup-brand">AURORA</strong>

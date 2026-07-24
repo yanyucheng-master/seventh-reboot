@@ -4,6 +4,7 @@ import storyZh from './locales/zh-CN/story.json';
 import storyEn from './locales/en-US/story.json';
 import interactionEn from './locales/en-US/interactions.json';
 import interactionZh from './locales/zh-CN/interactions.json';
+import { localizeMediaPath } from '../game/mediaAssets';
 
 const STORY_BY_LOCALE: Record<Locale, StoryLocaleData> = {
   'zh-CN': storyZh as StoryLocaleData,
@@ -34,14 +35,18 @@ export function applyStoryLocale(baseNodes: StoryNode[], locale: Locale): StoryN
   return baseNodes.map(node => {
     const primaryNode = interactionOverlay?.nodes[node.id] ?? primary.nodes[node.id];
     const content = resolveNodeText(node, primaryNode);
+    const image = localizeMediaPath(node.image, locale);
 
     if (!node.choices?.length) {
-      return content === node.content ? node : { ...node, content };
+      return content === node.content && image === node.image
+        ? node
+        : { ...node, content, image };
     }
 
     return {
       ...node,
       content,
+      image,
       choices: node.choices.map((choice, index) => ({
         ...choice,
         text: resolveChoiceText(

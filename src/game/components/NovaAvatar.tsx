@@ -20,8 +20,8 @@ const OVERLAY_ALT_KEYS: Partial<Record<NovaAvatarOverlay, string>> = {
   offline_residual: 'avatar.status.offline',
   archived: 'avatar.status.archived',
   nova06_interference: 'avatar.status.nova06Interference',
+  special_bulkhead: 'avatar.status.specialBulkhead',
   special_password: 'avatar.status.specialPassword',
-  special_signal: 'avatar.status.specialSignal',
   special_power: 'avatar.status.specialPower',
   special_memory_seal: 'avatar.status.specialMemory',
 };
