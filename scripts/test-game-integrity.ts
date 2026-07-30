@@ -94,7 +94,7 @@ function linearPath(from: string, stopAt: string, max = 80): string[] {
 assert.equal(storyNodeMap.size, storyNodes.length, 'Story node IDs must be unique');
 const archiveIds = new Set(ARCHIVE_ENTRIES.map(entry => entry.id));
 assert.equal(archiveIds.size, ARCHIVE_ENTRIES.length, 'Archive IDs must be unique');
-assert.equal(ARCHIVE_ENTRIES.length, 27, 'Archive total must reflect the two removed draft records');
+assert.equal(ARCHIVE_ENTRIES.length, 29, 'Archive total must include both optional future records');
 
 const choiceIds = new Set<string>();
 for (const node of storyNodes) {
@@ -112,7 +112,7 @@ for (const node of storyNodes) {
 }
 
 const reachable = new Set<string>();
-const queue = ['p0', 'NORMAL_END_START'];
+const queue = ['PRO-0001', 'END-N-0001'];
 while (queue.length) {
   const id = queue.shift()!;
   if (id === 'MENU' || reachable.has(id)) continue;
@@ -131,62 +131,60 @@ function assertAcyclic(id: string): void {
   visiting.add(id);
   const node = storyNodeMap.get(id);
   assert.ok(node);
-  const nextTargets = node.id === 'bad_action_restart'
-    ? []
-    : node.id === 'ch5a_auth_input'
-      ? targets(node).filter(target => target !== 'ch5a_auth_retry1')
-      : targets(node);
+  const nextTargets = node.id === 'CH05A-0016'
+    ? targets(node).filter(target => target !== 'CH05A-0017')
+    : targets(node);
   nextTargets.forEach(assertAcyclic);
   visiting.delete(id);
   visited.add(id);
 }
-assertAcyclic('p0');
-assertAcyclic('NORMAL_END_START');
+assertAcyclic('PRO-0001');
+assertAcyclic('END-N-0001');
 
 const timedNodes = storyNodes.filter(node => node.choiceTimeoutMs !== undefined);
 assert.deepEqual(
   timedNodes.map(node => node.id),
-  ['ch1_go1', 'ch3_ref16', 'ch4_27', 'ch5a_firstline_choice', 'ch5b_obs13', 'fin_q6', 'fin_last6'],
+  ['CH01-0160', 'CH03-0109', 'CH04-0048', 'CH05A-0076', 'CH05B-0049', 'FIN-0081', 'FIN-0231'],
 );
 for (const node of timedNodes) {
   assert.ok(node.timeoutNextId, `${node.id} requires an explicit timeout route`);
   assert.ok(node.choices?.length, `${node.id} requires choices`);
 }
 
-const finalMemoryQuestion = storyNodeMap.get('fin_last6')!;
+const finalMemoryQuestion = storyNodeMap.get('FIN-0231')!;
 assert.equal(finalMemoryQuestion.choiceTimeoutMs, 5000);
-assert.equal(finalMemoryQuestion.choices?.[0]?.id, 'fin_last6__0');
+assert.equal(finalMemoryQuestion.choices?.[0]?.id, 'FIN-0231__0');
 assert.equal(finalMemoryQuestion.choices?.[0]?.text, '【真的有人收到了？】');
-assert.equal(finalMemoryQuestion.choices?.[0]?.nextId, 'fin_correct1');
+assert.equal(finalMemoryQuestion.choices?.[0]?.nextId, 'FIN-0232');
 assert.equal(
   getFinalFarewellVariant({ ...finalMemoryQuestion.choices![0], text: 'localized text may change' }),
   'remembered_until_end',
   'Final-memory grading must use stable choice identity, not display text',
 );
 
-const timeoutPath = linearPath('fin_timeout1', 'fin_breakdown');
-assert.equal(timeoutPath.at(-1), 'fin_breakdown');
-assert.equal(timeoutPath.includes('fin_memory_shift'), false);
-assert.equal(timeoutPath.includes('fin_wrong_common'), false);
-assert.equal(storyNodeMap.get('fin_timeout8')?.nextId, 'fin_breakdown');
-for (const wrongStart of ['fin_wrong_iam1', 'fin_wrong_nice1', 'fin_wrong_forever1']) {
-  assert.equal(canReach(wrongStart, 'fin_memory_shift'), true, `${wrongStart} must retain the wrong-answer response`);
+const timeoutPath = linearPath('FIN-0265', 'FIN-0288');
+assert.equal(timeoutPath.at(-1), 'FIN-0288');
+assert.equal(timeoutPath.includes('FIN-0274'), false);
+assert.equal(timeoutPath.includes('FIN-0275'), false);
+assert.equal(storyNodeMap.get('FIN-0273')?.nextId, 'FIN-0288');
+for (const wrongStart of ['FIN-0246', 'FIN-0253', 'FIN-0259']) {
+  assert.equal(canReach(wrongStart, 'FIN-0274'), true, `${wrongStart} must retain the wrong-answer response`);
 }
-for (const finaleStart of ['fin_q_yes1', 'fin_q_no1', 'fin_q_unknown1', 'fin_q_timeout1']) {
-  assert.equal(canReach(finaleStart, 'fin_q_merge2'), true, `${finaleStart} must rejoin the finale`);
+for (const finaleStart of ['FIN-0086', 'FIN-0093', 'FIN-0105', 'FIN-0082']) {
+  assert.equal(canReach(finaleStart, 'FIN-0114'), true, `${finaleStart} must rejoin the finale`);
 }
 
-const chapterFourProof = storyNodeMap.get('ch4_27')!;
+const chapterFourProof = storyNodeMap.get('CH04-0048')!;
 for (const choice of chapterFourProof.choices!) {
   const before = { ...defaultStats, trust: 3, memory: 2 };
   const after = applyStoryChoiceEffects(before, choice);
   assert.equal(after.trust, before.trust, `${choice.id} must not change trust during the timed proof`);
   assert.equal(after.memory, before.memory, `${choice.id} must not change memory during the timed proof`);
-  assert.equal(canReach(choice.nextId, 'ch4_n7_name'), true, `${choice.id} must still reach the N7 recovery`);
-  assert.equal(canReach(choice.nextId, 'ch4_n7_21'), true, `${choice.id} must preserve the N7 reassurance sequence`);
+  assert.equal(canReach(choice.nextId, 'CH04-0049'), true, `${choice.id} must still reach the N7 recovery`);
+  assert.equal(canReach(choice.nextId, 'CH04-0096'), true, `${choice.id} must preserve the N7 reassurance sequence`);
 }
-assert.equal(canReach(chapterFourProof.timeoutNextId!, 'ch4_n7_name'), true);
-assert.equal(canReach(chapterFourProof.timeoutNextId!, 'ch4_n7_21'), true);
+assert.equal(canReach(chapterFourProof.timeoutNextId!, 'CH04-0049'), true);
+assert.equal(canReach(chapterFourProof.timeoutNextId!, 'CH04-0096'), true);
 
 const qualified: GameStats = {
   ...defaultStats,
@@ -194,26 +192,26 @@ const qualified: GameStats = {
   memory: 4,
   memoryAnchors: [...ALL_ANCHORS],
 };
-const finaleDecision = storyNodeMap.get('ch5b_fin3')!;
+const finaleDecision = storyNodeMap.get('CH05B-0293')!;
 const accepted = applyStoryChoiceEffects(qualified, finaleDecision.choices![0]);
 assert.equal(accepted.ending, 'true');
-assert.equal(resolveEndingStart('FINALE_DECISION_END', accepted), 'FINALE_DECISION_END');
+assert.equal(resolveEndingStart('CH05B-0294', accepted), 'CH05B-0294');
 
 const underThreshold = applyStoryChoiceEffects({ ...qualified, trust: 3 }, finaleDecision.choices![0]);
 assert.equal(underThreshold.ending, 'normal');
-assert.equal(resolveEndingStart('FINALE_DECISION_END', underThreshold), 'NORMAL_END_START');
+assert.equal(resolveEndingStart('CH05B-0294', underThreshold), 'END-N-0001');
 
 const refused = applyStoryChoiceEffects(qualified, finaleDecision.choices![1]);
 assert.equal(refused.ending, 'bad');
-assert.equal(resolveEndingStart('BAD_END_START', refused), 'BAD_END_START');
+assert.equal(resolveEndingStart('END-B-0001', refused), 'END-B-0001');
 
-assert.equal(canReach('FINALE_DECISION_END', 'fin_the_end'), true);
-assert.equal(canReach('NORMAL_END_START', 'normal_end'), true);
-assert.equal(canReach('BAD_END_START', 'bad_end'), true);
-assert.equal(storyNodeMap.get('fin_the_end')?.nextId, 'MENU');
-assert.equal(storyNodeMap.get('normal_end')?.nextId, 'MENU');
-assert.equal(storyNodeMap.get('bad_end')?.nextId, 'MENU');
-assert.ok(getArchiveUnlocksForNode(storyNodeMap.get('bad_end')!).includes('ending_bad'));
+assert.equal(canReach('CH05B-0294', 'END-T-0006'), true);
+assert.equal(canReach('END-N-0001', 'END-N-0013'), true);
+assert.equal(canReach('END-B-0001', 'END-B-0041'), true);
+assert.equal(storyNodeMap.get('END-T-0006')?.nextId, 'MENU');
+assert.equal(storyNodeMap.get('END-N-0013')?.nextId, 'MENU');
+assert.equal(storyNodeMap.get('END-B-0041')?.nextId, 'MENU');
+assert.ok(getArchiveUnlocksForNode(storyNodeMap.get('END-B-0041')!).includes('ending_bad'));
 
 for (const [index, choice] of finalMemoryQuestion.choices!.entries()) {
   const next = applyStoryChoiceEffects({ ...accepted }, choice);
@@ -223,13 +221,13 @@ for (const [index, choice] of finalMemoryQuestion.choices!.entries()) {
   assert.deepEqual(next.memoryAnchors, accepted.memoryAnchors);
   assert.equal(next.finalFarewellVariant, index === 0 ? 'remembered_until_end' : 'remembered_wrong');
 }
-const timedOut = applyTimedChoiceTimeoutEffects(accepted, 'fin_last6');
+const timedOut = applyTimedChoiceTimeoutEffects(accepted, 'FIN-0231');
 assert.equal(timedOut.finalFarewellVariant, 'forgetting_started');
 assert.equal(timedOut.ending, 'true');
 assert.equal(timedOut.trust, accepted.trust);
 assert.equal(timedOut.memory, accepted.memory);
 
-for (const choice of storyNodeMap.get('fin_q6')!.choices!) {
+for (const choice of storyNodeMap.get('FIN-0081')!.choices!) {
   const next = applyStoryChoiceEffects(accepted, choice);
   assert.equal(next.ending, 'true');
   assert.equal(next.trust, accepted.trust);
@@ -252,15 +250,18 @@ for (const completion of interactionCompletions) {
 
 const trueRunArchiveStats: GameStats = {
   ...accepted,
-  unlockedArchives: ARCHIVE_ENTRIES.filter(entry => entry.category !== 'ending').map(entry => entry.id),
+  unlockedArchives: ARCHIVE_ENTRIES
+    .filter(entry => entry.category !== 'ending' && entry.category !== 'future')
+    .map(entry => entry.id),
   endingsUnlocked: ['ending_true'],
+  trueEpilogueUnlocked: true,
 };
 const trueRunEntries = getArchiveEntries(trueRunArchiveStats, 'verified');
-assert.equal(trueRunEntries.filter(entry => entry.unlocked).length, ARCHIVE_ENTRIES.length - 2);
+assert.equal(trueRunEntries.filter(entry => entry.unlocked).length, ARCHIVE_ENTRIES.length - 3);
 assert.deepEqual(
   trueRunEntries.filter(entry => !entry.unlocked).map(entry => entry.id),
-  ['ending_normal', 'ending_bad'],
-  'The only locked records must be the two unobserved ending branches',
+  ['ending_normal', 'ending_bad', 'epilogue_normal'],
+  'Unobserved ending branches and their future record must remain locked',
 );
 
 const productionText = [
@@ -278,13 +279,13 @@ for (const internalPhrase of [
   assert.equal(productionText.includes(internalPhrase), false, `Player-facing text leaks internal phrase: ${internalPhrase}`);
 }
 
-const firstSave = applyPersistentStoryNodeEffects({ ...trueRunArchiveStats }, 'fin_action_save');
-const secondSave = applyPersistentStoryNodeEffects(firstSave, 'fin_action_save');
+const firstSave = applyPersistentStoryNodeEffects({ ...trueRunArchiveStats }, 'END-T-0005');
+const secondSave = applyPersistentStoryNodeEffects(firstSave, 'END-T-0005');
 assert.equal(firstSave.commemorativeArchiveSaved, true);
 assert.equal(secondSave, firstSave, 'Commemorative archive save must be idempotent');
 
 clearAllData();
-saveGame(createSaveData('fin_the_end', [], createDefaultNovaAvatarState(), 'verified', firstSave));
+saveGame(createSaveData('END-T-0006', [], createDefaultNovaAvatarState(), 'verified', firstSave));
 assert.ok(localStorage.getItem(SAVE_KEY));
 assert.ok(localStorage.getItem(PERSISTENT_PROGRESS_KEY));
 clearSave();
@@ -300,9 +301,9 @@ assert.deepEqual(freshRun.endingsUnlocked, ['ending_true']);
 assert.equal(freshRun.unlockedArchives.includes('ending_true'), true);
 
 localStorage.setItem(SAVE_KEY, JSON.stringify({
-  currentNodeId: 'p13e',
+  currentNodeId: 'PRO-0011',
   messages: [{
-    id: 'p13e_legacy',
+    id: 'PRO-0011_legacy',
     speaker: 'nova',
     type: 'text',
     content: '真的有人收到了？',
@@ -314,7 +315,7 @@ const migrated = loadGame();
 assert.equal(migrated, null, 'Legacy active saves must fail closed after the interaction state upgrade');
 
 localStorage.setItem(SAVE_KEY, JSON.stringify({
-  currentNodeId: 'p13e',
+  currentNodeId: 'PRO-0011',
   stats: { trust: 2 },
   timestamp: Date.now() - 1000,
 }));
@@ -322,7 +323,7 @@ const migratedWithoutMessages = loadGame();
 assert.equal(migratedWithoutMessages, null, 'Incomplete legacy saves must not enter the new branch topology');
 
 localStorage.setItem(SAVE_KEY, JSON.stringify({
-  pendingNodeId: 'p0',
+  pendingNodeId: 'PRO-0001',
   messages: [],
   stats: {},
   storyVersion: 'V2.0',

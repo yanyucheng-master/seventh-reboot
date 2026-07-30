@@ -1,22 +1,22 @@
 {
   "version": "V1.0-special-interactions",
   "nodes": {
-    "ch3_airlock_interaction": {
+    "CH03-0144": {
       "content": "观测室隔离与手动均压"
     },
-    "ch5a_auth_input": {
+    "CH05A-0016": {
       "content": "联合授权密钥"
     },
-    "ch5b_power_interaction": {
+    "CH05B-0017": {
       "content": "应急供能路由 / 第一次提交"
     },
-    "ch5b_power_retry_interaction": {
+    "CH05B-0029": {
       "content": "应急供能路由 / 最终提交"
     },
-    "ch5b_memory_seal": {
+    "CH05B-0193": {
       "content": "临时记忆容量管理"
     },
-    "fin_memory_restore": {
+    "FIN-0014": {
       "content": "临时封存锚点恢复"
     }
   }

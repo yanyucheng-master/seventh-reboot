@@ -22,14 +22,7 @@ export function applyMobileStoryPatches(storyNodeMap: Map<string, StoryNode>) {
     if (node) storyNodeMap.set(id, { ...node, delay });
   };
 
-  shorten('p0', 1200);
-  shorten('p1', 500);
-  shorten('p2', 500);
-  shorten('p3', 500);
-  shorten('p5', 900);
-  shorten('p6', 650);
-  shorten('p7', 900);
-  shorten('p8', 1400);
-  shorten('p9', 450);
-  shorten('p10', 900);
+  shorten('PRO-0001', 1200);
+  shorten('PRO-0002', 450);
+  shorten('PRO-0003', 900);
 }

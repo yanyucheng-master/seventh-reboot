@@ -4,7 +4,8 @@
     "photo": "Story Photos",
     "anomaly": "Anomaly Records",
     "profile": "Nova Profile",
-    "ending": "Ending Records"
+    "ending": "Ending Records",
+    "future": "Future Records"
   },
   "locked": {
     "title": {
@@ -164,6 +165,16 @@
       "title": "Eighth Reboot",
       "subtitle": "Bad Ending",
       "description": "If obsession refuses farewell\nThe reboot will never end"
+    },
+    "epilogue_normal": {
+      "title": "Future Record: A Fading Warmth",
+      "subtitle": "Normal-ending follow-up archive",
+      "description": "Record time: Twelve years later\nRecord source: Unverified\nContinuity status: Unknown"
+    },
+    "epilogue_true": {
+      "title": "Future Record: Remembered Until the End",
+      "subtitle": "True-ending follow-up archive",
+      "description": "Record time: Twelve years later\nRecord source: Unverified\nContinuity status: Unknown"
     }
   }
 }

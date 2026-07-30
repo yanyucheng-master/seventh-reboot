@@ -10,10 +10,14 @@ const TYPE = new Map([
   ['延迟', 'delay'], ['状态', 'status'], ['时间戳', 'timestamp'], ['章节', 'chapter'], ['草稿', 'draft'],
   ['故障', 'glitch'], ['文件', 'file'], ['结局', 'end'], ['输入', 'input'], ['限时输入', 'input'],
   ['交互', 'interaction'], ['通讯日志', 'comm-log'], ['后记', 'epilogue'], ['结局操作', 'ending-action'],
+  ['内部章节标记', 'internal-chapter-marker'], ['内部结局标记', 'internal-ending-marker'],
+  ['结局标题', 'ending-title'],
   ['Text', 'text'], ['Choice', 'choice'], ['Timed Choice', 'choice'], ['Image', 'image'], ['Typing', 'typing'],
   ['Delay', 'delay'], ['Status', 'status'], ['Timestamp', 'timestamp'], ['Chapter', 'chapter'], ['Draft', 'draft'],
   ['Fault', 'glitch'], ['File', 'file'], ['Ending', 'end'], ['Input', 'input'], ['Timed Input', 'input'],
   ['Interaction', 'interaction'], ['Comm Log', 'comm-log'], ['Epilogue', 'epilogue'], ['Ending Action', 'ending-action'],
+  ['Internal Chapter Marker', 'internal-chapter-marker'], ['Internal Ending Marker', 'internal-ending-marker'],
+  ['Ending Title', 'ending-title'],
   ['Menu', 'menu'],
 ]);
 
@@ -160,7 +164,7 @@ function compare(srcNodes, locale, label) {
   return { label, contentDiff, choiceDiff, missing, samples };
 }
 
-const zhScript = path.join(root, '..', '第七次重启_剧情文本_V1_0_联合密钥修订最终版.txt');
+const zhScript = path.join(root, '..', '第七次重启_V1.0_无后记主流程_规范化ID版.txt');
 const enScript = process.env.SEVENTH_REBOOT_EN_SOURCE;
 const zhLoc = JSON.parse(fs.readFileSync(path.join(root, 'src/i18n/locales/zh-CN/story.json'), 'utf8'));
 const enLoc = JSON.parse(fs.readFileSync(path.join(root, 'src/i18n/locales/en-US/story.json'), 'utf8'));
@@ -200,10 +204,10 @@ const report = {
   enCoverage,
   nextIdStructureDiff: nextDiff,
   keyLines: {
-    zh_p13e: zhLoc.nodes.p13e?.content,
-    en_p13e: enLoc.nodes.p13e?.content,
-    zh_fin_last6: zhLoc.nodes.fin_last6?.choices,
-    en_fin_last6: enLoc.nodes.fin_last6?.choices,
+    'zh_PRO-0011': zhLoc.nodes['PRO-0011']?.content,
+    'en_PRO-0011': enLoc.nodes['PRO-0011']?.content,
+    'zh_FIN-0231': zhLoc.nodes['FIN-0231']?.choices,
+    'en_FIN-0231': enLoc.nodes['FIN-0231']?.choices,
   },
 };
 

@@ -4,7 +4,8 @@
     "photo": "剧情照片",
     "anomaly": "异常记录",
     "profile": "Nova档案",
-    "ending": "结局记录"
+    "ending": "结局记录",
+    "future": "未来记录"
   },
   "locked": {
     "title": {
@@ -164,6 +165,16 @@
       "title": "《第八次重启》",
       "subtitle": "坏结局",
       "description": "如果执念拒绝告别\n重启便永无尽头"
+    },
+    "epilogue_normal": {
+      "title": "未来记录：模糊的温度",
+      "subtitle": "普通结局后续档案",
+      "description": "记录时间：十二年后\n记录来源：无法验证\n连续性状态：未知"
+    },
+    "epilogue_true": {
+      "title": "未来记录：直到最后都还记得",
+      "subtitle": "真结局后续档案",
+      "description": "记录时间：十二年后\n记录来源：无法验证\n连续性状态：未知"
     }
   }
 }

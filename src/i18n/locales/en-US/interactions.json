@@ -1,22 +1,22 @@
 {
   "version": "V1.0-special-interactions",
   "nodes": {
-    "ch3_airlock_interaction": {
+    "CH03-0144": {
       "content": "Observation isolation and manual equalization"
     },
-    "ch5a_auth_input": {
+    "CH05A-0016": {
       "content": "Joint authorization key"
     },
-    "ch5b_power_interaction": {
+    "CH05B-0017": {
       "content": "Emergency power routing / first submission"
     },
-    "ch5b_power_retry_interaction": {
+    "CH05B-0029": {
       "content": "Emergency power routing / final submission"
     },
-    "ch5b_memory_seal": {
+    "CH05B-0193": {
       "content": "Temporary memory capacity"
     },
-    "fin_memory_restore": {
+    "FIN-0014": {
       "content": "Restore temporarily sealed anchor"
     }
   }

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Anchor,
   ArrowLeft,
+  BookOpen,
   History,
   Image as ImageIcon,
   RadioTower,
@@ -27,16 +28,19 @@ import {
   getLockedArchiveCopy,
 } from '../../i18n/archiveResolver';
 import { getResponsiveImageAttributes, isNovaProfileImage } from '../mediaAssets';
+import { EpilogueArchiveReader } from './EpilogueArchiveReader';
+import type { EpilogueKind } from '../epilogues';
 
 type ArchiveTabId = ArchiveCategory | 'history';
 
-const TAB_IDS: ArchiveTabId[] = ['anchor', 'photo', 'anomaly', 'profile', 'ending', 'history'];
+const TAB_IDS: ArchiveTabId[] = ['anchor', 'photo', 'anomaly', 'profile', 'ending', 'future', 'history'];
 const TAB_EN: Record<ArchiveTabId, string> = {
   anchor: 'ANCHOR',
   photo: 'PHOTO',
   anomaly: 'ANOMALY',
   profile: 'PROFILE',
   ending: 'ENDING',
+  future: 'FUTURE',
   history: 'HISTORY',
 };
 const TAB_ICONS: Record<ArchiveTabId, LucideIcon> = {
@@ -45,6 +49,7 @@ const TAB_ICONS: Record<ArchiveTabId, LucideIcon> = {
   anomaly: RadioTower,
   profile: UserRound,
   ending: Waypoints,
+  future: BookOpen,
   history: History,
 };
 
@@ -174,6 +179,7 @@ export function MemoryArchiveOverlay({
   const { t, locale } = useI18n();
   const [activeTab, setActiveTab] = useState<ArchiveTabId>('anchor');
   const [selectedEntry, setSelectedEntry] = useState<ArchiveEntry | null>(null);
+  const [activeEpilogue, setActiveEpilogue] = useState<EpilogueKind | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const triggerElementRef = useRef<HTMLElement | null>(null);
   const entries = useMemo(
@@ -203,11 +209,25 @@ export function MemoryArchiveOverlay({
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
+      if (event.key !== 'Escape') return;
+      if (activeEpilogue) {
+        setActiveEpilogue(null);
+      } else {
+        onClose();
+      }
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+  }, [activeEpilogue, onClose]);
+
+  if (activeEpilogue) {
+    return (
+      <EpilogueArchiveReader
+        kind={activeEpilogue}
+        onClose={() => setActiveEpilogue(null)}
+      />
+    );
+  }
 
   return (
     <div className="archive-overlay" role="dialog" aria-modal="true" aria-label={t('archiveOverlay.title')}>
@@ -362,7 +382,13 @@ export function MemoryArchiveOverlay({
                 <ArchiveCard
                   key={entry.id}
                   entry={entry}
-                  onSelect={setSelectedEntry}
+                  onSelect={selected => {
+                    if (selected.epilogueKind) {
+                      setActiveEpilogue(selected.epilogueKind);
+                    } else {
+                      setSelectedEntry(selected);
+                    }
+                  }}
                   lockedLabel={t('archiveOverlay.locked')}
                   categoryLabel={getArchiveCategoryLabel(entry.category, locale)}
                   lockedCopy={getLockedArchiveCopy(entry.category, locale)}

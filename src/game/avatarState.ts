@@ -184,12 +184,12 @@ export function applyNovaAvatarNodeEffect(
   let transition: NovaAvatarTransition | undefined;
   const noticeKeys: NovaAvatarNodeEffect['noticeKeys'] = [];
 
-  if (nodeId === 'p9' && !state.novaAvatarEventReceipts.unknownConnectionNoticeShown) {
+  if (nodeId === 'PRO-0002' && !state.novaAvatarEventReceipts.unknownConnectionNoticeShown) {
     state = patchState(state, {}, { unknownConnectionNoticeShown: true });
     noticeKeys.push('avatar.connection.unregistered');
   }
 
-  if (nodeId === 'ch4_id_confirm' && !state.novaIdentityVerified) {
+  if (nodeId === 'CH04-0124' && !state.novaIdentityVerified) {
     const animate = !state.novaAvatarEventReceipts.identityVerificationAnimationSeen;
     state = patchState(
       state,
@@ -207,18 +207,18 @@ export function applyNovaAvatarNodeEffect(
     if (animate) transition = 'identity-verification';
   }
 
-  if (nodeId === 'ch1_pet5' && !state.n7StoryIntroduced) {
+  if (nodeId === 'CH01-0128' && !state.n7StoryIntroduced) {
     state = patchState(state, { n7StoryIntroduced: true });
   }
 
-  if (nodeId === 'ch1_n7photo' && (!state.n7PhotoShared || !state.n7AvatarQueued)) {
+  if (nodeId === 'CH01-0137' && (!state.n7PhotoShared || !state.n7AvatarQueued)) {
     state = patchState(state, { n7PhotoShared: true, n7AvatarQueued: true });
   }
 
   // Identity is only proven in chapter four. The 18:33 jump is the first calm
   // interval after that proof where the queued private profile can sync.
   if (
-    nodeId === 'ch4_trust1'
+    nodeId === 'CH04-0153'
     && state.novaIdentityVerified
     && state.n7StoryIntroduced
     && state.n7PhotoShared
@@ -238,7 +238,7 @@ export function applyNovaAvatarNodeEffect(
     if (animate) transition = 'private-profile';
   }
 
-  if (nodeId === 'ch3_flower1' && (!state.whiteFlowerSeen || !state.whiteFlowerPhotoShared)) {
+  if (nodeId === 'CH03-0006' && (!state.whiteFlowerSeen || !state.whiteFlowerPhotoShared)) {
     state = patchState(state, {
       whiteFlowerSeen: true,
       whiteFlowerPhotoShared: true,
@@ -247,7 +247,7 @@ export function applyNovaAvatarNodeEffect(
   }
 
   if (
-    nodeId === 'ch4_gn1'
+    nodeId === 'CH04-0213'
     && state.n7AvatarActivated
     && state.whiteFlowerSeen
     && state.whiteFlowerPhotoShared
@@ -267,7 +267,7 @@ export function applyNovaAvatarNodeEffect(
     if (animate) transition = 'flower-profile';
   }
 
-  if ((nodeId === 'ch4_offline' || nodeId === 'CH5A_START') && state.whiteFlowerAvatarActive) {
+  if ((nodeId === 'CH04-0221' || nodeId === 'CH05A-0001') && state.whiteFlowerAvatarActive) {
     state = patchState(state, {
       whiteFlowerAvatarActive: false,
       whiteFlowerAvatarExpired: true,
@@ -276,17 +276,17 @@ export function applyNovaAvatarNodeEffect(
     transition = 'private-profile';
   }
 
-  if (nodeId === 'ch3_dc1' || nodeId === 'ch4_offline') {
+  if (nodeId === 'CH03-0163' || nodeId === 'CH04-0221') {
     if (state.novaConnectionState !== 'offline') state = patchState(state, { novaConnectionState: 'offline' });
   }
-  if (nodeId === 'ch3_dc5' || nodeId === 'ch5a_1' || nodeId === 'ch5a_sep_conclusion') {
+  if (nodeId === 'CH03-0167' || nodeId === 'CH05A-0003') {
     if (state.novaConnectionState !== 'stable') state = patchState(state, { novaConnectionState: 'stable' });
   }
-  if (nodeId === 'ch5a_sep_intro1' || nodeId === 'fin_breakdown') {
+  if (nodeId === 'FIN-0288') {
     if (state.novaConnectionState !== 'weak') state = patchState(state, { novaConnectionState: 'weak' });
   }
 
-  if (nodeId === 'fin_action_prompt') {
+  if (nodeId === 'END-T-0003') {
     state = patchState(
       state,
       { novaConnectionState: 'archived', novaEndingAvatarMode: 'private_archive' },
@@ -294,7 +294,7 @@ export function applyNovaAvatarNodeEffect(
     );
   }
 
-  if (nodeId === 'normal_action_prompt') {
+  if (nodeId === 'END-N-0010') {
     state = patchState(
       state,
       { novaConnectionState: 'offline', novaEndingAvatarMode: 'private_archive' },
@@ -302,7 +302,7 @@ export function applyNovaAvatarNodeEffect(
     );
   }
 
-  if (nodeId === 'bad_15' && state.novaEndingAvatarMode !== 'official_identity_restored') {
+  if (nodeId === 'END-B-0038' && state.novaEndingAvatarMode !== 'official_identity_restored') {
     const animate = !state.novaAvatarEventReceipts.badEndingProfileClearAnimationSeen;
     state = patchState(
       state,
@@ -366,14 +366,21 @@ export function migrateNovaAvatarState(
   const state = createDefaultNovaAvatarState();
   const has = (id: string) => ids.has(id);
   const seenPrefix = (pattern: RegExp) => [...ids].some(id => pattern.test(id)) || pattern.test(context.pendingNodeId);
-  const identityVerified = context.contactStage === 'verified' || has('ch4_id_confirm');
-  const n7Introduced = has('ch1_pet5') || context.stats.memoryAnchors.includes('n7');
-  const n7PhotoShared = has('ch1_n7photo') || context.messages.some(message => message.image === '/assets/nova_n7_photo.png');
-  const reachedN7Sync = has('ch4_trust1') || seenPrefix(/^ch4_(?:trust|gn|offline|log)/) || seenPrefix(/^(?:ch5|fin_|normal_|bad_)/);
-  const flowerSeen = has('ch3_flower1') || context.stats.memoryAnchors.includes('white_flower');
-  const reachedFlowerSync = has('ch4_gn1') || seenPrefix(/^ch4_(?:gn|offline|log)/) || seenPrefix(/^(?:ch5|fin_|normal_|bad_)/);
-  const flowerExpired = has('ch4_offline') || seenPrefix(/^(?:ch5|fin_|normal_|bad_)/);
-  const badIdentityRestored = has('bad_15') || has('bad_16') || seenPrefix(/^bad_(?:1[5-9]|action|end)/);
+  const seenAtOrAfter = (prefix: string, index: number) => (
+    [...ids, context.pendingNodeId].some(id => (
+      id.startsWith(prefix)
+      && Number(id.slice(-4)) >= index
+    ))
+  );
+  const seenAfterChapterFour = seenPrefix(/^(?:CH05A|CH05B|FIN|END-[TNB])-/);
+  const identityVerified = context.contactStage === 'verified' || has('CH04-0124');
+  const n7Introduced = has('CH01-0128') || context.stats.memoryAnchors.includes('n7');
+  const n7PhotoShared = has('CH01-0137') || context.messages.some(message => message.image === '/assets/nova_n7_photo.png');
+  const reachedN7Sync = seenAtOrAfter('CH04-', 153) || seenAfterChapterFour;
+  const flowerSeen = has('CH03-0006') || context.stats.memoryAnchors.includes('white_flower');
+  const reachedFlowerSync = seenAtOrAfter('CH04-', 213) || seenAfterChapterFour;
+  const flowerExpired = seenAtOrAfter('CH04-', 221) || seenAfterChapterFour;
+  const badIdentityRestored = seenAtOrAfter('END-B-', 38);
 
   state.novaIdentityVerified = identityVerified;
   state.novaOfficialProfileEstablished = identityVerified;
@@ -389,7 +396,7 @@ export function migrateNovaAvatarState(
   state.novaConnectionState = identityVerified ? 'stable' : 'weak';
   state.novaAvatarEventReceipts = {
     ...state.novaAvatarEventReceipts,
-    unknownConnectionNoticeShown: has('p9') || context.messages.length > 0,
+    unknownConnectionNoticeShown: has('PRO-0002') || context.messages.length > 0,
     identityVerificationAnimationSeen: identityVerified,
     identityVerificationNoticeShown: identityVerified,
     n7ProfileTransitionSeen: state.n7AvatarActivated || badIdentityRestored,
@@ -397,15 +404,15 @@ export function migrateNovaAvatarState(
     badEndingProfileClearAnimationSeen: badIdentityRestored,
   };
 
-  const lastDisconnectIndex = findLastMessageIndex(context.messages, new Set(['ch3_dc1', 'ch4_offline']));
-  const lastReconnectIndex = findLastMessageIndex(context.messages, new Set(['ch3_dc5', 'ch5a_1']));
+  const lastDisconnectIndex = findLastMessageIndex(context.messages, new Set(['CH03-0163', 'CH04-0221']));
+  const lastReconnectIndex = findLastMessageIndex(context.messages, new Set(['CH03-0167', 'CH05A-0003']));
   if (lastDisconnectIndex > lastReconnectIndex) state.novaConnectionState = 'offline';
 
-  if (has('fin_action_prompt') || has('fin_the_end')) {
+  if (has('END-T-0003') || has('END-T-0006')) {
     state.novaEndingAvatarMode = 'private_archive';
     state.novaConnectionState = 'archived';
     state.novaAvatarEventReceipts.trueEndingArchiveNoticeShown = true;
-  } else if (has('normal_action_prompt') || has('normal_end')) {
+  } else if (has('END-N-0010') || has('END-N-0013')) {
     state.novaEndingAvatarMode = 'private_archive';
     state.novaConnectionState = 'offline';
     state.novaAvatarEventReceipts.normalEndingArchiveNoticeShown = true;
@@ -428,11 +435,12 @@ export function createNovaAvatarStateForCheckpoint(nodeId: string): NovaAvatarSt
     identityVerificationAnimationSeen: true,
     identityVerificationNoticeShown: true,
   };
-  const isChapterFour = /^(?:ch4_|CH4_START)/.test(nodeId);
-  const isAfterChapterFour = /^(?:ch5|CH5|fin_|FINALE|normal_|NORMAL|bad_|BAD)/.test(nodeId);
-  const isAfterIdentityProof = /^(?:ch4_(?:id_photo|fold|head|trust|gn|offline|log)|ch5|CH5|fin_|FINALE|normal_|NORMAL|bad_|BAD)/.test(nodeId);
-  const isAfterN7Sync = /^(?:ch4_(?:trust(?!1$)|gn|offline|log)|ch5|CH5|fin_|FINALE|normal_|NORMAL|bad_|BAD)/.test(nodeId);
-  const isAfterFlowerSync = /^(?:ch4_(?:gn(?!1$)|offline|log)|ch5|CH5|fin_|FINALE|normal_|NORMAL|bad_|BAD)/.test(nodeId);
+  const chapterFourIndex = nodeId.startsWith('CH04-') ? Number(nodeId.slice(-4)) : -1;
+  const isChapterFour = chapterFourIndex >= 1;
+  const isAfterChapterFour = /^(?:CH05A|CH05B|FIN|END-[TNB])-/.test(nodeId);
+  const isAfterIdentityProof = chapterFourIndex >= 124 || isAfterChapterFour;
+  const isAfterN7Sync = chapterFourIndex >= 153 || isAfterChapterFour;
+  const isAfterFlowerSync = chapterFourIndex >= 213 || isAfterChapterFour;
 
   if (isChapterFour || isAfterChapterFour) {
     state.n7StoryIntroduced = true;
@@ -461,11 +469,11 @@ export function createNovaAvatarStateForCheckpoint(nodeId: string): NovaAvatarSt
     state.whiteFlowerAvatarActive = false;
     state.whiteFlowerAvatarExpired = true;
   }
-  if (/^(?:normal_|NORMAL)/.test(nodeId)) {
+  if (nodeId.startsWith('END-N-')) {
     state.novaEndingAvatarMode = 'private_archive';
     state.novaConnectionState = 'offline';
   }
-  if (/^(?:bad_(?:1[5-9]|action|end)|BAD_END)/.test(nodeId)) {
+  if (nodeId.startsWith('END-B-') && Number(nodeId.slice(-4)) >= 38) {
     state.novaEndingAvatarMode = 'official_identity_restored';
     state.novaConnectionState = 'offline';
     state.n7AvatarActivated = false;

@@ -107,20 +107,20 @@ export const RESTORED_FAILURE_RETRY_SPEC: DeliverySpec = {
 };
 
 const NODE_LINK_STATE_EFFECTS: Record<string, CommunicationLinkState> = {
-  ch3_dc1: 'interrupted',
-  ch3_dc2: 'interrupted',
-  ch3_dc3: 'interrupted',
-  ch3_dc4: 'interrupted',
-  ch3_dc5: 'restoring',
-  ch3_dc9: 'stable',
-  ch5a_offline: 'interrupted',
-  fin_disconnect3: 'unstable',
-  fin_disconnect4: 'unstable',
-  fin_disconnect5: 'unstable',
-  fin_correct1: 'unstable',
-  fin_wrong_iam1: 'unstable',
-  fin_wrong_nice1: 'unstable',
-  fin_wrong_forever1: 'unstable',
+  'CH03-0163': 'interrupted',
+  'CH03-0164': 'interrupted',
+  'CH03-0165': 'interrupted',
+  'CH03-0166': 'interrupted',
+  'CH03-0167': 'restoring',
+  'CH03-0174': 'stable',
+  'CH05A-0276': 'interrupted',
+  'FIN-0223': 'unstable',
+  'FIN-0224': 'unstable',
+  'FIN-0225': 'unstable',
+  'FIN-0232': 'unstable',
+  'FIN-0246': 'unstable',
+  'FIN-0253': 'unstable',
+  'FIN-0259': 'unstable',
 };
 
 function stableHash(value: string): number {

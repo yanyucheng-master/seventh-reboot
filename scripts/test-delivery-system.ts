@@ -17,10 +17,10 @@ import {
 import type { DeliveryEventKey, DisplayMessage } from '../src/game/types.ts';
 
 const EXPECTED_EVENTS = new Map<string, DeliveryEventKey>([
-  ['p14', 'prologue_first_reply'],
-  ['ch3_dc7', 'chapter3_reconnect_reply'],
-  ['ch5a_fut17_choice', 'chapter5_explicit_failure'],
-  ['fin_last6', 'finale_last_answer'],
+  ['PRO-0012', 'prologue_first_reply'],
+  ['CH03-0170', 'chapter3_reconnect_reply'],
+  ['CH05A-0266', 'chapter5_explicit_failure'],
+  ['FIN-0231', 'finale_last_answer'],
 ]);
 
 const eventNodes = storyNodes.filter(node => node.deliveryEvent);
@@ -62,7 +62,7 @@ const failureSpecs = Object.values(DELIVERY_EVENT_SPECS).filter(spec =>
   spec.phases.some(phase => phase.state === 'failed'));
 assert.deepEqual(failureSpecs.map(spec => spec.key), ['chapter5_explicit_failure']);
 
-for (const seed of ['p14__0', 'p_merge3__1', 'fin_action_choice__0']) {
+for (const seed of ['PRO-0012__0', 'PRO-0024__1', 'END-T-0004__0']) {
   const first = createNormalDeliverySpec(seed);
   const second = createNormalDeliverySpec(seed);
   const deliveredAt = first.phases.find(phase => phase.state === 'delivered')?.atMs ?? -1;
@@ -96,7 +96,7 @@ const legacyChoice: DisplayMessage = {
   speaker: 'player',
   type: 'text',
   content: '在',
-  sourceNodeId: 'ch3_dc7',
+  sourceNodeId: 'CH03-0170',
   sourceChoiceIndex: 0,
 };
 const freeInput: DisplayMessage = {
@@ -108,11 +108,11 @@ const freeInput: DisplayMessage = {
 const migratedLegacy = migrateDeliveryState(
   [legacyChoice, freeInput],
   undefined,
-  'ch3_dc8',
+  'CH03-0171',
   1000,
 );
 assert.equal(migratedLegacy.messages[0].deliveryState, 'delivered');
-assert.equal(migratedLegacy.messages[0].choiceId, 'ch3_dc7__0');
+assert.equal(migratedLegacy.messages[0].choiceId, 'CH03-0170__0');
 assert.equal(migratedLegacy.messages[1].deliveryState, undefined, 'Free input must not become an outgoing choice delivery');
 
 const failedMessage: DisplayMessage = {
@@ -120,11 +120,11 @@ const failedMessage: DisplayMessage = {
   speaker: 'player',
   type: 'text',
   content: '因为我也在里面？',
-  sourceNodeId: 'ch5a_fut17_choice',
+  sourceNodeId: 'CH05A-0266',
   sourceChoiceIndex: 0,
   deliveryState: 'failed',
   scriptedDeliveryEvent: 'chapter5_explicit_failure',
-  branchTargetNodeId: 'ch5a_fut17_a1',
+  branchTargetNodeId: 'CH05A-0267',
   committedAt: 2000,
   branchCommitted: true,
 };
@@ -135,29 +135,29 @@ const failedRuntime = {
 const restoredFailure = migrateDeliveryState(
   [failedMessage],
   failedRuntime,
-  'ch5a_fut17_a1',
+  'CH05A-0267',
   3000,
 );
 assert.equal(restoredFailure.messages[0].deliveryState, 'failed');
 assert.equal(restoredFailure.runtime.activeMessageId, failedMessage.id);
 assert.deepEqual(restoredFailure.runtime.pendingAutoRetryIds, [failedMessage.id]);
-assert.equal(restoredFailure.pendingNodeId, 'ch5a_fut17_a1');
+assert.equal(restoredFailure.pendingNodeId, 'CH05A-0267');
 
 const interruptedP14: DisplayMessage = {
-  id: 'p14_pending',
+  id: 'PRO-0012_pending',
   speaker: 'player',
   type: 'text',
   content: '你是谁？',
-  sourceNodeId: 'p14',
+  sourceNodeId: 'PRO-0012',
   sourceChoiceIndex: 0,
   deliveryState: 'sending',
   scriptedDeliveryEvent: 'prologue_first_reply',
-  branchTargetNodeId: 'p15a',
+  branchTargetNodeId: 'PRO-0013',
   committedAt: 2000,
   branchCommitted: true,
 };
-const p14Runtime = { ...createDefaultChatDeliveryRuntime(), activeMessageId: interruptedP14.id };
-const restoredP14 = migrateDeliveryState([interruptedP14], p14Runtime, 'p15a', 3000);
+const pro0012Runtime = { ...createDefaultChatDeliveryRuntime(), activeMessageId: interruptedP14.id };
+const restoredP14 = migrateDeliveryState([interruptedP14], pro0012Runtime, 'PRO-0013', 3000);
 assert.equal(restoredP14.messages[0].deliveryState, 'delivered');
 assert.equal(restoredP14.runtime.activeMessageId, undefined);
 assert.equal(restoredP14.runtime.receipts.prologueFirstReply, 'completed');

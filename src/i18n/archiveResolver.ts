@@ -66,6 +66,14 @@ export function computeArchiveUnlockedIds(
   const unlocked = new Set<string>(stats.unlockedArchives);
   stats.memoryAnchors.forEach(anchor => unlocked.add(ANCHOR_ARCHIVE_IDS[anchor]));
   stats.endingsUnlocked.forEach(ending => unlocked.add(ending));
+  unlocked.delete('epilogue_normal');
+  unlocked.delete('epilogue_true');
+  if (stats.normalEpilogueUnlocked || stats.endingsUnlocked.includes('ending_normal')) {
+    unlocked.add('epilogue_normal');
+  }
+  if (stats.trueEpilogueUnlocked || stats.endingsUnlocked.includes('ending_true')) {
+    unlocked.add('epilogue_true');
+  }
   unlocked.add('profile_unknown');
   if (contactStage === 'named' || contactStage === 'verified') unlocked.add('profile_named');
   if (contactStage === 'verified') unlocked.add('profile_verified');

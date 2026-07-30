@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { ChevronDown, FileText } from 'lucide-react';
 import type { GlitchLevel, NovaAvatarPresentation, NovaAvatarTransition } from '../types';
 import { useI18n } from '../../i18n';
 import { NovaAvatar } from './NovaAvatar';
@@ -197,7 +198,7 @@ type FileLineEntry =
 function normalizeFileLines(title: string, body: string): string[] {
   const rawLines = body.split('\n');
   const meaningfulLines = rawLines.map(line => line.trim()).filter(Boolean);
-  const isDualAuth = /^Dual Authenticators$/i.test(title.trim());
+  const isDualAuth = /^(Dual Authenticators|双重认证者)$/i.test(title.trim());
 
   if (isDualAuth && meaningfulLines.length >= 2 && meaningfulLines.every(line => line === 'Nova Arlen')) {
     return [
@@ -227,22 +228,42 @@ function parseFileLine(line: string): FileLineEntry {
 }
 
 function getFileType(title: string): string {
-  if (/SEVENTH|PROTOCOL/i.test(title)) return 'PROTOCOL RECORD';
-  if (/LOG|NOVA-07|Hidden Log/i.test(title)) return 'MEMORY LOG';
-  if (/Auth|Identity|Dual Authenticator/i.test(title)) return 'IDENTITY FILE';
+  if (/SEVENTH|PROTOCOL|协议|核心|供能|路由/i.test(title)) return 'PROTOCOL RECORD';
+  if (/LOG|NOVA-07|Hidden Log|日志|记录/i.test(title)) return 'MEMORY LOG';
+  if (/Auth|Identity|Dual Authenticator|认证|OBSERVER/i.test(title)) return 'IDENTITY FILE';
   return 'DECRYPTED RECORD';
 }
 
 function getFileSummary(title: string, entries: FileLineEntry[]): string[] {
-  if (/^Dual Authenticators$/i.test(title.trim())) {
+  if (/^(Dual Authenticators|双重认证者)$/i.test(title.trim())) {
     return ['Current Nova and sixth-cycle residual coexist'];
   }
 
-  return entries
+  const lines = entries
     .filter(entry => entry.kind !== 'spacer')
-    .slice(0, 2)
     .map(entry => (entry.kind === 'row' ? `${entry.label}: ${entry.value}` : entry.text.trim()))
     .filter(Boolean);
+
+  if (lines.length <= 2) return lines;
+
+  const first = lines[0];
+  const last = lines.at(-1);
+  return last && last !== first ? [first, last] : [first];
+}
+
+function getFileRecordCode(title: string): string {
+  let hash = 0x811c9dc5;
+  for (const character of title) {
+    hash ^= character.charCodeAt(0);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return `N7-${(hash >>> 0).toString(16).toUpperCase().padStart(8, '0').slice(-6)}`;
+}
+
+function getFileRecordTone(fileType: string): 'signal' | 'protocol' | 'identity' {
+  if (fileType === 'PROTOCOL RECORD') return 'protocol';
+  if (fileType === 'IDENTITY FILE') return 'identity';
+  return 'signal';
 }
 
 export function FileDisplay({ content }: { content: string }) {
@@ -251,9 +272,17 @@ export function FileDisplay({ content }: { content: string }) {
   const lines = useMemo(() => normalizeFileLines(title, body), [body, title]);
   const entries = useMemo(() => lines.map(parseFileLine), [lines]);
   const summary = useMemo(() => getFileSummary(title, entries), [entries, title]);
-  const shouldCollapseByDefault = entries.filter(entry => entry.kind !== 'spacer').length > 4;
-  const [isExpanded, setIsExpanded] = useState(!shouldCollapseByDefault);
+  const meaningfulEntries = useMemo(
+    () => entries.filter(entry => entry.kind !== 'spacer'),
+    [entries],
+  );
+  const hasExpandableDetails = meaningfulEntries.length > 3 || body.length > 180;
+  const [isExpanded, setIsExpanded] = useState(false);
   const fileType = getFileType(title);
+  const recordCode = getFileRecordCode(title);
+  const recordTone = getFileRecordTone(fileType);
+  const showSummary = hasExpandableDetails && !isExpanded;
+  const showBody = !hasExpandableDetails || isExpanded;
 
   function renderEntry(entry: FileLineEntry, index: number) {
     if (entry.kind === 'spacer') return <div key={index} className="file-record-spacer" aria-hidden />;
@@ -276,42 +305,85 @@ export function FileDisplay({ content }: { content: string }) {
 
   return (
     <div className="anomaly-card-wrap file-card-wrap animate-fade-in">
-      <div className="file-record-card" aria-label={`${title} ${lines.join(' ')}`}>
+      <div
+        className="file-record-card"
+        data-record-tone={recordTone}
+        data-record-state={isExpanded ? 'expanded' : 'sealed'}
+        aria-label={`${title} ${lines.join(' ')}`}
+      >
+        <span className="file-record-scan" aria-hidden="true" />
         <div className="file-record-header">
-          <svg className="w-4 h-4 text-[#F0A030]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            />
-          </svg>
+          <div className="file-record-core" aria-hidden="true">
+            <FileText size={19} strokeWidth={1.6} />
+            <span className="file-record-core-orbit" />
+          </div>
           <div className="file-record-heading">
-            <span className="file-record-kicker">NOVA FILE / DECRYPTED</span>
+            <span className="file-record-kicker">
+              <span>AURORA / RECOVERED FILE</span>
+              <span className="file-record-code">{recordCode}</span>
+            </span>
             <span className="file-record-title">{title}</span>
-            <span className="file-record-type">{fileType}</span>
+            <span className="file-record-meta">
+              <span className="file-record-type">{fileType}</span>
+              <span className="file-record-status">
+                <span className="file-record-status-dot" aria-hidden="true" />
+                DECRYPTED
+              </span>
+            </span>
           </div>
         </div>
-        <div className="file-record-summary">
-          {summary.length > 0 ? (
-            summary.map((line, index) => (
-              <p key={index} className="file-record-summary-line">
-                {line}
-              </p>
-            ))
-          ) : (
-            <p className="file-record-summary-line">{t('chat.summaryUnavailable')}</p>
+        <div className="file-record-content">
+          {showSummary && (
+            <div className="file-record-summary">
+              <span className="file-record-signal-mark" aria-hidden="true" />
+              <div>
+                {summary.length > 0 ? (
+                  summary.map((line, index) => (
+                    <p key={index} className="file-record-summary-line">
+                      {line}
+                    </p>
+                  ))
+                ) : (
+                  <p className="file-record-summary-line">{t('chat.summaryUnavailable')}</p>
+                )}
+              </div>
+            </div>
+          )}
+          {showBody && (
+            <div className={`file-record-body ${hasExpandableDetails ? 'file-record-body-expanded' : 'file-record-body-static'}`}>
+              {entries.map(renderEntry)}
+            </div>
           )}
         </div>
-        <button
-          type="button"
-          className="file-record-toggle"
-          onClick={() => setIsExpanded(value => !value)}
-          aria-expanded={isExpanded}
-        >
-          {isExpanded ? t('chat.collapseDetails') : t('chat.expandDetails')}
-        </button>
-        {isExpanded && <div className="file-record-body">{entries.map(renderEntry)}</div>}
+        {hasExpandableDetails ? (
+          <button
+            type="button"
+            className="file-record-toggle"
+            onClick={() => setIsExpanded(value => !value)}
+            aria-expanded={isExpanded}
+          >
+            <span className="file-record-toggle-copy">
+              <span className="file-record-toggle-kicker">CONTENT STREAM</span>
+              <span>{isExpanded ? t('chat.collapseDetails') : t('chat.expandDetails')}</span>
+            </span>
+            <ChevronDown
+              size={18}
+              strokeWidth={1.6}
+              className={`file-record-toggle-icon ${isExpanded ? 'is-expanded' : ''}`}
+              aria-hidden="true"
+            />
+          </button>
+        ) : (
+          <div className="file-record-complete" aria-hidden="true">
+            <span>RECORD COMPLETE</span>
+            <span className="file-record-signal-bars">
+              <i />
+              <i />
+              <i />
+              <i />
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

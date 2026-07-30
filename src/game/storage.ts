@@ -15,6 +15,10 @@ import {
   recordCycleInteraction,
   recordCycleTimedResult,
 } from './cycleState';
+import {
+  migrateLegacyChoiceId,
+  migrateLegacyMainNodeId,
+} from './storyIds';
 import type {
   BulkheadFailureReason,
   BulkheadResult,
@@ -46,8 +50,12 @@ export const SAVE_KEY = 'seventh_reboot_save';
 export const PERSISTENT_PROGRESS_KEY = 'seventh_reboot_persistent_progress';
 /** 剧情分支拓扑版本；变更选项 nextId 后递增，使旧 localStorage 存档失效 */
 export const STORY_VERSION = 'V1.0';
-export const STORY_CONTENT_VERSION = 'v1.0-immersive-echo-20260722';
-export const SAVE_STATE_VERSION = 3 as const;
+export const STORY_CONTENT_VERSION = 'v1.0-optional-epilogues-normalized-20260726';
+export const SAVE_STATE_VERSION = 4 as const;
+const MIGRATABLE_STORY_CONTENT_VERSIONS = new Set([
+  STORY_CONTENT_VERSION,
+  'v1.0-immersive-echo-20260722',
+]);
 export const defaultContactStage: ContactStage = 'unknown';
 
 export const defaultStats: GameStats = {
@@ -70,6 +78,8 @@ export const defaultStats: GameStats = {
   fatalEndingTriggered: false,
   fatalRebootCount: 0,
   reboot08TitleUnlocked: false,
+  normalEpilogueUnlocked: false,
+  trueEpilogueUnlocked: false,
 };
 
 const MEMORY_ANCHOR_IDS = new Set<MemoryAnchorId>([
@@ -230,6 +240,7 @@ export function normalizeGameStats(value: unknown): GameStats {
     : undefined;
   const reboot08TitleUnlocked = stats.reboot08TitleUnlocked === true
     || (stats.reboot08Unlocked === true && Boolean(earlyFailureCause));
+  const endingsUnlocked = normalizeEndings(stats.endingsUnlocked);
   const normalized: GameStats = {
     trust: clampStat(typeof stats.trust === 'number' ? stats.trust : defaultStats.trust),
     memory: clampStat(typeof stats.memory === 'number' ? stats.memory : defaultStats.memory),
@@ -237,7 +248,7 @@ export function normalizeGameStats(value: unknown): GameStats {
     memoryAnchors,
     acceptFarewell: typeof stats.acceptFarewell === 'boolean' ? stats.acceptFarewell : defaultStats.acceptFarewell,
     unlockedArchives: normalizeStringList(stats.unlockedArchives),
-    endingsUnlocked: normalizeEndings(stats.endingsUnlocked),
+    endingsUnlocked,
     commemorativeArchiveSaved: stats.commemorativeArchiveSaved === true,
     bulkheadInjured: stats.bulkheadInjured === true || bulkheadResult === 'injured',
     jointAuthorizationCompleted,
@@ -252,6 +263,10 @@ export function normalizeGameStats(value: unknown): GameStats {
       ? Math.max(0, Math.floor(stats.fatalRebootCount))
       : 0,
     reboot08TitleUnlocked,
+    normalEpilogueUnlocked: stats.normalEpilogueUnlocked === true
+      || endingsUnlocked.includes('ending_normal'),
+    trueEpilogueUnlocked: stats.trueEpilogueUnlocked === true
+      || endingsUnlocked.includes('ending_true'),
   };
 
   const finalChoice = normalizeFinalChoice(stats.finalChoice);
@@ -310,10 +325,12 @@ function clampStat(value: number): number {
 }
 
 export type PersistentProgress = {
-  version: 3;
+  version: 4;
   unlockedArchives: string[];
   endingsUnlocked: EndingId[];
   commemorativeArchiveSaved: boolean;
+  normalEpilogueUnlocked: boolean;
+  trueEpilogueUnlocked: boolean;
   readNodeIds: string[];
   currentRebootNumber: number;
   fatalRebootCount: number;
@@ -323,10 +340,12 @@ export type PersistentProgress = {
 };
 
 const EMPTY_PERSISTENT_PROGRESS: PersistentProgress = {
-  version: 3,
+  version: 4,
   unlockedArchives: [],
   endingsUnlocked: [],
   commemorativeArchiveSaved: false,
+  normalEpilogueUnlocked: false,
+  trueEpilogueUnlocked: false,
   readNodeIds: [],
   currentRebootNumber: 7,
   fatalRebootCount: 0,
@@ -380,11 +399,15 @@ export function loadPersistentProgress(): PersistentProgress {
       ? Math.max(failedCycles.length, Math.floor(parsed.fatalRebootCount))
       : failedCycles.length;
     return {
-      version: 3,
+      version: 4,
       unlockedArchives: normalizeStringList(parsed.unlockedArchives),
       endingsUnlocked: normalizeEndings(parsed.endingsUnlocked),
       commemorativeArchiveSaved: parsed.commemorativeArchiveSaved === true,
-      readNodeIds: normalizeStringList(parsed.readNodeIds),
+      normalEpilogueUnlocked: parsed.normalEpilogueUnlocked === true
+        || normalizeEndings(parsed.endingsUnlocked).includes('ending_normal'),
+      trueEpilogueUnlocked: parsed.trueEpilogueUnlocked === true
+        || normalizeEndings(parsed.endingsUnlocked).includes('ending_true'),
+      readNodeIds: normalizeStringList(parsed.readNodeIds).map(migrateLegacyMainNodeId),
       currentRebootNumber: reboot08TitleUnlocked
         ? Math.max(8, typeof parsed.currentRebootNumber === 'number' ? Math.floor(parsed.currentRebootNumber) : 8)
         : 7,
@@ -419,6 +442,10 @@ function mergeStatsWithPersistentProgress(stats: GameStats): GameStats {
     endingsUnlocked: [...new Set([...progress.endingsUnlocked, ...stats.endingsUnlocked])],
     commemorativeArchiveSaved:
       progress.commemorativeArchiveSaved || stats.commemorativeArchiveSaved,
+    normalEpilogueUnlocked:
+      progress.normalEpilogueUnlocked || stats.normalEpilogueUnlocked,
+    trueEpilogueUnlocked:
+      progress.trueEpilogueUnlocked || stats.trueEpilogueUnlocked,
     fatalEndingTriggered: progress.fatalEndingTriggered || stats.fatalEndingTriggered,
     fatalRebootCount: Math.max(progress.fatalRebootCount, stats.fatalRebootCount),
     reboot08TitleUnlocked: progress.reboot08TitleUnlocked || stats.reboot08TitleUnlocked,
@@ -430,10 +457,12 @@ function persistProgressFromStats(stats: GameStats, cycleState?: CurrentCycleSta
   const merged = mergeStatsWithPersistentProgress(stats);
   savePersistentProgress({
     ...progress,
-    version: 3,
+    version: 4,
     unlockedArchives: merged.unlockedArchives,
     endingsUnlocked: merged.endingsUnlocked,
     commemorativeArchiveSaved: merged.commemorativeArchiveSaved,
+    normalEpilogueUnlocked: merged.normalEpilogueUnlocked,
+    trueEpilogueUnlocked: merged.trueEpilogueUnlocked,
     readNodeIds: [...new Set([...progress.readNodeIds, ...(cycleState?.completedNodeIds ?? [])])],
     currentRebootNumber: Math.max(progress.currentRebootNumber, cycleState?.currentRebootNumber ?? 7),
     fatalRebootCount: merged.fatalRebootCount,
@@ -466,7 +495,7 @@ export function archiveFatalCycle(
     : [...progress.failedCycles, failed].slice(-8);
   const next: PersistentProgress = {
     ...progress,
-    version: 3,
+    version: 4,
     unlockedArchives: [...new Set([
       ...progress.unlockedArchives,
       ...save.stats.unlockedArchives,
@@ -474,6 +503,10 @@ export function archiveFatalCycle(
     ])],
     endingsUnlocked: [...new Set([...progress.endingsUnlocked, ...save.stats.endingsUnlocked])],
     commemorativeArchiveSaved: progress.commemorativeArchiveSaved || save.stats.commemorativeArchiveSaved,
+    normalEpilogueUnlocked:
+      progress.normalEpilogueUnlocked || save.stats.normalEpilogueUnlocked,
+    trueEpilogueUnlocked:
+      progress.trueEpilogueUnlocked || save.stats.trueEpilogueUnlocked,
     readNodeIds: [...new Set([...progress.readNodeIds, ...save.cycleState.completedNodeIds])],
     currentRebootNumber: 8,
     fatalRebootCount: alreadyArchived ? progress.fatalRebootCount : progress.fatalRebootCount + 1,
@@ -541,7 +574,7 @@ function legacyInteractionRecords(stats: GameStats): CycleInteractionRecord[] {
   const records: CycleInteractionRecord[] = [];
   if (stats.bulkheadResult) {
     records.push({
-      nodeId: 'ch3_airlock_interaction',
+      nodeId: 'CH03-0144',
       kind: 'bulkhead-isolation',
       routeKey: stats.bulkheadResult,
       ...(stats.bulkheadFailureReason ? { failureReason: stats.bulkheadFailureReason } : {}),
@@ -549,7 +582,7 @@ function legacyInteractionRecords(stats: GameStats): CycleInteractionRecord[] {
   }
   if (stats.jointAuthorizationCompleted) {
     records.push({
-      nodeId: 'ch5a_auth_input',
+      nodeId: 'CH05A-0016',
       kind: 'critical-log-password',
       routeKey: 'success',
     });
@@ -557,7 +590,7 @@ function legacyInteractionRecords(stats: GameStats): CycleInteractionRecord[] {
   if (stats.powerRoutingAttempt >= 1) {
     const firstRoute = stats.powerRoutingResult === 'first_success' ? 'success' : 'fail';
     records.push({
-      nodeId: 'ch5b_power_interaction',
+      nodeId: 'CH05B-0017',
       kind: 'power-routing',
       routeKey: firstRoute,
       attempt: 1,
@@ -566,7 +599,7 @@ function legacyInteractionRecords(stats: GameStats): CycleInteractionRecord[] {
   }
   if (stats.powerRoutingAttempt === 2 && stats.powerRoutingResult) {
     records.push({
-      nodeId: 'ch5b_power_retry_interaction',
+      nodeId: 'CH05B-0029',
       kind: 'power-routing',
       routeKey: stats.powerRoutingResult === 'retry_success' ? 'success' : 'fatal',
       attempt: 2,
@@ -575,7 +608,7 @@ function legacyInteractionRecords(stats: GameStats): CycleInteractionRecord[] {
   }
   if (stats.temporaryAnchorSealed) {
     records.push({
-      nodeId: 'ch5b_memory_seal',
+      nodeId: 'CH05B-0193',
       kind: 'memory-seal',
       routeKey: stats.temporaryAnchorSealed,
       anchor: stats.temporaryAnchorSealed,
@@ -583,7 +616,7 @@ function legacyInteractionRecords(stats: GameStats): CycleInteractionRecord[] {
   }
   if (stats.memoryRestoreResult) {
     records.push({
-      nodeId: 'fin_memory_restore',
+      nodeId: 'FIN-0014',
       kind: 'memory-restore',
       routeKey: stats.memoryRestoreResult,
       ...(stats.memoryRestoreResult !== 'none' ? { anchor: stats.memoryRestoreResult } : {}),
@@ -658,17 +691,34 @@ export function migrateSaveData(value: unknown): SaveData | null {
   const save = value as Partial<SaveData>;
   const rawSaveStateVersion = (save as unknown as { saveStateVersion?: unknown }).saveStateVersion;
   if (save.storyVersion !== undefined && save.storyVersion !== STORY_VERSION) return null;
-  if (save.storyContentVersion !== STORY_CONTENT_VERSION) return null;
-  if (rawSaveStateVersion !== 2 && rawSaveStateVersion !== SAVE_STATE_VERSION) return null;
+  if (
+    save.storyContentVersion !== undefined
+    && !MIGRATABLE_STORY_CONTENT_VERSIONS.has(save.storyContentVersion)
+  ) return null;
+  if (
+    rawSaveStateVersion !== 2
+    && rawSaveStateVersion !== 3
+    && rawSaveStateVersion !== SAVE_STATE_VERSION
+  ) return null;
   const rawMessages = Array.isArray(save.messages) ? save.messages : [];
 
-  const pendingNodeId = typeof save.pendingNodeId === 'string' ? save.pendingNodeId : '';
-  const currentNodeId = typeof save.currentNodeId === 'string' ? save.currentNodeId : undefined;
+  const rawPendingNodeId = typeof save.pendingNodeId === 'string' ? save.pendingNodeId : '';
+  const rawCurrentNodeId = typeof save.currentNodeId === 'string' ? save.currentNodeId : undefined;
+  const pendingNodeId = rawPendingNodeId ? migrateLegacyMainNodeId(rawPendingNodeId) : '';
+  const currentNodeId = rawCurrentNodeId ? migrateLegacyMainNodeId(rawCurrentNodeId) : undefined;
   if (!pendingNodeId && !currentNodeId) return null;
+  const legacyEpilogueKind = /^fin_epi\d+$/.test(rawPendingNodeId)
+    || /^fin_epi\d+$/.test(rawCurrentNodeId ?? '')
+    ? 'true'
+    : /^normal_(?:[5-9]|1[0-6])$/.test(rawPendingNodeId)
+      || /^normal_(?:[5-9]|1[0-6])$/.test(rawCurrentNodeId ?? '')
+      ? 'normal'
+      : undefined;
 
   const messageIds = new Set<string>();
   const messages: DisplayMessage[] = rawMessages
     .filter(isDisplayMessageLike)
+    .filter(message => message.type !== 'epilogue')
     .filter(message => {
       if (messageIds.has(message.id)) return false;
       messageIds.add(message.id);
@@ -700,6 +750,15 @@ export function migrateSaveData(value: unknown): SaveData | null {
         : undefined;
       return {
         ...cleanMessage,
+        ...(cleanMessage.sourceNodeId
+          ? { sourceNodeId: migrateLegacyMainNodeId(cleanMessage.sourceNodeId) }
+          : {}),
+        ...(cleanMessage.branchTargetNodeId
+          ? { branchTargetNodeId: migrateLegacyMainNodeId(cleanMessage.branchTargetNodeId) }
+          : {}),
+        ...(cleanMessage.choiceId
+          ? { choiceId: migrateLegacyChoiceId(cleanMessage.choiceId) }
+          : {}),
         ...(speakerIdentity ? { speakerIdentity } : {}),
         isNew: false,
       } as DisplayMessage;
@@ -709,7 +768,23 @@ export function migrateSaveData(value: unknown): SaveData | null {
     ? save.timestamp
     : Date.now();
   const contactStage = normalizeContactStage(save.contactStage);
-  const stats = mergeStatsWithPersistentProgress(normalizeGameStats(save.stats));
+  const migratedStats = normalizeGameStats(save.stats);
+  if (legacyEpilogueKind === 'normal') {
+    migratedStats.ending = 'normal';
+    migratedStats.endingsUnlocked = [
+      ...new Set([...migratedStats.endingsUnlocked, 'ending_normal' as const]),
+    ];
+    migratedStats.unlockedArchives = [...new Set([...migratedStats.unlockedArchives, 'ending_normal'])];
+    migratedStats.normalEpilogueUnlocked = true;
+  } else if (legacyEpilogueKind === 'true') {
+    migratedStats.ending = 'true';
+    migratedStats.endingsUnlocked = [
+      ...new Set([...migratedStats.endingsUnlocked, 'ending_true' as const]),
+    ];
+    migratedStats.unlockedArchives = [...new Set([...migratedStats.unlockedArchives, 'ending_true'])];
+    migratedStats.trueEpilogueUnlocked = true;
+  }
+  const stats = mergeStatsWithPersistentProgress(migratedStats);
   let resumeCandidate = pendingNodeId;
   if (!resumeCandidate && currentNodeId) {
     const legacyNode = storyNodeMap.get(currentNodeId);
@@ -726,7 +801,7 @@ export function migrateSaveData(value: unknown): SaveData | null {
   const delivery = migrateDeliveryState(
     messages,
     save.deliveryRuntime,
-    resumeCandidate || 'p0',
+    resumeCandidate || 'PRO-0001',
     timestamp,
   );
   const avatarState = migrateNovaAvatarState(save.avatarState, {
@@ -735,7 +810,7 @@ export function migrateSaveData(value: unknown): SaveData | null {
     contactStage,
     stats,
   });
-  const cycleState = rawSaveStateVersion === SAVE_STATE_VERSION
+  const cycleState = rawSaveStateVersion === 3 || rawSaveStateVersion === SAVE_STATE_VERSION
     ? normalizeCurrentCycleState(save.cycleState, stats.reboot08TitleUnlocked ? 8 : 7, timestamp)
     : createLegacyCycleState(delivery.messages, stats, timestamp);
   if (
@@ -779,7 +854,7 @@ export function loadGame(): SaveData | null {
     const fatalSequenceAlreadyReachedReboot = Boolean(
       data.stats.earlyFailureCause
       && (
-        /^bad_(?:1[5-9]|action_|end)/.test(data.pendingNodeId)
+        /^END-B-(?:0038|0039|0040|0041)$/.test(data.pendingNodeId)
         || ((parsed.stats as Record<string, unknown> | undefined)?.reboot08Unlocked === true)
       )
     );
@@ -843,19 +918,17 @@ export function getPendingNodeIdAfterNode(nodeId: string): string {
 /** 读档时解析应继续的节点，兼容旧版 currentNodeId 存档 */
 export function resolveResumeNodeId(save: SaveData): string {
   const fatalResumeStart = save.stats.earlyFailureCause === 'power_routing_failure'
-    ? 'bad_power_1'
-    : 'bad_airlock_1';
-  const candidate = save.pendingNodeId || save.currentNodeId || 'p0';
-  const isFatalSequenceNode = candidate === 'EARLY_BAD_END_START'
-    || candidate.startsWith('bad_airlock_')
-    || candidate.startsWith('bad_power_')
-    || candidate.startsWith('early_bad_')
-    || /^bad_(?:1[5-9]|action_|end)/.test(candidate);
+    ? 'CH05B-0033'
+    : 'CH03-0152';
+  const candidate = save.pendingNodeId || save.currentNodeId || 'PRO-0001';
+  const isFatalSequenceNode = /^CH03-(?:015[2-9]|016[01])$/.test(candidate)
+    || /^CH05B-003[3-8]$/.test(candidate)
+    || /^END-B-(?:0038|0039|0040|0041)$/.test(candidate);
   if (save.stats.pendingReboot08 && !isFatalSequenceNode) return fatalResumeStart;
   if (save.pendingNodeId) return save.pendingNodeId;
 
   const legacyId = save.currentNodeId;
-  if (!legacyId) return 'p0';
+  if (!legacyId) return 'PRO-0001';
 
   const node = storyNodeMap.get(legacyId);
   if (!node) return legacyId;

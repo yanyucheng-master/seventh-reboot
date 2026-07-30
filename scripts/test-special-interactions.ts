@@ -58,6 +58,7 @@ scenario('01 均压一次成功', () => {
   assert.deepEqual(evaluateBulkheadDecision({
     sealTarget: 'observation',
     equalizeTarget: 'hallway',
+    transitionPressure: 96,
     elapsedMs: 8_000,
   }), { result: 'safe' });
 });
@@ -69,6 +70,12 @@ scenario('02 均压次优或受伤', () => {
     elapsedMs: 18_000,
   });
   assert.equal(evaluation.result, 'injured');
+  assert.equal(evaluateBulkheadDecision({
+    sealTarget: 'observation',
+    equalizeTarget: 'hallway',
+    transitionPressure: 91,
+    elapsedMs: 8_000,
+  }).result, 'injured');
   const stats = applySpecialInteractionCompletion(freshStats(), {
     kind: 'bulkhead-isolation',
     routeKey: 'injured',
@@ -192,7 +199,7 @@ scenario('10 供能第一次失败后刷新页面', () => {
     failureReason: 'core_scan_underpowered',
   });
   const save = createSaveData(
-    'ch5b_power_first_fail1',
+    'CH05B-0021',
     [],
     createDefaultNovaAvatarState(),
     'verified',
@@ -203,7 +210,7 @@ scenario('10 供能第一次失败后刷新页面', () => {
   assert.ok(restored);
   assert.equal(restored.stats.nova06PowerOverrideUsed, true);
   assert.equal(restored.stats.powerFirstFailureReason, 'core_scan_underpowered');
-  assert.equal(resolveResumeNodeId(restored), 'ch5b_power_first_fail1');
+  assert.equal(resolveResumeNodeId(restored), 'CH05B-0021');
 });
 
 scenario('11 供能第一次失败后退出再进入', () => {
@@ -283,14 +290,14 @@ scenario('17 新增第八次重启坏结局', () => {
     routeKey: 'fatal',
     failureReason: 'seal_timeout',
   });
-  const reachedReboot = applyPersistentStoryNodeEffects(fatal, 'bad_16');
+  const reachedReboot = applyPersistentStoryNodeEffects(fatal, 'END-B-0039');
   assert.equal(reachedReboot.pendingReboot08, true);
   assert.equal(reachedReboot.reboot08TitleUnlocked, false);
 });
 
 scenario('18 旧存档正确失效', () => {
   assert.equal(migrateSaveData({
-    pendingNodeId: 'p0',
+    pendingNodeId: 'PRO-0001',
     messages: [],
     stats: defaultStats,
     storyVersion: 'V1.0',
@@ -315,7 +322,7 @@ scenario('19 手机端与桌面端基本操作的纯逻辑边界', () => {
 scenario('20 所有章节正常到达且无死链', () => {
   const nodeMap = new Map(storyNodes.map(node => [node.id, node]));
   assert.equal(nodeMap.size, storyNodes.length, 'Story node IDs must be unique');
-  const queue = ['p0', 'NORMAL_END_START'];
+  const queue = ['PRO-0001', 'END-N-0001'];
   const reachable = new Set<string>();
   while (queue.length > 0) {
     const id = queue.shift();

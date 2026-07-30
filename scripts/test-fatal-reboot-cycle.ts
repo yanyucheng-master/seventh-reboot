@@ -79,7 +79,7 @@ function buildRecordedCycle(cause: FatalFailureCause): FailedCycleRecord {
   const boundary = getSyncBoundaryNodeId(cause);
   let stats = freshStats();
   let cycle: CurrentCycleState = createCurrentCycleState(7, undefined, 1_700_000_000_000);
-  let nodeId = 'p0';
+  let nodeId = 'PRO-0001';
   let guard = 0;
 
   while (nodeId !== boundary && guard < 6000) {
@@ -253,7 +253,7 @@ const fatalCycle = {
 test('05 致死归档解锁第八次循环状态且非致死状态不会误触发', () => {
   clearAllData();
   const save = createSaveData(
-    'early_bad_reboot_time', [], createDefaultNovaAvatarState(), defaultContactStage,
+    'CH03-0161', [], createDefaultNovaAvatarState(), defaultContactStage,
     fatalStats, createDefaultChatDeliveryRuntime(), fatalCycle,
   );
   saveGame(save);
@@ -261,7 +261,7 @@ test('05 致死归档解锁第八次循环状态且非致死状态不会误触�
   check(progress.reboot08TitleUnlocked && progress.fatalEndingTriggered, 'reboot08 title was not unlocked');
   check(progress.fatalRebootCount === 1 && progress.failedCycles.length === 1, 'fatal history count mismatch');
   const before = progress.fatalRebootCount;
-  const nonFatal = createSaveData('normal_end', [], createDefaultNovaAvatarState(), defaultContactStage, freshStats());
+  const nonFatal = createSaveData('END-N-0013', [], createDefaultNovaAvatarState(), defaultContactStage, freshStats());
   check(archiveFatalCycle(nonFatal).fatalRebootCount === before, 'non-fatal ending changed fatal count');
 });
 
@@ -297,11 +297,11 @@ test('09 死亡前活动存档不可继续', () => {
 });
 
 test('10 重新接入建立 REBOOT 08 序章', () => {
-  const p0 = storyNodeMap.get('p0');
-  check(p0, 'p0 missing');
-  const reboot08 = getStoryNodeForReboot(p0, 8);
-  check(/(?:接入编号：|access number: )08/i.test(reboot08.content), 'p0 was not rewritten to access 08');
-  check(!/(?:接入编号：|access number: )07/i.test(reboot08.content), 'p0 still exposes access 07');
+  const pro0001Node = storyNodeMap.get('PRO-0001');
+  check(pro0001Node, 'PRO-0001 missing');
+  const reboot08 = getStoryNodeForReboot(pro0001Node, 8);
+  check(/(?:接入编号：|access number: )08/i.test(reboot08.content), 'PRO-0001 was not rewritten to access 08');
+  check(!/(?:接入编号：|access number: )07/i.test(reboot08.content), 'PRO-0001 still exposes access 07');
 });
 
 test('11 同步恢复上一轮选择、互动与已完成节点', () => {
@@ -315,8 +315,8 @@ test('11 同步恢复上一轮选择、互动与已完成节点', () => {
 test('12 同步在对应致死互动之前停止', () => {
   const airlock = replayFailedCycle(fatalRecord, storyNodeMap, createNewGameStats(), createCurrentCycleState(8, fatalRecord));
   const power = replayFailedCycle(powerRecord, storyNodeMap, createNewGameStats(), createCurrentCycleState(8, powerRecord));
-  check(airlock.nextNodeId === 'ch3_airlock_interaction', 'airlock sync crossed fatal boundary');
-  check(power.nextNodeId === 'ch5b_power_interaction', 'power sync crossed fatal boundary');
+  check(airlock.nextNodeId === 'CH03-0144', 'airlock sync crossed fatal boundary');
+  check(power.nextNodeId === 'CH05B-0017', 'power sync crossed fatal boundary');
 });
 
 test('13 同步自动经过非致死互动', () => {
@@ -347,42 +347,42 @@ test('16 中断后的当前循环从投射前缀重算数值', () => {
 });
 
 test('17 普通跳过允许完整已读文本', () => {
-  const p0 = storyNodeMap.get('p0');
-  check(p0, 'p0 missing');
-  check(!shouldStopReadSkip(p0, ['p0']), 'read text incorrectly stopped read-skip');
+  const pro0001Node = storyNodeMap.get('PRO-0001');
+  check(pro0001Node, 'PRO-0001 missing');
+  check(!shouldStopReadSkip(pro0001Node, ['PRO-0001']), 'read text incorrectly stopped read-skip');
 });
 
 test('18 普通跳过遇到新内容、选项或特殊互动停止', () => {
-  const p0 = storyNodeMap.get('p0');
-  const p14 = storyNodeMap.get('p14');
-  const airlock = storyNodeMap.get('ch3_airlock_interaction');
-  check(p0 && p14 && airlock, 'skip boundary fixtures missing');
-  check(shouldStopReadSkip(p0, []), 'new text did not stop read-skip');
-  check(shouldStopReadSkip(p14, ['p14']), 'choice did not stop read-skip');
-  check(shouldStopReadSkip(airlock, ['ch3_airlock_interaction']), 'interaction did not stop read-skip');
+  const pro0001Node = storyNodeMap.get('PRO-0001');
+  const pro0012Node = storyNodeMap.get('PRO-0012');
+  const airlock = storyNodeMap.get('CH03-0144');
+  check(pro0001Node && pro0012Node && airlock, 'skip boundary fixtures missing');
+  check(shouldStopReadSkip(pro0001Node, []), 'new text did not stop read-skip');
+  check(shouldStopReadSkip(pro0012Node, ['PRO-0012']), 'choice did not stop read-skip');
+  check(shouldStopReadSkip(airlock, ['CH03-0144']), 'interaction did not stop read-skip');
 });
 
 test('19 拒绝关闭协议进入回溯且同步停在最终协议选择前', () => {
-  check(protocolRecord.failedInteractionId === 'ch5b_fin3', 'protocol rollback failure id mismatch');
+  check(protocolRecord.failedInteractionId === 'CH05B-0293', 'protocol rollback failure id mismatch');
   const replay = replayFailedCycle(
     protocolRecord,
     storyNodeMap,
     createNewGameStats(),
     createCurrentCycleState(8, protocolRecord),
   );
-  check(replay.reachedBoundary && replay.nextNodeId === 'ch5b_fin3', 'protocol sync crossed final protocol choice');
+  check(replay.reachedBoundary && replay.nextNodeId === 'CH05B-0293', 'protocol sync crossed final protocol choice');
 });
 
 test('20 上一轮同步不记录或回放 Observer 残响', () => {
-  check(!protocolRecord.completedNodeIds.includes('ch2_observer_echo'), 'observer echo leaked into completed nodes');
+  check(!protocolRecord.completedNodeIds.includes('CH02-0242'), 'observer echo leaked into completed nodes');
   const replay = replayFailedCycle(
     protocolRecord,
     storyNodeMap,
     createNewGameStats(),
     createCurrentCycleState(8, protocolRecord),
   );
-  check(!replay.events.some(event => event.nodeId === 'ch2_observer_echo'), 'observer echo leaked into sync events');
-  check(!replay.cycleState.completedNodeIds.includes('ch2_observer_echo'), 'observer echo leaked into replay state');
+  check(!replay.events.some(event => event.nodeId === 'CH02-0242'), 'observer echo leaked into sync events');
+  check(!replay.cycleState.completedNodeIds.includes('CH02-0242'), 'observer echo leaked into replay state');
 });
 
 let passed = 0;

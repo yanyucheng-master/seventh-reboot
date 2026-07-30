@@ -29,13 +29,25 @@ const TYPE = new Map([
   ['延迟', 'delay'], ['状态', 'status'], ['时间戳', 'timestamp'], ['章节', 'chapter'], ['草稿', 'draft'],
   ['故障', 'glitch'], ['文件', 'file'], ['结局', 'end'], ['输入', 'input'], ['限时输入', 'input'],
   ['交互', 'interaction'], ['通讯日志', 'comm-log'], ['记忆锚点', 'memory-anchor'], ['后记', 'epilogue'],
-  ['结局操作', 'ending-action'], ['断连', 'disconnect'], ['重连失败', 'reconnectFailed'], ['信号错误', 'signalError'],
+  ['结局操作', 'ending-action'], ['内部章节标记', 'internal-chapter-marker'],
+  ['内部结局标记', 'internal-ending-marker'], ['结局标题', 'ending-title'],
+  ['断连', 'disconnect'], ['重连失败', 'reconnectFailed'], ['信号错误', 'signalError'],
   ['Text', 'text'], ['Choice', 'choice'], ['Timed Choice', 'choice'], ['Image', 'image'], ['Typing', 'typing'],
   ['Delay', 'delay'], ['Status', 'status'], ['Timestamp', 'timestamp'], ['Chapter', 'chapter'], ['Draft', 'draft'],
   ['Fault', 'glitch'], ['File', 'file'], ['Ending', 'end'], ['Input', 'input'], ['Timed Input', 'input'],
   ['Interaction', 'interaction'], ['Comm Log', 'comm-log'], ['Memory Anchor', 'memory-anchor'],
-  ['Epilogue', 'epilogue'], ['Ending Action', 'ending-action'], ['Disconnect', 'disconnect'],
+  ['Epilogue', 'epilogue'], ['Ending Action', 'ending-action'],
+  ['Internal Chapter Marker', 'internal-chapter-marker'],
+  ['Internal Ending Marker', 'internal-ending-marker'], ['Ending Title', 'ending-title'],
+  ['Disconnect', 'disconnect'],
   ['Reconnect Failed', 'reconnectFailed'], ['Signal Error', 'signalError'], ['Menu', 'menu'],
+]);
+
+const PROMOTED_DISPLAY_TYPES = new Set([
+  'chapter',
+  'internal-chapter-marker',
+  'internal-ending-marker',
+  'ending-title',
 ]);
 
 function cleanNextId(value) {
@@ -173,8 +185,12 @@ function compareLocale(label, sourceNodes, localeNodes, { compareChoices = true 
     // Skip empty structural nodes
     if (!srcContent && !locContent && !(src.choices?.length)) continue;
 
-    if (srcContent !== locContent && !(src.type === 'chapter' && !srcContent && locContent)) {
-      // Chapter titles may be promoted differently — still report
+    const isExpectedDisplayPromotion =
+      !srcContent &&
+      Boolean(locContent) &&
+      PROMOTED_DISPLAY_TYPES.has(src.type);
+
+    if (srcContent !== locContent && !isExpectedDisplayPromotion) {
       mismatches.push({
         id,
         kind: 'content',
@@ -229,7 +245,7 @@ function checkLocaleCoverage(label, sourceNodes, localeNodes) {
   return { label, missingContent, missingChoices, cjkLeaks };
 }
 
-const zhScript = path.join(root, '..', '第七次重启_剧情文本_V1_0_联合密钥修订最终版.txt');
+const zhScript = path.join(root, '..', '第七次重启_V1.0_无后记主流程_规范化ID版.txt');
 const enScript = process.env.SEVENTH_REBOOT_EN_SOURCE;
 
 if (!fs.existsSync(zhScript)) throw new Error(`Missing ZH script: ${zhScript}`);

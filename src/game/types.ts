@@ -115,7 +115,8 @@ export type ArchiveCategory =
   | 'photo'
   | 'anomaly'
   | 'profile'
-  | 'ending';
+  | 'ending'
+  | 'future';
 
 export type EndingId = 'ending_true' | 'ending_normal' | 'ending_bad';
 
@@ -259,6 +260,7 @@ export interface ArchiveEntry {
   unlocked: boolean;
   unlockedAt?: string;
   chapter?: string;
+  epilogueKind?: 'normal' | 'true';
   order: number;
 }
 
@@ -334,6 +336,8 @@ export interface GameStats {
   fatalEndingTriggered: boolean;
   fatalRebootCount: number;
   reboot08TitleUnlocked: boolean;
+  normalEpilogueUnlocked: boolean;
+  trueEpilogueUnlocked: boolean;
 }
 
 /** UI 生成的系统提示（非剧情节点正文），切语言时按 key 重算 */
@@ -417,7 +421,7 @@ export interface SaveData {
   /** 内部剧情内容版本；玩家可见版本仍保持 V1.0 */
   storyContentVersion?: string;
   /** 内部存档结构版本；与玩家可见版本号无关。 */
-  saveStateVersion?: 3;
+  saveStateVersion?: 4;
   deliveryStateVersion?: 1;
   /** @deprecated 旧版存档字段，仅用于兼容 */
   currentNodeId?: string;

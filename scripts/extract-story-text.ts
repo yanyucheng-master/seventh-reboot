@@ -1,17 +1,22 @@
-﻿import fs from 'fs';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { storyNodes } from '../src/game/story.ts';
 import type { StoryNode } from '../src/game/story.ts';
+import { getEpilogueNodes, type EpilogueKind } from '../src/game/epilogues.ts';
 import { getSpecialInteractionCopy } from '../src/game/interactions/copy.ts';
 import { encodeStorySource } from './story-source-format.ts';
 
 const VERSION = 'V1.0';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const outPath = path.join(__dirname, '..', '第七次重启-剧情文本.txt');
-const exportFilename = '第七次重启_剧情文本_V1_0_沉浸式章节与观察者残响最终版.txt';
-const projectOutPath = path.join(__dirname, '..', '..', exportFilename);
-const desktopOutPath = path.join(__dirname, '..', '..', '..', exportFilename);
+const epilogueOutPath = path.join(__dirname, '..', '第七次重启-可选后记.txt');
+const mainExportFilename = '第七次重启_V1.0_无后记主流程_规范化ID版.txt';
+const epilogueExportFilename = '第七次重启_V1.0_可选后记_普通与真结局.txt';
+const projectOutPath = path.join(__dirname, '..', '..', mainExportFilename);
+const projectEpilogueOutPath = path.join(__dirname, '..', '..', epilogueExportFilename);
+const desktopOutPath = path.join(__dirname, '..', '..', '..', mainExportFilename);
+const desktopEpilogueOutPath = path.join(__dirname, '..', '..', '..', epilogueExportFilename);
 
 const speakerLabel: Record<string, string> = {
   nova: 'Nova',
@@ -56,16 +61,16 @@ const endingLabel: Record<string, string> = {
 };
 
 const unindentedFileTitleNodeIds = new Set([
-  'ch3_log1b',
-  'ch5a_protocol1',
-  'ch5a_protocol2',
-  'ch5b_file10',
-  'ch5b_fin2',
+  'CH03-0180',
+  'CH05A-0067',
+  'CH05A-0070',
+  'CH05B-0080',
+  'CH05B-0276',
 ]);
 
 const internalEndingHeadings: Record<string, string> = {
-  NORMAL_END_START: '普通结局：循环之外',
-  BAD_END_START: '坏结局：第八次重启',
+  'END-N-0001': '普通结局：循环之外',
+  'END-B-0001': '坏结局：第八次重启',
 };
 
 function parsePipeContent(content: string): { title: string; body: string } {
@@ -343,7 +348,7 @@ function formatInteractionAppendix(): string[] {
   lines.push('- 第一、第二、第四章不含正式特殊互动。');
   lines.push('- 联合密钥不会修改 NOVA-06 一次性回退状态。');
   lines.push('- 第一次供能失败时先落盘 nova06PowerOverrideUsed=true，再播放后果与回退剧情。');
-  lines.push('- 均压 fatal 与最终供能 fatal 通过各自死亡前导汇入 EARLY_BAD_END_START。');
+  lines.push('- 均压 fatal 与最终供能 fatal 通过各自死亡前导汇入 CH03-0157。');
   lines.push('- 记忆封存不修改 Trust、Memory、Attachment 或结局判定。');
 
   lines.push('');
@@ -351,15 +356,15 @@ function formatInteractionAppendix(): string[] {
 }
 
 const output = [
-  `# 第七次重启 · 剧情文本导出`,
+  `# 第七次重启 · 无后记主流程导出`,
   `版本：${VERSION}`,
-  `节点数：${storyNodes.length + 1}`,
+  `主流程节点数：${storyNodes.length}`,
   `正式特殊互动：5`,
   `特殊互动运行时挂点：${interactionNodes.length}`,
   `生成时间：${new Date().toISOString().replace(/\.\d{3}Z$/, '')}`,
   ``,
-  `说明：本文档由运行时 story.ts 自动导出，包含全部剧情节点、选项分支、系统消息、章节、后记、结局、记忆锚点、文件与图片说明，以及特殊互动模块附录。`,
-  `修订说明：本版以“沉浸式章节与观察者残响最终版”为唯一剧情真源，保持主线白话优先、系统文件承载工程证据、Nova表达亲历感受。`,
+  `说明：本文档由运行时 story.ts 自动导出，仅包含正式主流程；可选后记由独立文件维护，不属于一周目自动播放链。`,
+  `真源说明：主流程依据“第七次重启_V1.0_无后记主流程_规范化ID版”，后记依据“第七次重启_V1.0_可选后记_普通与真结局”。`,
   `沉浸式界面说明：章节与结局入口仅保留为内部结构边界，正常游玩不显示章节扉页；正式结局标题使用独立演出。`,
   `观察者残响说明：第二章离线后仅向 Observer-01 显示一次“还给对方一颗”，不写入聊天历史、已读记录或上一轮同步。`,
   `静态草稿说明：未发送草稿、加密草稿与牛奶糖异常草稿链已从运行时及档案中删除。`,
@@ -374,10 +379,40 @@ const output = [
   ...formatInteractionAppendix(),
 ].join('\n') + '\n';
 
+function formatEpilogue(kind: EpilogueKind): string[] {
+  const title = kind === 'normal'
+    ? '## 普通结局《循环之外》· 可选后记'
+    : '## 真结局 · 可选后记';
+  const lines = [title];
+  for (const node of getEpilogueNodes(kind)) {
+    lines.push(`[${node.id}] (系统/后记)`);
+    lines.push(node.content);
+    lines.push(`meta: 延迟=${node.delay}ms`);
+    lines.push(`next: ${node.nextId}`);
+  }
+  return lines;
+}
+
+const epilogueOutput = [
+  '# 第七次重启 · 可选后记',
+  `版本：${VERSION}`,
+  `后记节点数：${getEpilogueNodes('normal').length + getEpilogueNodes('true').length}`,
+  '说明：本文件仅供通关后的档案阅读模式使用，不得接回一周目主流程。',
+  '',
+  ...formatEpilogue('normal'),
+  '',
+  ...formatEpilogue('true'),
+  '',
+].join('\n');
+
 const encodedOutput = encodeStorySource(output);
+const encodedEpilogueOutput = encodeStorySource(epilogueOutput);
 fs.writeFileSync(outPath, encodedOutput);
+fs.writeFileSync(epilogueOutPath, encodedEpilogueOutput);
 fs.writeFileSync(projectOutPath, encodedOutput);
+fs.writeFileSync(projectEpilogueOutPath, encodedEpilogueOutput);
 fs.writeFileSync(desktopOutPath, encodedOutput);
+fs.writeFileSync(desktopEpilogueOutPath, encodedEpilogueOutput);
 
 const lineCount = output.split('\n').length;
 const choiceCount = storyNodes.filter(n => n.choices?.length).length;
@@ -387,3 +422,7 @@ console.log(`Wrote ${storyNodes.length} nodes (${lineCount} lines, ${choiceCount
 console.log(`- ${outPath}`);
 console.log(`- ${projectOutPath}`);
 console.log(`- ${desktopOutPath}`);
+console.log(`Wrote ${getEpilogueNodes('normal').length + getEpilogueNodes('true').length} optional epilogue nodes`);
+console.log(`- ${epilogueOutPath}`);
+console.log(`- ${projectEpilogueOutPath}`);
+console.log(`- ${desktopEpilogueOutPath}`);

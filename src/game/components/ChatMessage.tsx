@@ -61,7 +61,7 @@ export function ChatMessage({
         <GlitchText
           content={msg.content}
           glitchLevel={getMessageGlitchLevel(msg)}
-          presentation={msg.sourceNodeId === 'p12' ? 'dropout' : 'standard'}
+          presentation={msg.sourceNodeId === 'PRO-0005' ? 'dropout' : 'standard'}
         />
       );
     }
@@ -101,7 +101,7 @@ export function ChatMessage({
 
   const isPlayer = msg.speaker === 'player';
   const isResidual06 = msg.speakerIdentity === 'residual06';
-  const isResidualDropout = msg.sourceNodeId === 'p13_u06';
+  const isResidualDropout = msg.sourceNodeId === 'PRO-0007';
   const senderName = msg.displayName ?? currentSenderName;
 
   if (msg.type === 'image') {

@@ -126,6 +126,7 @@ export function SpecialInteractionOverlay({
         {node.interactionKind === 'bulkhead-isolation' && (
           <BulkheadIsolationInteraction
             copy={copy}
+            reducedMotion={reducedMotion}
             onResultLocked={onResultLocked}
             onComplete={onComplete}
           />

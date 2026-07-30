@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const zhScript = path.join(root, '..', '第七次重启_剧情文本_V1_0_航线因果闭环与自然语言精修版.txt');
+const zhScript = path.join(root, '..', '第七次重启_V1.0_无后记主流程_规范化ID版.txt');
 const enScript = process.env.SEVENTH_REBOOT_EN_SOURCE;
 
 if (!enScript || !fs.existsSync(enScript)) {
@@ -86,7 +86,7 @@ console.log('Base story.ts restored to Chinese.');
 console.log(`EN nodes ${Object.keys(en.locale.nodes).length}, ZH nodes ${Object.keys(zh.locale.nodes).length}`);
 
 // Spot-check key lines
-console.log('ZH p13e:', zh.locale.nodes.p13e?.content);
-console.log('EN p13e:', en.locale.nodes.p13e?.content);
-console.log('ZH CH1:', zh.locale.nodes.CH1_START?.content);
-console.log('EN CH1:', en.locale.nodes.CH1_START?.content);
+console.log('ZH PRO-0011:', zh.locale.nodes['PRO-0011']?.content);
+console.log('EN PRO-0011:', en.locale.nodes['PRO-0011']?.content);
+console.log('ZH CH1:', zh.locale.nodes['CH01-0001']?.content);
+console.log('EN CH1:', en.locale.nodes['CH01-0001']?.content);

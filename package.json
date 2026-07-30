@@ -14,14 +14,17 @@
     "build:bilingual": "npx tsx scripts/build-bilingual-stories.mjs",
     "build:interaction-locales": "npx tsx scripts/build-interaction-locales.mjs",
     "normalize:story-source": "npx tsx scripts/normalize-story-source.ts",
+    "test": "npm run test:story-source-format && npm run test:story-audit && npm run validate:story && npm run test:interactions && npm run test:avatar && npm run test:delivery && npm run test:reboot-cycle && npm run test:immersive-story && npm run test:epilogues && npm run test:integrity",
     "test:story-source-format": "npx tsx scripts/test-story-source-format.ts",
+    "test:story-audit": "npx tsx scripts/audit-story-vs-source.mjs",
     "validate:story": "npx tsx scripts/validate-story-branches.mjs",
     "test:interactions": "npx tsx scripts/test-special-interactions.ts",
     "test:integrity": "npx tsx scripts/test-game-integrity.ts",
     "test:avatar": "npx tsx scripts/test-avatar-system.ts",
     "test:delivery": "npx tsx scripts/test-delivery-system.ts",
     "test:reboot-cycle": "npx tsx scripts/test-fatal-reboot-cycle.ts",
-    "test:immersive-story": "npx tsx scripts/test-immersive-story.ts"
+    "test:immersive-story": "npx tsx scripts/test-immersive-story.ts",
+    "test:epilogues": "npx tsx scripts/test-optional-epilogues.ts"
   },
   "dependencies": {
     "lucide-react": "^1.24.0",

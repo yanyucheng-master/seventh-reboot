@@ -36,10 +36,10 @@ const PHOTO_ARCHIVE_BY_IMAGE: Record<string, string> = {
 };
 
 const ANOMALY_ARCHIVE_BY_NODE_ID: Record<string, string[]> = {
-  ch4_log1: ['anomaly_hidden_log_nova07'],
-  ch5a_msg3: ['anomaly_nova06_warning'],
-  ch5b_file10: ['anomaly_observer_file', 'profile_truth'],
-  ch5b_fin2: ['anomaly_seventh_reboot_file'],
+  'CH04-0223': ['anomaly_hidden_log_nova07'],
+  'CH05A-0282': ['anomaly_nova06_warning'],
+  'CH05B-0080': ['anomaly_observer_file', 'profile_truth'],
+  'CH05B-0276': ['anomaly_seventh_reboot_file'],
 };
 
 export const ARCHIVE_ENTRIES: ArchiveDefinition[] = [
@@ -276,12 +276,34 @@ export const ARCHIVE_ENTRIES: ArchiveDefinition[] = [
     description: '如果执念拒绝告别\n重启便永无尽头',
     order: 430,
   },
+  {
+    id: 'epilogue_normal',
+    category: 'future',
+    title: '未来记录：模糊的温度',
+    subtitle: '普通结局后续档案',
+    description: '记录时间：十二年后\n记录来源：无法验证\n连续性状态：未知',
+    epilogueKind: 'normal',
+    order: 510,
+  },
+  {
+    id: 'epilogue_true',
+    category: 'future',
+    title: '未来记录：直到最后都还记得',
+    subtitle: '真结局后续档案',
+    description: '记录时间：十二年后\n记录来源：无法验证\n连续性状态：未知',
+    epilogueKind: 'true',
+    order: 520,
+  },
 ];
 
 export function getArchiveEntries(stats: GameStats, contactStage: ContactStage): ArchiveEntry[] {
   const unlocked = new Set<string>(stats.unlockedArchives);
   stats.memoryAnchors.forEach(anchor => unlocked.add(ANCHOR_ARCHIVE_IDS[anchor]));
   stats.endingsUnlocked.forEach(ending => unlocked.add(ending));
+  unlocked.delete('epilogue_normal');
+  unlocked.delete('epilogue_true');
+  if (stats.normalEpilogueUnlocked) unlocked.add('epilogue_normal');
+  if (stats.trueEpilogueUnlocked) unlocked.add('epilogue_true');
   unlocked.add('profile_unknown');
   if (contactStage === 'named' || contactStage === 'verified') unlocked.add('profile_named');
   if (contactStage === 'verified') unlocked.add('profile_verified');
@@ -289,6 +311,44 @@ export function getArchiveEntries(stats: GameStats, contactStage: ContactStage):
   return ARCHIVE_ENTRIES
     .map(entry => ({ ...entry, unlocked: unlocked.has(entry.id) }))
     .sort((a, b) => a.order - b.order);
+}
+
+export function applyArchiveUnlocks(
+  stats: GameStats,
+  entryIds: string | string[],
+): GameStats {
+  const ids = Array.isArray(entryIds) ? entryIds : [entryIds];
+  const normalized = [...new Set(ids.filter(Boolean))];
+  if (normalized.length === 0) return stats;
+
+  const unlockedArchives = new Set(stats.unlockedArchives);
+  const endingsUnlocked = new Set(stats.endingsUnlocked);
+
+  normalized.forEach(id => {
+    unlockedArchives.add(id);
+    if (id === 'ending_true' || id === 'ending_normal' || id === 'ending_bad') {
+      endingsUnlocked.add(id);
+    }
+  });
+
+  const normalEpilogueUnlocked =
+    stats.normalEpilogueUnlocked || endingsUnlocked.has('ending_normal');
+  const trueEpilogueUnlocked =
+    stats.trueEpilogueUnlocked || endingsUnlocked.has('ending_true');
+  const changed =
+    unlockedArchives.size !== stats.unlockedArchives.length
+    || endingsUnlocked.size !== stats.endingsUnlocked.length
+    || normalEpilogueUnlocked !== stats.normalEpilogueUnlocked
+    || trueEpilogueUnlocked !== stats.trueEpilogueUnlocked;
+
+  if (!changed) return stats;
+  return {
+    ...stats,
+    unlockedArchives: [...unlockedArchives],
+    endingsUnlocked: [...endingsUnlocked],
+    normalEpilogueUnlocked,
+    trueEpilogueUnlocked,
+  };
 }
 
 export function getArchiveUnlocksForNode(node: ArchiveNodeLike): string[] {
@@ -317,5 +377,7 @@ export function getArchiveCategoryLabel(category: ArchiveCategory): string {
       return 'Nova档案';
     case 'ending':
       return '结局记录';
+    case 'future':
+      return '未来记录';
   }
 }

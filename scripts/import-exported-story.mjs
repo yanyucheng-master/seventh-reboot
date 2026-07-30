@@ -92,8 +92,8 @@ const ENDING = new Map([
   ['普通结局', 'ending_normal'],
   ['坏结局', 'ending_bad'],
   ['true_ending', 'ending_true'],
-  ['normal_ending', 'ending_normal'],
-  ['bad_ending', 'ending_bad'],
+  ['END-N-0013ing', 'ending_normal'],
+  ['END-B-0041ing', 'ending_bad'],
   ['ending_true', 'ending_true'],
   ['ending_normal', 'ending_normal'],
   ['ending_bad', 'ending_bad'],
@@ -120,7 +120,7 @@ const DEFAULT_DELAY = {
 };
 
 const NEXT_ID_ALIASES = new Map([
-  ['ch3_dream11-c3', 'ch3_dream11_c3'],
+  ['CH03-0055-c3', 'CH03-0065'],
 ]);
 
 function cleanNextId(value) {
@@ -404,6 +404,9 @@ function preserveNodeRuntime(parsed) {
     || node.type === 'title-state'
   ) {
     delete node.delay;
+  } else if (node.delay !== undefined) {
+    // The exported source is authoritative for pacing. This branch matters
+    // when IDs are normalized and no same-ID runtime node exists to preserve.
   } else if (old?.delay !== undefined) node.delay = old.delay;
   else if (DEFAULT_DELAY[node.type] !== undefined && node.type !== 'choice' && node.type !== 'end') node.delay = DEFAULT_DELAY[node.type];
 
@@ -423,7 +426,7 @@ function preserveNodeRuntime(parsed) {
 }
 
 function applyDisplayOverrides(node) {
-  const unknown06Ids = new Set(['p11', 'p12a_u06', 'p12b_u06', 'p12e_u06', 'p13_u06', 'p13a_u06']);
+  const unknown06Ids = new Set(['PRO-0004', 'PRO-0006', 'PRO-0007']);
   if (unknown06Ids.has(node.id)) {
     node.displayName = 'UNKNOWN-06';
     node.speakerIdentity = 'residual06';
@@ -435,45 +438,45 @@ function promoteChapterTitles(nodes) {
   const byId = new Map(nodes.map(n => [n.id, n]));
   const titleHint = (id, content) => {
     const c = content.toLowerCase();
-    if (id === 'CH1_START') return /chapter one|chapter 1/.test(c);
-    if (id === 'CH2_START') return /chapter two|chapter 2/.test(c);
-    if (id === 'CH3_START') return /chapter three|chapter 3/.test(c);
-    if (id === 'CH4_START') return /chapter four|chapter 4/.test(c);
-    if (id === 'CH5A_START') return /chapter five.*part i\b|truth \(part i\)/.test(c);
-    if (id === 'CH5B_START') return /chapter five.*part ii|truth \(part ii\)/.test(c);
-    if (id === 'FINALE_START') return /finale|seventh reboot/.test(c) && !/bad ending|eighth/.test(c);
-    if (id === 'NORMAL_END_START' || id === 'normal_title') return /normal ending|beyond the/.test(c);
-    if (id === 'BAD_END_START') return /bad ending|eighth reboot/.test(c);
-    if (id === 'fin_credit_title') return /true ending|seventh reboot/.test(c);
+    if (id === 'CH01-0001') return /chapter one|chapter 1/.test(c);
+    if (id === 'CH02-0001') return /chapter two|chapter 2/.test(c);
+    if (id === 'CH03-0001') return /chapter three|chapter 3/.test(c);
+    if (id === 'CH04-0001') return /chapter four|chapter 4/.test(c);
+    if (id === 'CH05A-0001') return /chapter five.*part i\b|truth \(part i\)/.test(c);
+    if (id === 'CH05B-0001') return /chapter five.*part ii|truth \(part ii\)/.test(c);
+    if (id === 'FIN-0001') return /finale|seventh reboot/.test(c) && !/bad ending|eighth/.test(c);
+    if (id === 'END-N-0001' || id === 'END-N-0009') return /normal ending|beyond the/.test(c);
+    if (id === 'END-B-0001') return /bad ending|eighth reboot/.test(c);
+    if (id === 'END-T-0001') return /true ending|seventh reboot/.test(c);
     return content.length <= 80;
   };
 
   const fallbackTitlesEn = {
-    CH1_START: 'Chapter One: Connection',
-    CH2_START: 'Chapter Two: Ordinary Days',
-    CH3_START: 'Chapter Three: Anomaly',
-    CH4_START: 'Chapter Four: Memory',
-    CH5A_START: 'Chapter Five: The Truth (Part I)',
-    CH5B_START: 'Chapter Five: The Truth (Part II)',
-    FINALE_START: 'Finale: The Seventh Reboot',
-    NORMAL_END_START: 'Normal Ending: Beyond the Cycle',
-    BAD_END_START: 'Bad Ending: The Eighth Reboot',
-    fin_credit_title: 'True Ending: The Seventh Reboot',
-    normal_title: 'Normal Ending: Beyond the Cycle',
+    'CH01-0001': 'Chapter One: Connection',
+    'CH02-0001': 'Chapter Two: Ordinary Days',
+    'CH03-0001': 'Chapter Three: Anomaly',
+    'CH04-0001': 'Chapter Four: Memory',
+    'CH05A-0001': 'Chapter Five: The Truth (Part I)',
+    'CH05B-0001': 'Chapter Five: The Truth (Part II)',
+    'FIN-0001': 'Finale: The Seventh Reboot',
+    'END-N-0001': 'Normal Ending: Beyond the Cycle',
+    'END-B-0001': 'Bad Ending: The Eighth Reboot',
+    'END-T-0001': 'True Ending: The Seventh Reboot',
+    'END-N-0009': 'Normal Ending: Beyond the Cycle',
   };
 
   const fallbackTitlesZh = {
-    CH1_START: '第一章：连接',
-    CH2_START: '第二章：日常',
-    CH3_START: '第三章：异常',
-    CH4_START: '第四章：记忆',
-    CH5A_START: '第五章：真相（上）',
-    CH5B_START: '第五章：真相（下）',
-    FINALE_START: '终章：第七次重启',
-    NORMAL_END_START: '普通结局：循环之外',
-    BAD_END_START: '坏结局：第八次重启',
-    fin_credit_title: '真结局：第七次重启',
-    normal_title: '普通结局：循环之外',
+    'CH01-0001': '第一章：连接',
+    'CH02-0001': '第二章：日常',
+    'CH03-0001': '第三章：异常',
+    'CH04-0001': '第四章：记忆',
+    'CH05A-0001': '第五章：真相（上）',
+    'CH05B-0001': '第五章：真相（下）',
+    'FIN-0001': '终章：第七次重启',
+    'END-N-0001': '普通结局：循环之外',
+    'END-B-0001': '坏结局：第八次重启',
+    'END-T-0001': '真结局：第七次重启',
+    'END-N-0009': '普通结局：循环之外',
   };
 
   for (const node of nodes) {
@@ -513,8 +516,8 @@ function promoteChapterTitles(nodes) {
 }
 
 function applySourceLogicFixes(node) {
-  if (node.id === 'ch5a_obs9' && node.nextId === 'ch5a_obs11') {
-    node.nextId = 'ch5a_obs10_choice';
+  if (node.id === 'CH05A-0151' && node.nextId === 'CH05A-0164') {
+    node.nextId = 'CH05A-0152';
   }
   return node;
 }

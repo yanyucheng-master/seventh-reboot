@@ -22,11 +22,11 @@ export function determineEnding(stats: GameStats): EndingType {
 }
 
 export function resolveEndingStart(requestedNextId: string, stats: GameStats): string {
-  if (requestedNextId === 'BAD_END_START') return 'BAD_END_START';
-  if (requestedNextId !== 'FINALE_DECISION_END') return requestedNextId;
+  if (requestedNextId === 'END-B-0001') return 'END-B-0001';
+  if (requestedNextId !== 'CH05B-0294') return requestedNextId;
 
   const ending = determineEnding(stats);
-  if (ending === 'bad') return 'BAD_END_START';
-  if (ending === 'true') return 'FINALE_DECISION_END';
-  return 'NORMAL_END_START';
+  if (ending === 'bad') return 'END-B-0001';
+  if (ending === 'true') return 'CH05B-0294';
+  return 'END-N-0001';
 }

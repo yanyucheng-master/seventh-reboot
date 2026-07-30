@@ -1,6497 +1,6422 @@
 {
   "version": "V1.0",
   "nodes": {
-    "p0": {
+    "PRO-0001": {
       "content": "[OBSERVER-01]\nPROTOCOL · 检测到第七协议残留通讯\nREBOOT · 本次接入编号：{currentRebootNumber:02}\nLINK · 通讯链路不稳定"
     },
-    "p9": {
+    "PRO-0002": {
       "content": "检测到 UNKNOWN-06 残留留言"
     },
-    "p10": {
+    "PRO-0003": {
       "content": "残留信号损坏"
     },
-    "p11": {
+    "PRO-0004": {
       "content": "如果你能看到……"
     },
-    "p12": {
+    "PRO-0005": {
       "content": "信号片段缺失"
     },
-    "p12a_u06": {
+    "PRO-0006": {
       "content": "第七次已经开始"
     },
-    "p13_u06": {
+    "PRO-0007": {
       "content": "记▇▇▇……第一▇▇"
     },
-    "p13b_u06": {
+    "PRO-0008": {
       "content": "UNKNOWN-06 信号中断"
     },
-    "p13c": {
+    "PRO-0009": {
       "content": "正在接入当前加密信号源"
     },
-    "p13e": {
+    "PRO-0011": {
       "content": "真的有人收到了？"
     },
-    "p14": {
+    "PRO-0012": {
       "choices": {
-        "p14__0": "【你是谁？】",
-        "p14__1": "【这是哪里？】",
-        "p14__2": "【恶作剧？】"
+        "PRO-0012__0": "【你是谁？】",
+        "PRO-0012__1": "【这是哪里？】",
+        "PRO-0012__2": "【恶作剧？】"
       }
     },
-    "p15a": {
+    "PRO-0013": {
       "content": "好问题"
     },
-    "p16a": {
+    "PRO-0014": {
       "content": "我也想知道你是谁"
     },
-    "p17a": {
+    "PRO-0015": {
       "content": "至少说明这不是自动回复"
     },
-    "p15b": {
+    "PRO-0016": {
       "content": "我不知道你那边是哪"
     },
-    "p16b": {
+    "PRO-0017": {
       "content": "但我这边……"
     },
-    "p17b": {
+    "PRO-0018": {
       "content": "有点远"
     },
-    "p15c": {
+    "PRO-0019": {
       "content": "如果这是恶作剧"
     },
-    "p16c": {
+    "PRO-0020": {
       "content": "那成本可真有点高"
     },
-    "p17c": {
+    "PRO-0021": {
       "content": "我已经三天没睡好了"
     },
-    "p_merge1": {
+    "PRO-0022": {
       "content": "先问一句"
     },
-    "p_merge2": {
+    "PRO-0023": {
       "content": "你是真人吗？"
     },
-    "p_merge3": {
+    "PRO-0024": {
       "choices": {
-        "p_merge3__0": "【是】",
-        "p_merge3__1": "【不是】"
+        "PRO-0024__0": "【是】",
+        "PRO-0024__1": "【不是】"
       }
     },
-    "p_yes": {
+    "PRO-0025": {
       "content": "太好了"
     },
-    "p_yes2": {
+    "PRO-0026": {
       "content": "终于不是系统日志了"
     },
-    "p_no": {
+    "PRO-0027": {
       "content": "……"
     },
-    "p_no2": {
+    "PRO-0028": {
       "content": "那至少你比这里的大部分系统有礼貌"
     },
-    "p_no3": {
+    "PRO-0029": {
       "content": "好吧"
     },
-    "p_merge_sys1": {
+    "PRO-0030": {
       "content": "回答来源：外部意识"
     },
-    "p_merge_sys2": {
+    "PRO-0031": {
       "content": "舰内人员登记：未匹配"
     },
-    "p_merge_sys3": {
+    "PRO-0032": {
       "content": "Observer-01 身份权限不属于 Aurora 舰内人员"
     },
-    "p_merge_sys4": {
+    "PRO-0033": {
       "content": "……"
     },
-    "p_merge_sys5": {
+    "PRO-0034": {
       "content": "刚才系统闪了一下"
     },
-    "p_merge_sys6": {
+    "PRO-0035": {
       "content": "说你不是舰内人员"
     },
-    "p_merge_sys7": {
+    "PRO-0036": {
       "content": "废话"
     },
-    "p_merge_sys8": {
+    "PRO-0037": {
       "content": "你要是突然出现在舰上"
     },
-    "p_merge_sys9": {
+    "PRO-0038": {
       "content": "我才该真的报警"
     },
-    "p_merge4": {
+    "PRO-0039": {
       "content": "我叫 Nova"
     },
-    "p_merge5": {
+    "PRO-0040": {
       "content": "Aurora号导航员"
     },
-    "p_merge6": {
+    "PRO-0041": {
       "content": "虽然你大概率没听过"
     },
-    "p_merge7": {
+    "PRO-0042": {
       "choices": {
-        "p_merge7__0": "【没听过】",
-        "p_merge7__1": "【Aurora号？】",
-        "p_merge7__2": "【导航员？】"
+        "PRO-0042__0": "【没听过】",
+        "PRO-0042__1": "【Aurora号？】",
+        "PRO-0042__2": "【导航员？】"
       }
     },
-    "p_aurora_unknown": {
+    "PRO-0043": {
       "content": "正常"
     },
-    "p_aurora_unknown2": {
+    "PRO-0044": {
       "content": "这名字听起来也不像你那边会有的东西"
     },
-    "p_aurora_ship": {
+    "PRO-0045": {
       "content": "对"
     },
-    "p_aurora_ship2": {
+    "PRO-0046": {
       "content": "一艘很贵、很大、也很容易出问题的宇宙飞船"
     },
-    "p_aurora_nav": {
+    "PRO-0047": {
       "content": "嗯"
     },
-    "p_aurora_nav2": {
+    "PRO-0048": {
       "content": "负责确认我们没有把自己开进恒星里"
     },
-    "p_aurora_nav3": {
+    "PRO-0049": {
       "content": "目前看，我还算称职"
     },
-    "p_aurora_merge1": {
+    "PRO-0050": {
       "content": "这么说吧"
     },
-    "p_aurora_merge2": {
+    "PRO-0051": {
       "content": "Aurora号是一艘远航观测船"
     },
-    "p_aurora_merge3": {
+    "PRO-0052": {
       "content": "不是战舰"
     },
-    "p_aurora_merge4": {
+    "PRO-0053": {
       "content": "也不是那种听起来很壮烈的殖民船"
     },
-    "p_aurora_merge5": {
+    "PRO-0054": {
       "content": "我们的任务是穿过静默航区"
     },
-    "p_aurora_merge6": {
+    "PRO-0055": {
       "content": "记录一些人类还没见过的星域"
     },
-    "p_aurora_merge7": {
+    "PRO-0056": {
       "content": "听起来很浪漫对吧"
     },
-    "p_aurora_merge8": {
+    "PRO-0057": {
       "content": "实际工作大多是值班、报表"
     },
-    "p_aurora_merge9": {
+    "PRO-0058": {
       "content": "还有半夜响起来的故障警报"
     },
-    "p_aurora_merge10": {
+    "PRO-0059": {
       "content": "而你这条通讯"
     },
-    "p_aurora_merge11": {
+    "PRO-0060": {
       "content": "不在任何正常协议里"
     },
-    "p_aurora6": {
+    "PRO-0061": {
       "choices": {
-        "p_aurora6__0": "【那它是从哪来的？】",
-        "p_aurora6__1": "【这会让你有危险吗？】",
-        "p_aurora6__2": "【听起来不太妙】"
+        "PRO-0061__0": "【那它是从哪来的？】",
+        "PRO-0061__1": "【这会让你有危险吗？】",
+        "PRO-0061__2": "【听起来不太妙】"
       }
     },
-    "p_comm_source1": {
+    "PRO-0062": {
       "content": "我也想知道"
     },
-    "p_comm_source2": {
+    "PRO-0063": {
       "content": "它像是从一台实验设备里漏出来的"
     },
-    "p_comm_danger1": {
+    "PRO-0064": {
       "content": "暂时还不好说"
     },
-    "p_comm_danger2": {
+    "PRO-0065": {
       "content": "但如果你问我现在安不安全"
     },
-    "p_comm_danger3": {
+    "PRO-0066": {
       "content": "答案可能有点尴尬"
     },
-    "p_comm_bad1": {
+    "PRO-0067": {
       "content": "恭喜"
     },
-    "p_comm_bad2": {
+    "PRO-0068": {
       "content": "你的直觉暂时领先我的安全手册"
     },
-    "p_comm_bad3": {
+    "PRO-0069": {
       "content": "因为它确实不太妙"
     },
-    "p_exp1": {
+    "PRO-0070": {
       "content": "说具体一点"
     },
-    "p_exp2": {
+    "PRO-0071": {
       "content": "我刚刚启动了一台实验设备"
     },
-    "p_exp3": {
+    "PRO-0072": {
       "content": "然后它炸了"
     },
-    "p_exp4": {
+    "PRO-0073": {
       "content": "嗯"
     },
-    "p_exp5": {
+    "PRO-0074": {
       "content": "字面意义上的炸了"
     },
-    "p_exp6": {
+    "PRO-0075": {
       "choices": {
-        "p_exp6__0": "【你没事吧？】",
-        "p_exp6__1": "【…………】",
-        "p_exp6__2": "【为什么你还能聊天？】"
+        "PRO-0075__0": "【你没事吧？】",
+        "PRO-0075__1": "【…………】",
+        "PRO-0075__2": "【为什么你还能聊天？】"
       }
     },
-    "p_ok1": {
+    "PRO-0076": {
       "content": "你是今天第一个问我有没有事的人"
     },
-    "p_ok2": {
+    "PRO-0077": {
       "content": "谢谢"
     },
-    "p_ok3": {
+    "PRO-0078": {
       "content": "暂时死不了"
     },
-    "p_ok4": {
+    "PRO-0079": {
       "content": "应该"
     },
-    "p_silent1": {
+    "PRO-0080": {
       "content": "你这个反应"
     },
-    "p_silent2": {
+    "PRO-0081": {
       "content": "像已经开始给我写悼词了"
     },
-    "p_silent3": {
+    "PRO-0082": {
       "content": "先别急"
     },
-    "p_silent4": {
+    "PRO-0083": {
       "content": "我还没死"
     },
-    "p_silent5": {
+    "PRO-0084": {
       "content": "暂时"
     },
-    "p_silent6": {
+    "PRO-0085": {
       "content": "应该"
     },
-    "p_link1": {
+    "PRO-0086": {
       "content": "好问题"
     },
-    "p_link2": {
+    "PRO-0087": {
       "content": "因为爆炸的是实验舱"
     },
-    "p_link3": {
+    "PRO-0088": {
       "content": "不是通讯终端"
     },
-    "p_link4": {
+    "PRO-0089": {
       "content": "也不是我本人"
     },
-    "p_link5": {
+    "PRO-0090": {
       "content": "至少暂时不是"
     },
-    "p_link6": {
+    "PRO-0091": {
       "content": "备用链路还能撑一会儿"
     },
-    "p_link7": {
+    "PRO-0092": {
       "content": "所以"
     },
-    "p_link8": {
+    "PRO-0093": {
       "content": "暂时死不了"
     },
-    "p_link9": {
+    "PRO-0094": {
       "content": "应该"
     },
-    "p_dead1": {
+    "PRO-0095": {
       "content": "因为医疗系统还没判定我死亡"
     },
-    "p_dead2": {
+    "PRO-0096": {
       "content": "这通常是个好消息"
     },
-    "p_dead3": {
+    "PRO-0097": {
       "content": "大概吧"
     },
-    "p_wonder1": {
+    "PRO-0098": {
       "content": "其实我更好奇另一件事"
     },
-    "p_wonder2": {
+    "PRO-0099": {
       "content": "为什么我能联系到你"
     },
-    "p_wonder3": {
+    "PRO-0100": {
       "choices": {
-        "p_wonder3__0": "【我也不知道】",
-        "p_wonder3__1": "【我只是打开了这个界面】",
-        "p_wonder3__2": "【跨时空通讯？】"
+        "PRO-0100__0": "【我也不知道】",
+        "PRO-0100__1": "【我只是打开了这个界面】",
+        "PRO-0100__2": "【跨时空通讯？】"
       }
     },
-    "p_idk1": {
+    "PRO-0101": {
       "content": "好吧"
     },
-    "p_idk2": {
+    "PRO-0102": {
       "content": "至少我们现在一样迷茫"
     },
-    "p_interface1": {
+    "PRO-0103": {
       "content": "界面？"
     },
-    "p_interface2": {
+    "PRO-0104": {
       "content": "你那边听起来也不像正常通讯终端"
     },
-    "p_interface3": {
+    "PRO-0105": {
       "content": "好吧"
     },
-    "p_interface4": {
+    "PRO-0106": {
       "content": "至少有一件事能确定"
     },
-    "p_interface5": {
+    "PRO-0107": {
       "content": "这条链路两边都不太正常"
     },
-    "p_space1": {
+    "PRO-0108": {
       "content": "你倒是很敢想"
     },
-    "p_space2": {
+    "PRO-0109": {
       "content": "但问题是……我也开始这么想了"
     },
-    "p_idk3": {
+    "PRO-0110": {
       "content": "等等"
     },
-    "p_idk4": {
+    "PRO-0111": {
       "content": "我好像找到原因了"
     },
-    "p_idk5": {
+    "PRO-0112": {
       "content": "实验设备记录了一段异常数据"
     },
-    "p_idk6": {
+    "PRO-0113": {
       "content": "里面有一个编号"
     },
-    "p_idk7": {
+    "PRO-0114": {
       "content": "和你的连接ID一致"
     },
-    "p_signal_intro1": {
+    "PRO-0115": {
       "content": "等一下"
     },
-    "p_signal_intro2": {
+    "PRO-0116": {
       "content": "这条线路正在自己换频段"
     },
-    "p_signal_intro3": {
+    "PRO-0117": {
       "content": "我这里只有三段叠在一起的噪声"
     },
-    "p_signal_file": {
+    "PRO-0118": {
       "content": "实时载波已自动锁定"
     },
-    "p_signal_merge": {
+    "PRO-0119": {
       "content": "……它刚才像是在确认你有没有回应"
     },
-    "p_mean1": {
+    "PRO-0120": {
       "content": "怪就怪在这里"
     },
-    "p_mean2": {
+    "PRO-0121": {
       "content": "这台设备在爆炸前"
     },
-    "p_mean3": {
+    "PRO-0122": {
       "content": "就已经知道你的存在"
     },
-    "p_mean4": {
+    "PRO-0123": {
       "content": "这不合理"
     },
-    "p_mean5": {
+    "PRO-0124": {
       "content": "非常不合理"
     },
-    "p_mean6": {
+    "PRO-0125": {
       "content": "除非……"
     },
-    "p_unless1": {
+    "PRO-0126": {
       "content": "算了"
     },
-    "p_unless2": {
+    "PRO-0127": {
       "content": "我不想吓你"
     },
-    "p_unless3": {
+    "PRO-0128": {
       "choices": {
-        "p_unless3__0": "【没事，说吧】",
-        "p_unless3__1": "【我不怕】"
+        "PRO-0128__0": "【没事，说吧】",
+        "PRO-0128__1": "【我不怕】"
       }
     },
-    "p_unless_say1": {
+    "PRO-0129": {
       "content": "好"
     },
-    "p_unless_say2": {
+    "PRO-0130": {
       "content": "那我说了"
     },
-    "p_unless_brave1": {
+    "PRO-0131": {
       "content": "你最好是真的不怕"
     },
-    "p_unless4": {
+    "PRO-0132": {
       "content": "除非"
     },
-    "p_unless5": {
+    "PRO-0133": {
       "content": "它以前见过你"
     },
-    "p_log1": {
+    "PRO-0135": {
       "content": "我知道这听起来很蠢"
     },
-    "p_log2": {
+    "PRO-0136": {
       "content": "但我不是凭空猜的"
     },
-    "p_log3": {
+    "PRO-0137": {
       "content": "但日志里有一句备注"
     },
-    "p_log4": {
+    "PRO-0138": {
       "content": "只有一句"
     },
-    "p_log5": {
+    "PRO-0139": {
       "content": "“第七次连接成功”"
     },
-    "p_exp7_1": {
+    "PRO-0141": {
       "content": "可最奇怪的是"
     },
-    "p_exp7_2": {
+    "PRO-0142": {
       "content": "今天是我第一次启动设备"
     },
-    "p_exp7_3": {
+    "PRO-0143": {
       "content": "可日志显示"
     },
-    "p_exp7_4": {
+    "PRO-0144": {
       "content": "已经成功连接过六次了"
     },
-    "p_exp7_5": {
+    "PRO-0145": {
       "content": "而且对象都是你"
     },
-    "p_familiar2": {
+    "PRO-0146": {
       "content": "……"
     },
-    "p_familiar3": {
+    "PRO-0147": {
       "content": "你有没有一种感觉？"
     },
-    "p_familiar4": {
+    "PRO-0148": {
       "content": "不是很清楚"
     },
-    "p_fam1": {
+    "PRO-0149": {
       "content": "就是……"
     },
-    "p_fam2": {
+    "PRO-0150": {
       "content": "你不像是突然出现的人"
     },
-    "p_fam3": {
+    "PRO-0151": {
       "content": "更像是我本来就应该认识你"
     },
-    "p_fam4": {
+    "PRO-0152": {
       "choices": {
-        "p_fam4__0": "【我没这种感觉】",
-        "p_fam4__1": "【有一点】",
-        "p_fam4__2": "【你吓到我了】"
+        "PRO-0152__0": "【我没这种感觉】",
+        "PRO-0152__1": "【有一点】",
+        "PRO-0152__2": "【你吓到我了】"
       }
     },
-    "p_fam_no": {
+    "PRO-0153": {
       "content": "好吧"
     },
-    "p_fam_no2": {
+    "PRO-0154": {
       "content": "那可能是我单方面熟人错觉"
     },
-    "p_fam_yes": {
+    "PRO-0155": {
       "content": "……"
     },
-    "p_fam_yes2": {
+    "PRO-0156": {
       "content": "你也这么觉得？"
     },
-    "p_fam_yes3": {
+    "PRO-0157": {
       "content": "这反而更吓人了"
     },
-    "p_fam_scared": {
+    "PRO-0158": {
       "content": "抱歉"
     },
-    "p_fam_scared2": {
+    "PRO-0159": {
       "content": "我不是故意的"
     },
-    "p_fam_scared3": {
+    "PRO-0160": {
       "content": "只是这里真的有点不对劲"
     },
-    "p_fam6": {
+    "PRO-0161": {
       "content": "可能是我太久没和人聊天了"
     },
-    "p_fam7": {
+    "PRO-0162": {
       "content": "开始胡思乱想"
     },
-    "p_fam9": {
+    "PRO-0164": {
       "content": "不过"
     },
-    "p_fam10": {
+    "PRO-0165": {
       "content": "能见到你"
     },
-    "p_fam11": {
+    "PRO-0166": {
       "content": "我还是很高兴"
     },
-    "p_fam12": {
+    "PRO-0167": {
       "content": "真的"
     },
-    "p_window2": {
+    "PRO-0169": {
       "content": "等等"
     },
-    "p_window3": {
+    "PRO-0170": {
       "content": "观测窗外面有东西"
     },
-    "p_window4": {
+    "PRO-0171": {
       "content": "我去确认一下"
     },
-    "p_window5": {
+    "PRO-0172": {
       "content": "别关通讯"
     },
-    "p_window6": {
+    "PRO-0173": {
       "content": "我很快回来"
     },
-    "p_offline1": {
+    "PRO-0174": {
       "content": "Nova 已离线"
     },
-    "CH1_START": {
+    "CH01-0001": {
       "content": "第一章：连接"
     },
-    "ch1_0": {
+    "CH01-0002": {
       "content": "第二天 08:13"
     },
-    "ch1_1": {
+    "CH01-0003": {
       "content": "收到新消息"
     },
-    "ch1_2": {
+    "CH01-0004": {
       "content": "我回来了"
     },
-    "ch1_3": {
+    "CH01-0005": {
       "content": "其实"
     },
-    "ch1_4": {
+    "CH01-0006": {
       "content": "昨晚就回来了"
     },
-    "ch1_5": {
+    "CH01-0007": {
       "content": "然后直接睡死"
     },
-    "ch1_6": {
+    "CH01-0008": {
       "content": "脸差点和控制台融为一体"
     },
-    "ch1_7": {
+    "CH01-0009": {
       "choices": {
-        "ch1_7__0": "【你没事吧】",
-        "ch1_7__1": "【睡得好吗】",
-        "ch1_7__2": "【昨晚观测窗外到底是什么】",
-        "ch1_7__3": "【我可是等了你一个晚上】"
+        "CH01-0009__0": "【你没事吧】",
+        "CH01-0009__1": "【睡得好吗】",
+        "CH01-0009__2": "【昨晚观测窗外到底是什么】",
+        "CH01-0009__3": "【我可是等了你一个晚上】"
       }
     },
-    "ch1_sleep1": {
+    "CH01-0010": {
       "content": "5分"
     },
-    "ch1_sleep2": {
+    "CH01-0011": {
       "content": "满分100"
     },
-    "ch1_sleep3": {
+    "CH01-0012": {
       "content": "导航员的职业病"
     },
-    "ch1_sleep4": {
+    "CH01-0013": {
       "content": "睡眠质量和随机事件一样"
     },
-    "ch1_ok1": {
+    "CH01-0014": {
       "content": "活着"
     },
-    "ch1_ok2": {
+    "CH01-0015": {
       "content": "这就是最好的答案"
     },
-    "ch1_win2": {
+    "CH01-0016": {
       "content": "不是外星怪物"
     },
-    "ch1_win3": {
+    "CH01-0017": {
       "content": "虽然当时我真的这么怀疑了一秒"
     },
-    "ch1_wait1": {
+    "CH01-0018": {
       "content": "说得像我欠你一条已读回执"
     },
-    "ch1_wait2": {
+    "CH01-0019": {
       "content": "不过"
     },
-    "ch1_wait3": {
+    "CH01-0020": {
       "content": "让你等了一晚上"
     },
-    "ch1_wait4": {
+    "CH01-0021": {
       "content": "抱歉"
     },
-    "ch1_wait5": {
+    "CH01-0022": {
       "content": "我也没想到自己会直接睡死"
     },
-    "ch1_merge1": {
+    "CH01-0023": {
       "content": "对了"
     },
-    "ch1_merge2": {
+    "CH01-0024": {
       "content": "昨天那个异常信号"
     },
-    "ch1_merge3": {
+    "CH01-0025": {
       "content": "最后证明是乌龙"
     },
-    "ch1_ug1": {
+    "CH01-0026": {
       "content": "只是一块漂到检修通道口的维修板"
     },
-    "ch1_ug2": {
+    "CH01-0027": {
       "content": "我紧张了十分钟"
     },
-    "ch1_ug3": {
+    "CH01-0028": {
       "content": "结果是隔壁工程组丢的"
     },
-    "ch1_ug4": {
+    "CH01-0029": {
       "content": "重点是"
     },
-    "ch1_ug5": {
+    "CH01-0030": {
       "content": "它上面贴着一双眼睛"
     },
-    "ch1_ug6": {
+    "CH01-0031": {
       "content": "当时通道灯还闪了一下"
     },
-    "ch1_ug7": {
+    "CH01-0032": {
       "content": "我一抬头"
     },
-    "ch1_ug8": {
+    "CH01-0033": {
       "content": "它就在那儿看着我"
     },
-    "ch1_ug9": {
+    "CH01-0034": {
       "content": "有时候我真的怀疑人类还有没有未来"
     },
-    "ch1_photo1": {
+    "CH01-0035": {
       "choices": {
-        "ch1_photo1__0": "【哈哈哈】",
-        "ch1_photo1__1": "【照片呢】",
-        "ch1_photo1__2": "【你拍了吗】"
+        "CH01-0035__0": "【哈哈哈】",
+        "CH01-0035__1": "【照片呢】",
+        "CH01-0035__2": "【你拍了吗】"
       }
     },
-    "ch1_haha1": {
+    "CH01-0036": {
       "content": "笑得很开心是吧"
     },
-    "ch1_haha2": {
+    "CH01-0037": {
       "content": "我当时可是真的准备写遗书了"
     },
-    "ch1_photo_req1": {
+    "CH01-0038": {
       "content": "你怎么这么熟练"
     },
-    "ch1_photo_req2": {
+    "CH01-0039": {
       "content": "等等，我找找"
     },
-    "ch1_took1": {
+    "CH01-0040": {
       "content": "拍了"
     },
-    "ch1_took2": {
+    "CH01-0041": {
       "content": "人在尴尬的时候总会留下证据"
     },
-    "ch1_photo_send": {
+    "CH01-0043": {
       "content": "看\n宇宙级威胁"
     },
-    "ch1_photo_reply": {
+    "CH01-0044": {
       "choices": {
-        "ch1_photo_reply__0": "【确实可怕】",
-        "ch1_photo_reply__1": "【挺可爱的】",
-        "ch1_photo_reply__2": "【谁贴的】"
+        "CH01-0044__0": "【确实可怕】",
+        "CH01-0044__1": "【挺可爱的】",
+        "CH01-0044__2": "【谁贴的】"
       }
     },
-    "ch1_ph1": {
+    "CH01-0045": {
       "content": "是吧"
     },
-    "ch1_ph1b": {
+    "CH01-0046": {
       "content": "宇宙级威胁，认证完毕"
     },
-    "ch1_ph2": {
+    "CH01-0047": {
       "content": "？"
     },
-    "ch1_ph2b": {
+    "CH01-0048": {
       "content": "你的审美是不是有 bug"
     },
-    "ch1_ph3": {
+    "CH01-0049": {
       "content": "这个问题"
     },
-    "ch1_ph3b": {
+    "CH01-0050": {
       "content": "说出来有点丢人"
     },
-    "ch1_ph3c": {
+    "CH01-0051": {
       "content": "眼睛是我贴的"
     },
-    "ch1_ph3d": {
+    "CH01-0052": {
       "content": "前一天贴的"
     },
-    "ch1_ph3e": {
+    "CH01-0053": {
       "content": "但我真的忘了"
     },
-    "ch1_ph3f": {
+    "CH01-0054": {
       "content": "所以说"
     },
-    "ch1_ph3g": {
+    "CH01-0055": {
       "content": "我是被昨天的自己吓到了"
     },
-    "ch1_ph3h": {
+    "CH01-0056": {
       "content": "维修组的老霍发现以后"
     },
-    "ch1_ph3i": {
+    "CH01-0057": {
       "content": "说我再敢给维修板贴眼睛"
     },
-    "ch1_ph3j": {
+    "CH01-0058": {
       "content": "就把我也贴到检修通道上"
     },
-    "ch1_ph3k": {
+    "CH01-0059": {
       "content": "其实"
     },
-    "ch1_worry1": {
+    "CH01-0060": {
       "content": "昨天我有点担心"
     },
-    "ch1_worry3": {
+    "CH01-0062": {
       "content": "担心你不在了"
     },
-    "ch1_worry4": {
+    "CH01-0063": {
       "choices": {
-        "ch1_worry4__0": "【我不是还在吗？】",
-        "ch1_worry4__1": "【发生了什么？】"
+        "CH01-0063__0": "【我不是还在吗？】",
+        "CH01-0063__1": "【发生了什么？】"
       }
     },
-    "ch1_worry4_a1": {
+    "CH01-0064": {
       "content": "你这句话听起来很轻松"
     },
-    "ch1_worry4_a2": {
+    "CH01-0065": {
       "content": "但我确实安心了一点"
     },
-    "ch1_worry4_b1": {
+    "CH01-0066": {
       "content": "认真说的话"
     },
-    "ch1_worry4_b2": {
+    "CH01-0067": {
       "content": "我也不知道它算不算发生过"
     },
-    "ch1_worry5": {
+    "CH01-0068": {
       "content": "就是……"
     },
-    "ch1_worry6": {
+    "CH01-0069": {
       "content": "通讯突然建立"
     },
-    "ch1_worry7": {
+    "CH01-0070": {
       "content": "然后突然消失"
     },
-    "ch1_worry8": {
+    "CH01-0071": {
       "content": "我以为今天醒来"
     },
-    "ch1_worry9": {
+    "CH01-0072": {
       "content": "会发现一切都是幻觉"
     },
-    "ch1_worry10": {
+    "CH01-0073": {
       "content": "但现在确定了"
     },
-    "ch1_worry11": {
+    "CH01-0074": {
       "content": "你是真的"
     },
-    "ch1_worry12": {
+    "CH01-0075": {
       "content": "虽然还是有点离谱"
     },
-    "ch1_weather2": {
+    "CH01-0076": {
       "content": "诶"
     },
-    "ch1_weather3": {
+    "CH01-0077": {
       "content": "你那边是什么天气？"
     },
-    "ch1_weather_sys2": {
+    "CH01-0078": {
       "content": "我总觉得你那边是真的有天气"
     },
-    "ch1_weather_sys2b": {
+    "CH01-0079": {
       "content": "不是系统模拟出来的那种"
     },
-    "ch1_weather4": {
+    "CH01-0080": {
       "choices": {
-        "ch1_weather4__0": "【晴天】",
-        "ch1_weather4__1": "【阴天】",
-        "ch1_weather4__2": "【下雨】"
+        "CH01-0080__0": "【晴天】",
+        "CH01-0080__1": "【阴天】",
+        "CH01-0080__2": "【下雨】"
       }
     },
-    "ch1_sun": {
+    "CH01-0081": {
       "content": "羡慕了"
     },
-    "ch1_sun1b": {
+    "CH01-0082": {
       "content": "唉，这里连“今天阳光不错”这种话都说不了"
     },
-    "ch1_cloud": {
+    "CH01-0083": {
       "content": "听起来很适合睡觉"
     },
-    "ch1_cloud2": {
+    "CH01-0084": {
       "content": "当然，我现在也很适合睡觉"
     },
-    "ch1_cloud3": {
+    "CH01-0085": {
       "content": "只是没有资格"
     },
-    "ch1_rain": {
+    "CH01-0086": {
       "content": "真的？"
     },
-    "ch1_rain2b": {
+    "CH01-0087": {
       "content": "真的在下雨？"
     },
-    "ch1_rain3": {
+    "CH01-0088": {
       "content": "我最喜欢下雨了"
     },
-    "ch1_sun_merge": {
+    "CH01-0089": {
       "content": "我这里看不到天气"
     },
-    "ch1_sun3": {
+    "CH01-0090": {
       "content": "只有星星"
     },
-    "ch1_sun4": {
+    "CH01-0091": {
       "content": "每天都是星星"
     },
-    "ch1_sun4b": {
+    "CH01-0092": {
       "content": "而且我们现在穿过的是静默航区"
     },
-    "ch1_stability1": {
+    "CH01-0093": {
       "content": "这里连舰钟都会慢慢漂"
     },
-    "ch1_stability2": {
+    "CH01-0094": {
       "content": "所以深空航行稳定核心每天都在重新校准时间基准"
     },
-    "ch1_stability3": {
+    "CH01-0095": {
       "content": "至少工程组一直是这么告诉我们的"
     },
-    "ch1_sun4c": {
+    "CH01-0096": {
       "content": "正常通讯延迟高得像在给未来寄信"
     },
-    "ch1_sun4d": {
+    "CH01-0097": {
       "content": "所以你这种实时回复"
     },
-    "ch1_sun4e": {
+    "CH01-0098": {
       "content": "才会离谱到让我有点不安"
     },
-    "ch1_star1": {
+    "CH01-0099": {
       "content": "刚开始很好"
     },
-    "ch1_star2": {
+    "CH01-0100": {
       "content": "后来就觉得"
     },
-    "ch1_star3": {
+    "CH01-0101": {
       "content": "只有星星还是太单调了"
     },
-    "ch1_star4": {
+    "CH01-0102": {
       "content": "说起来"
     },
-    "ch1_star5": {
+    "CH01-0103": {
       "content": "我小时候最喜欢下雨"
     },
-    "ch1_star7": {
+    "CH01-0104": {
       "content": "因为下雨的时候"
     },
-    "ch1_star8": {
+    "CH01-0105": {
       "content": "大家都会回家"
     },
-    "ch1_star9": {
+    "CH01-0106": {
       "content": "街道会变安静"
     },
-    "ch1_star10": {
+    "CH01-0107": {
       "content": "然后我就能坐在窗边发呆"
     },
-    "ch1_star13": {
+    "CH01-0109": {
       "content": "我能看一下午"
     },
-    "ch1_star14": {
+    "CH01-0110": {
       "content": "结果长大以后"
     },
-    "ch1_star15": {
+    "CH01-0111": {
       "content": "天天看宇宙发呆"
     },
-    "ch1_star16": {
+    "CH01-0112": {
       "content": "梦想实现过头了"
     },
-    "ch1_n7_2": {
+    "CH01-0113": {
       "content": "对了"
     },
-    "ch1_n7_3": {
+    "CH01-0114": {
       "content": "你养过宠物吗？"
     },
-    "ch1_n7_4": {
+    "CH01-0115": {
       "choices": {
-        "ch1_n7_4__0": "【曾经养过】",
-        "ch1_n7_4__1": "【没有】",
-        "ch1_n7_4__2": "【现在还养着】"
+        "CH01-0115__0": "【曾经养过】",
+        "CH01-0115__1": "【没有】",
+        "CH01-0115__2": "【现在还养着】"
       }
     },
-    "ch1_pet_yes": {
+    "CH01-0116": {
       "content": "那你肯定懂"
     },
-    "ch1_pet_yes2": {
+    "CH01-0117": {
       "content": "宠物很麻烦"
     },
-    "ch1_pet_yes3": {
+    "CH01-0118": {
       "content": "但真的很难不喜欢"
     },
-    "ch1_nopet1": {
+    "CH01-0119": {
       "content": "那也正常"
     },
-    "ch1_nopet2": {
+    "CH01-0120": {
       "content": "现在的城市生活节奏太快了"
     },
-    "ch1_nopet3": {
+    "CH01-0121": {
       "content": "根本没时间细心照料它们"
     },
-    "ch1_pet_now": {
+    "CH01-0122": {
       "content": "真好"
     },
-    "ch1_pet_now2": {
+    "CH01-0123": {
       "content": "那替我多摸两下吧"
     },
-    "ch1_pet_now3": {
+    "CH01-0124": {
       "content": "就当帮我还愿了"
     },
-    "ch1_pet1": {
+    "CH01-0125": {
       "content": "我以前养过猫"
     },
-    "ch1_pet2": {
+    "CH01-0126": {
       "content": "一只橘猫"
     },
-    "ch1_pet3": {
+    "CH01-0127": {
       "content": "胖得像违法建筑"
     },
-    "ch1_pet5": {
+    "CH01-0128": {
       "content": "N7"
     },
-    "ch1_pet5b": {
+    "CH01-0129": {
       "content": "听起来像什么高级导航编号吧"
     },
-    "ch1_pet7": {
+    "CH01-0130": {
       "content": "但其实是因为我七岁捡到它"
     },
-    "ch1_pet8": {
+    "CH01-0131": {
       "content": "我的取名能力从小就不怎么样"
     },
-    "ch1_pet10": {
+    "CH01-0132": {
       "content": "后来它老死了"
     },
-    "ch1_pet11": {
+    "CH01-0133": {
       "content": "挺正常的"
     },
-    "ch1_pet12": {
+    "CH01-0134": {
       "content": "只是那天我第一次发现"
     },
-    "ch1_pet13": {
+    "CH01-0135": {
       "content": "有些东西不会一直陪着你"
     },
-    "ch1_n7photo": {
-      "content": "这是它最后的照片\n在控制台上睡着了"
+    "CH01-0137": {
+      "content": "这是它最后的照片\n那时候我们还在一起"
     },
-    "ch1_n7_emotion": {
+    "CH01-0138": {
       "content": "抱歉"
     },
-    "ch1_n7_emotion2": {
+    "CH01-0139": {
       "content": "气氛突然有点奇怪"
     },
-    "ch1_n7_emotion3": {
+    "CH01-0140": {
       "content": "换个话题吧"
     },
-    "ch1_cook1": {
+    "CH01-0141": {
       "content": "你会做饭吗？"
     },
-    "ch1_cook2": {
+    "CH01-0142": {
       "choices": {
-        "ch1_cook2__0": "【会】",
-        "ch1_cook2__1": "【不会】",
-        "ch1_cook2__2": "【一点点】"
+        "CH01-0142__0": "【会】",
+        "CH01-0142__1": "【不会】",
+        "CH01-0142__2": "【一点点】"
       }
     },
-    "ch1_cook_yes": {
+    "CH01-0143": {
       "content": "羡慕"
     },
-    "ch1_cook_yes2": {
+    "CH01-0144": {
       "content": "会做饭的人在宇宙里应该算稀有资源"
     },
-    "ch1_cook_no": {
+    "CH01-0145": {
       "content": "那我们打平了"
     },
-    "ch1_cook_no2": {
+    "CH01-0146": {
       "content": "不过我可能输得更彻底"
     },
-    "ch1_cook_little": {
+    "CH01-0147": {
       "content": "那也比我强"
     },
-    "ch1_cook_little2": {
+    "CH01-0148": {
       "content": "我属于反向天赋"
     },
-    "ch1_cook_merge": {
+    "CH01-0149": {
       "content": "我不会"
     },
-    "ch1_cook_merge2": {
+    "CH01-0150": {
       "content": "甚至可以说"
     },
-    "ch1_cook_merge3": {
+    "CH01-0151": {
       "content": "我会把能吃的东西变成不能吃"
     },
-    "ch1_cook_story": {
+    "CH01-0152": {
       "content": "上个月"
     },
-    "ch1_cook_story2": {
+    "CH01-0153": {
       "content": "我成功把营养面做成了固体武器"
     },
-    "ch1_cook_story3": {
+    "CH01-0154": {
       "content": "维修组现在还拿它开玩笑"
     },
-    "ch1_steak_photo": {
+    "CH01-0155": {
       "content": "11:42"
     },
-    "ch1_steak1": {
+    "CH01-0156": {
       "content": "糟了"
     },
-    "ch1_steak3": {
+    "CH01-0157": {
       "content": "例会"
     },
-    "ch1_steak4": {
+    "CH01-0158": {
       "content": "我忘了"
     },
-    "ch1_steak5": {
+    "CH01-0159": {
       "content": "舰长会杀了我的"
     },
-    "ch1_go1": {
+    "CH01-0160": {
       "choices": {
-        "ch1_go1__0": "【快去，别迟到】",
-        "ch1_go1__1": "【等等，你的午饭呢？】",
-        "ch1_go1__2": "【舰长真会杀人吗？】"
+        "CH01-0160__0": "【快去，别迟到】",
+        "CH01-0160__1": "【等等，你的午饭呢？】",
+        "CH01-0160__2": "【舰长真会杀人吗？】"
       }
     },
-    "ch1_go_fast1": {
+    "CH01-0161": {
       "content": "收到"
     },
-    "ch1_go_fast2": {
+    "CH01-0162": {
       "content": "你这句比警报有用"
     },
-    "ch1_go_food1": {
+    "CH01-0163": {
       "content": "来不及管它了"
     },
-    "ch1_go_food2": {
+    "CH01-0164": {
       "content": "如果它活到晚上\n我再回来审判它"
     },
-    "ch1_go_joke1": {
+    "CH01-0165": {
       "content": "法律意义上不会"
     },
-    "ch1_go_joke2": {
+    "CH01-0166": {
       "content": "考勤意义上不一定"
     },
-    "ch1_go_timeout1": {
+    "CH01-0167": {
       "content": "喂？"
     },
-    "ch1_go_timeout2": {
+    "CH01-0168": {
       "content": "算了我真得跑了"
     },
-    "ch1_go10": {
+    "CH01-0169": {
       "content": "我晚上再回来"
     },
-    "ch1_go11": {
+    "CH01-0170": {
       "content": "你别突然消失啊"
     },
-    "ch1_offline": {
+    "CH01-0171": {
       "content": "Nova 已离线"
     },
-    "ch1_night": {
+    "CH01-0172": {
       "content": "21:17"
     },
-    "ch1_night1": {
+    "CH01-0173": {
       "content": "收到新消息"
     },
-    "ch1_night2": {
+    "CH01-0174": {
       "content": "回来了"
     },
-    "ch1_night3": {
+    "CH01-0175": {
       "content": "坏消息"
     },
-    "ch1_night4": {
+    "CH01-0176": {
       "content": "我被舰长骂了"
     },
-    "ch1_night4b": {
+    "CH01-0177": {
       "content": "更坏的消息"
     },
-    "ch1_night4c": {
+    "CH01-0178": {
       "content": "他顺手把我的咖啡换成了低因的"
     },
-    "ch1_night4d": {
+    "CH01-0179": {
       "content": "这人骂人很凶"
     },
-    "ch1_night4e": {
+    "CH01-0180": {
       "content": "关心人也很凶"
     },
-    "ch1_night5": {
+    "CH01-0181": {
       "choices": {
-        "ch1_night5__0": "【活该】",
-        "ch1_night5__1": "【怎么又被骂了？】",
-        "ch1_night5__2": "【哈哈哈哈】"
+        "CH01-0181__0": "【活该】",
+        "CH01-0181__1": "【怎么又被骂了？】",
+        "CH01-0181__2": "【哈哈哈哈】"
       }
     },
-    "ch1_night_gotcha": {
+    "CH01-0182": {
       "content": "你这人怎么站舰长那边"
     },
-    "ch1_night_gotcha2": {
+    "CH01-0183": {
       "content": "我们友谊的小船裂开了"
     },
-    "ch1_night_why": {
+    "CH01-0184": {
       "content": "原因很简单"
     },
-    "ch1_night_why2": {
+    "CH01-0185": {
       "content": "但我说出来会显得我很不靠谱"
     },
-    "ch1_night6": {
+    "CH01-0186": {
       "content": "你居然笑"
     },
-    "ch1_night7": {
+    "CH01-0187": {
       "content": "我们友谊的小船沉了"
     },
-    "ch1_night_merge": {
+    "CH01-0188": {
       "content": "开会迟到"
     },
-    "ch1_night10": {
+    "CH01-0189": {
       "content": "而且睡着了"
     },
-    "ch1_night12": {
+    "CH01-0190": {
       "content": "我知道"
     },
-    "ch1_night13": {
+    "CH01-0191": {
       "content": "这事不占理"
     },
-    "ch1_night14": {
+    "CH01-0192": {
       "content": "不过"
     },
-    "ch1_night16": {
+    "CH01-0193": {
       "content": "今天其实挺开心的"
     },
-    "ch1_night17": {
+    "CH01-0194": {
       "choices": {
-        "ch1_night17__0": "【因为什么？】",
-        "ch1_night17__1": "【因为没死？】",
-        "ch1_night17__2": "【因为摸鱼成功？】"
+        "CH01-0194__0": "【因为什么？】",
+        "CH01-0194__1": "【因为没死？】",
+        "CH01-0194__2": "【因为摸鱼成功？】"
       }
     },
-    "ch1_night18": {
+    "CH01-0195": {
       "content": "……"
     },
-    "ch1_night18d": {
+    "CH01-0196": {
       "content": "可能是因为你吧"
     },
-    "ch1_night18e": {
+    "CH01-0197": {
       "content": "别得意"
     },
-    "ch1_night18b": {
+    "CH01-0198": {
       "content": "这个理由确实很充分"
     },
-    "ch1_night18b2": {
+    "CH01-0199": {
       "content": "活着下班，值得庆祝"
     },
-    "ch1_night18c": {
+    "CH01-0200": {
       "content": "你说得像我是什么惯犯"
     },
-    "ch1_night18c2": {
+    "CH01-0201": {
       "content": "虽然证据对我很不利"
     },
-    "ch1_night_merge2": {
+    "CH01-0202": {
       "content": "好了"
     },
-    "ch1_night23": {
+    "CH01-0203": {
       "content": "我得去绕飞船一圈了"
     },
-    "ch1_night24": {
+    "CH01-0204": {
       "content": "晚安"
     },
-    "ch1_night25": {
+    "CH01-0205": {
       "choices": {
-        "ch1_night25__0": "【晚安】"
+        "CH01-0205__0": "【晚安】"
       }
     },
-    "ch1_night26": {
+    "CH01-0206": {
       "content": "嗯"
     },
-    "ch1_night27": {
+    "CH01-0207": {
       "content": "谢谢"
     },
-    "ch1_night28": {
+    "CH01-0208": {
       "content": "还有"
     },
-    "ch1_night32": {
+    "CH01-0209": {
       "content": "很高兴认识你"
     },
-    "ch1_night33": {
+    "CH01-0210": {
       "content": "Nova 已离线"
     },
-    "CH2_START": {
+    "CH02-0001": {
       "content": "第二章：日常"
     },
-    "ch2_0": {
+    "CH02-0002": {
       "content": "第三天 07:26"
     },
-    "ch2_1": {
+    "CH02-0003": {
       "content": "收到新消息"
     },
-    "ch2_2": {
+    "CH02-0004": {
       "content": "坏了坏了"
     },
-    "ch2_3": {
+    "CH02-0005": {
       "content": "出大事了"
     },
-    "ch2_4": {
+    "CH02-0006": {
       "choices": {
-        "ch2_4__0": "【你又闯什么祸了？】",
-        "ch2_4__1": "【飞船炸了？】",
-        "ch2_4__2": "【你又迟到了？】"
+        "CH02-0006__0": "【你又闯什么祸了？】",
+        "CH02-0006__1": "【飞船炸了？】",
+        "CH02-0006__2": "【你又迟到了？】"
       }
     },
-    "ch2_5d": {
+    "CH02-0007": {
       "content": "我犯了一个导航员不该犯的错误"
     },
-    "ch2_5d2": {
+    "CH02-0008": {
       "content": "而且非常低级"
     },
-    "ch2_5d3": {
+    "CH02-0009": {
       "content": "低级到我不想承认"
     },
-    "ch2_5b": {
+    "CH02-0010": {
       "content": "……暂时还没有"
     },
-    "ch2_5b3": {
+    "CH02-0011": {
       "content": "谢谢你一上来就把事故等级拉满"
     },
-    "ch2_5b4": {
+    "CH02-0012": {
       "content": "不过以我今天的状态"
     },
-    "ch2_5b5": {
+    "CH02-0013": {
       "content": "也不是完全没可能"
     },
-    "ch2_5c": {
+    "CH02-0014": {
       "content": "……"
     },
-    "ch2_5c2": {
+    "CH02-0015": {
       "content": "为什么是“又”"
     },
-    "ch2_5c3": {
+    "CH02-0016": {
       "content": "你这个字用得很伤人"
     },
-    "ch2_5c4": {
+    "CH02-0017": {
       "content": "虽然这次你猜对了"
     },
-    "ch2_alarm": {
+    "CH02-0018": {
       "content": "我把闹钟关了"
     },
-    "ch2_alarm2": {
+    "CH02-0019": {
       "content": "然后梦见自己起床了"
     },
-    "ch2_alarm3": {
+    "CH02-0020": {
       "content": "甚至梦见自己已经开完会了"
     },
-    "ch2_alarm4": {
+    "CH02-0021": {
       "content": "醒来的时候"
     },
-    "ch2_alarm5": {
+    "CH02-0022": {
       "content": "舰长正站在我面前"
     },
-    "ch2_merge5": {
+    "CH02-0023": {
       "choices": {
-        "ch2_merge5__0": "【经典】",
-        "ch2_merge5__1": "【太真实了】",
-        "ch2_merge5__2": "【后来现实给了你一拳？】"
+        "CH02-0023__0": "【经典】",
+        "CH02-0023__1": "【太真实了】",
+        "CH02-0023__2": "【后来现实给了你一拳？】"
       }
     },
-    "ch2_classic": {
+    "CH02-0024": {
       "content": "不要说得像你很有经验一样"
     },
-    "ch2_classic2": {
+    "CH02-0025": {
       "content": "虽然我怀疑你确实有"
     },
-    "ch2_real": {
+    "CH02-0026": {
       "content": "对吧"
     },
-    "ch2_real2": {
+    "CH02-0027": {
       "content": "最可怕的是梦里的我特别清醒"
     },
-    "ch2_real3": {
+    "CH02-0028": {
       "content": "还认真做了会议记录"
     },
-    "ch2_punch": {
+    "CH02-0029": {
       "content": "很准"
     },
-    "ch2_punch2": {
+    "CH02-0030": {
       "content": "现实真的给了我一拳"
     },
-    "ch2_punch3": {
+    "CH02-0031": {
       "content": "舰长的脸就是那一拳"
     },
-    "ch2_merge6": {
+    "CH02-0032": {
       "content": "人生至暗时刻"
     },
-    "ch2_merge7": {
+    "CH02-0033": {
       "content": "我现在严重怀疑"
     },
-    "ch2_merge7b": {
+    "CH02-0034": {
       "content": "梦境系统和现实系统之间缺少同步机制"
     },
-    "ch2_haha_choice": {
+    "CH02-0035": {
       "choices": {
-        "ch2_haha_choice__0": "【哈哈哈哈】"
+        "CH02-0035__0": "【哈哈哈哈】"
       }
     },
-    "ch2_5": {
+    "CH02-0036": {
       "content": "你笑得太开心了"
     },
-    "ch2_5a": {
+    "CH02-0037": {
       "content": "记仇"
     },
-    "ch2_5b2": {
+    "CH02-0038": {
       "content": "不过"
     },
-    "ch2_haha_merge": {
+    "CH02-0039": {
       "content": "今天有件怪事"
     },
-    "ch2_today": {
+    "CH02-0040": {
       "content": "我做梦了"
     },
-    "ch2_dream_intro_choice": {
+    "CH02-0041": {
       "choices": {
-        "ch2_dream_intro_choice__0": "【这不是很正常吗】"
+        "CH02-0041__0": "【这不是很正常吗】"
       }
     },
-    "ch2_dream1": {
+    "CH02-0042": {
       "content": "不正常"
     },
-    "ch2_dream2": {
+    "CH02-0043": {
       "content": "因为梦里有你"
     },
-    "ch2_dream2_choice": {
+    "CH02-0044": {
       "choices": {
-        "ch2_dream2_choice__0": "【我在梦里做了什么？】",
-        "ch2_dream2_choice__1": "【我说了什么吗？】",
-        "ch2_dream2_choice__2": "【你都没见过我，怎么知道那是我？】"
+        "CH02-0044__0": "【我在梦里做了什么？】",
+        "CH02-0044__1": "【我说了什么吗？】",
+        "CH02-0044__2": "【你都没见过我，怎么知道那是我？】"
       }
     },
-    "ch2_dream7": {
+    "CH02-0045": {
       "content": "没做什么"
     },
-    "ch2_dream_say1": {
+    "CH02-0046": {
       "content": "好像说了"
     },
-    "ch2_dream_say2": {
+    "CH02-0047": {
       "content": "但我想不起来"
     },
-    "ch2_dream_face1": {
+    "CH02-0048": {
       "content": "这就是最奇怪的地方"
     },
-    "ch2_dream_face2": {
+    "CH02-0049": {
       "content": "我其实看不清你的脸"
     },
-    "ch2_dream_face3": {
+    "CH02-0050": {
       "content": "但梦里我就是知道"
     },
-    "ch2_dream_face4": {
+    "CH02-0051": {
       "content": "那个人是你"
     },
-    "ch2_dream7b": {
+    "CH02-0052": {
       "content": "梦很模糊"
     },
-    "ch2_dream7c": {
+    "CH02-0053": {
       "content": "我只记得"
     },
-    "ch2_dream7d": {
+    "CH02-0054": {
       "content": "你好像站在观测窗前"
     },
-    "ch2_dream7e": {
+    "CH02-0055": {
       "content": "嘴唇好像动了一下"
     },
-    "ch2_dream7f": {
+    "CH02-0056": {
       "content": "但我听不清你说了什么"
     },
-    "ch2_dream10": {
+    "CH02-0057": {
       "content": "奇怪"
     },
-    "ch2_dream10b": {
+    "CH02-0058": {
       "content": "明明只是一个梦"
     },
-    "ch2_dream11": {
+    "CH02-0059": {
       "content": "可我醒来的时候"
     },
-    "ch2_dream12": {
+    "CH02-0060": {
       "content": "第一反应不是害怕"
     },
-    "ch2_dream13": {
+    "CH02-0061": {
       "content": "是觉得这里好像没那么孤独了"
     },
-    "ch2_dream14": {
+    "CH02-0062": {
       "content": "像是有人真的坐在通讯另一端"
     },
-    "ch2_dream15": {
+    "CH02-0063": {
       "content": "虽然这么说有点怪"
     },
-    "ch2_dream16": {
+    "CH02-0064": {
       "content": "但我好像没那么怕睡着了"
     },
-    "ch2_dream17": {
+    "CH02-0065": {
       "content": "不像普通梦"
     },
-    "ch2_dream18": {
+    "CH02-0066": {
       "content": "因为总有一句话像被什么东西擦掉了"
     },
-    "ch2_dream18b": {
+    "CH02-0067": {
       "content": "只剩你站在观测窗前"
     },
-    "ch2_dream18c": {
+    "CH02-0068": {
       "content": "像在等我想起什么"
     },
-    "ch2_dream19": {
+    "CH02-0069": {
       "content": "可我越想"
     },
-    "ch2_dream20": {
+    "CH02-0070": {
       "content": "那个画面越像被擦掉"
     },
-    "ch2_dream21": {
+    "CH02-0071": {
       "content": "算了"
     },
-    "ch2_dream22": {
+    "CH02-0072": {
       "content": "先不吓你"
     },
-    "ch2_dream23": {
+    "CH02-0073": {
       "content": "我去观测室透口气"
     },
-    "ch2_dream24": {
+    "CH02-0074": {
       "content": "顺便给你看个好东西"
     },
-    "ch2_dream25": {
+    "CH02-0075": {
       "content": "如果我没在路上迷路的话"
     },
-    "ch2_obs_ts": {
+    "CH02-0076": {
       "content": "12:03"
     },
-    "ch2_obs2": {
+    "CH02-0077": {
       "content": "我先摸鱼五分钟"
     },
-    "ch2_obs3": {
+    "CH02-0078": {
       "content": "给你看"
     },
-    "ch2_obs5": {
+    "CH02-0080": {
       "content": "这里是我最喜欢的地方"
     },
-    "ch2_obs6": {
+    "CH02-0081": {
       "choices": {
-        "ch2_obs6__0": "【真漂亮】",
-        "ch2_obs6__1": "【你每天都来这吗？】",
-        "ch2_obs6__2": "【不会看腻吗】"
+        "CH02-0081__0": "【真漂亮】",
+        "CH02-0081__1": "【你每天都来这吗？】",
+        "CH02-0081__2": "【不会看腻吗】"
       }
     },
-    "ch2_obs_pretty": {
+    "CH02-0082": {
       "content": "是吧"
     },
-    "ch2_obs_pretty1": {
+    "CH02-0083": {
       "content": "我第一次看到的时候"
     },
-    "ch2_obs_pretty2": {
+    "CH02-0084": {
       "content": "差点忘了自己还在值班"
     },
-    "ch2_obs_daily": {
+    "CH02-0085": {
       "content": "理论上是"
     },
-    "ch2_obs_daily2": {
+    "CH02-0086": {
       "content": "只要我没被拉去开会"
     },
-    "ch2_obs_daily3": {
+    "CH02-0087": {
       "content": "或者没在维修通道里迷路"
     },
-    "ch2_obs_tired": {
+    "CH02-0088": {
       "content": "会"
     },
-    "ch2_obs_tired2": {
+    "CH02-0089": {
       "content": "看久了也会觉得单调"
     },
-    "ch2_obs_tired3": {
+    "CH02-0090": {
       "content": "但偶尔还是会被震撼到"
     },
-    "ch2_obs_merge": {
+    "CH02-0091": {
       "content": "对着这些星星的时候，我总会想"
     },
-    "ch2_obs10": {
+    "CH02-0092": {
       "content": "那些星星后面"
     },
-    "ch2_obs12": {
+    "CH02-0093": {
       "content": "会不会也有人正在抬头"
     },
-    "ch2_obs13": {
+    "CH02-0094": {
       "choices": {
-        "ch2_obs13__0": "【也许有】",
-        "ch2_obs13__1": "【说不定正在看你】",
-        "ch2_obs13__2": "【宇宙太大了】"
+        "CH02-0094__0": "【也许有】",
+        "CH02-0094__1": "【说不定正在看你】",
+        "CH02-0094__2": "【宇宙太大了】"
       }
     },
-    "ch2_obs_maybe": {
+    "CH02-0095": {
       "content": "也许吧"
     },
-    "ch2_obs_maybe2": {
+    "CH02-0096": {
       "content": "这样想的话"
     },
-    "ch2_obs_maybe3": {
+    "CH02-0097": {
       "content": "这里好像就没那么安静了"
     },
-    "ch2_obs_watch_you": {
+    "CH02-0098": {
       "content": "那希望我现在表情别太傻"
     },
-    "ch2_obs_watch_you2": {
+    "CH02-0099": {
       "content": "被宇宙围观这种事"
     },
-    "ch2_obs_watch_you3": {
+    "CH02-0100": {
       "content": "听起来压力很大"
     },
-    "ch2_obs_big": {
+    "CH02-0101": {
       "content": "是啊"
     },
-    "ch2_obs_big2": {
+    "CH02-0102": {
       "content": "大到有时候会让人觉得自己很小"
     },
-    "ch2_obs_merge2": {
+    "CH02-0103": {
       "content": "所以能认识一个人"
     },
-    "ch2_obs17": {
+    "CH02-0104": {
       "content": "其实挺难的"
     },
-    "ch2_forget1": {
+    "CH02-0105": {
       "content": "16:44"
     },
-    "ch2_forget2": {
+    "CH02-0106": {
       "content": "问你个问题"
     },
-    "ch2_forget3": {
+    "CH02-0107": {
       "content": "如果有一天"
     },
-    "ch2_forget4": {
+    "CH02-0108": {
       "content": "你突然忘记一个人"
     },
-    "ch2_forget5": {
+    "CH02-0109": {
       "content": "会怎么办？"
     },
-    "ch2_forget7": {
+    "CH02-0110": {
       "choices": {
-        "ch2_forget7__0": "【你怎么突然问这个？】",
-        "ch2_forget7__1": "【找回记忆不就行了】",
-        "ch2_forget7__2": "【顺其自然】"
+        "CH02-0110__0": "【你怎么突然问这个？】",
+        "CH02-0110__1": "【找回记忆不就行了】",
+        "CH02-0110__2": "【顺其自然】"
       }
     },
-    "ch2_forget_why": {
+    "CH02-0111": {
       "content": "没什么"
     },
-    "ch2_forget_why2": {
+    "CH02-0112": {
       "content": "就是突然想到"
     },
-    "ch2_forget_why3": {
+    "CH02-0113": {
       "content": "最近我总觉得自己忘了点什么"
     },
-    "ch2_forget_why4": {
+    "CH02-0114": {
       "content": "但又说不上来是什么"
     },
-    "ch2_forget_find": {
+    "CH02-0115": {
       "content": "说得轻松"
     },
-    "ch2_forget_find2": {
+    "CH02-0116": {
       "content": "要是真能像找文件一样找回来就好了"
     },
-    "ch2_forget_find3": {
+    "CH02-0117": {
       "content": "问题是"
     },
-    "ch2_forget_find4": {
+    "CH02-0118": {
       "content": "我连自己丢了什么都不知道"
     },
-    "ch2_forget_let": {
+    "CH02-0119": {
       "content": "你倒是挺洒脱"
     },
-    "ch2_forget_let2": {
+    "CH02-0120": {
       "content": "我可能做不到"
     },
-    "ch2_forget_let3": {
+    "CH02-0121": {
       "content": "如果忘掉的是不重要的事还好"
     },
-    "ch2_forget_let4": {
+    "CH02-0122": {
       "content": "但如果是很重要的人呢"
     },
-    "ch2_forget_merge": {
+    "CH02-0123": {
       "content": "算了"
     },
-    "ch2_forget_merge2": {
+    "CH02-0124": {
       "content": "可能只是最近睡太少"
     },
-    "ch2_forget_merge3": {
+    "CH02-0125": {
       "content": "我记性一直不算好"
     },
-    "ch2_forget_merge4": {
+    "CH02-0126": {
       "content": "但这次感觉不太一样"
     },
-    "ch2_forget12": {
+    "CH02-0127": {
       "content": "有可能"
     },
-    "ch2_forget13": {
+    "CH02-0128": {
       "content": "昨天我居然忘了维修组那个光头叫什么"
     },
-    "ch2_forget14": {
+    "CH02-0129": {
       "content": "虽然我本来也经常忘"
     },
-    "ch2_forget16": {
+    "CH02-0130": {
       "content": "但还有件更奇怪的事"
     },
-    "ch2_forget18": {
+    "CH02-0131": {
       "content": "我记得"
     },
-    "ch2_forget19": {
+    "CH02-0132": {
       "content": "有人告诉过我"
     },
-    "ch2_forget20": {
+    "CH02-0133": {
       "content": "不要喝舰上的苦咖啡"
     },
-    "ch2_forget21": {
+    "CH02-0134": {
       "content": "可没人说过"
     },
-    "ch2_forget22": {
+    "CH02-0135": {
       "content": "我也没写过备忘录"
     },
-    "ch2_forget24": {
+    "CH02-0136": {
       "content": "然后我还是喝了"
     },
-    "ch2_forget25": {
+    "CH02-0137": {
       "content": "难喝得像发动机冷却液"
     },
-    "ch2_candy2": {
+    "CH02-0138": {
       "content": "对了"
     },
-    "ch2_candy3": {
+    "CH02-0139": {
       "content": "我刚在抽屉里找到三颗牛奶糖"
     },
-    "ch2_candy4": {
+    "CH02-0140": {
       "choices": {
-        "ch2_candy4__0": "【又是给 N7 的？】",
-        "ch2_candy4__1": "【舰上还有糖？】"
+        "CH02-0140__0": "【又是给 N7 的？】",
+        "CH02-0140__1": "【舰上还有糖？】"
       }
     },
-    "ch2_candy_n7": {
+    "CH02-0141": {
       "content": "你怎么知道我会想到它"
     },
-    "ch2_candy_n7b": {
+    "CH02-0142": {
       "content": "好吧"
     },
-    "ch2_candy_n7c": {
+    "CH02-0143": {
       "content": "确实像是替那只猫还债"
     },
-    "ch2_candy_n7d": {
+    "CH02-0144": {
       "content": "结果债主都不在了"
     },
-    "ch2_candy_n7e": {
+    "CH02-0145": {
       "content": "现在只能由我单方面宣布清账"
     },
-    "ch2_candy_n7f": {
+    "CH02-0146": {
       "content": "奇怪"
     },
-    "ch2_candy_n7g": {
+    "CH02-0147": {
       "content": "我好像已经给过你一颗"
     },
-    "ch2_candy_n7h": {
+    "CH02-0148": {
       "content": "可这句话说出来也很蠢"
     },
-    "ch2_candy_n7i": {
+    "CH02-0149": {
       "content": "隔着通讯怎么给你糖啊"
     },
-    "ch2_candy_ship": {
+    "CH02-0150": {
       "content": "有"
     },
-    "ch2_candy_ship2": {
+    "CH02-0151": {
       "content": "但属于稀有物资"
     },
-    "ch2_candy_ship3": {
+    "CH02-0152": {
       "content": "一般只有系统觉得我们快要精神崩溃的时候才会发一点"
     },
-    "ch2_candy_ship4": {
+    "CH02-0153": {
       "content": "我刚在抽屉里翻出来三颗"
     },
-    "ch2_candy_ship5": {
+    "CH02-0154": {
       "content": "刚好"
     },
-    "ch2_candy_ship6": {
+    "CH02-0155": {
       "content": "替某只欠债多年的橘猫还账"
     },
-    "ch2_candy8": {
+    "CH02-0156": {
       "content": "战利品\n替 N7 还债"
     },
-    "ch2_night1": {
+    "CH02-0157": {
       "content": "21:09"
     },
-    "ch2_night2": {
+    "CH02-0158": {
       "content": "回来了"
     },
-    "ch2_night3": {
+    "CH02-0159": {
       "content": "腿快废了"
     },
-    "ch2_night4": {
+    "CH02-0160": {
       "choices": {
-        "ch2_night4__0": "【早点休息】",
-        "ch2_night4__1": "【辛苦了】"
+        "CH02-0160__0": "【早点休息】",
+        "CH02-0160__1": "【辛苦了】"
       }
     },
-    "ch2_night_rest": {
+    "CH02-0161": {
       "content": "我也想"
     },
-    "ch2_night_rest2": {
+    "CH02-0162": {
       "content": "但先让我把这件事说完"
     },
-    "ch2_night_tired": {
+    "CH02-0163": {
       "content": "嗯"
     },
-    "ch2_night_tired2": {
+    "CH02-0164": {
       "content": "今天确实有点累"
     },
-    "ch2_night_merge": {
+    "CH02-0165": {
       "content": "其实"
     },
-    "ch2_night9": {
+    "CH02-0166": {
       "content": "有件事我没告诉别人"
     },
-    "ch2_night10": {
+    "CH02-0167": {
       "choices": {
-        "ch2_night10__0": "【什么事？】",
-        "ch2_night10__1": "【你最近有点不对劲】"
+        "CH02-0167__0": "【什么事？】",
+        "CH02-0167__1": "【你最近有点不对劲】"
       }
     },
-    "ch2_night10_a1": {
+    "CH02-0168": {
       "content": "嗯"
     },
-    "ch2_night10_a2": {
+    "CH02-0169": {
       "content": "我本来还想装作没事"
     },
-    "ch2_night10_b1": {
+    "CH02-0170": {
       "content": "你也感觉到了？"
     },
-    "ch2_night10_b2": {
+    "CH02-0171": {
       "content": "那可能真的不是我多想"
     },
-    "ch2_night11": {
+    "CH02-0172": {
       "content": "我最近总有种感觉"
     },
-    "ch2_night12": {
+    "CH02-0173": {
       "content": "好像有什么事正在发生"
     },
-    "ch2_night13": {
+    "CH02-0174": {
       "content": "但我不知道是什么"
     },
-    "ch2_night14": {
+    "CH02-0175": {
       "content": "像是……"
     },
-    "ch2_night15": {
+    "CH02-0176": {
       "content": "站在悬崖边"
     },
-    "ch2_night16": {
+    "CH02-0177": {
       "content": "却看不见下面"
     },
-    "ch2_night17": {
+    "CH02-0178": {
       "choices": {
-        "ch2_night17__0": "【压力太大了】",
-        "ch2_night17__1": "【别胡思乱想】",
-        "ch2_night17__2": "【具体是什么感觉】"
+        "CH02-0178__0": "【压力太大了】",
+        "CH02-0178__1": "【别胡思乱想】",
+        "CH02-0178__2": "【具体是什么感觉】"
       }
     },
-    "ch2_night_stress": {
+    "CH02-0179": {
       "content": "可能吧"
     },
-    "ch2_night_stress2": {
+    "CH02-0180": {
       "content": "最近确实没怎么睡好"
     },
-    "ch2_night_stress3": {
+    "CH02-0181": {
       "content": "但这次不太像普通压力"
     },
-    "ch2_night_stress4": {
+    "CH02-0182": {
       "content": "更像是脑子里多了一些不属于我的痕迹"
     },
-    "ch2_night_deny": {
+    "CH02-0183": {
       "content": "我也想这么说服自己"
     },
-    "ch2_night_deny2": {
+    "CH02-0184": {
       "content": "真的"
     },
-    "ch2_night_deny3": {
+    "CH02-0185": {
       "content": "但有些感觉不是你不去想"
     },
-    "ch2_night_deny4": {
+    "CH02-0186": {
       "content": "它就会消失的"
     },
-    "ch2_night_feel": {
+    "CH02-0187": {
       "content": "说不上来"
     },
-    "ch2_night_feel2": {
+    "CH02-0188": {
       "content": "就是偶尔会觉得"
     },
-    "ch2_night_feel3": {
+    "CH02-0189": {
       "content": "有些东西特别熟悉"
     },
-    "ch2_night_feel4": {
+    "CH02-0190": {
       "content": "但我明明不该熟悉"
     },
-    "ch2_night_feel_merge": {
+    "CH02-0191": {
       "content": "有些画面是这样"
     },
-    "ch2_night22": {
+    "CH02-0192": {
       "content": "有些对话也是"
     },
-    "ch2_night23": {
+    "CH02-0193": {
       "content": "甚至有时候看见你的消息"
     },
-    "ch2_night24": {
+    "CH02-0194": {
       "content": "会有一种很奇怪的感觉"
     },
-    "ch2_night27": {
+    "CH02-0195": {
       "content": "像是我已经看过了"
     },
-    "ch2_night27b": {
+    "CH02-0196": {
       "content": "不止一次"
     },
-    "ch2_night29": {
+    "CH02-0197": {
       "content": "嗯"
     },
-    "ch2_night30": {
+    "CH02-0198": {
       "content": "很奇怪吧"
     },
-    "ch2_night31": {
+    "CH02-0199": {
       "content": "明明不可能"
     },
-    "ch2_night32": {
+    "CH02-0200": {
       "content": "算了"
     },
-    "ch2_night33": {
+    "CH02-0201": {
       "content": "可能只是最近睡眠不足"
     },
-    "ch2_n7q2": {
+    "CH02-0202": {
       "content": "对了"
     },
-    "ch2_n7q3": {
+    "CH02-0203": {
       "content": "我今天路过储物区"
     },
-    "ch2_n7q4": {
+    "CH02-0204": {
       "content": "看到一只橘猫玩偶"
     },
-    "ch2_n7q5": {
+    "CH02-0205": {
       "content": "突然想起 N7"
     },
-    "ch2_n7q6": {
+    "CH02-0206": {
       "choices": {
-        "ch2_n7q6__0": "【那只胖得像违法建筑的猫？】",
-        "ch2_n7q6__1": "【你跟我提过它】"
+        "CH02-0206__0": "【那只胖得像违法建筑的猫？】",
+        "CH02-0206__1": "【你跟我提过它】"
       }
     },
-    "ch2_n7q6_a1": {
+    "CH02-0207": {
       "content": "……"
     },
-    "ch2_n7q6_a2": {
+    "CH02-0208": {
       "content": "等等"
     },
-    "ch2_n7q6_a3": {
+    "CH02-0209": {
       "content": "这句话我确实会说"
     },
-    "ch2_n7q6_b1": {
+    "CH02-0210": {
       "content": "你连这个都记得？"
     },
-    "ch2_n7q6_b2": {
+    "CH02-0211": {
       "content": "我连它都和你说过吗"
     },
-    "ch2_n7q7": {
+    "CH02-0212": {
       "content": "？"
     },
-    "ch2_n7q8": {
+    "CH02-0213": {
       "content": "等等"
     },
-    "ch2_n7q9": {
+    "CH02-0214": {
       "content": "我和你说过 N7 吗？"
     },
-    "ch2_n7q10": {
+    "CH02-0215": {
       "choices": {
-        "ch2_n7q10__0": "【说过，而且你说它叫 N7】",
-        "ch2_n7q10__1": "【我记得，你提过】"
+        "CH02-0215__0": "【说过，而且你说它叫 N7】",
+        "CH02-0215__1": "【我记得，你提过】"
       }
     },
-    "ch2_n7q10_a1": {
+    "CH02-0216": {
       "content": "你连名字都记得"
     },
-    "ch2_n7q10_b1": {
+    "CH02-0217": {
       "content": "你说得不太确定"
     },
-    "ch2_n7q10_b2": {
+    "CH02-0218": {
       "content": "但我不知道为什么"
     },
-    "ch2_n7q10_b3": {
+    "CH02-0219": {
       "content": "觉得你不像在骗我"
     },
-    "ch2_n7q11": {
+    "CH02-0220": {
       "content": "奇怪"
     },
-    "ch2_n7q12": {
+    "CH02-0221": {
       "content": "我完全不记得"
     },
-    "ch2_n7q13": {
+    "CH02-0222": {
       "choices": {
-        "ch2_n7q13__0": "【你记性越来越差了】",
-        "ch2_n7q13__1": "【没事，我记得】"
+        "CH02-0222__0": "【你记性越来越差了】",
+        "CH02-0222__1": "【没事，我记得】"
       }
     },
-    "ch2_n7q13_a1": {
+    "CH02-0223": {
       "content": "喂"
     },
-    "ch2_n7q13_a2": {
+    "CH02-0224": {
       "content": "不要把事实说得这么像吐槽"
     },
-    "ch2_n7q13_b1": {
+    "CH02-0225": {
       "content": "……"
     },
-    "ch2_n7q13_b2": {
+    "CH02-0226": {
       "content": "这句话听起来有点危险"
     },
-    "ch2_n7q13_b3": {
+    "CH02-0227": {
       "content": "但我想先相信它"
     },
-    "ch2_n7q14": {
+    "CH02-0228": {
       "content": "可能吧"
     },
-    "ch2_n7q15": {
+    "CH02-0229": {
       "content": "不过"
     },
-    "ch2_n7q16": {
+    "CH02-0230": {
       "content": "谢谢你记得"
     },
-    "ch2_n7q18": {
+    "CH02-0231": {
       "content": "有时候我觉得"
     },
-    "ch2_n7q19": {
+    "CH02-0232": {
       "content": "被人记住"
     },
-    "ch2_n7q20": {
+    "CH02-0233": {
       "content": "是一件很幸福的事"
     },
-    "ch2_goodnight": {
+    "CH02-0234": {
       "content": "好了"
     },
-    "ch2_gn1": {
+    "CH02-0235": {
       "content": "今天是真的要睡了"
     },
-    "ch2_gn2": {
+    "CH02-0236": {
       "content": "累死我了"
     },
-    "ch2_gn3": {
+    "CH02-0237": {
       "choices": {
-        "ch2_gn3__0": "【晚安】"
+        "CH02-0237__0": "【晚安】"
       }
     },
-    "ch2_gn4": {
+    "CH02-0238": {
       "content": "晚安"
     },
-    "ch2_gn5": {
+    "CH02-0239": {
       "content": "如果明天我忘了什么"
     },
-    "ch2_gn6": {
+    "CH02-0240": {
       "content": "记得提醒我"
     },
-    "ch2_offline": {
+    "CH02-0241": {
       "content": "Nova 已离线"
     },
-    "ch2_observer_echo": {
+    "CH02-0242": {
       "content": "还给对方一颗"
     },
-    "CH3_START": {
+    "CH03-0001": {
       "content": "第三章：异常"
     },
-    "ch3_0": {
+    "CH03-0002": {
       "content": "第四天 08:02"
     },
-    "ch3_1": {
+    "CH03-0003": {
       "content": "收到新消息"
     },
-    "ch3_flower0": {
+    "CH03-0004": {
       "content": "早"
     },
-    "ch3_flower0b": {
+    "CH03-0005": {
       "content": "先给你看个东西"
     },
-    "ch3_flower1": {
+    "CH03-0006": {
       "content": "一朵长在维修通风管里的小白花"
     },
-    "ch3_flower2": {
+    "CH03-0007": {
       "content": "它居然长在维修通风管里"
     },
-    "ch3_flower3": {
+    "CH03-0008": {
       "content": "理论上这里不该有植物"
     },
-    "ch3_flower4": {
+    "CH03-0009": {
       "choices": {
-        "ch3_flower4__0": "【它是怎么活下来的？】",
-        "ch3_flower4__1": "【你要上报吗？】"
+        "CH03-0009__0": "【它是怎么活下来的？】",
+        "CH03-0009__1": "【你要上报吗？】"
       }
     },
-    "ch3_flower_survive1": {
+    "CH03-0010": {
       "content": "我也不知道"
     },
-    "ch3_flower_survive2": {
+    "CH03-0011": {
       "content": "那附近没有培养土"
     },
-    "ch3_flower_survive3": {
+    "CH03-0012": {
       "content": "也没有稳定光源"
     },
-    "ch3_flower_survive4": {
+    "CH03-0013": {
       "content": "按理说"
     },
-    "ch3_flower_survive5": {
+    "CH03-0014": {
       "content": "它连发芽的机会都不该有"
     },
-    "ch3_flower_report1": {
+    "CH03-0015": {
       "content": "正常来说应该上报"
     },
-    "ch3_flower_report2": {
+    "CH03-0016": {
       "content": "但它看起来挺努力的"
     },
-    "ch3_flower_report3": {
+    "CH03-0017": {
       "content": "我想先观察一下"
     },
-    "ch3_flower_report4": {
+    "CH03-0018": {
       "content": "至少别让它刚被发现就进隔离箱"
     },
-    "ch3_flower_merge": {
+    "CH03-0019": {
       "content": "很奇怪吧"
     },
-    "ch3_flower_merge2": {
+    "CH03-0020": {
       "content": "一朵不该活下来的花"
     },
-    "ch3_flower_merge3": {
+    "CH03-0021": {
       "content": "偏偏长在最不该有生命的地方"
     },
-    "ch3_flower_merge4": {
+    "CH03-0022": {
       "content": "我本来想把它当成今天最奇怪的事"
     },
-    "ch3_flower_merge5": {
+    "CH03-0023": {
       "content": "但好像不是"
     },
-    "ch3_5": {
+    "CH03-0024": {
       "content": "我想问你个问题"
     },
-    "ch3_6": {
+    "CH03-0025": {
       "content": "你那边今天下雨了吗？"
     },
-    "ch3_7": {
+    "CH03-0026": {
       "choices": {
-        "ch3_7__0": "【没有】",
-        "ch3_7__1": "【你怎么突然问这个？】",
-        "ch3_7__2": "【你听见雨声了？】"
+        "CH03-0026__0": "【没有】",
+        "CH03-0026__1": "【你怎么突然问这个？】",
+        "CH03-0026__2": "【你听见雨声了？】"
       }
     },
-    "ch3_rain_no1": {
+    "CH03-0027": {
       "content": "这样啊"
     },
-    "ch3_rain_no2": {
+    "CH03-0028": {
       "content": "那就不是我把你那边的天气想进梦里了"
     },
-    "ch3_rain_why1": {
+    "CH03-0029": {
       "content": "不知道"
     },
-    "ch3_rain_why2": {
+    "CH03-0030": {
       "content": "我一醒来就在想这个"
     },
-    "ch3_rain_guess1": {
+    "CH03-0031": {
       "content": "……"
     },
-    "ch3_rain_guess2": {
+    "CH03-0032": {
       "content": "你怎么知道"
     },
-    "ch3_rain_guess3": {
+    "CH03-0033": {
       "content": "不"
     },
-    "ch3_rain_guess4": {
+    "CH03-0034": {
       "content": "我不是说真的听见"
     },
-    "ch3_rain_merge": {
+    "CH03-0035": {
       "content": "更像是脑子里卡了一段声音"
     },
-    "ch3_rain_merge2": {
+    "CH03-0036": {
       "content": "雨声"
     },
-    "ch3_rain_merge3": {
+    "CH03-0037": {
       "content": "还有窗户被敲到的声音"
     },
-    "ch3_rain_merge4": {
+    "CH03-0038": {
       "content": "明明这里不可能下雨"
     },
-    "ch3_rain_merge5": {
+    "CH03-0039": {
       "content": "Aurora 号也没有真正意义上的窗户"
     },
-    "ch3_rain_merge6": {
+    "CH03-0040": {
       "content": "只有观测窗"
     },
-    "ch3_10": {
+    "CH03-0041": {
       "content": "然后我想起另一个画面"
     },
-    "ch3_11": {
+    "CH03-0042": {
       "content": "观测室"
     },
-    "ch3_12": {
+    "CH03-0043": {
       "content": "玻璃上有个人影"
     },
-    "ch3_dream3": {
+    "CH03-0044": {
       "content": "我一开始以为是反光"
     },
-    "ch3_dream4": {
+    "CH03-0045": {
       "content": "观测窗有时候会这样"
     },
-    "ch3_dream4b": {
+    "CH03-0046": {
       "content": "但那个影子没有跟着我动"
     },
-    "ch3_dream4c": {
+    "CH03-0047": {
       "content": "它只是站在那里"
     },
-    "ch3_dream4d": {
+    "CH03-0048": {
       "content": "像是在看我"
     },
-    "ch3_dream6": {
+    "CH03-0049": {
       "content": "后来我又梦见了那里"
     },
-    "ch3_dream7": {
+    "CH03-0050": {
       "content": "我站在观测室"
     },
-    "ch3_dream8": {
+    "CH03-0051": {
       "content": "你站在我旁边"
     },
-    "ch3_dream9": {
+    "CH03-0052": {
       "content": "然后你开口了"
     },
-    "ch3_dream10": {
+    "CH03-0053": {
       "content": "我只听清了前半句"
     },
-    "ch3_dream10b": {
+    "CH03-0054": {
       "content": "“别去——”"
     },
-    "ch3_dream11": {
+    "CH03-0055": {
       "choices": {
-        "ch3_dream11__0": "【我说的？】",
-        "ch3_dream11__1": "【观测窗那边？】",
-        "ch3_dream11__2": "【别去哪里？】"
+        "CH03-0055__0": "【我说的？】",
+        "CH03-0055__1": "【观测窗那边？】",
+        "CH03-0055__2": "【别去哪里？】"
       }
     },
-    "ch3_dream11_a1": {
+    "CH03-0056": {
       "content": "嗯"
     },
-    "ch3_dream11_a2": {
+    "CH03-0057": {
       "content": "至少梦里是你"
     },
-    "ch3_dream11_a3": {
+    "CH03-0058": {
       "content": "但我还是看不清你的脸"
     },
-    "ch3_dream11_b1": {
+    "CH03-0059": {
       "content": "……"
     },
-    "ch3_dream11_b2": {
+    "CH03-0060": {
       "content": "我也是这么想的"
     },
-    "ch3_dream11_b3": {
+    "CH03-0061": {
       "content": "梦里那个影子"
     },
-    "ch3_dream11_b4": {
+    "CH03-0062": {
       "content": "确实一直站在那里"
     },
-    "ch3_dream11_c1": {
+    "CH03-0063": {
       "content": "不知道"
     },
-    "ch3_dream11_c2": {
+    "CH03-0064": {
       "content": "后半句像被什么东西截断了"
     },
-    "ch3_dream11_c3": {
+    "CH03-0065": {
       "content": "我越想听清"
     },
-    "ch3_dream11_c4": {
+    "CH03-0066": {
       "content": "它就越像被擦掉"
     },
-    "ch3_dream12": {
+    "CH03-0067": {
       "content": "后半句像被什么东西截断了"
     },
-    "ch3_dream13": {
+    "CH03-0068": {
       "content": "梦到这里就醒了"
     },
-    "ch3_creep2": {
+    "CH03-0069": {
       "content": "你有没有觉得"
     },
-    "ch3_creep3": {
+    "CH03-0070": {
       "content": "最近越来越诡异了"
     },
-    "ch3_creep4": {
+    "CH03-0071": {
       "choices": {
-        "ch3_creep4__0": "【有一点】",
-        "ch3_creep4__1": "【确实】",
-        "ch3_creep4__2": "【你压力太大了】"
+        "CH03-0071__0": "【有一点】",
+        "CH03-0071__1": "【确实】",
+        "CH03-0071__2": "【你压力太大了】"
       }
     },
-    "ch3_creep_a": {
+    "CH03-0072": {
       "content": "你说得这么委婉"
     },
-    "ch3_creep_a2": {
+    "CH03-0073": {
       "content": "我都已经开始觉得"
     },
-    "ch3_creep_a3": {
+    "CH03-0074": {
       "content": "这不是“有一点”的程度了"
     },
-    "ch3_creep_b": {
+    "CH03-0075": {
       "content": "对吧"
     },
-    "ch3_creep_b2": {
+    "CH03-0076": {
       "content": "我还以为只有我这么觉得"
     },
-    "ch3_creep_b3": {
+    "CH03-0077": {
       "content": "说出来之后反而更糟了"
     },
-    "ch3_creep_c": {
+    "CH03-0078": {
       "content": "希望是这样"
     },
-    "ch3_creep_c2": {
+    "CH03-0079": {
       "content": "压力大听起来至少还算正常"
     },
-    "ch3_creep_c3": {
+    "CH03-0080": {
       "content": "虽然“正常”这个词现在也不太可靠"
     },
-    "ch3_creep_merge": {
+    "CH03-0081": {
       "content": "我不想把事情往最坏的方向想"
     },
-    "ch3_creep_merge2": {
+    "CH03-0082": {
       "content": "但最近发生的这些"
     },
-    "ch3_creep_merge3": {
+    "CH03-0083": {
       "content": "已经不像单纯睡眠不足了"
     },
-    "ch3_creep_merge4": {
+    "CH03-0084": {
       "content": "而且医疗舱很贵"
     },
-    "ch3_creep_merge5": {
+    "CH03-0085": {
       "content": "我暂时还不想因为“疑似精神异常”被塞进去"
     },
-    "ch3_lunch1": {
+    "CH03-0086": {
       "content": "13:11"
     },
-    "ch3_lunch2": {
+    "CH03-0087": {
       "content": "我刚到食堂"
     },
-    "ch3_lunch3": {
+    "CH03-0088": {
       "content": "他们今天说有牛排"
     },
-    "ch3_lunch5": {
+    "CH03-0089": {
       "content": "但我现在有点怀疑"
     },
-    "ch3_lunch6": {
+    "CH03-0090": {
       "content": "这东西到底算不算食物"
     },
-    "ch3_lunch7": {
+    "CH03-0091": {
       "content": "我发你看看"
     },
-    "ch3_steak": {
+    "CH03-0094": {
       "content": "别问\n问就是科研事故"
     },
-    "ch3_ref1": {
+    "CH03-0096": {
       "content": "等一下"
     },
-    "ch3_ref2": {
+    "CH03-0097": {
       "content": "有点不对"
     },
-    "ch3_ref4": {
+    "CH03-0098": {
       "content": "我刚刚好像在照片的玻璃反光里看见一个人"
     },
-    "ch3_ref5": {
+    "CH03-0099": {
       "content": "像是站在观测窗那边"
     },
-    "ch3_ref7": {
+    "CH03-0100": {
       "content": "看起来像我自己"
     },
-    "ch3_ref9": {
+    "CH03-0101": {
       "choices": {
-        "ch3_ref9__0": "【你看清了吗？】"
+        "CH03-0101__0": "【你看清了吗？】"
       }
     },
-    "ch3_ref10": {
+    "CH03-0102": {
       "content": "也可能是反光"
     },
-    "ch3_ref11": {
+    "CH03-0103": {
       "content": "观测窗有时候会这样"
     },
-    "ch3_ref13": {
+    "CH03-0104": {
       "content": "……"
     },
-    "ch3_ref14": {
+    "CH03-0105": {
       "content": "不确定"
     },
-    "ch3_ref15": {
+    "CH03-0106": {
       "content": "因为她看着我"
     },
-    "ch3_timed_sys1": {
+    "CH03-0107": {
       "content": "通讯稳定性下降"
     },
-    "ch3_timed_sys2": {
+    "CH03-0108": {
       "content": "Nova 生理指标波动"
     },
-    "ch3_ref16": {
+    "CH03-0109": {
       "choices": {
-        "ch3_ref16__0": "【我在，先别看窗外】",
-        "ch3_ref16__1": "【赶快离开观测室】",
-        "ch3_ref16__2": "【快检查通讯日志】"
+        "CH03-0109__0": "【我在，先别看窗外】",
+        "CH03-0109__1": "【赶快离开观测室】",
+        "CH03-0109__2": "【快检查通讯日志】"
       }
     },
-    "ch3_ref_calm1": {
+    "CH03-0110": {
       "content": "……"
     },
-    "ch3_ref_calm2": {
+    "CH03-0111": {
       "content": "好"
     },
-    "ch3_ref_calm3": {
+    "CH03-0112": {
       "content": "我不看"
     },
-    "ch3_ref_calm4": {
+    "CH03-0113": {
       "content": "你说话"
     },
-    "ch3_ref_calm5": {
+    "CH03-0114": {
       "content": "随便说点什么都行"
     },
-    "ch3_ref_leave1": {
+    "CH03-0115": {
       "content": "我正在退出来"
     },
-    "ch3_ref_leave2": {
+    "CH03-0116": {
       "content": "门禁反应有点慢"
     },
-    "ch3_ref_leave3": {
+    "CH03-0117": {
       "content": "别催我"
     },
-    "ch3_ref_leave4": {
+    "CH03-0118": {
       "content": "我现在已经很想催它了"
     },
-    "ch3_ref_log1": {
+    "CH03-0119": {
       "content": "你还真冷静"
     },
-    "ch3_ref_log2": {
+    "CH03-0120": {
       "content": "好"
     },
-    "ch3_ref_log3": {
+    "CH03-0121": {
       "content": "我查查日志"
     },
-    "ch3_ref_log4": {
+    "CH03-0122": {
       "content": "至少这比盯着另一个自己看正常一点"
     },
-    "ch3_ref_timeout1": {
+    "CH03-0123": {
       "content": "……你还在吗"
     },
-    "ch3_ref_timeout2": {
+    "CH03-0124": {
       "content": "别在这种时候断线"
     },
-    "ch3_ref_timeout3": {
+    "CH03-0125": {
       "content": "求你了"
     },
-    "ch3_ref17": {
+    "CH03-0126": {
       "content": "反光不会看着我"
     },
-    "ch3_ref18": {
+    "CH03-0127": {
       "content": "对吧？"
     },
-    "ch3_ref20": {
+    "CH03-0129": {
       "content": "算了"
     },
-    "ch3_ref21": {
+    "CH03-0130": {
       "content": "当我没说"
     },
-    "ch3_ref22": {
+    "CH03-0131": {
       "content": "你别露出那种表情"
     },
-    "ch3_ref28b": {
+    "CH03-0132": {
       "content": "当然我看不到你的表情"
     },
-    "ch3_ref28c": {
+    "CH03-0133": {
       "content": "但可以想象"
     },
-    "ch3_ref28d": {
+    "CH03-0134": {
       "content": "就是那种"
     },
-    "ch3_ref25": {
+    "CH03-0135": {
       "content": "“完了她要疯了”的表情"
     },
-    "ch3_airlock_time": {
+    "CH03-0136": {
       "content": "18:23"
     },
-    "ch3_airlock_alarm": {
+    "CH03-0137": {
       "content": "观测室隔离门异常闭锁"
     },
-    "ch3_airlock_nova1": {
+    "CH03-0138": {
       "content": "等等"
     },
-    "ch3_airlock_nova2": {
+    "CH03-0139": {
       "content": "门把我卡在中间过渡舱了"
     },
-    "ch3_airlock_nova3": {
+    "CH03-0140": {
       "content": "系统说里面有两个生命信号，不肯自动均压"
     },
-    "ch3_airlock_file": {
+    "CH03-0141": {
       "content": "观测室隔离门 / 手动均压||观测室：71 kPa\n过渡舱：84 kPa / LIVE-07 位于此处\n主走廊：101 kPa\n异常：观测室内检测到重复生命信号\n安全原则：隔离异常舱室，使人员所在舱与主走廊均压\n警告：净化过渡舱将直接危及 LIVE-07"
     },
-    "ch3_airlock_nova4": {
+    "CH03-0142": {
       "content": "我在中间"
     },
-    "ch3_airlock_nova5": {
+    "CH03-0143": {
       "content": "把我身后的观测室封住，再让我这边接主走廊"
     },
-    "ch3_airlock_interaction": {
+    "CH03-0144": {
       "content": "观测室隔离与手动均压"
     },
-    "ch3_airlock_safe1": {
+    "CH03-0145": {
       "content": "观测室已隔离\n过渡舱与主走廊均压完成"
     },
-    "ch3_airlock_safe2": {
+    "CH03-0146": {
       "content": "门开了"
     },
-    "ch3_airlock_safe3": {
+    "CH03-0147": {
       "content": "刚才里面那个“我”还站在原地"
     },
-    "ch3_airlock_injured1": {
+    "CH03-0148": {
       "content": "观测室已隔离\n均压延迟 / LIVE-07 短时缺氧"
     },
-    "ch3_airlock_injured2": {
+    "CH03-0149": {
       "content": "咳……"
     },
-    "ch3_airlock_injured3": {
+    "CH03-0150": {
       "content": "我出来了"
     },
-    "ch3_airlock_injured4": {
+    "CH03-0151": {
       "content": "先别挂，我还看见她站在里面"
     },
-    "bad_airlock_1": {
+    "CH03-0152": {
       "content": "过渡舱压力快速下降"
     },
-    "bad_airlock_2": {
+    "CH03-0153": {
       "content": "不是那边"
     },
-    "bad_airlock_3": {
+    "CH03-0154": {
       "content": "我在中——"
     },
-    "bad_airlock_4": {
+    "CH03-0155": {
       "content": "LIVE-07 生命信号丢失"
     },
-    "bad_airlock_5": {
+    "CH03-0156": {
       "content": "第七协议已接管观测室与导航权限"
     },
-    "EARLY_BAD_END_START": {
+    "CH03-0157": {
       "content": "提前终止：第七次任务失败"
     },
-    "early_bad_failure1": {
+    "CH03-0158": {
       "content": "Aurora 任务连续性：不可维持"
     },
-    "early_bad_failure2": {
+    "CH03-0159": {
       "content": "保护性回溯请求已提交"
     },
-    "early_bad_failure3": {
+    "CH03-0160": {
       "content": "当前通讯记录正在清除"
     },
-    "early_bad_reboot_time": {
+    "CH03-0161": {
       "content": "时间：无法确认"
     },
-    "ch3_disconnect1": {
+    "CH03-0162": {
       "content": "18:26"
     },
-    "ch3_dc1": {
+    "CH03-0163": {
       "content": "通讯中断"
     },
-    "ch3_dc2": {
+    "CH03-0164": {
       "content": "尝试重连……"
     },
-    "ch3_dc3": {
+    "CH03-0165": {
       "content": "重连失败"
     },
-    "ch3_dc4": {
+    "CH03-0166": {
       "content": "重连失败"
     },
-    "ch3_dc5": {
+    "CH03-0167": {
       "content": "重连成功"
     },
-    "ch3_dc6": {
+    "CH03-0168": {
       "content": "……"
     },
-    "ch3_dc6b": {
+    "CH03-0169": {
       "content": "你还在吗？"
     },
-    "ch3_dc7": {
+    "CH03-0170": {
       "choices": {
-        "ch3_dc7__0": "【在】"
+        "CH03-0170__0": "【在】"
       }
     },
-    "ch3_dc8": {
+    "CH03-0171": {
       "content": "太好了"
     },
-    "ch3_airlock_injury_callback": {
+    "CH03-0172": {
       "content": "我还有点喘"
     },
-    "ch3_airlock_injury_callback2": {
+    "CH03-0173": {
       "content": "但比刚才好多了"
     },
-    "ch3_dc9": {
+    "CH03-0174": {
       "content": "刚刚系统断了"
     },
-    "ch3_dc10": {
+    "CH03-0175": {
       "content": "我还以为失去连接了"
     },
-    "ch3_dc12": {
+    "CH03-0176": {
       "content": "我还不知道原因"
     },
-    "ch3_dc13": {
+    "CH03-0177": {
       "content": "但通讯日志出现了一段东西"
     },
-    "ch3_dc15": {
+    "CH03-0178": {
       "content": "你最好自己看"
     },
-    "ch3_log1": {
+    "CH03-0179": {
       "content": "通讯日志.txt||连接建立\n连接建立\n连接建立\n连接建立\n连接建立\n连接建立\n连接建立\n第七次连接成功"
     },
-    "ch3_log1b": {
+    "CH03-0180": {
       "content": "协议残片：SEVENTH_PROTOCOL||用途：Aurora号任务状态保护\n执行载体：████\n作用范围：████\n触发条件：任务不可恢复性失败\n恢复方式：局部时间████\n认知保护：启用\n默认保留对象：最低限度任务数据\n异常保留对象：UNKNOWN\n当前状态：重复触发"
     },
-    "ch3_corepower1": {
+    "CH03-0181": {
       "content": "能源路由异常||登记模块：深空航行稳定核心\n公开用途：静默航区导航同步 / 舰体参照稳定\n记录时段：未知任务终止事件后 0.8 秒\n峰值调用：47% 可用储备能源\n公开结构位置：核心舱段\n异常子层：船员图纸未登记\n子层标识：LOCAL PHASE A▇▇▇ / SEALED"
     },
-    "ch3_corepower2": {
+    "CH03-0182": {
       "content": "深空航行稳定核心，我知道"
     },
-    "ch3_corepower3": {
+    "CH03-0183": {
       "content": "平时它只负责校准舰钟和航线参照"
     },
-    "ch3_corepower4": {
+    "CH03-0184": {
       "content": "可这条记录里，它从备用电网抽走了将近一半的能源"
     },
-    "ch3_corepower5": {
+    "CH03-0185": {
       "content": "而且那个子层根本不在船员能看到的图纸上"
     },
-    "ch3_log2": {
+    "CH03-0186": {
       "content": "等等"
     },
-    "ch3_log2b": {
+    "CH03-0187": {
       "content": "这不是普通通讯日志"
     },
-    "ch3_log2c": {
+    "CH03-0188": {
       "content": "这是第七协议的底层记录"
     },
-    "ch3_log2d": {
+    "CH03-0189": {
       "content": "它好像不是第一次把我们接在一起"
     },
-    "ch3_log4": {
+    "CH03-0190": {
       "content": "而且还不止这些"
     },
-    "ch3_log5": {
+    "CH03-0191": {
       "content": "你往下看"
     },
-    "ch3_log5b": {
+    "CH03-0192": {
       "content": "日志最后一条||第七次连接成功"
     },
-    "ch3_log6": {
+    "CH03-0193": {
       "content": "又是这句话"
     },
-    "ch3_log7": {
+    "CH03-0194": {
       "content": "第四天了"
     },
-    "ch3_log8": {
+    "CH03-0195": {
       "content": "我已经开始讨厌数字七了"
     },
-    "ch3_log9": {
+    "CH03-0196": {
       "choices": {
-        "ch3_log9__0": "【也许只是程序错误】",
-        "ch3_log9__1": "【这不像普通错误】"
+        "CH03-0196__0": "【也许只是程序错误】",
+        "CH03-0196__1": "【这不像普通错误】"
       }
     },
-    "ch3_log10": {
+    "CH03-0197": {
       "content": "希望如此"
     },
-    "ch3_log10b": {
+    "CH03-0198": {
       "content": "我也想这么解释"
     },
-    "ch3_log10_alt": {
+    "CH03-0199": {
       "content": "……"
     },
-    "ch3_log10_alt2": {
+    "CH03-0200": {
       "content": "你也这么觉得？"
     },
-    "ch3_log10_alt3": {
+    "CH03-0201": {
       "content": "那我可能没法继续装作没事了"
     },
-    "ch3_log11": {
+    "CH03-0202": {
       "content": "但有个问题"
     },
-    "ch3_log11b": {
+    "CH03-0203": {
       "content": "日志时间校验||异常日志时间：三个月前\nAurora号离港记录：当前任务开始于七天前"
     },
-    "ch3_log12": {
+    "CH03-0204": {
       "choices": {
-        "ch3_log12__0": "【日志时间不对？】",
-        "ch3_log12__1": "【三个月前你们还没出发】"
+        "CH03-0204__0": "【日志时间不对？】",
+        "CH03-0204__1": "【三个月前你们还没出发】"
       }
     },
-    "ch3_log12_a1": {
+    "CH03-0205": {
       "content": "对"
     },
-    "ch3_log12_b1": {
+    "CH03-0206": {
       "content": "你也注意到了"
     },
-    "ch3_log12_b2": {
+    "CH03-0207": {
       "content": "三个月前"
     },
-    "ch3_log12_b3": {
+    "CH03-0208": {
       "content": "Aurora号甚至还没离港"
     },
-    "ch3_log13": {
+    "CH03-0209": {
       "content": "这条日志时间"
     },
-    "ch3_log14": {
+    "CH03-0210": {
       "content": "是三个月前"
     },
-    "ch3_log16": {
+    "CH03-0211": {
       "content": "Aurora号三个月前还没出发"
     },
-    "ch3_log17": {
+    "CH03-0212": {
       "content": "所以"
     },
-    "ch3_log18": {
+    "CH03-0213": {
       "content": "它不应该存在"
     },
-    "ch3_scared1": {
+    "CH03-0214": {
       "content": "我突然有点害怕"
     },
-    "ch3_scared2": {
+    "CH03-0215": {
       "choices": {
-        "ch3_scared2__0": "【别怕】",
-        "ch3_scared2__1": "【我在】",
-        "ch3_scared2__2": "【一定有原因】"
+        "CH03-0215__0": "【别怕】",
+        "CH03-0215__1": "【我在】",
+        "CH03-0215__2": "【一定有原因】"
       }
     },
-    "ch3_scared_afraid": {
+    "CH03-0216": {
       "content": "嗯"
     },
-    "ch3_scared_afraid2": {
+    "CH03-0217": {
       "content": "我尽量"
     },
-    "ch3_scared_afraid3": {
+    "CH03-0218": {
       "content": "不过你这么说的时候"
     },
-    "ch3_scared_afraid4": {
+    "CH03-0219": {
       "content": "我反而有点想承认自己真的在怕"
     },
-    "ch3_scared_here": {
+    "CH03-0220": {
       "content": "我知道"
     },
-    "ch3_scared_here2": {
+    "CH03-0221": {
       "content": "所以现在还没那么糟"
     },
-    "ch3_scared_here3": {
+    "CH03-0222": {
       "content": "至少这次"
     },
-    "ch3_scared_here4": {
+    "CH03-0223": {
       "content": "不是我一个人在看这些东西"
     },
-    "ch3_scared_reason": {
+    "CH03-0224": {
       "content": "我也希望是这样"
     },
-    "ch3_scared_reason2": {
+    "CH03-0225": {
       "content": "有原因就说明还能解释"
     },
-    "ch3_scared_reason3": {
+    "CH03-0226": {
       "content": "可我现在怕的就是"
     },
-    "ch3_scared_reason4": {
+    "CH03-0227": {
       "content": "那个原因可能比异常本身更糟"
     },
-    "ch3_scared_merge": {
+    "CH03-0228": {
       "content": "不过"
     },
-    "ch3_scared6": {
+    "CH03-0229": {
       "content": "如果有一天"
     },
-    "ch3_scared7": {
+    "CH03-0230": {
       "content": "我真的忘记了什么很重要的事"
     },
-    "ch3_scared8": {
+    "CH03-0231": {
       "content": "你会告诉我吗？"
     },
-    "ch3_scared9": {
+    "CH03-0232": {
       "choices": {
-        "ch3_scared9__0": "【会】",
-        "ch3_scared9__1": "【当然】"
+        "CH03-0232__0": "【会】",
+        "CH03-0232__1": "【当然】"
       }
     },
-    "ch3_scared_yes": {
+    "CH03-0233": {
       "content": "嗯"
     },
-    "ch3_scared_yes2": {
+    "CH03-0234": {
       "content": "那我就相信你一次"
     },
-    "ch3_scared_ofc": {
+    "CH03-0235": {
       "content": "你说得太快了"
     },
-    "ch3_scared_ofc2": {
+    "CH03-0236": {
       "content": "不过……谢谢"
     },
-    "ch3_scared10": {
+    "CH03-0237": {
       "content": "那就好"
     },
-    "ch3_scared11": {
+    "CH03-0238": {
       "content": "因为我开始觉得"
     },
-    "ch3_scared12": {
+    "CH03-0239": {
       "content": "有些东西正在从我脑子里消失"
     },
-    "ch3_gn2": {
+    "CH03-0240": {
       "content": "好了"
     },
-    "ch3_gn3": {
+    "CH03-0241": {
       "content": "我今天先缓一缓"
     },
-    "ch3_gn4": {
+    "CH03-0242": {
       "choices": {
-        "ch3_gn4__0": "【晚安】"
+        "CH03-0242__0": "【晚安】"
       }
     },
-    "ch3_gn5": {
+    "CH03-0243": {
       "content": "晚安"
     },
-    "ch3_gn8": {
+    "CH03-0244": {
       "content": "还有"
     },
-    "ch3_gn9": {
+    "CH03-0245": {
       "content": "如果以后我说了一些奇怪的话"
     },
-    "ch3_gn10": {
+    "CH03-0246": {
       "content": "别立刻相信"
     },
-    "ch3_gn12": {
+    "CH03-0247": {
       "content": "因为"
     },
-    "ch3_gn13": {
+    "CH03-0248": {
       "content": "我最近越来越分不清"
     },
-    "ch3_gn14": {
+    "CH03-0249": {
       "content": "哪些记忆是我的"
     },
-    "ch3_gn15": {
+    "CH03-0250": {
       "content": "哪些不是"
     },
-    "ch3_offline": {
+    "CH03-0251": {
       "content": "Nova 已离线"
     },
-    "CH4_START": {
+    "CH04-0001": {
       "content": "第四章：记忆"
     },
-    "ch4_0": {
+    "CH04-0002": {
       "content": "第五天 09:18"
     },
-    "ch4_1": {
+    "CH04-0003": {
       "content": "收到新消息"
     },
-    "ch4_2": {
+    "CH04-0004": {
       "content": "你好"
     },
-    "ch4_3": {
+    "CH04-0005": {
       "content": "请问……"
     },
-    "ch4_4": {
+    "CH04-0006": {
       "content": "我们认识吗？"
     },
-    "ch4_5": {
+    "CH04-0007": {
       "choices": {
-        "ch4_5__0": "【Nova？】",
-        "ch4_5__1": "【你在开玩笑吗，Nova？】",
-        "ch4_5__2": "【当然认识，你是Nova】"
+        "CH04-0007__0": "【Nova？】",
+        "CH04-0007__1": "【你在开玩笑吗，Nova？】",
+        "CH04-0007__2": "【当然认识，你是Nova】"
       }
     },
-    "ch4_6": {
+    "CH04-0008": {
       "content": "……"
     },
-    "ch4_7": {
+    "CH04-0009": {
       "content": "你刚刚叫我什么？"
     },
-    "ch4_8": {
+    "CH04-0010": {
       "content": "抱歉"
     },
-    "ch4_8b": {
+    "CH04-0011": {
       "content": "我应该认识你吗？"
     },
-    "ch4_joke1": {
+    "CH04-0012": {
       "content": "我希望是"
     },
-    "ch4_joke2": {
+    "CH04-0013": {
       "content": "但我现在真的笑不出来"
     },
-    "ch4_joke3": {
+    "CH04-0014": {
       "content": "抱歉"
     },
-    "ch4_joke3b": {
+    "CH04-0015": {
       "content": "我好像不记得你了"
     },
-    "ch4_sure1": {
+    "CH04-0016": {
       "content": "等等"
     },
-    "ch4_sure2": {
+    "CH04-0017": {
       "content": "你说得太确定了"
     },
-    "ch4_sure3": {
+    "CH04-0018": {
       "content": "可我这里一点印象都没有"
     },
-    "ch4_sure4": {
+    "CH04-0019": {
       "content": "抱歉"
     },
-    "ch4_sure5": {
+    "CH04-0020": {
       "content": "这感觉很糟"
     },
-    "ch4_merge1": {
+    "CH04-0021": {
       "content": "我不是故意的"
     },
-    "ch4_merge2": {
+    "CH04-0022": {
       "content": "只是……"
     },
-    "ch4_merge3": {
+    "CH04-0023": {
       "content": "我好像真的不记得了"
     },
-    "ch4_merge4": {
+    "CH04-0024": {
       "content": "很多东西"
     },
-    "ch4_merge5": {
+    "CH04-0025": {
       "content": "包括你"
     },
-    "ch4_12": {
+    "CH04-0026": {
       "content": "等等"
     },
-    "ch4_13": {
+    "CH04-0027": {
       "content": "你为什么知道我的名字？"
     },
-    "ch4_14": {
+    "CH04-0028": {
       "choices": {
-        "ch4_14__0": "【当然是你告诉我的】",
-        "ch4_14__1": "【我们之前聊过很多】",
-        "ch4_14__2": "【我可以证明】"
+        "CH04-0028__0": "【当然是你告诉我的】",
+        "CH04-0028__1": "【我们之前聊过很多】",
+        "CH04-0028__2": "【我可以证明】"
       }
     },
-    "ch4_15": {
+    "CH04-0029": {
       "content": "我告诉你的？"
     },
-    "ch4_16": {
+    "CH04-0030": {
       "content": "什么时候？"
     },
-    "ch4_many1": {
+    "CH04-0031": {
       "content": "很多？"
     },
-    "ch4_many2": {
+    "CH04-0032": {
       "content": "可我这里一点记录都没有"
     },
-    "ch4_many3": {
+    "CH04-0033": {
       "content": "你确定不是认错人了吗？"
     },
-    "ch4_prove1": {
+    "CH04-0034": {
       "content": "证明？"
     },
-    "ch4_prove2": {
+    "CH04-0035": {
       "content": "你要怎么证明？"
     },
-    "ch4_record_merge": {
+    "CH04-0036": {
       "content": "抱歉"
     },
-    "ch4_record_merge2": {
+    "CH04-0037": {
       "content": "我不是不相信你"
     },
-    "ch4_record_merge3": {
+    "CH04-0038": {
       "content": "只是这件事真的很奇怪"
     },
-    "ch4_record1": {
+    "CH04-0039": {
       "content": "而且记录显示"
     },
-    "ch4_record2": {
+    "CH04-0040": {
       "content": "我昨天刚从短期休眠舱出来"
     },
-    "ch4_record3": {
+    "CH04-0041": {
       "content": "休眠记录是72小时"
     },
-    "ch4_record4": {
+    "CH04-0042": {
       "content": "但通讯记录里有很多空白"
     },
-    "ch4_record5": {
+    "CH04-0043": {
       "content": "像被删除了一样"
     },
-    "ch4_record6": {
+    "CH04-0044": {
       "content": "如果我们认识"
     },
-    "ch4_record7": {
+    "CH04-0045": {
       "content": "那你应该知道一些我没告诉过别人的事"
     },
-    "ch4_proof_sys1": {
+    "CH04-0046": {
       "content": "通讯对象警戒反应上升"
     },
-    "ch4_proof_sys2": {
+    "CH04-0047": {
       "content": "可用记忆锚点：不稳定"
     },
-    "ch4_27": {
+    "CH04-0048": {
       "choices": {
-        "ch4_27__0": "【N7】",
-        "ch4_27__1": "【牛奶糖】",
-        "ch4_27__2": "【观测室】",
-        "ch4_27__3": "【我在】"
+        "CH04-0048__0": "【N7】",
+        "CH04-0048__1": "【牛奶糖】",
+        "CH04-0048__2": "【观测室】",
+        "CH04-0048__3": "【我在】"
       }
     },
-    "ch4_n7_name": {
+    "CH04-0049": {
       "content": "等等"
     },
-    "ch4_n7_name2": {
+    "CH04-0050": {
       "content": "你刚刚说什么？\nN7？\n我不记得自己告诉过你这个名字\n而且我几乎没对别人提过"
     },
-    "ch4_proof_anchor_tip": {
+    "CH04-0051": {
       "content": "强化记忆锚点：N7"
     },
-    "ch4_proof_candy1": {
+    "CH04-0052": {
       "content": "……"
     },
-    "ch4_proof_candy2": {
+    "CH04-0053": {
       "content": "牛奶糖？"
     },
-    "ch4_proof_candy3": {
+    "CH04-0054": {
       "content": "为什么听到这个词"
     },
-    "ch4_proof_candy4": {
+    "CH04-0055": {
       "content": "我会突然觉得很难过"
     },
-    "ch4_proof_candy5": {
+    "CH04-0056": {
       "content": "但这还不能证明我们认识"
     },
-    "ch4_proof_obs1": {
+    "CH04-0057": {
       "content": "观测室很多人都知道"
     },
-    "ch4_proof_obs2": {
+    "CH04-0058": {
       "content": "不"
     },
-    "ch4_proof_obs3": {
+    "CH04-0059": {
       "content": "等等"
     },
-    "ch4_proof_obs4": {
+    "CH04-0060": {
       "content": "为什么我觉得你说的不是那个地方"
     },
-    "ch4_proof_obs5": {
+    "CH04-0061": {
       "content": "而是某一天的星空"
     },
-    "ch4_proof_here1": {
+    "CH04-0062": {
       "content": "……"
     },
-    "ch4_proof_here2": {
+    "CH04-0063": {
       "content": "这句话很奇怪"
     },
-    "ch4_proof_here3": {
+    "CH04-0064": {
       "content": "明明不能证明什么"
     },
-    "ch4_proof_here4": {
+    "CH04-0065": {
       "content": "可我听见它的时候"
     },
-    "ch4_proof_here5": {
+    "CH04-0066": {
       "content": "心跳突然慢了一点"
     },
-    "ch4_proof_timeout1": {
+    "CH04-0067": {
       "content": "你也不知道该怎么证明，对吗"
     },
-    "ch4_proof_timeout2": {
+    "CH04-0068": {
       "content": "抱歉"
     },
-    "ch4_proof_timeout3": {
+    "CH04-0069": {
       "content": "我现在真的很害怕"
     },
-    "ch4_proof_supp_image": {
+    "CH04-0070": {
       "content": "那这张呢\n你还记得它叫什么吗"
     },
-    "ch4_proof_supplement": {
+    "CH04-0071": {
       "choices": {
-        "ch4_proof_supplement__0": "【它叫 N7】"
+        "CH04-0071__0": "【它叫 N7】"
       }
     },
-    "ch4_proof_supp1": {
+    "CH04-0072": {
       "content": "……"
     },
-    "ch4_proof_supp2": {
+    "CH04-0073": {
       "content": "等等"
     },
-    "ch4_proof_merge1": {
+    "CH04-0074": {
       "content": "N7是我的猫"
     },
-    "ch4_proof_merge2": {
+    "CH04-0075": {
       "content": "我七岁的时候捡到它"
     },
-    "ch4_proof_merge3": {
+    "CH04-0076": {
       "content": "这件事我几乎没和别人说过"
     },
-    "ch4_proof_merge4": {
+    "CH04-0077": {
       "content": "更不可能告诉一个陌生人"
     },
-    "ch4_proof_merge5": {
+    "CH04-0078": {
       "content": "所以……"
     },
-    "ch4_proof_merge6": {
+    "CH04-0079": {
       "content": "我们真的认识？"
     },
-    "ch4_n7_8": {
+    "CH04-0080": {
       "choices": {
-        "ch4_n7_8__0": "【你告诉过我】",
-        "ch4_n7_8__1": "【你只是忘了】",
-        "ch4_n7_8__2": "【我一直记得】"
+        "CH04-0080__0": "【你告诉过我】",
+        "CH04-0080__1": "【你只是忘了】",
+        "CH04-0080__2": "【我一直记得】"
       }
     },
-    "ch4_n7_told": {
+    "CH04-0081": {
       "content": "可我完全没有印象"
     },
-    "ch4_n7_told2": {
+    "CH04-0082": {
       "content": "这比我想象的还糟"
     },
-    "ch4_n7_forgot": {
+    "CH04-0083": {
       "content": "“只是忘了”"
     },
-    "ch4_n7_forgot2": {
+    "CH04-0084": {
       "content": "你说得倒是轻巧"
     },
-    "ch4_n7_forgot3": {
+    "CH04-0085": {
       "content": "但如果是真的"
     },
-    "ch4_n7_forgot4": {
+    "CH04-0086": {
       "content": "那我忘掉的可能不止这件事"
     },
-    "ch4_n7_remember": {
+    "CH04-0087": {
       "content": "……"
     },
-    "ch4_n7_remember2": {
+    "CH04-0088": {
       "content": "不知道为什么"
     },
-    "ch4_n7_remember3": {
+    "CH04-0089": {
       "content": "这句话听起来"
     },
-    "ch4_n7_remember4": {
+    "CH04-0090": {
       "content": "让我有点难过"
     },
-    "ch4_n7_merge": {
+    "CH04-0091": {
       "content": "好吧"
     },
-    "ch4_n7_14": {
+    "CH04-0092": {
       "content": "至少你知道 N7"
     },
-    "ch4_n7_15": {
+    "CH04-0093": {
       "content": "这让我没法把你当骗子"
     },
-    "ch4_n7_18": {
+    "CH04-0094": {
       "content": "虽然我不记得你"
     },
-    "ch4_n7_20": {
+    "CH04-0095": {
       "content": "但和你聊天的时候"
     },
-    "ch4_n7_21": {
+    "CH04-0096": {
       "content": "确实有种很奇怪的安心感"
     },
-    "ch4_folder1": {
+    "CH04-0097": {
       "content": "11:42"
     },
-    "ch4_fold2": {
+    "CH04-0098": {
       "content": "我检查了一下数据库"
     },
-    "ch4_fold3": {
+    "CH04-0099": {
       "content": "发现一件怪事"
     },
-    "ch4_fold5": {
+    "CH04-0100": {
       "content": "有个隐藏文件夹"
     },
-    "ch4_fold6": {
+    "CH04-0101": {
       "content": "权限属于我"
     },
-    "ch4_fold7": {
+    "CH04-0102": {
       "content": "但我从没见过"
     },
-    "ch4_fold8": {
+    "CH04-0103": {
       "content": "打开折叠文件夹"
     },
-    "ch4_fold9": {
+    "CH04-0104": {
       "content": "正在试"
     },
-    "ch4_fold10": {
+    "CH04-0105": {
       "content": "……"
     },
-    "ch4_fold10b": {
+    "CH04-0106": {
       "content": "可恶"
     },
-    "ch4_fold11": {
+    "CH04-0107": {
       "content": "打不开"
     },
-    "ch4_fold12": {
+    "CH04-0108": {
       "content": "需要双重认证"
     },
-    "ch4_fold13": {
+    "CH04-0109": {
       "choices": {
-        "ch4_fold13__0": "【另一个认证者是？】",
-        "ch4_fold13__1": "【系统怎么可能有两个你】"
+        "CH04-0109__0": "【另一个认证者是？】",
+        "CH04-0109__1": "【系统怎么可能有两个你】"
       }
     },
-    "ch4_fold13_a1": {
+    "CH04-0110": {
       "content": "显示是我"
     },
-    "ch4_fold14": {
+    "CH04-0111": {
       "content": "但我不知道它为什么会这么记录"
     },
-    "ch4_fold13_b1": {
+    "CH04-0112": {
       "content": "正常系统不可能"
     },
-    "ch4_fold13_b2": {
+    "CH04-0113": {
       "content": "除非它记录的不是两个“我”"
     },
-    "ch4_fold13_b3": {
+    "CH04-0114": {
       "content": "而是两个不同时间留下的认证"
     },
-    "ch4_fold15": {
+    "CH04-0115": {
       "content": "显示："
     },
-    "ch4_fold16": {
+    "CH04-0116": {
       "content": "双重认证者||当前认证者：Nova Arlen / 本轮\n残留认证者：Nova Arlen / 上一轮连续性签名"
     },
-    "ch4_fold16a": {
+    "CH04-0117": {
       "content": "检测到残留导航连续性签名"
     },
-    "ch4_fold16b": {
+    "CH04-0118": {
       "content": "第二认证源校验完成"
     },
-    "ch4_core_route1": {
+    "CH04-0119": {
       "content": "导航连续性签名路由||例行接收端：NAVIGATION DATABASE\n镜像接收端：STABILITY CORE / SEALED SUBLAYER\n签名用途：HUMAN CONTINUITY REFERENCE\n真实模块标识：LOCAL PHASE ANCHOR C▇▇▇\n船员访问权限：无"
     },
-    "ch4_core_route2": {
+    "CH04-0120": {
       "content": "我的例行导航签名一直被复制了一份"
     },
-    "ch4_core_route3": {
+    "CH04-0121": {
       "content": "目的地就是那条能源记录里的隐藏子层"
     },
-    "ch4_core_route4": {
+    "CH04-0122": {
       "content": "可我从来没有被告知它存在"
     },
-    "ch4_id_restore": {
+    "CH04-0123": {
       "content": "通讯档案已恢复"
     },
-    "ch4_id_confirm": {
+    "CH04-0124": {
       "content": "身份确认：NOVA ARLEN"
     },
-    "ch4_id_photo": {
+    "CH04-0125": {
       "content": "Nova Arlen / Aurora Navigation 身份档案"
     },
-    "ch4_fold17": {
+    "CH04-0126": {
       "choices": {
-        "ch4_fold17__0": "【两个Nova？】"
+        "CH04-0126__0": "【两个Nova？】"
       }
     },
-    "ch4_fold18": {
+    "CH04-0127": {
       "content": "我也希望这是系统Bug"
     },
-    "ch4_fold19": {
+    "CH04-0128": {
       "content": "但系统从不重复登记身份"
     },
-    "ch4_fold20": {
+    "CH04-0129": {
       "content": "至少理论上不会"
     },
-    "ch4_head1": {
+    "CH04-0130": {
       "content": "等等"
     },
-    "ch4_head2": {
+    "CH04-0131": {
       "content": "我突然头疼"
     },
-    "ch4_head3": {
+    "CH04-0132": {
       "choices": {
-        "ch4_head3__0": "【那赶紧去医疗舱看看】",
-        "ch4_head3__1": "【先告诉我那个画面是什么】"
+        "CH04-0132__0": "【那赶紧去医疗舱看看】",
+        "CH04-0132__1": "【先告诉我那个画面是什么】"
       }
     },
-    "ch4_head3_a1": {
+    "CH04-0133": {
       "content": "你这反应倒是很像医疗组"
     },
-    "ch4_head3_b1": {
+    "CH04-0134": {
       "content": "你先别急着追问"
     },
-    "ch4_head3_b2": {
+    "CH04-0135": {
       "content": "我得趁它还没散掉的时候说出来"
     },
-    "ch4_head4": {
+    "CH04-0136": {
       "content": "不用"
     },
-    "ch4_head5": {
+    "CH04-0137": {
       "content": "只是……"
     },
-    "ch4_head6": {
+    "CH04-0138": {
       "content": "脑子里闪过一个画面"
     },
-    "ch4_head8": {
+    "CH04-0139": {
       "content": "观测室"
     },
-    "ch4_head9": {
+    "CH04-0140": {
       "content": "一个女孩站在那里"
     },
-    "ch4_head10": {
+    "CH04-0141": {
       "content": "背对着我"
     },
-    "ch4_head12": {
+    "CH04-0142": {
       "content": "她说："
     },
-    "ch4_head13": {
+    "CH04-0143": {
       "content": "“不要相信第七次”"
     },
-    "ch4_head14": {
+    "CH04-0144": {
       "choices": {
-        "ch4_head14__0": "【第七次是指现在这一次？】",
-        "ch4_head14__1": "【你们之前已经经历过六次？】"
+        "CH04-0144__0": "【第七次是指现在这一次？】",
+        "CH04-0144__1": "【你们之前已经经历过六次？】"
       }
     },
-    "ch4_head14_a1": {
+    "CH04-0145": {
       "content": "如果按字面理解"
     },
-    "ch4_head14_b1": {
+    "CH04-0146": {
       "content": "这个问题比我敢想的还糟"
     },
-    "ch4_head14_b2": {
+    "CH04-0147": {
       "content": "如果不是来过"
     },
-    "ch4_head14_b3": {
+    "CH04-0148": {
       "content": "就是没有真正离开过"
     },
-    "ch4_head15": {
+    "CH04-0149": {
       "content": "我还不敢确定"
     },
-    "ch4_head16": {
+    "CH04-0150": {
       "content": "而且最奇怪的是"
     },
-    "ch4_head17": {
+    "CH04-0151": {
       "content": "那个声音"
     },
-    "ch4_head18": {
+    "CH04-0152": {
       "content": "就是我的声音"
     },
-    "ch4_trust1": {
+    "CH04-0153": {
       "content": "18:33"
     },
-    "ch4_trust2": {
+    "CH04-0154": {
       "content": "我开始相信你了"
     },
-    "ch4_trust3": {
+    "CH04-0155": {
       "choices": {
-        "ch4_trust3__0": "【因为 N7？】",
-        "ch4_trust3__1": "【终于愿意信我了？】",
-        "ch4_trust3__2": "【你不用勉强相信的】"
+        "CH04-0155__0": "【因为 N7？】",
+        "CH04-0155__1": "【终于愿意信我了？】",
+        "CH04-0155__2": "【你不用勉强相信的】"
       }
     },
-    "ch4_trust4": {
+    "CH04-0156": {
       "content": "不只是 N7"
     },
-    "ch4_trust4b": {
+    "CH04-0157": {
       "content": "还有你说那些事的方式"
     },
-    "ch4_trust4c": {
+    "CH04-0158": {
       "content": "不像是在编"
     },
-    "ch4_trust4d": {
+    "CH04-0159": {
       "content": "更像是真的记得"
     },
-    "ch4_trust_tease": {
+    "CH04-0160": {
       "content": "别说得像我很难搞一样"
     },
-    "ch4_trust_tease2a": {
+    "CH04-0161": {
       "content": "虽然好像确实有一点"
     },
-    "ch4_trust_tease2b": {
+    "CH04-0162": {
       "content": "但你要理解"
     },
-    "ch4_trust_tease4": {
+    "CH04-0163": {
       "content": "醒来之后突然多出一个“熟人”"
     },
-    "ch4_trust_tease5": {
+    "CH04-0164": {
       "content": "这事正常人都会警惕吧"
     },
-    "ch4_trust_gentle": {
+    "CH04-0165": {
       "content": "……"
     },
-    "ch4_trust_gentle2": {
+    "CH04-0166": {
       "content": "你这么说"
     },
-    "ch4_trust_gentle3": {
+    "CH04-0167": {
       "content": "反而让我更想相信你了"
     },
-    "ch4_trust_gentle4": {
+    "CH04-0168": {
       "content": "骗子一般不会给别人保留怀疑自己的余地"
     },
-    "ch4_trust_merge": {
+    "CH04-0169": {
       "content": "而且"
     },
-    "ch4_trust6": {
+    "CH04-0170": {
       "content": "如果你真的想骗我"
     },
-    "ch4_trust7": {
+    "CH04-0171": {
       "content": "完全没必要提 N7"
     },
-    "ch4_trust8": {
+    "CH04-0172": {
       "content": "那种细节编不出来"
     },
-    "ch4_trust8b": {
+    "CH04-0173": {
       "content": "也没有骗我的价值"
     },
-    "ch4_trust9": {
+    "CH04-0174": {
       "content": "所以我现在有两个判断"
     },
-    "ch4_trust_judge": {
+    "CH04-0175": {
       "choices": {
-        "ch4_trust_judge__0": "【哪两个？】",
-        "ch4_trust_judge__1": "【听起来不太乐观】",
-        "ch4_trust_judge__2": "【我猜你不会喜欢这两个判断】"
+        "CH04-0175__0": "【哪两个？】",
+        "CH04-0175__1": "【听起来不太乐观】",
+        "CH04-0175__2": "【我猜你不会喜欢这两个判断】"
       }
     },
-    "ch4_trust_j1": {
+    "CH04-0176": {
       "content": "第一"
     },
-    "ch4_trust_j1b": {
+    "CH04-0177": {
       "content": "我们以前真的认识"
     },
-    "ch4_trust_j1c": {
+    "CH04-0178": {
       "content": "第二"
     },
-    "ch4_trust_j1d": {
+    "CH04-0179": {
       "content": "我把这件事忘了"
     },
-    "ch4_trust_j2": {
+    "CH04-0180": {
       "content": "确实"
     },
-    "ch4_trust_j2b": {
+    "CH04-0181": {
       "content": "因为无论哪一个是真的"
     },
-    "ch4_trust_j2c": {
+    "CH04-0182": {
       "content": "都说明我的记忆出了问题"
     },
-    "ch4_trust_j3": {
+    "CH04-0183": {
       "content": "你猜对了"
     },
-    "ch4_trust_j3b": {
+    "CH04-0184": {
       "content": "我一点都不喜欢"
     },
-    "ch4_trust_j3c": {
+    "CH04-0185": {
       "content": "尤其是第二个"
     },
-    "ch4_trust_fear": {
+    "CH04-0186": {
       "content": "其实"
     },
-    "ch4_trust11": {
+    "CH04-0187": {
       "content": "我有点害怕"
     },
-    "ch4_trust12": {
+    "CH04-0188": {
       "choices": {
-        "ch4_trust12__0": "【害怕什么】",
-        "ch4_trust12__1": "【害怕想起来？】",
-        "ch4_trust12__2": "【害怕我说的是真的？】"
+        "CH04-0188__0": "【害怕什么】",
+        "CH04-0188__1": "【害怕想起来？】",
+        "CH04-0188__2": "【害怕我说的是真的？】"
       }
     },
-    "ch4_trust_f1": {
+    "CH04-0189": {
       "content": "害怕我真的忘记了什么重要的人"
     },
-    "ch4_trust_f1b": {
+    "CH04-0190": {
       "content": "而且那个人"
     },
-    "ch4_trust_f1c": {
+    "CH04-0191": {
       "content": "现在还在我面前"
     },
-    "ch4_trust_true": {
+    "CH04-0192": {
       "content": "对"
     },
-    "ch4_trust_true2": {
+    "CH04-0193": {
       "content": "因为如果你说的是真的"
     },
-    "ch4_trust_true3": {
+    "CH04-0194": {
       "content": "那我不是第一次失去你"
     },
-    "ch4_trust_true4": {
+    "CH04-0195": {
       "content": "只是第一次意识到自己失去了你"
     },
-    "ch4_trust_apology": {
+    "CH04-0196": {
       "content": "抱歉"
     },
-    "ch4_trust_apology2": {
+    "CH04-0197": {
       "content": "这句话听起来可能很奇怪"
     },
-    "ch4_trust_apology3": {
+    "CH04-0198": {
       "content": "但我现在最害怕的不是被骗"
     },
-    "ch4_trust_apology4": {
+    "CH04-0199": {
       "content": "而是你说的都是真的"
     },
-    "ch4_trust_memory": {
+    "CH04-0200": {
       "content": "也许吧"
     },
-    "ch4_trust_memory2": {
+    "CH04-0201": {
       "content": "如果记忆是被删掉的，那它被删掉之前一定发生过很糟糕的事"
     },
-    "ch4_trust14": {
+    "CH04-0202": {
       "choices": {
-        "ch4_trust14__0": "【……】"
+        "CH04-0202__0": "【……】"
       }
     },
-    "ch4_trust15": {
+    "CH04-0203": {
       "content": "如果是那样"
     },
-    "ch4_trust16": {
+    "CH04-0204": {
       "content": "那一定很糟糕"
     },
-    "ch4_trust17": {
+    "CH04-0205": {
       "choices": {
-        "ch4_trust17__0": "【为什么会更难过？】",
-        "ch4_trust17__1": "【……】"
+        "CH04-0205__0": "【为什么会更难过？】",
+        "CH04-0205__1": "【……】"
       }
     },
-    "ch4_trust17_a1": {
+    "CH04-0206": {
       "content": "因为"
     },
-    "ch4_trust17_b1": {
+    "CH04-0207": {
       "content": "你沉默了"
     },
-    "ch4_trust17_b2": {
+    "CH04-0208": {
       "content": "我知道"
     },
-    "ch4_trust17_b3": {
+    "CH04-0209": {
       "content": "这句话本来就不好接"
     },
-    "ch4_trust19": {
+    "CH04-0210": {
       "content": "被忘记已经很难过了"
     },
-    "ch4_trust20": {
+    "CH04-0211": {
       "content": "忘记别人"
     },
-    "ch4_trust21": {
+    "CH04-0212": {
       "content": "其实更难过"
     },
-    "ch4_gn1": {
+    "CH04-0213": {
       "content": "23:17"
     },
-    "ch4_gn2": {
+    "CH04-0214": {
       "content": "我要睡了"
     },
-    "ch4_gn3": {
+    "CH04-0215": {
       "choices": {
-        "ch4_gn3__0": "【晚安】"
+        "CH04-0215__0": "【晚安】"
       }
     },
-    "ch4_gn4": {
+    "CH04-0216": {
       "content": "晚安"
     },
-    "ch4_gn7": {
+    "CH04-0217": {
       "content": "那个"
     },
-    "ch4_gn9": {
+    "CH04-0218": {
       "content": "虽然我不记得以前"
     },
-    "ch4_gn10": {
+    "CH04-0219": {
       "content": "但如果你说的是真的"
     },
-    "ch4_gn11": {
+    "CH04-0220": {
       "content": "谢谢你一直记得我"
     },
-    "ch4_offline": {
+    "CH04-0221": {
       "content": "Nova 已离线"
     },
-    "ch4_log": {
+    "CH04-0222": {
       "content": "凌晨 02:41"
     },
-    "ch4_log1": {
+    "CH04-0223": {
       "content": "隐藏日志：NOVA-06 → NOVA-07||如果你正在阅读这段记录。\n说明我已经忘记 Observer-01 了。\n请不要尝试恢复记忆。\n不要寻找观测室中的我。\n不要打开第七协议。\n尤其不要相信我。\n因为我已经失败六次了。"
     },
-    "CH5A_START": {
+    "CH05A-0001": {
       "content": "第五章：真相（上）"
     },
-    "ch5a_0": {
+    "CH05A-0002": {
       "content": "第六天 07:11"
     },
-    "ch5a_1": {
+    "CH05A-0003": {
       "content": "收到新消息"
     },
-    "ch5a_2": {
+    "CH05A-0004": {
       "content": "我一夜没睡"
     },
-    "ch5a_4": {
+    "CH05A-0005": {
       "content": "天亮以后，我又试着打开那个文件夹"
     },
-    "ch5a_5": {
+    "CH05A-0006": {
       "choices": {
-        "ch5a_5__0": "【今天怎么能打开了？】"
+        "CH05A-0006__0": "【今天怎么能打开了？】"
       }
     },
-    "ch5a_6": {
+    "CH05A-0007": {
       "content": "不知道"
     },
-    "ch5a_7": {
+    "CH05A-0008": {
       "content": "昨晚刚看到它的时候还打不开"
     },
-    "ch5a_8": {
+    "CH05A-0009": {
       "content": "天亮以后突然就能打开了"
     },
-    "ch5a_9": {
+    "CH05A-0010": {
       "content": "像有人帮我授权了一样"
     },
-    "ch5a_auth1": {
+    "CH05A-0011": {
       "content": "外层索引旁边还有一道密封层"
     },
-    "ch5a_auth2": {
+    "CH05A-0012": {
       "content": "标记是“NOVA-06 / SEALED”"
     },
-    "ch5a_auth3": {
+    "CH05A-0013": {
       "content": "她在验证栏旁边留了一句提示"
     },
-    "ch5a_auth4": {
+    "CH05A-0014": {
       "content": "“本次接入编号 / 外部索引编号”"
     },
-    "ch5a_auth5": {
+    "CH05A-0015": {
       "content": "看来这一次，得由你来替我们输入"
     },
-    "ch5a_auth_input": {
+    "CH05A-0016": {
       "content": "联合授权密钥"
     },
-    "ch5a_auth_retry1": {
+    "CH05A-0017": {
       "content": "联合密钥未通过"
     },
-    "ch5a_auth_retry2": {
+    "CH05A-0018": {
       "content": "不是猜谜，按她留下的顺序，把 07 和 01 放在一起"
     },
-    "ch5a_auth_ok1": {
+    "CH05A-0019": {
       "content": "双端身份已确认\n联合密钥成立\nNOVA-06 密封记录解除只读限制"
     },
-    "ch5a_auth_ok2": {
+    "CH05A-0020": {
       "content": "07 是第七次接入，也是这一次的我"
     },
-    "ch5a_auth_ok3": {
+    "CH05A-0021": {
       "content": "01 是系统一直叫你的 Observer-01"
     },
-    "ch5a_auth_ok4": {
+    "CH05A-0022": {
       "content": "这道密封从一开始就是留给我们两个共同打开的"
     },
-    "ch5a_auth_file": {
+    "CH05A-0023": {
       "content": "NOVA-06 密封记录 / 索引头||AUTHORIZATION · 当前 Nova 外层授权 + Observer-01 索引密钥\nACCESS · 仅开放只读记录与一次性应急供能授权\nRESIDUAL · NOVA-06 为条件触发残留，不是实时意识\nRESTRICTION · 不授予第七协议或时相核心控制权限"
     },
-    "ch5a_11": {
+    "CH05A-0024": {
       "content": "记录"
     },
-    "ch5a_12": {
+    "CH05A-0025": {
       "content": "很多记录"
     },
-    "ch5a_13": {
+    "CH05A-0026": {
       "content": "全都是我留下的"
     },
-    "ch5a_protocol0": {
+    "CH05A-0027": {
       "content": "还有一份装置和协议说明"
     },
-    "ch5a_core_file1": {
+    "CH05A-0028": {
       "content": "回溯核心 / 封存摘要||公开名称：深空航行稳定核心\n隐藏用途：保存 Aurora 的稳定状态\n触发条件：任务失败 / 第七协议确认\n执行结果：Aurora 与任务区域恢复到最近一次保存状态\n回溯范围外：不受影响\n完整工程记录：已解锁至档案"
     },
-    "ch5a_core_reveal1": {
+    "CH05A-0029": {
       "content": "我们每天交的导航数据，不只是为了开船"
     },
-    "ch5a_core_reveal2": {
+    "CH05A-0030": {
       "content": "它一直在给 Aurora 做“存档”"
     },
-    "ch5a_core_reveal3": {
+    "CH05A-0031": {
       "content": "任务失败，第七协议就让核心读回上一份"
     },
-    "ch5a_core_reveal4": {
+    "CH05A-0032": {
       "content": "人、船、记录，都会一起恢复"
     },
-    "ch5a_core_reveal5": {
+    "CH05A-0033": {
       "content": "但它恢复不了存档范围外的东西"
     },
-    "ch5a_core_reveal6": {
+    "CH05A-0034": {
       "content": "你不在 Aurora 上，所以你不在那份存档里"
     },
-    "ch5a_core_choice": {
+    "CH05A-0035": {
       "choices": {
-        "ch5a_core_choice__0": "【所以全船的人都被瞒着？】",
-        "ch5a_core_choice__1": "【所以每次失败，船都会读档？】",
-        "ch5a_core_choice__2": "【我想看完整原理】"
+        "CH05A-0035__0": "【所以全船的人都被瞒着？】",
+        "CH05A-0035__1": "【所以每次失败，船都会读档？】",
+        "CH05A-0035__2": "【我想看完整原理】"
       }
     },
-    "ch5a_core_choice_a1": {
+    "CH05A-0036": {
       "content": "看起来是"
     },
-    "ch5a_core_choice_a2": {
+    "CH05A-0037": {
       "content": "至少任务开始前，没有人在岗船员知道"
     },
-    "ch5a_core_choice_b1": {
+    "CH05A-0038": {
       "content": "对"
     },
-    "ch5a_core_choice_b2": {
+    "CH05A-0039": {
       "content": "只是被恢复的不止设备"
     },
-    "ch5a_core_choice_c1": {
+    "CH05A-0040": {
       "content": "可以"
     },
-    "ch5a_core_choice_c2": {
+    "CH05A-0041": {
       "content": "可以，等会儿你自己决定要不要展开完整工程记录"
     },
-    "ch5a_protocol4": {
+    "CH05A-0042": {
       "content": "第七协议只负责做决定"
     },
-    "ch5a_protocol4b": {
+    "CH05A-0043": {
       "content": "真正把我们拉回去的是回溯核心"
     },
-    "ch5a_protocol5": {
+    "CH05A-0044": {
       "content": "它认定任务已经无法继续"
     },
-    "ch5a_protocol6": {
+    "CH05A-0045": {
       "content": "就把整艘船恢复到最近一次稳定状态"
     },
-    "ch5a_protocol7": {
+    "CH05A-0046": {
       "content": "外面的宇宙不会跟着倒退"
     },
-    "ch5a_protocol7b": {
+    "CH05A-0047": {
       "content": "你那边也不会"
     },
-    "ch5a_protocol7c": {
+    "CH05A-0048": {
       "content": "所以系统能抹掉我的今天"
     },
-    "ch5a_protocol7d": {
+    "CH05A-0049": {
       "content": "却抹不掉你那边留下的痕迹"
     },
-    "ch5a_protocol7e": {
+    "CH05A-0050": {
       "content": "至少，没有抹干净"
     },
-    "ch5a_protocol7f": {
+    "CH05A-0051": {
       "content": "这就是你为什么总比我先想起来"
     },
-    "ch5a_protocol7g": {
+    "CH05A-0052": {
       "content": "也是我为什么会一次次觉得认识你"
     },
-    "ch5a_protocol_check": {
+    "CH05A-0053": {
       "choices": {
-        "ch5a_protocol_check__0": "【所以它救的是任务，不是人？】",
-        "ch5a_protocol_check__1": "【那我为什么也会忘？】",
-        "ch5a_protocol_check__2": "【为什么只有你留下残影？】"
+        "CH05A-0053__0": "【所以它救的是任务，不是人？】",
+        "CH05A-0053__1": "【那我为什么也会忘？】",
+        "CH05A-0053__2": "【为什么只有你留下残影？】"
       }
     },
-    "ch5a_protocol_check_a1": {
+    "CH05A-0054": {
       "content": "对"
     },
-    "ch5a_protocol_check_a2": {
+    "CH05A-0055": {
       "content": "文件里没有把“救人”写成目标"
     },
-    "ch5a_protocol_check_b1": {
+    "CH05A-0056": {
       "content": "我还不知道"
     },
-    "ch5a_protocol_check_b2": {
+    "CH05A-0057": {
       "content": "这里只写着，链路关闭后你会失去对这段通讯的访问"
     },
-    "ch5a_protocol_check_c1": {
+    "CH05A-0058": {
       "content": "因为导航员每天都要给任务状态签名"
     },
-    "ch5a_protocol_check_c2": {
+    "CH05A-0059": {
       "content": "六次恢复以后，那些签名留下了误差"
     },
-    "ch5a_protocol8": {
+    "CH05A-0060": {
       "content": "记录里写得很清楚"
     },
-    "ch5a_protocol8b": {
+    "CH05A-0061": {
       "content": "它只应该保留最低限度的航行数据"
     },
-    "ch5a_protocol9": {
+    "CH05A-0062": {
       "content": "不该保留人的记忆"
     },
-    "ch5a_protocol10": {
+    "CH05A-0063": {
       "content": "更不该保留我"
     },
-    "ch5a_protocol10b": {
+    "CH05A-0064": {
       "content": "但现在"
     },
-    "ch5a_protocol10c": {
+    "CH05A-0065": {
       "content": "它好像开始把我当成记录的一部分了"
     },
-    "ch5a_logs1": {
+    "CH05A-0066": {
       "content": "回溯日志节选||备注：编号为日志条目编号，非循环次数\n日志001：如果你看到这里，说明循环已经开始。\n日志002：不要相信系统时间。\n日志003：不要进入观测室。\n日志004：如果你收到来自自己的消息，删除它。\n日志007：如果你已经认识 Observer-01，请善待对方。\n日志012：外部索引会记得。所以不要让对方太早知道真相。"
     },
-    "ch5a_protocol1": {
+    "CH05A-0067": {
       "content": "回溯执行摘要||决定者：SEVENTH_PROTOCOL\n执行者：回溯核心\n恢复点：最近一次稳定存档\n恢复范围：Aurora号及附近任务区域\n恢复对象：人员 / 舰体 / 航行系统 / 记录\n范围外对象：不受回溯影响\n异常：Nova Arlen 残留 / 外部索引已生成"
     },
-    "ch5a_protocol_detail_choice": {
+    "CH05A-0068": {
       "choices": {
-        "ch5a_protocol_detail_choice__0": "【我明白了，继续】",
-        "ch5a_protocol_detail_choice__1": "【查看完整工程记录】"
+        "CH05A-0068__0": "【我明白了，继续】",
+        "CH05A-0068__1": "【查看完整工程记录】"
       }
     },
-    "ch5a_protocol_detail_skip": {
+    "CH05A-0069": {
       "content": "完整工程记录已收入可选档案"
     },
-    "ch5a_protocol2": {
+    "CH05A-0070": {
       "content": "回溯核心 / 完整工程记录||正式名称：局部时相锚定核心\n时相锚内容：空间坐标 / 舰体状态 / 生命状态 / 关键系统 / 局部因果参照\n执行组件：时相储能环 / 局部时相场发生器\n认知同步：随任务状态一并恢复\n允许保留：最低限度航行数据\n禁止保留：完整个人记忆\n保密理由：知情会改变行为基线，并干扰稳定状态收敛\n循环代价：状态残差无法完全清除\n时间戳异常：上一轮任务时间污染当前索引"
     },
-    "ch5a_firstline_hint1": {
+    "CH05A-0071": {
       "content": "日志里还有一句很奇怪的话"
     },
-    "ch5a_firstline_hint2": {
+    "CH05A-0072": {
       "content": "它说"
     },
-    "ch5a_firstline_hint3": {
+    "CH05A-0073": {
       "content": "第一句话很重要"
     },
-    "ch5a_firstline_hint4": {
+    "CH05A-0074": {
       "content": "但记录里没写是哪句"
     },
-    "ch5a_firstline_hint5": {
+    "CH05A-0075": {
       "content": "你还记得吗？"
     },
-    "ch5a_firstline_choice": {
+    "CH05A-0076": {
       "choices": {
-        "ch5a_firstline_choice__0": "【好像记得】",
-        "ch5a_firstline_choice__1": "【不太确定】",
-        "ch5a_firstline_choice__2": "【等等，让我想想】"
+        "CH05A-0076__0": "【好像记得】",
+        "CH05A-0076__1": "【不太确定】",
+        "CH05A-0076__2": "【等等，让我想想】"
       }
     },
-    "ch5a_firstline_remember1": {
+    "CH05A-0077": {
       "content": "那就先别告诉我"
     },
-    "ch5a_firstline_remember2": {
+    "CH05A-0078": {
       "content": "我怕我现在听见"
     },
-    "ch5a_firstline_remember3": {
+    "CH05A-0079": {
       "content": "反而会把它弄丢"
     },
-    "ch5a_firstline_unsure1": {
+    "CH05A-0080": {
       "content": "没关系"
     },
-    "ch5a_firstline_unsure2": {
+    "CH05A-0081": {
       "content": "不确定也算一种记得"
     },
-    "ch5a_firstline_unsure3": {
+    "CH05A-0082": {
       "content": "至少你开始在找它了"
     },
-    "ch5a_firstline_think1": {
+    "CH05A-0083": {
       "content": "别现在想太久"
     },
-    "ch5a_firstline_think2": {
+    "CH05A-0084": {
       "content": "越重要的东西"
     },
-    "ch5a_firstline_think3": {
+    "CH05A-0085": {
       "content": "越容易在紧张的时候变形"
     },
-    "ch5a_firstline_timeout1": {
+    "CH05A-0086": {
       "content": "……"
     },
-    "ch5a_firstline_timeout2": {
+    "CH05A-0087": {
       "content": "算了"
     },
-    "ch5a_firstline_timeout3": {
+    "CH05A-0088": {
       "content": "你刚才那个停顿"
     },
-    "ch5a_firstline_timeout4": {
+    "CH05A-0089": {
       "content": "已经说明你在想了"
     },
-    "ch5a_firstline_hint6": {
+    "CH05A-0090": {
       "content": "算了"
     },
-    "ch5a_firstline_hint7": {
+    "CH05A-0091": {
       "content": "也许你记得"
     },
-    "ch5a_protocol3": {
+    "CH05A-0092": {
       "content": "看懂了吗"
     },
-    "ch5a_protocol11": {
+    "CH05A-0093": {
       "content": "它不是想救我"
     },
-    "ch5a_protocol12": {
+    "CH05A-0094": {
       "content": "它只是想让任务继续"
     },
-    "ch5a_protocol13": {
+    "CH05A-0095": {
       "content": "而我"
     },
-    "ch5a_protocol14": {
+    "CH05A-0096": {
       "content": "好像被它当成了某种错误但有用的记录"
     },
-    "ch5a_protocol15": {
+    "CH05A-0097": {
       "content": "还有那个外部索引"
     },
-    "ch5a_protocol16": {
+    "CH05A-0098": {
       "content": "它也不该存在"
     },
-    "ch5a_time_explain1": {
+    "CH05A-0099": {
       "content": "我也终于明白三个月前那条日志了"
     },
-    "ch5a_time_explain2": {
+    "CH05A-0100": {
       "content": "不是 Aurora 三个月前就出发了"
     },
-    "ch5a_time_explain3": {
+    "CH05A-0101": {
       "content": "是上一轮的“三个月后”"
     },
-    "ch5a_time_explain4": {
+    "CH05A-0102": {
       "content": "被塞进了这一轮的“三个月前”"
     },
-    "ch5a_time_explain5": {
+    "CH05A-0103": {
       "content": "这不是完整意义上的时间旅行"
     },
-    "ch5a_time_explain6": {
+    "CH05A-0104": {
       "content": "是上一轮任务时间残留\n污染了这一轮的索引"
     },
-    "ch5a_logs3": {
+    "CH05A-0105": {
       "content": "后面开始不对劲了"
     },
-    "ch5a_logs5": {
+    "CH05A-0106": {
       "content": "你自己看"
     },
-    "ch5a_logs6": {
+    "CH05A-0107": {
       "content": "日志007-012||日志007：如果你已经认识 Observer-01，请善待对方。\n日志012：外部索引会记得。所以不要让对方太早知道真相。\nNova，不要再问了。继续循环下去，对你们都好。"
     },
-    "ch5a_logs7_choice": {
+    "CH05A-0108": {
       "choices": {
-        "ch5a_logs7_choice__0": "【这些是谁写的？】",
-        "ch5a_logs7_choice__1": "【为什么继续循环会更好？】",
-        "ch5a_logs7_choice__2": "【“你们”是指我们两个？】"
+        "CH05A-0108__0": "【这些是谁写的？】",
+        "CH05A-0108__1": "【为什么继续循环会更好？】",
+        "CH05A-0108__2": "【“你们”是指我们两个？】"
       }
     },
-    "ch5a_logs8": {
+    "CH05A-0109": {
       "content": "不知道"
     },
-    "ch5a_logs8_a2": {
+    "CH05A-0110": {
       "content": "署名和写入来源都被删了"
     },
-    "ch5a_logs8_b1": {
+    "CH05A-0111": {
       "content": "也许写下它的人觉得"
     },
-    "ch5a_logs8_b2": {
+    "CH05A-0112": {
       "content": "重来比彻底失去更安全"
     },
-    "ch5a_logs8_c1": {
+    "CH05A-0113": {
       "content": "应该是"
     },
-    "ch5a_logs8_c2": {
+    "CH05A-0114": {
       "content": "至少这份日志把我们算在了一起"
     },
-    "ch5a_logs9": {
+    "CH05A-0115": {
       "content": "后面还有"
     },
-    "ch5a_logs10": {
+    "CH05A-0116": {
       "content": "最奇怪的是"
     },
-    "ch5a_logs11": {
+    "CH05A-0117": {
       "content": "日志数量"
     },
-    "ch5a_logs13": {
+    "CH05A-0118": {
       "content": "六份"
     },
-    "ch5a_logs14": {
+    "CH05A-0119": {
       "content": "正好六个版本"
     },
-    "ch5a_logs15": {
+    "CH05A-0120": {
       "choices": {
-        "ch5a_logs15__0": "【六份日志对应六次循环？】",
-        "ch5a_logs15__1": "【这些都是你写的？】",
-        "ch5a_logs15__2": "【有没有可能是伪造的？】"
+        "CH05A-0120__0": "【六份日志对应六次循环？】",
+        "CH05A-0120__1": "【这些都是你写的？】",
+        "CH05A-0120__2": "【有没有可能是伪造的？】"
       }
     },
-    "ch5a_logs15_a1": {
+    "CH05A-0121": {
       "content": "我也是这么想的"
     },
-    "ch5a_logs15_b1": {
+    "CH05A-0122": {
       "content": "字迹和权限都是我的"
     },
-    "ch5a_logs15_b2": {
+    "CH05A-0123": {
       "content": "但我一点也不记得自己写过"
     },
-    "ch5a_logs15_c1": {
+    "CH05A-0124": {
       "content": "我希望是"
     },
-    "ch5a_logs15_c2": {
+    "CH05A-0125": {
       "content": "可认证签名骗不了人"
     },
-    "ch5a_logs16": {
+    "CH05A-0126": {
       "content": "这些日志来自不同时间"
     },
-    "ch5a_logs17": {
+    "CH05A-0127": {
       "content": "但内容互相矛盾"
     },
-    "ch5a_logs18": {
+    "CH05A-0128": {
       "content": "像六个人写的"
     },
-    "ch5a_obs1": {
+    "CH05A-0129": {
       "content": "11:52"
     },
-    "ch5a_obs2": {
+    "CH05A-0130": {
       "content": "我去了观测室"
     },
-    "ch5a_obs2_choice": {
+    "CH05A-0131": {
       "choices": {
-        "ch5a_obs2_choice__0": "【你还是去找她了？】",
-        "ch5a_obs2_choice__1": "【别靠太近】",
-        "ch5a_obs2_choice__2": "【我在，继续说】"
+        "CH05A-0131__0": "【你还是去找她了？】",
+        "CH05A-0131__1": "【别靠太近】",
+        "CH05A-0131__2": "【我在，继续说】"
       }
     },
-    "ch5a_obs2_a1": {
+    "CH05A-0132": {
       "content": "嗯"
     },
-    "ch5a_obs2_a2": {
+    "CH05A-0133": {
       "content": "如果一直避开那里"
     },
-    "ch5a_obs2_a3": {
+    "CH05A-0134": {
       "content": "我可能永远都弄不明白自己在怕什么"
     },
-    "ch5a_obs2_b1": {
+    "CH05A-0135": {
       "content": "我知道"
     },
-    "ch5a_obs2_b2": {
+    "CH05A-0136": {
       "content": "我没有直接进去"
     },
-    "ch5a_obs2_b3": {
+    "CH05A-0137": {
       "content": "只站在门口看了一会儿"
     },
-    "ch5a_obs2_c1": {
+    "CH05A-0138": {
       "content": "嗯"
     },
-    "ch5a_obs2_c2": {
+    "CH05A-0139": {
       "content": "那我慢慢说"
     },
-    "ch5a_obs4": {
+    "CH05A-0140": {
       "content": "她还在那里"
     },
-    "ch5a_obs5": {
+    "CH05A-0141": {
       "content": "就在观测窗前"
     },
-    "ch5a_obs6_choice": {
+    "CH05A-0142": {
       "choices": {
-        "ch5a_obs6_choice__0": "【她看见你了吗？】",
-        "ch5a_obs6_choice__1": "【她像是在等你】",
-        "ch5a_obs6_choice__2": "【这次和之前不一样？】"
+        "CH05A-0142__0": "【她看见你了吗？】",
+        "CH05A-0142__1": "【她像是在等你】",
+        "CH05A-0142__2": "【这次和之前不一样？】"
       }
     },
-    "ch5a_obs6_a1": {
+    "CH05A-0143": {
       "content": "至少当时看起来是"
     },
-    "ch5a_obs6_a2": {
+    "CH05A-0144": {
       "content": "她的视线正好落在我站的位置"
     },
-    "ch5a_obs6_b1": {
+    "CH05A-0145": {
       "content": "对"
     },
-    "ch5a_obs6_b2": {
+    "CH05A-0146": {
       "content": "不是偶然站在那里"
     },
-    "ch5a_obs6_b3": {
+    "CH05A-0147": {
       "content": "是等在那里"
     },
-    "ch5a_obs6_c1": {
+    "CH05A-0148": {
       "content": "不一样"
     },
-    "ch5a_obs6_c2": {
+    "CH05A-0149": {
       "content": "之前像是我看见了她"
     },
-    "ch5a_obs6_c3": {
+    "CH05A-0150": {
       "content": "这次像是她终于等到我看见她"
     },
-    "ch5a_obs9": {
+    "CH05A-0151": {
       "content": "然后她开口了"
     },
-    "ch5a_obs10_choice": {
+    "CH05A-0152": {
       "choices": {
-        "ch5a_obs10_choice__0": "【她在和你说话？】",
-        "ch5a_obs10_choice__1": "【那不是现在的你】",
-        "ch5a_obs10_choice__2": "【别怕，我在】"
+        "CH05A-0152__0": "【她在和你说话？】",
+        "CH05A-0152__1": "【那不是现在的你】",
+        "CH05A-0152__2": "【别怕，我在】"
       }
     },
-    "ch5a_obs10_a1": {
+    "CH05A-0153": {
       "content": "看起来像"
     },
-    "ch5a_obs10_a2": {
+    "CH05A-0154": {
       "content": "她看着我"
     },
-    "ch5a_obs10_a3": {
+    "CH05A-0155": {
       "content": "像是早就知道我会来"
     },
-    "ch5a_obs10_b1": {
+    "CH05A-0156": {
       "content": "我也这么告诉自己"
     },
-    "ch5a_obs10_b2": {
+    "CH05A-0157": {
       "content": "但她有我的脸"
     },
-    "ch5a_obs10_b3": {
+    "CH05A-0158": {
       "content": "也有我的声音"
     },
-    "ch5a_obs10_b4": {
+    "CH05A-0159": {
       "content": "我没办法立刻把她当成别人"
     },
-    "ch5a_obs10_c1": {
+    "CH05A-0160": {
       "content": "……"
     },
-    "ch5a_obs10_c2": {
+    "CH05A-0161": {
       "content": "你每次都说得好像很简单"
     },
-    "ch5a_obs10_c3": {
+    "CH05A-0162": {
       "content": "但奇怪的是"
     },
-    "ch5a_obs10_c4": {
+    "CH05A-0163": {
       "content": "我好像真的没那么怕了"
     },
-    "ch5a_obs11": {
+    "CH05A-0164": {
       "content": "通讯静默了几秒"
     },
-    "ch5a_obs11a": {
+    "CH05A-0165": {
       "content": "我缓了一会儿"
     },
-    "ch5a_obs11b": {
+    "CH05A-0166": {
       "content": "因为那不是普通的影像"
     },
-    "ch5a_obs12": {
+    "CH05A-0167": {
       "content": "她不是另一个活着的我"
     },
-    "ch5a_obs13": {
+    "CH05A-0168": {
       "content": "更像是一个被回溯过程留在这里的残影"
     },
-    "ch5a_obs14": {
+    "CH05A-0169": {
       "content": "由记忆、记录"
     },
-    "ch5a_obs14b": {
+    "CH05A-0170": {
       "content": "还有某种不该留下来的东西拼在一起"
     },
-    "ch5a_obs15": {
+    "CH05A-0171": {
       "content": "她坐在观测窗前"
     },
-    "ch5a_obs16": {
+    "CH05A-0172": {
       "content": "像是已经等了很久"
     },
-    "ch5a_obs21": {
+    "CH05A-0173": {
       "content": "她看着我"
     },
-    "ch5a_obs22": {
+    "CH05A-0174": {
       "content": "第一句话是："
     },
-    "ch5a_obs23": {
+    "CH05A-0175": {
       "content": "“已经第七次了？”"
     },
-    "ch5a_obs24": {
+    "CH05A-0176": {
       "choices": {
-        "ch5a_obs24__0": "【她听起来像是在等这一次？】",
-        "ch5a_obs24__1": "【等了多久？】"
+        "CH05A-0176__0": "【她听起来像是在等这一次？】",
+        "CH05A-0176__1": "【等了多久？】"
       }
     },
-    "ch5a_obs24_a1": {
+    "CH05A-0177": {
       "content": "对"
     },
-    "ch5a_obs24_b1": {
+    "CH05A-0178": {
       "content": "我不知道"
     },
-    "ch5a_obs24_b2": {
+    "CH05A-0179": {
       "content": "但如果她真的是第六次的我"
     },
-    "ch5a_obs24_b3": {
+    "CH05A-0180": {
       "content": "那至少已经等过一次失败之后的全部时间"
     },
-    "ch5a_obs25": {
+    "CH05A-0181": {
       "content": "然后她笑了"
     },
-    "ch5a_obs26": {
+    "CH05A-0182": {
       "content": "很难形容"
     },
-    "ch5a_obs27": {
+    "CH05A-0183": {
       "content": "像松了一口气"
     },
-    "ch5a_obs28": {
+    "CH05A-0184": {
       "content": "又像很难过"
     },
-    "ch5a_obs30": {
+    "CH05A-0185": {
       "content": "她留下的下一句话是："
     },
-    "ch5a_obs31": {
+    "CH05A-0186": {
       "content": "“Observer-01 还在吗？”"
     },
-    "ch5a_obs33": {
+    "CH05A-0187": {
       "content": "我不知道"
     },
-    "ch5a_obs34": {
+    "CH05A-0188": {
       "content": "它听不见我，也不会真正回应"
     },
-    "ch5a_obs34b": {
+    "CH05A-0189": {
       "content": "更像是在满足条件后，播放早就留下的内容"
     },
-    "ch5a_obs35": {
+    "CH05A-0190": {
       "content": "接着，它播放了下一段留言："
     },
-    "ch5a_obs36": {
+    "CH05A-0191": {
       "content": "“我是第六次的你”"
     },
-    "ch5a_obs37": {
+    "CH05A-0192": {
       "content": "17:34"
     },
-    "ch5a_back1": {
+    "CH05A-0193": {
       "content": "我回来了"
     },
-    "ch5a_back3": {
+    "CH05A-0194": {
       "content": "不好"
     },
-    "ch5a_back4": {
+    "CH05A-0195": {
       "content": "非常不好"
     },
-    "ch5a_back5": {
+    "CH05A-0196": {
       "content": "因为她给我看了些东西"
     },
-    "ch5a_back7": {
+    "CH05A-0197": {
       "content": "录像"
     },
-    "ch5a_back8": {
+    "CH05A-0198": {
       "content": "六段录像"
     },
-    "ch5a_back9": {
+    "CH05A-0199": {
       "content": "全部是我"
     },
-    "ch5a_back10": {
+    "CH05A-0200": {
       "content": "前五段都以不同的事故结束"
     },
-    "ch5a_vids3": {
+    "CH05A-0201": {
       "content": "第一段"
     },
-    "ch5a_vids4": {
+    "CH05A-0202": {
       "content": "引擎爆炸"
     },
-    "ch5a_vids5": {
+    "CH05A-0203": {
       "content": "第二段"
     },
-    "ch5a_vids6": {
+    "CH05A-0204": {
       "content": "能源崩溃"
     },
-    "ch5a_vids7": {
+    "CH05A-0205": {
       "content": "第三段"
     },
-    "ch5a_vids8": {
+    "CH05A-0206": {
       "content": "未知感染"
     },
-    "ch5a_vids9": {
+    "CH05A-0207": {
       "content": "第四段"
     },
-    "ch5a_vids10": {
+    "CH05A-0208": {
       "content": "系统失控"
     },
-    "ch5a_vids11": {
+    "CH05A-0209": {
       "content": "第五段"
     },
-    "ch5a_vids12": {
+    "CH05A-0210": {
       "content": "飞船解体"
     },
-    "ch5a_vids13": {
+    "CH05A-0211": {
       "choices": {
-        "ch5a_vids13__0": "【第六段里发生了什么？】",
-        "ch5a_vids13__1": "【前五次都失败了？】",
-        "ch5a_vids13__2": "【她为什么还要录下来？】"
+        "CH05A-0211__0": "【第六段里发生了什么？】",
+        "CH05A-0211__1": "【前五次都失败了？】",
+        "CH05A-0211__2": "【她为什么还要录下来？】"
       }
     },
-    "ch5a_vids13_a1": {
+    "CH05A-0212": {
       "content": "我也是先看的第六段"
     },
-    "ch5a_vids13_b1": {
+    "CH05A-0213": {
       "content": "嗯"
     },
-    "ch5a_vids13_b2": {
+    "CH05A-0214": {
       "content": "至少录像里是这样"
     },
-    "ch5a_vids13_c1": {
+    "CH05A-0215": {
       "content": "也许不是给自己看的"
     },
-    "ch5a_vids13_c2": {
+    "CH05A-0216": {
       "content": "也许是给下一次的我看的"
     },
-    "ch5a_vids_compare_file": {
+    "CH05A-0217": {
       "content": "六次任务失败 / 交叉比对||记录范围：LOOP-01 至 LOOP-06\n共同坐标：原定航线 / 静默航区 S-7 时相共振区\n共同前兆：舰钟漂移 / 隐藏核心负载激增 / 导航连续性签名重复写入\nLOOP-01：推进系统先失效 / 引擎爆炸\nLOOP-02：能源网络先失效 / 全舰能源崩溃\nLOOP-03：环境与医疗系统先失效 / 未知感染\nLOOP-04：控制系统先失效 / 自动系统失控\nLOOP-05：舰体参照先失效 / 船体解体\nLOOP-06：紧急航线修正提交 / 被判定为任务偏离 / 保护性回溯启动\n判定：六次任务失败源自同一时相共振事件，并非六次独立事故\n补充：失败不等同于六次完整舰体损毁"
     },
-    "ch5a_vids_compare1": {
+    "CH05A-0218": {
       "content": "我一开始也以为，那是五场不同的事故"
     },
-    "ch5a_vids_compare2": {
+    "CH05A-0219": {
       "content": "可把记录叠在一起，它们都从同一个坐标开始"
     },
-    "ch5a_vids_compare3": {
+    "CH05A-0220": {
       "content": "引擎、能源、环境、控制、船体，只是最先垮掉的地方不一样"
     },
-    "ch5a_vids_compare4": {
+    "CH05A-0221": {
       "content": "原定航线会穿过一片时相共振区"
     },
-    "ch5a_vids_compare5": {
+    "CH05A-0222": {
       "content": "只要我们照原计划继续飞，事故迟早都会发生"
     },
-    "ch5a_vids14": {
+    "CH05A-0223": {
       "content": "第六段没有出现死亡记录"
     },
-    "ch5a_vids16": {
+    "CH05A-0224": {
       "content": "录像最后"
     },
-    "ch5a_vids17": {
+    "CH05A-0225": {
       "content": "那个我看着镜头"
     },
-    "ch5a_vids18": {
+    "CH05A-0226": {
       "content": "然后说："
     },
-    "ch5a_vids19": {
+    "CH05A-0227": {
       "content": "“终于找到你了”"
     },
-    "ch5a_vids20": {
+    "CH05A-0228": {
       "choices": {
-        "ch5a_vids20__0": "【她说她找到了谁？】",
-        "ch5a_vids20__1": "【录像被删掉了？】",
-        "ch5a_vids20__2": "【你觉得是我？】"
+        "CH05A-0228__0": "【她说她找到了谁？】",
+        "CH05A-0228__1": "【录像被删掉了？】",
+        "CH05A-0228__2": "【你觉得是我？】"
       }
     },
-    "ch5a_vids_who": {
+    "CH05A-0229": {
       "content": "不知道"
     },
-    "ch5a_vids_who2": {
+    "CH05A-0230": {
       "content": "录像到那里就断了"
     },
-    "ch5a_vids_who3": {
+    "CH05A-0231": {
       "content": "像是有人故意删掉了后半段"
     },
-    "ch5a_vids_who4": {
+    "CH05A-0232": {
       "content": "但她看着镜头的样子"
     },
-    "ch5a_vids_who5": {
+    "CH05A-0233": {
       "content": "不像是在找一个陌生人"
     },
-    "ch5a_vids_del": {
+    "CH05A-0234": {
       "content": "对"
     },
-    "ch5a_vids_del2": {
+    "CH05A-0235": {
       "content": "而且删得很干净"
     },
-    "ch5a_vids_del3": {
+    "CH05A-0236": {
       "content": "这不像文件损坏"
     },
-    "ch5a_vids_del4": {
+    "CH05A-0237": {
       "content": "更像有人把后半段删掉了"
     },
-    "ch5a_vids_del5": {
+    "CH05A-0238": {
       "content": "有人不想让我看到后面的话"
     },
-    "ch5a_vids_you": {
+    "CH05A-0239": {
       "content": "我不敢确定"
     },
-    "ch5a_vids_you2": {
+    "CH05A-0240": {
       "content": "但她说那句话的时候"
     },
-    "ch5a_vids_you3": {
+    "CH05A-0241": {
       "content": "视线正对着通讯镜头"
     },
-    "ch5a_vids_you4": {
+    "CH05A-0242": {
       "content": "就像知道另一边有人在看"
     },
-    "ch5a_vids_merge": {
+    "CH05A-0243": {
       "content": "所以我有个很糟糕的预感"
     },
-    "ch5a_vids_merge2": {
+    "CH05A-0244": {
       "content": "她说的那个人"
     },
-    "ch5a_vids_merge3": {
+    "CH05A-0245": {
       "content": "可能是你"
     },
-    "ch5a_vids_merge4": {
+    "CH05A-0246": {
       "content": "或者说"
     },
-    "ch5a_vids_merge5": {
+    "CH05A-0247": {
       "content": "是某个和你有关的人"
     },
-    "ch5a_route_record1": {
+    "CH05A-0248": {
       "content": "LOOP-06 / 紧急航线修正记录||原定航线：穿过 S-7 时相共振区\n紧急修正：已提交\n修正目的：绕开共振区\n第七协议判定：偏离既定任务航线\n执行结果：保护性回溯指令已提交\n新航线写入稳定时相锚：未完成"
     },
-    "ch5a_route_reveal1": {
+    "CH05A-0249": {
       "content": "第六次的我已经找到绕开的路，也真的改过航线"
     },
-    "ch5a_route_reveal2": {
+    "CH05A-0250": {
       "content": "可第七协议把改道判成了任务失败"
     },
-    "ch5a_route_reveal3": {
+    "CH05A-0251": {
       "content": "新航线还没来得及写进锚点，时相核心就把一切拉回去了"
     },
-    "ch5a_route_reveal4": {
+    "CH05A-0252": {
       "content": "所以这一次醒来，我还在原来的航线上"
     },
-    "ch5a_future": {
+    "CH05A-0253": {
       "content": "22:18"
     },
-    "ch5a_fut1": {
+    "CH05A-0254": {
       "content": "我发现了一件更糟糕的事"
     },
-    "ch5a_fut3": {
+    "CH05A-0255": {
       "content": "这些录像"
     },
-    "ch5a_fut4": {
+    "CH05A-0256": {
       "content": "全都录在当前安全记录点之后"
     },
-    "ch5a_fut6": {
+    "CH05A-0257": {
       "content": "最早的一段"
     },
-    "ch5a_fut7": {
+    "CH05A-0258": {
       "content": "最早的一段，也标着一年后的任务时间"
     },
-    "ch5a_fut9": {
+    "CH05A-0259": {
       "content": "是啊"
     },
-    "ch5a_fut10": {
+    "CH05A-0260": {
       "content": "可我想不通"
     },
-    "ch5a_fut11": {
+    "CH05A-0261": {
       "content": "为什么上一轮更晚时候的我"
     },
-    "ch5a_fut12": {
+    "CH05A-0262": {
       "content": "会把录像留给这个安全记录点之后醒来的我？"
     },
-    "ch5a_fut14": {
+    "CH05A-0263": {
       "content": "还有"
     },
-    "ch5a_fut15": {
+    "CH05A-0264": {
       "content": "为什么这些录像里"
     },
-    "ch5a_fut16": {
+    "CH05A-0265": {
       "content": "总有和你有关的记录？"
     },
-    "ch5a_fut17_choice": {
+    "CH05A-0266": {
       "choices": {
-        "ch5a_fut17_choice__0": "【因为我也在里面？】",
-        "ch5a_fut17_choice__1": "【因为她想让我知道？】",
-        "ch5a_fut17_choice__2": "【也许不是我】"
+        "CH05A-0266__0": "【因为我也在里面？】",
+        "CH05A-0266__1": "【因为她想让我知道？】",
+        "CH05A-0266__2": "【也许不是我】"
       }
     },
-    "ch5a_fut17_a1": {
+    "CH05A-0267": {
       "content": "我不知道你是不是“在里面”"
     },
-    "ch5a_fut17_a2": {
+    "CH05A-0268": {
       "content": "但你一定在她的计划里"
     },
-    "ch5a_fut17_b1": {
+    "CH05A-0269": {
       "content": "有可能"
     },
-    "ch5a_fut17_b2": {
+    "CH05A-0270": {
       "content": "她像是把所有没法说出口的话都塞进了录像里"
     },
-    "ch5a_fut17_c1": {
+    "CH05A-0271": {
       "content": "我也希望不是"
     },
-    "ch5a_fut17_c2": {
+    "CH05A-0272": {
       "content": "但所有线索都在往你身上靠"
     },
-    "ch5a_fut19": {
+    "CH05A-0273": {
       "content": "我开始怀疑一件事"
     },
-    "ch5a_fut21": {
+    "CH05A-0274": {
       "content": "也许"
     },
-    "ch5a_fut22": {
+    "CH05A-0275": {
       "content": "我不是唯一被困住的人"
     },
-    "ch5a_offline": {
+    "CH05A-0276": {
       "content": "Nova 已离线"
     },
-    "ch5a_msg": {
+    "CH05A-0277": {
       "content": "凌晨 03:09"
     },
-    "ch5a_msg1": {
+    "CH05A-0278": {
       "content": "收到未知来源消息"
     },
-    "ch5a_shadow_photo": {
+    "CH05A-0279": {
       "content": "通讯残影：NOVA-06"
     },
-    "ch5a_msg2": {
+    "CH05A-0280": {
       "content": "发送者识别：NOVA-06 / 条件残留"
     },
-    "ch5a_residual_record": {
+    "CH05A-0281": {
       "content": "NOVA-06 残留触发记录||类型：第六次循环留下的条件指令 / 非实时意识\n触发条件：当前 Nova 再次进入观测室，且回溯核心负载越过预设阈值\n可执行范围：发送封存留言；在指定供能事故中短时接管一次\n限制：不能持续控制当前循环；不能替代 Observer-01 完成授权；接管权限使用后立即注销"
     },
-    "ch5a_msg3": {
+    "CH05A-0282": {
       "content": "不要完全相信她。"
     },
-    "ch5a_msg4": {
+    "CH05A-0283": {
       "content": "不是因为她会骗你。"
     },
-    "ch5a_msg5": {
+    "CH05A-0284": {
       "content": "是因为她真的会忘。"
     },
-    "ch5a_msg6": {
+    "CH05A-0285": {
       "content": "也不要完全相信我。"
     },
-    "ch5a_msg7": {
+    "CH05A-0286": {
       "content": "我只是第六次留下来的残影。"
     },
-    "ch5a_msg8": {
+    "CH05A-0287": {
       "content": "真正被困住的不是 Nova，是你"
     },
-    "CH5B_START": {
+    "CH05B-0001": {
       "content": "第五章：真相（下）"
     },
-    "ch5b_0": {
+    "CH05B-0002": {
       "content": "第七天 08:01"
     },
-    "ch5b_1": {
+    "CH05B-0003": {
       "content": "收到新消息"
     },
-    "ch5b_2": {
+    "CH05B-0004": {
       "content": "我一晚上没睡"
     },
-    "ch5b_4": {
+    "CH05B-0005": {
       "content": "嗯"
     },
-    "ch5b_5": {
+    "CH05B-0006": {
       "content": "尤其是最后那句"
     },
-    "ch5b_6": {
+    "CH05B-0007": {
       "content": "“真正被困住的不是 Nova，是你”"
     },
-    "ch5b_7": {
+    "CH05B-0008": {
       "content": "我想不通"
     },
-    "ch5b_9": {
+    "CH05B-0009": {
       "content": "所以我决定做件危险的事"
     },
-    "ch5b_11": {
+    "CH05B-0010": {
       "content": "去见第六次的我"
     },
-    "ch5b_power_intro1": {
+    "CH05B-0011": {
       "content": "不过观测室现在的主供能不够"
     },
-    "ch5b_power_intro2": {
+    "CH05B-0012": {
       "content": "低压通道的生命维持、通讯和核心读取，会抢同一组电"
     },
-    "ch5b_power_intro3": {
+    "CH05B-0013": {
       "content": "我把临时供能窗口交给你"
     },
-    "ch5b_power_intro4": {
+    "CH05B-0014": {
       "content": "先保住我，再让通讯和扫描都留在安全线以上"
     },
-    "ch5b_power_intro5": {
+    "CH05B-0015": {
       "content": "系统会锁定提交，看清每条支路的下限再确认"
     },
-    "ch5b_power_file": {
+    "CH05B-0016": {
       "content": "观测室应急供能窗口||阶段 A / 穿过低压通道：生命维持必须保持高位；通讯不得中断\n阶段 B / 读取残留核心：扫描必须进入工作区；生命维持与通讯仍须高于安全线\n总线限制：每阶段可用功率固定；确认后不可由当前 Nova 撤回\n历史权限：检测到一枚 NOVA-06 一次性紧急接管签名"
     },
-    "ch5b_power_interaction": {
+    "CH05B-0017": {
       "content": "应急供能路由 / 第一次提交"
     },
-    "ch5b_power_first_success1": {
+    "CH05B-0018": {
       "content": "两阶段供能路由完成\n生命维持、通讯与核心读取均保持安全"
     },
-    "ch5b_power_first_success2": {
+    "CH05B-0019": {
       "content": "稳住了"
     },
-    "ch5b_power_first_success3": {
+    "CH05B-0020": {
       "content": "一次就够，紧急接管权限没有被调用"
     },
-    "ch5b_power_first_fail1": {
+    "CH05B-0021": {
       "content": "供能提交越过安全下限\n错误路由已锁定"
     },
-    "ch5b_power_first_fail2": {
+    "CH05B-0022": {
       "content": "不对，生命维持在掉"
     },
-    "ch5b_power_override1": {
+    "CH05B-0023": {
       "content": "检测到过期导航权限：NOVA-06"
     },
-    "ch5b_power_override2": {
+    "CH05B-0024": {
       "content": "NOVA-06 短时接管供能总线\n正在撤销最近一次提交"
     },
-    "ch5b_power_override3": {
+    "CH05B-0025": {
       "content": "NOVA-06 残留指令：只能退回一次"
     },
-    "ch5b_power_override4": {
+    "CH05B-0026": {
       "content": "错误提交已撤销\n一次性接管权限已注销\n最终供能窗口重新开放"
     },
-    "ch5b_power_retry_nova1": {
+    "CH05B-0027": {
       "content": "刚才那是谁？"
     },
-    "ch5b_power_retry_nova2": {
+    "CH05B-0028": {
       "content": "先别管了，这次没有人能再替我们撤回"
     },
-    "ch5b_power_retry_interaction": {
+    "CH05B-0029": {
       "content": "应急供能路由 / 最终提交"
     },
-    "ch5b_power_retry_success1": {
+    "CH05B-0030": {
       "content": "最终供能路由完成\n生命维持、通讯与核心读取均保持安全"
     },
-    "ch5b_power_retry_success2": {
+    "CH05B-0031": {
       "content": "这次稳住了"
     },
-    "ch5b_power_retry_success3": {
+    "CH05B-0032": {
       "content": "她只替我们把错误撤回了一次，剩下的是你做的"
     },
-    "bad_power_1": {
+    "CH05B-0033": {
       "content": "最终供能提交已锁定\n紧急接管权限：不存在"
     },
-    "bad_power_2": {
+    "CH05B-0034": {
       "content": "生命维持支路跌破最低安全线\n观测室低压门已闭锁"
     },
-    "bad_power_3": {
+    "CH05B-0035": {
       "content": "不对……这次没有人把它撤回"
     },
-    "bad_power_4": {
+    "CH05B-0036": {
       "content": "别断开，我还可以——"
     },
-    "bad_power_5": {
+    "CH05B-0037": {
       "content": "通讯载波中断"
     },
-    "bad_power_6": {
+    "CH05B-0038": {
       "content": "观测室 LIVE-07：生命信号丢失"
     },
-    "ch5b_obs1": {
+    "CH05B-0039": {
       "content": "11:42"
     },
-    "ch5b_obs2": {
+    "CH05B-0040": {
       "content": "我到观测室了"
     },
-    "ch5b_obs3": {
+    "CH05B-0041": {
       "content": "她还在"
     },
-    "ch5b_obs5": {
+    "CH05B-0042": {
       "content": "和我一模一样"
     },
-    "ch5b_obs6": {
+    "CH05B-0043": {
       "content": "只是更疲惫"
     },
-    "ch5b_obs7": {
+    "CH05B-0044": {
       "content": "像很多年没睡过觉"
     },
-    "ch5b_obs9": {
+    "CH05B-0046": {
       "content": "她让我问你一个问题"
     },
-    "ch5b_obs11": {
+    "CH05B-0047": {
       "content": "她说："
     },
-    "ch5b_obs12": {
+    "CH05B-0048": {
       "content": "“你还记得第一次见到我吗？”"
     },
-    "ch5b_obs13": {
+    "CH05B-0049": {
       "choices": {
-        "ch5b_obs13__0": "【其实是第七次】",
-        "ch5b_obs13__1": "【不知道……】",
-        "ch5b_obs13__2": "【我当然记得】"
+        "CH05B-0049__0": "【其实是第七次】",
+        "CH05B-0049__1": "【不知道……】",
+        "CH05B-0049__2": "【我当然记得】"
       }
     },
-    "ch5b_obs_timeout": {
+    "CH05B-0050": {
       "content": "你没有立刻回答"
     },
-    "ch5b_obs_timeout2": {
+    "CH05B-0051": {
       "content": "她好像也不意外"
     },
-    "ch5b_obs_seven": {
+    "CH05B-0052": {
       "content": "第七次？"
     },
-    "ch5b_obs_seven2": {
+    "CH05B-0053": {
       "content": "你为什么会用这个说法"
     },
-    "ch5b_obs_seven3": {
+    "CH05B-0054": {
       "content": "正常人不会把“第一次见面”叫成第七次"
     },
-    "ch5b_obs_seven4": {
+    "CH05B-0055": {
       "content": "除非……"
     },
-    "ch5b_obs_seven5": {
+    "CH05B-0056": {
       "content": "算了"
     },
-    "ch5b_obs_seven6": {
+    "CH05B-0057": {
       "content": "我现在不确定自己想不想知道答案"
     },
-    "ch5b_obs_dontknow": {
+    "CH05B-0058": {
       "content": "也是"
     },
-    "ch5b_obs_dontknow2": {
+    "CH05B-0059": {
       "content": "这问题本来就很奇怪"
     },
-    "ch5b_obs_dontknow3": {
+    "CH05B-0060": {
       "content": "如果连我自己都不记得"
     },
-    "ch5b_obs_dontknow4": {
+    "CH05B-0061": {
       "content": "又怎么能要求你记得"
     },
-    "ch5b_obs_dontknow5": {
+    "CH05B-0062": {
       "content": "但她听到这个答案的时候"
     },
-    "ch5b_obs_dontknow6": {
+    "CH05B-0063": {
       "content": "好像一点都不意外"
     },
-    "ch5b_obs_remember": {
+    "CH05B-0064": {
       "content": "你答得很快"
     },
-    "ch5b_obs_remember2": {
+    "CH05B-0065": {
       "content": "快得像这个答案一直等在你那里"
     },
-    "ch5b_obs_remember3": {
+    "CH05B-0066": {
       "content": "可你不像是在犹豫"
     },
-    "ch5b_obs_remember4": {
+    "CH05B-0067": {
       "content": "像是真的在想起什么"
     },
-    "ch5b_obs14": {
+    "CH05B-0068": {
       "content": "但这不合理"
     },
-    "ch5b_obs15": {
+    "CH05B-0069": {
       "content": "我们明明只认识七天"
     },
-    "ch5b_obs16": {
+    "CH05B-0070": {
       "content": "至少对我来说"
     },
-    "ch5b_obs16b": {
+    "CH05B-0071": {
       "content": "只有七天"
     },
-    "ch5b_file1": {
+    "CH05B-0072": {
       "content": "15:03"
     },
-    "ch5b_file2": {
+    "CH05B-0073": {
       "content": "她给我看了最后一个文件"
     },
-    "ch5b_file3": {
+    "CH05B-0074": {
       "content": "文件名："
     },
-    "ch5b_file4": {
+    "CH05B-0075": {
       "content": "文件||OBSERVER"
     },
-    "ch5b_file5": {
+    "CH05B-0076": {
       "content": "OBSERVER-01 文件展开"
     },
-    "ch5b_file6": {
+    "CH05B-0077": {
       "content": "是实验记录"
     },
-    "ch5b_file7": {
+    "CH05B-0078": {
       "content": "记录的是你"
     },
-    "ch5b_file9": {
+    "CH05B-0079": {
       "content": "嗯"
     },
-    "ch5b_file10": {
+    "CH05B-0080": {
       "content": "OBSERVER-01 / 摘要||对象：外部真实意识\n回溯范围：Aurora，不包含对象本体\n链路关闭：对象对异常通讯的记忆访问被封锁\n保留内容：少量记忆锚点索引\n来源：NOVA-06\n权限：保存 / 读取 / 返还锚点\n协议控制权：无\n完整权限记录：已解锁至档案"
     },
-    "ch5b_file11": {
+    "CH05B-0081": {
       "content": "……"
     },
-    "ch5b_file12": {
+    "CH05B-0082": {
       "content": "所以你也忘过我"
     },
-    "ch5b_file13": {
+    "CH05B-0083": {
       "content": "不是你一直清醒地看着我重来"
     },
-    "ch5b_file_reader_choice": {
+    "CH05B-0084": {
       "choices": {
-        "ch5b_file_reader_choice__0": "【我也会忘？】",
-        "ch5b_file_reader_choice__1": "【Observer-01 到底是什么？】",
-        "ch5b_file_reader_choice__2": "【那为什么我总觉得认识你？】"
+        "CH05B-0084__0": "【我也会忘？】",
+        "CH05B-0084__1": "【Observer-01 到底是什么？】",
+        "CH05B-0084__2": "【那为什么我总觉得认识你？】"
       }
     },
-    "ch5b_file_reader_a1": {
+    "CH05B-0085": {
       "content": "是"
     },
-    "ch5b_file_reader_a2": {
+    "CH05B-0086": {
       "content": "每次通讯断开，你都会失去访问这段记忆的路"
     },
-    "ch5b_file_reader_b1": {
+    "CH05B-0087": {
       "content": "第六次的我留在你身上的几枚书签"
     },
-    "ch5b_file_reader_b2": {
+    "CH05B-0088": {
       "content": "不是另一个人，也不是系统管理员"
     },
-    "ch5b_file_reader_c1": {
+    "CH05B-0089": {
       "content": "因为那些书签会比你的记忆先醒"
     },
-    "ch5b_file_reader_c2": {
+    "CH05B-0090": {
       "content": "再把你一点点带回这里"
     },
-    "ch5b_file_reader_merge": {
+    "CH05B-0091": {
       "content": "第六次的我只在你那边留下几枚书签"
     },
-    "ch5b_file13f": {
+    "CH05B-0092": {
       "content": "每次连接重新出现"
     },
-    "ch5b_file13g": {
+    "CH05B-0093": {
       "content": "它们都会比你的记忆先醒"
     },
-    "ch5b_file13h": {
+    "CH05B-0094": {
       "content": "把你重新带回这段通讯"
     },
-    "ch5b_file13i": {
+    "CH05B-0095": {
       "content": "但不会把全部疼痛一起还给你"
     },
-    "ch5b_file13j": {
+    "CH05B-0096": {
       "content": "所以你不是看着我忘了六次"
     },
-    "ch5b_file13k": {
+    "CH05B-0097": {
       "content": "你也忘过我六次"
     },
-    "ch5b_player_forget1": {
+    "CH05B-0098": {
       "content": "只是每一次，都会有一点痕迹先醒过来"
     },
-    "ch5b_player_forget2": {
+    "CH05B-0099": {
       "content": "N7、小白花、晚安"
     },
-    "ch5b_player_forget3": {
+    "CH05B-0100": {
       "content": "它们不是完整回忆"
     },
-    "ch5b_player_forget4": {
+    "CH05B-0101": {
       "content": "只是能把回忆拉回来的线头"
     },
-    "ch5b_player_forget5": {
+    "CH05B-0102": {
       "content": "系统把那东西叫外部记忆索引"
     },
-    "ch5b_player_forget5b": {
+    "CH05B-0103": {
       "content": "我更愿意叫它书签"
     },
-    "ch5b_player_forget5c": {
+    "CH05B-0104": {
       "content": "听起来没那么像实验品"
     },
-    "ch5b_player_forget_choice": {
+    "CH05B-0105": {
       "choices": {
-        "ch5b_player_forget_choice__0": "【所以不是我一直记得你？】",
-        "ch5b_player_forget_choice__1": "【这些书签替我留下了证据？】",
-        "ch5b_player_forget_choice__2": "【那我们都忘过对方】"
+        "CH05B-0105__0": "【所以不是我一直记得你？】",
+        "CH05B-0105__1": "【这些书签替我留下了证据？】",
+        "CH05B-0105__2": "【那我们都忘过对方】"
       }
     },
-    "ch5b_player_forget_a1": {
+    "CH05B-0106": {
       "content": "嗯"
     },
-    "ch5b_player_forget_a2": {
+    "CH05B-0107": {
       "content": "至少不是以你以为的方式"
     },
-    "ch5b_player_forget_b1": {
+    "CH05B-0108": {
       "content": "对"
     },
-    "ch5b_player_forget_b2": {
+    "CH05B-0109": {
       "content": "它们留下证据，却没有替你保留完整的疼痛"
     },
-    "ch5b_player_forget_c1": {
+    "CH05B-0110": {
       "content": "嗯"
     },
-    "ch5b_player_forget_c2": {
+    "CH05B-0111": {
       "content": "只是我们每次忘掉的方式不一样"
     },
-    "ch5b_file14": {
+    "CH05B-0112": {
       "choices": {
-        "ch5b_file14__0": "【所以我不是协议的一部分？】",
-        "ch5b_file14__1": "【结束时我需要做什么？】"
+        "CH05B-0112__0": "【所以我不是协议的一部分？】",
+        "CH05B-0112__1": "【结束时我需要做什么？】"
       }
     },
-    "ch5b_file14_a1": {
+    "CH05B-0113": {
       "content": "不是，你只是被挂在协议外面"
     },
-    "ch5b_file14_b1": {
+    "CH05B-0114": {
       "content": "把书签还回来"
     },
-    "ch5b_file14_b2": {
+    "CH05B-0115": {
       "content": "再把挂在你这边的索引放开"
     },
-    "ch5b_file14_b3": {
+    "CH05B-0116": {
       "content": "这样关闭流程才会完整"
     },
-    "ch5b_file15": {
+    "CH05B-0117": {
       "content": "回溯只包住 Aurora 这一段任务区域"
     },
-    "ch5b_file16": {
+    "CH05B-0118": {
       "content": "人、系统、记录、舰体都会恢复"
     },
-    "ch5b_file17": {
+    "CH05B-0119": {
       "content": "你不在范围里"
     },
-    "ch5b_file17a": {
+    "CH05B-0120": {
       "content": "所以第六次的我才把书签放在你这边"
     },
-    "ch5b_file18": {
+    "CH05B-0121": {
       "content": "至于小白花"
     },
-    "ch5b_file18a": {
+    "CH05B-0122": {
       "content": "上一轮的花没有活到这一轮"
     },
-    "ch5b_file18b": {
+    "CH05B-0123": {
       "content": "每次回溯，它都会重新长出来"
     },
-    "ch5b_flower_choice": {
+    "CH05B-0124": {
       "choices": {
-        "ch5b_flower_choice__0": "【它不是上一轮留下的？】",
-        "ch5b_flower_choice__1": "【每次都会重新开？】",
-        "ch5b_flower_choice__2": "【这反而更像奇迹】"
+        "CH05B-0124__0": "【它不是上一轮留下的？】",
+        "CH05B-0124__1": "【每次都会重新开？】",
+        "CH05B-0124__2": "【这反而更像奇迹】"
       }
     },
-    "ch5b_flower_a1": {
+    "CH05B-0125": {
       "content": "不是"
     },
-    "ch5b_flower_b1": {
+    "CH05B-0126": {
       "content": "更像是这样"
     },
-    "ch5b_flower_c1": {
+    "CH05B-0127": {
       "content": "也许吧"
     },
-    "ch5b_file18c": {
+    "CH05B-0128": {
       "content": "它没有活过六次"
     },
-    "ch5b_file18d": {
+    "CH05B-0129": {
       "content": "只是六次都开在同一个不该开花的地方"
     },
-    "ch5b_file18e": {
+    "CH05B-0130": {
       "content": "一次也没有缺席"
     },
-    "ch5b_file18f": {
+    "CH05B-0131": {
       "content": "现在想想"
     },
-    "ch5b_file18g": {
+    "CH05B-0132": {
       "content": "也许这比活过六次更像奇迹"
     },
-    "ch5b_file18h": {
+    "CH05B-0133": {
       "content": "至少我愿意这么相信"
     },
-    "ch5b_file19": {
+    "CH05B-0134": {
       "content": "舰长不会记得自己骂过我多少次"
     },
-    "ch5b_file20": {
+    "CH05B-0135": {
       "content": "维修组也不会记得维修板丢过多少次"
     },
-    "ch5b_file21": {
+    "CH05B-0136": {
       "content": "只有我会留下模糊的残影"
     },
-    "ch5b_signature_detail_choice": {
+    "CH05B-0137": {
       "choices": {
-        "ch5b_signature_detail_choice__0": "【我明白，继续】",
-        "ch5b_signature_detail_choice__1": "【为什么偏偏是你？】"
+        "CH05B-0137__0": "【我明白，继续】",
+        "CH05B-0137__1": "【为什么偏偏是你？】"
       }
     },
-    "ch5b_file21a": {
+    "CH05B-0138": {
       "content": "导航员每天都要给任务状态签名"
     },
-    "ch5b_file21a2": {
+    "CH05B-0139": {
       "content": "星图、航线和人员位置都会写进去"
     },
-    "ch5b_file21a3": {
+    "CH05B-0140": {
       "content": "核心每次恢复我，也会重新核对那份签名"
     },
-    "ch5b_file21b": {
+    "CH05B-0141": {
       "content": "六次以后，签名之间留下了细小差异"
     },
-    "ch5b_file21c": {
+    "CH05B-0142": {
       "content": "观测室里的残影就是那些差异"
     },
-    "ch5b_file21d": {
+    "CH05B-0143": {
       "content": "不是完整的第六次，也不是另一个活着的我"
     },
-    "ch5b_file22": {
+    "CH05B-0144": {
       "content": "可 OBSERVER 文件不一样"
     },
-    "ch5b_file22a": {
+    "CH05B-0145": {
       "content": "那些书签是第六次的我故意留下的"
     },
-    "ch5b_file22b": {
+    "CH05B-0146": {
       "content": "她改不了协议"
     },
-    "ch5b_file22c": {
+    "CH05B-0147": {
       "content": "但导航数据由她提交"
     },
-    "ch5b_file22d": {
+    "CH05B-0148": {
       "content": "她把记忆锚点伪装成任务必须保存的导航索引"
     },
-    "ch5b_file22e": {
+    "CH05B-0149": {
       "content": "再把那份索引接到你这边"
     },
-    "ch5b_file22f": {
+    "CH05B-0150": {
       "content": "系统以为它在保存任务"
     },
-    "ch5b_file22g": {
+    "CH05B-0151": {
       "content": "其实她是在保存我们说过的话"
     },
-    "ch5b_file22h": {
+    "CH05B-0152": {
       "content": "至少，保存了能把它们找回来的线头"
     },
-    "ch5b_echo_record1": {
+    "CH05B-0153": {
       "content": "记录最后还有一句"
     },
-    "ch5b_echo_record2": {
+    "CH05B-0154": {
       "content": "“它看得见每一条通讯，却看不见你记住了什么”"
     },
-    "ch5b_split1": {
+    "CH05B-0155": {
       "content": "然后把一条外部链路接到了你身上"
     },
-    "ch5b_split2": {
+    "CH05B-0156": {
       "content": "第一句话"
     },
-    "ch5b_split3": {
+    "CH05B-0157": {
       "content": "N7"
     },
-    "ch5b_split4": {
+    "CH05B-0158": {
       "content": "晚安和观测室"
     },
-    "ch5b_split5": {
+    "CH05B-0159": {
       "content": "牛奶糖和小白花"
     },
-    "ch5b_split6": {
+    "CH05B-0160": {
       "content": "那块维修板、合成牛排，还有每一次你回应我的痕迹"
     },
-    "ch5b_split7": {
+    "CH05B-0161": {
       "content": "她把这些东西从自己的记忆里一点点拆了出来"
     },
-    "ch5b_split_choice": {
+    "CH05B-0162": {
       "choices": {
-        "ch5b_split_choice__0": "【这些都是锚点？】",
-        "ch5b_split_choice__1": "【所以你才会断片？】",
-        "ch5b_split_choice__2": "【她把自己弄坏了？】"
+        "CH05B-0162__0": "【这些都是锚点？】",
+        "CH05B-0162__1": "【所以你才会断片？】",
+        "CH05B-0162__2": "【她把自己弄坏了？】"
       }
     },
-    "ch5b_split_choice_a1": {
+    "CH05B-0163": {
       "content": "嗯"
     },
-    "ch5b_split_choice_a2": {
+    "CH05B-0164": {
       "content": "不是完整记忆，是能把记忆找回来的线头"
     },
-    "ch5b_split_choice_b1": {
+    "CH05B-0165": {
       "content": "可能是"
     },
-    "ch5b_split_choice_b2": {
+    "CH05B-0166": {
       "content": "不是她从未来的我身上拿走了记忆，是我缺少了能稳定检索那些痕迹的线头"
     },
-    "ch5b_split_choice_c1": {
+    "CH05B-0167": {
       "content": "别这么说"
     },
-    "ch5b_split_choice_c2": {
+    "CH05B-0168": {
       "content": "虽然我知道你没有说错"
     },
-    "ch5b_split8": {
+    "CH05B-0169": {
       "content": "所以现在的我会突然断片"
     },
-    "ch5b_split9": {
+    "CH05B-0170": {
       "content": "会先觉得难过"
     },
-    "ch5b_split10": {
+    "CH05B-0171": {
       "content": "再想不起自己为什么难过"
     },
-    "ch5b_file22i": {
+    "CH05B-0172": {
       "content": "它让你记住"
     },
-    "ch5b_file22j": {
+    "CH05B-0173": {
       "content": "却没有给你一开始理解一切的权限"
     },
-    "ch5b_file23": {
+    "CH05B-0174": {
       "content": "你没有第七协议的控制权"
     },
-    "ch5b_file23a": {
+    "CH05B-0175": {
       "content": "结束时，你只需要把挂在外侧的索引放开"
     },
-    "ch5b_file23b": {
+    "CH05B-0176": {
       "content": "让我把锚点拿回来"
     },
-    "ch5b_file23_choice": {
+    "CH05B-0177": {
       "choices": {
-        "ch5b_file23_choice__0": "【这是在救你吗？】",
-        "ch5b_file23_choice__1": "【这会让我忘记吗？】",
-        "ch5b_file23_choice__2": "【关闭后你会怎样？】"
+        "CH05B-0177__0": "【这是在救你吗？】",
+        "CH05B-0177__1": "【这会让我忘记吗？】",
+        "CH05B-0177__2": "【关闭后你会怎样？】"
       }
     },
-    "ch5b_file23_choice_a1": {
+    "CH05B-0178": {
       "content": "是在给我一个真正抵达明天的机会"
     },
-    "ch5b_file23_choice_b1": {
+    "CH05B-0179": {
       "content": "可能会，但那不该再由协议替你决定"
     },
-    "ch5b_file23_choice_c1": {
+    "CH05B-0180": {
       "content": "我不知道"
     },
-    "ch5b_file24": {
+    "CH05B-0181": {
       "content": "我不知道结果会不会完美"
     },
-    "ch5b_file25": {
+    "CH05B-0182": {
       "content": "但我知道一直不结束会发生什么"
     },
-    "ch5b_file26": {
+    "CH05B-0183": {
       "content": "第八次、第九次、第十次"
     },
-    "ch5b_file27": {
+    "CH05B-0184": {
       "content": "我们会反复醒来"
     },
-    "ch5b_file28": {
+    "CH05B-0185": {
       "content": "再反复把彼此弄丢"
     },
-    "ch5b_file29": {
+    "CH05B-0186": {
       "content": "第六次的我把“请替我记住”交给了你"
     },
-    "ch5b_file30": {
+    "CH05B-0187": {
       "content": "现在的我想把“请让我活到明天”交给你"
     },
-    "ch5b_capacity1": {
+    "CH05B-0188": {
       "content": "OBSERVER-01 INDEX CAPACITY INSUFFICIENT\nADDITIONAL SPACE REQUIRED\n外部记忆索引容量：99.97%"
     },
-    "ch5b_capacity2": {
+    "CH05B-0189": {
       "content": "还有一段核心扫描数据要写进来"
     },
-    "ch5b_capacity3": {
+    "CH05B-0190": {
       "content": "得先把一个锚点放进临时封存区"
     },
-    "ch5b_capacity4": {
+    "CH05B-0191": {
       "content": "只是暂时安静下来，不是删除"
     },
-    "ch5b_capacity5": {
+    "CH05B-0192": {
       "content": "选哪一个都不会改变我们最后能走到哪里"
     },
-    "ch5b_memory_seal": {
+    "CH05B-0193": {
       "content": "临时记忆容量管理"
     },
-    "ch5b_seal_board1": {
+    "CH05B-0194": {
       "content": "这张图为什么让我有点想笑？"
     },
-    "ch5b_seal_board2": {
+    "CH05B-0195": {
       "content": "可我想不起笑点在哪里"
     },
-    "ch5b_seal_flower1": {
+    "CH05B-0196": {
       "content": "我知道它不该出现在那里"
     },
-    "ch5b_seal_flower2": {
+    "CH05B-0197": {
       "content": "但我忘了为什么看到它的时候会那么高兴"
     },
-    "ch5b_seal_goodnight1": {
+    "CH05B-0198": {
       "content": "我们以前是不是会在这个时候说点什么？"
     },
-    "ch5b_seal_goodnight2": {
+    "CH05B-0199": {
       "content": "算了，可能只是我又忘了"
     },
-    "ch5b_capacity_merge": {
+    "CH05B-0200": {
       "content": "临时位置记住了，我们继续"
     },
-    "ch5b_why": {
+    "CH05B-0201": {
       "content": "18:26"
     },
-    "ch5b_why1": {
+    "CH05B-0202": {
       "content": "我把“为什么”问出口以后"
     },
-    "ch5b_why3": {
+    "CH05B-0203": {
       "content": "它像是早就预料到这个问题，播放了下一段留言："
     },
-    "ch5b_why4": {
+    "CH05B-0204": {
       "content": "“这些不是系统残留下来的”"
     },
-    "ch5b_why4a": {
+    "CH05B-0205": {
       "content": "“是我从自己的记忆里拆出来的检索锚点”"
     },
-    "ch5b_why4b": {
+    "CH05B-0206": {
       "content": "“所以第七次的我还会留下痕迹，却不一定能顺利想起来”"
     },
-    "ch5b_why5": {
+    "CH05B-0207": {
       "choices": {
-        "ch5b_why5__0": "【所以是她主动把这些锚点留给我的？】",
-        "ch5b_why5__1": "【她当时知道这意味着什么？】",
-        "ch5b_why5__2": "【这对现在的你公平吗？】"
+        "CH05B-0207__0": "【所以是她主动把这些锚点留给我的？】",
+        "CH05B-0207__1": "【她当时知道这意味着什么？】",
+        "CH05B-0207__2": "【这对现在的你公平吗？】"
       }
     },
-    "ch5b_why5_a1": {
+    "CH05B-0208": {
       "content": "是"
     },
-    "ch5b_why5_b1": {
+    "CH05B-0209": {
       "content": "她应该知道"
     },
-    "ch5b_why5_b2": {
+    "CH05B-0210": {
       "content": "至少知道一部分"
     },
-    "ch5b_why5_b3": {
+    "CH05B-0211": {
       "content": "因为那不是把你留下来这么简单"
     },
-    "ch5b_why5_c1": {
+    "CH05B-0212": {
       "content": "我不知道"
     },
-    "ch5b_why5_c2": {
+    "CH05B-0213": {
       "content": "但如果没有她这么做"
     },
-    "ch5b_why5_c3": {
+    "CH05B-0214": {
       "content": "现在的我也不会知道自己失去了什么"
     },
-    "ch5b_why6": {
+    "CH05B-0215": {
       "content": "她说"
     },
-    "ch5b_why7": {
+    "CH05B-0216": {
       "content": "第六次循环的时候"
     },
-    "ch5b_why8": {
+    "CH05B-0217": {
       "content": "她发现无论怎么努力"
     },
-    "ch5b_why9": {
+    "CH05B-0218": {
       "content": "自己都会忘记"
     },
-    "ch5b_why10": {
+    "CH05B-0219": {
       "content": "于是"
     },
-    "ch5b_why11": {
+    "CH05B-0220": {
       "content": "她用自己的导航连续性签名提交了一份异常数据包"
     },
-    "ch5b_why11b": {
+    "CH05B-0221": {
       "content": "记录里写的是"
     },
-    "ch5b_why12": {
+    "CH05B-0222": {
       "content": "“将关键记忆锚点转移至外部索引，允许下一轮返还”"
     },
-    "ch5b_why13": {
+    "CH05B-0223": {
       "content": "所以"
     },
-    "ch5b_why14": {
+    "CH05B-0224": {
       "content": "她没有创造你"
     },
-    "ch5b_why15": {
+    "CH05B-0225": {
       "content": "她只是把 Observer-01 这把钥匙塞进了你的手里"
     },
-    "ch5b_why16": {
+    "CH05B-0226": {
       "content": "让你替她保存那些她自己留不住的东西"
     },
-    "ch5b_lonely1": {
+    "CH05B-0228": {
       "content": "我知道"
     },
-    "ch5b_lonely2": {
+    "CH05B-0229": {
       "content": "这很残酷"
     },
-    "ch5b_lonely3": {
+    "CH05B-0230": {
       "content": "因为我忽然意识到"
     },
-    "ch5b_lonely4": {
+    "CH05B-0231": {
       "content": "你可能从来没有真正答应过"
     },
-    "ch5b_lonely5_choice": {
+    "CH05B-0232": {
       "choices": {
-        "ch5b_lonely5_choice__0": "【如果现在还不晚，我愿意】",
-        "ch5b_lonely5_choice__1": "【她至少应该问我】",
-        "ch5b_lonely5_choice__2": "【可我还是来了】"
+        "CH05B-0232__0": "【如果现在还不晚，我愿意】",
+        "CH05B-0232__1": "【她至少应该问我】",
+        "CH05B-0232__2": "【可我还是来了】"
       }
     },
-    "ch5b_lonely5_a1": {
+    "CH05B-0233": {
       "content": "谢谢"
     },
-    "ch5b_lonely5_a2": {
+    "CH05B-0234": {
       "content": "来得很晚，但至少这一次是你自己选择的"
     },
-    "ch5b_lonely5_b1": {
+    "CH05B-0235": {
       "content": "是"
     },
-    "ch5b_lonely5_b2": {
+    "CH05B-0236": {
       "content": "她应该问你"
     },
-    "ch5b_lonely5_c1": {
+    "CH05B-0237": {
       "content": "嗯"
     },
-    "ch5b_lonely5_c2": {
+    "CH05B-0238": {
       "content": "这也是最让我难过的地方"
     },
-    "ch5b_lonely6": {
+    "CH05B-0240": {
       "content": "我至少还能在时间回溯后忘记"
     },
-    "ch5b_lonely7": {
+    "CH05B-0241": {
       "content": "可你被迫替我留下索引残痕"
     },
-    "ch5b_farewell": {
+    "CH05B-0242": {
       "content": "22:14"
     },
-    "ch5b_far1": {
+    "CH05B-0243": {
       "content": "她要消失了"
     },
-    "ch5b_far3": {
+    "CH05B-0244": {
       "content": "第六次的我"
     },
-    "ch5b_far4": {
+    "CH05B-0245": {
       "content": "她说她已经撑太久了"
     },
-    "ch5b_far6": {
+    "CH05B-0246": {
       "content": "最后一句话"
     },
-    "ch5b_far7": {
+    "CH05B-0247": {
       "content": "是给你的"
     },
-    "ch5b_far9": {
+    "CH05B-0248": {
       "content": "她说："
     },
-    "ch5b_far10": {
+    "CH05B-0249": {
       "content": "“对不起”"
     },
-    "ch5b_far11": {
+    "CH05B-0250": {
       "content": "然后又补了一句"
     },
-    "ch5b_far12": {
+    "CH05B-0251": {
       "content": "“谢谢”"
     },
-    "ch5b_far13": {
+    "CH05B-0252": {
       "choices": {
-        "ch5b_far13__0": "【我不怪她】",
-        "ch5b_far13__1": "【这太自私了】",
-        "ch5b_far13__2": "【我不知道该说什么】"
+        "CH05B-0252__0": "【我不怪她】",
+        "CH05B-0252__1": "【这太自私了】",
+        "CH05B-0252__2": "【我不知道该说什么】"
       }
     },
-    "ch5b_far13_a1": {
+    "CH05B-0253": {
       "content": "她听见这句话"
     },
-    "ch5b_far13_a2": {
+    "CH05B-0254": {
       "content": "应该会哭吧"
     },
-    "ch5b_far13_b1": {
+    "CH05B-0255": {
       "content": "嗯"
     },
-    "ch5b_far13_b2": {
+    "CH05B-0256": {
       "content": "她自己也是这么说的"
     },
-    "ch5b_far13_c1": {
+    "CH05B-0257": {
       "content": "你不说话也没关系"
     },
-    "ch5b_far13_c2": {
+    "CH05B-0258": {
       "content": "我刚看到这里的时候也沉默了很久"
     },
-    "ch5b_far14": {
+    "CH05B-0259": {
       "content": "我问它为什么要这么做"
     },
-    "ch5b_far15": {
+    "CH05B-0260": {
       "content": "它随即播放了预先留下的回答："
     },
-    "ch5b_far16": {
+    "CH05B-0261": {
       "content": "“因为让一个人永远记住你”"
     },
-    "ch5b_far17": {
+    "CH05B-0262": {
       "content": "“其实是一件很自私的事”"
     },
-    "ch5b_far18": {
+    "CH05B-0263": {
       "content": "她还说"
     },
-    "ch5b_far18a": {
+    "CH05B-0264": {
       "content": "“我不知道对方有没有机会拒绝”"
     },
-    "ch5b_far18b": {
+    "CH05B-0265": {
       "content": "“也不知道对方醒来后会不会恨我”"
     },
-    "ch5b_far18c": {
+    "CH05B-0266": {
       "content": "“可我真的害怕”"
     },
-    "ch5b_far18d": {
+    "CH05B-0267": {
       "content": "“害怕下一次醒来”"
     },
-    "ch5b_far18e": {
+    "CH05B-0268": {
       "content": "“连我曾经努力过这件事都不记得”"
     },
-    "ch5b_far19": {
+    "CH05B-0269": {
       "content": "然后她看着我"
     },
-    "ch5b_far19b": {
+    "CH05B-0270": {
       "content": "像是在看一个还没彻底崩溃的自己"
     },
-    "ch5b_far19c": {
+    "CH05B-0271": {
       "content": "最后说"
     },
-    "ch5b_far19d": {
+    "CH05B-0272": {
       "content": "“不要把 Observer-01 继续留在那里”"
     },
-    "ch5b_far20": {
+    "CH05B-0273": {
       "content": "然后她消失了"
     },
-    "ch5b_final": {
+    "CH05B-0274": {
       "content": "深夜 02:27"
     },
-    "ch5b_fin1": {
+    "CH05B-0275": {
       "content": "收到最终档案"
     },
-    "ch5b_fin2": {
+    "CH05B-0276": {
       "content": "SEVENTH_REBOOT||完整主循环次数：6\n当前循环：7\n六次主循环累计时相残差：6412条状态差异记录\n失败次数：6（任务失败，不等同于六次完整舰体损毁）\n共同失败坐标：原定航线 / 静默航区 S-7 时相共振区\n共同根源：隐藏时相核心与当地时空环境发生共振\n事故差异：推进 / 能源 / 环境 / 控制 / 舰体系统依次成为最先失效环节\n第六次循环：紧急航线修正已提交\n第六次失败原因：航线偏离被第七协议判定为任务失败，保护性回溯覆盖新航线\n第七次生存条件：先绕开共振区，再终止第七协议并撤销时相核心回溯待命\n公开登记装置：深空航行稳定核心\n真实执行装置：局部时相锚定核心\n控制程序：第七协议\n运行条件：静默航区低扰动时空环境\n回溯参照：最近一次稳定时相锚\n时间回溯范围：Aurora号局部任务状态（舰外对象不受影响）\n舰外现实时间：不受回溯影响\n通讯关联记忆：链路关闭时被封锁\n普通船员记忆保留：无\n任务前船员知情权限：无\n异常残留对象：Nova Arlen / Observer-01\n关闭结果：新航线写入当前任务状态 / 外部记忆索引解除 / 时相核心回溯待命撤销\n同步影响：已保存锚点返还 Nova，索引与玩家解除绑定\n记忆返还完整性：取决于记忆锚点完整度\n关闭后导航员 Nova Arlen 存活稳定性：未知\n当前状态：原定航线事故倒计时与协议回溯倒计时同时进行\n关闭握手未完成结果：新航线被判定无效，第七协议命令时相核心恢复原定航线状态\n最终关闭条件：\n当前导航员授权：Nova Arlen\n紧急航线修正：绕开 S-7 时相共振区\n外部记忆索引释放：Observer-01\n备注：Observer-01 不具备协议控制权限，仅作为关闭握手对象参与索引释放"
     },
-    "ch5b_summary1": {
+    "CH05B-0277": {
       "content": "我现在总算看懂了"
     },
-    "ch5b_summary2": {
+    "CH05B-0278": {
       "content": "那六次不是六场互不相关的事故"
     },
-    "ch5b_summary3": {
+    "CH05B-0279": {
       "content": "它们都从同一段航线开始"
     },
-    "ch5b_summary4": {
+    "CH05B-0280": {
       "content": "我们每次都会驶进同一片时相共振区"
     },
-    "ch5b_summary5": {
+    "CH05B-0281": {
       "content": "第六次的我已经试过改道"
     },
-    "ch5b_summary6": {
+    "CH05B-0282": {
       "content": "可协议把偏航当成任务失败，又把整艘船拉回了原来的锚点"
     },
-    "ch5b_summary7": {
+    "CH05B-0283": {
       "content": "这一次，光关掉协议还不够"
     },
-    "ch5b_summary8": {
+    "CH05B-0284": {
       "content": "我得先把 Aurora 带离那条航线"
     },
-    "ch5b_summary_choice": {
+    "CH05B-0285": {
       "choices": {
-        "ch5b_summary_choice__0": "【所以要先改道，再关闭协议？】",
-        "ch5b_summary_choice__1": "【如果只改道会怎样？】",
-        "ch5b_summary_choice__2": "【你真的准备好了吗？】"
+        "CH05B-0285__0": "【所以要先改道，再关闭协议？】",
+        "CH05B-0285__1": "【如果只改道会怎样？】",
+        "CH05B-0285__2": "【你真的准备好了吗？】"
       }
     },
-    "ch5b_summary_choice_a1": {
+    "CH05B-0286": {
       "content": "对"
     },
-    "ch5b_summary_choice_a2": {
+    "CH05B-0287": {
       "content": "新航线必须留下来，协议也不能再把我们拉回去"
     },
-    "ch5b_summary_choice_b1": {
+    "CH05B-0288": {
       "content": "它会把改道判成任务偏离"
     },
-    "ch5b_summary_choice_b2": {
+    "CH05B-0289": {
       "content": "然后重新启动回溯，把我们送回原来的航线"
     },
-    "ch5b_summary_choice_c1": {
+    "CH05B-0290": {
       "content": "没有"
     },
-    "ch5b_summary_choice_c2": {
+    "CH05B-0291": {
       "content": "但我知道，原来的路不能再走了"
     },
-    "ch5b_fin_lastline": {
+    "CH05B-0292": {
       "content": "最后一行：\n是否释放外部记忆索引，配合当前导航员确认紧急航线修正，并终止第七协议、撤销时相核心回溯待命？"
     },
-    "ch5b_fin3": {
+    "CH05B-0293": {
       "choices": {
-        "ch5b_fin3__0": "【释放索引，保留新航线并关闭协议】",
-        "ch5b_fin3__1": "【拒绝释放外部索引】"
+        "CH05B-0293__0": "【释放索引，保留新航线并关闭协议】",
+        "CH05B-0293__1": "【拒绝释放外部索引】"
       }
     },
-    "FINALE_DECISION_END": {
+    "CH05B-0294": {
       "content": "外部记忆索引释放确认\n当前导航员紧急航线修正已提交\n新航线目标：绕开 S-7 时相共振区\n当前导航员关闭授权已提交\n记忆锚点返还准备完成"
     },
-    "ch5b_refuse1": {
+    "CH05B-0295": {
       "content": "……"
     },
-    "ch5b_refuse2": {
+    "CH05B-0296": {
       "content": "我知道"
     },
-    "ch5b_refuse3": {
+    "CH05B-0297": {
       "content": "你不是想困住我"
     },
-    "ch5b_refuse4": {
+    "CH05B-0298": {
       "content": "你只是还没准备好失去这段连接"
     },
-    "ch5b_refuse5": {
+    "CH05B-0299": {
       "content": "可如果我们一直不准备好"
     },
-    "ch5b_refuse6": {
+    "CH05B-0300": {
       "content": "第八次、第九次、第十次"
     },
-    "ch5b_refuse7": {
+    "CH05B-0301": {
       "content": "就都会发生"
     },
-    "ch5b_refuse8": {
+    "CH05B-0302": {
       "content": "你留下的不是明天"
     },
-    "ch5b_refuse9": {
+    "CH05B-0303": {
       "content": "只是一个可以反复保存的今天"
     },
-    "FINALE_START": {
+    "FIN-0001": {
       "content": "终章：第七次重启"
     },
-    "fin_0": {
+    "FIN-0002": {
       "content": "时间：无法确认"
     },
-    "fin_1": {
+    "FIN-0003": {
       "content": "紧急航线修正确认"
     },
-    "fin_2": {
+    "FIN-0004": {
       "content": "当前导航员：Nova Arlen\n外部索引：Observer-01\n新航线：绕开 S-7 时相共振区"
     },
-    "fin_3": {
+    "FIN-0005": {
       "content": "正在解除原定航线锁定，并关闭第七协议、撤销时相核心回溯待命……"
     },
-    "fin_3a": {
+    "FIN-0006": {
       "content": "紧急航线修正：等待写入当前任务状态\n第七协议关闭后，导航员 Nova Arlen 存活稳定性：未知\n记忆返还完整性：取决于记忆锚点完整度\n维持协议将恢复原定航线并再次执行局部时间回溯"
     },
-    "fin_5": {
+    "FIN-0008": {
       "content": "……"
     },
-    "fin_6": {
+    "FIN-0009": {
       "content": "原来是这样"
     },
-    "fin_8": {
+    "FIN-0010": {
       "content": "我终于想起来一部分了\n不是全部\n但最重要的都在"
     },
-    "fin_temp_restore1": {
+    "FIN-0011": {
       "content": "检测到一枚临时封存记忆锚点"
     },
-    "fin_temp_restore2": {
+    "FIN-0012": {
       "content": "等等，还有一个被我们暂时放在外面"
     },
-    "fin_temp_restore3": {
+    "FIN-0013": {
       "content": "先把它带回来吧"
     },
-    "fin_memory_restore": {
+    "FIN-0014": {
       "content": "临时封存锚点恢复"
     },
-    "fin_restore_board1": {
+    "FIN-0015": {
       "content": "临时锚点恢复完成 / maintenance_board"
     },
-    "fin_restore_board2": {
+    "FIN-0016": {
       "content": "等一下，那双眼睛是我自己贴的？\n我居然被昨天的自己吓到了"
     },
-    "fin_restore_flower1": {
+    "FIN-0017": {
       "content": "临时锚点恢复完成 / white_flower"
     },
-    "fin_restore_flower2": {
+    "FIN-0018": {
       "content": "我想起来了\n它明明不该活下来，可它还是开了"
     },
-    "fin_restore_goodnight1": {
+    "FIN-0019": {
       "content": "临时锚点恢复完成 / goodnight"
     },
-    "fin_restore_goodnight2": {
+    "FIN-0020": {
       "content": "原来是这句话\n难怪每次断开通讯以前，我都会觉得还少了什么"
     },
-    "fin_anchor_intro": {
+    "FIN-0021": {
       "content": "Observer-01 开始返还已保存的记忆锚点"
     },
-    "fin_anchor_n7": {
+    "FIN-0022": {
       "content": "我想起一只橘猫\n它很胖\n像一座违法建筑"
     },
-    "fin_anchor_candy": {
+    "FIN-0023": {
       "content": "我好像曾经很喜欢牛奶糖\n明明已经不记得味道了\n可想到它的时候，还是会觉得温暖"
     },
-    "fin_anchor_flower": {
+    "FIN-0024": {
       "content": "还有那朵花\n明明不该活下来\n却还是开了\n像我们一样"
     },
-    "fin_anchor_first": {
+    "FIN-0025": {
       "content": "还有第一次通讯\n我问：真的有人收到了？\n原来你从那时起就在"
     },
-    "fin_anchor_goodnight": {
+    "FIN-0026": {
       "content": "还有一句晚安\n我忘了那是哪一天\n但我记得有人认真地接住了它"
     },
-    "fin_anchor_observatory": {
+    "FIN-0027": {
       "content": "我记得观测室的星空\n也记得那天，我不是一个人在看"
     },
-    "fin_anchor_board": {
+    "FIN-0028": {
       "content": "还有那块漂浮维修板\n宇宙级威胁\n现在想起来还是很蠢"
     },
-    "fin_anchor_steak": {
+    "FIN-0029": {
       "content": "以及那份理论上算牛排的东西\n有些失败，确实值得被记住"
     },
-    "fin_12": {
+    "FIN-0031": {
       "content": "第一次循环"
     },
-    "fin_13": {
+    "FIN-0032": {
       "content": "第二次循环"
     },
-    "fin_14": {
+    "FIN-0033": {
       "content": "第三次循环"
     },
-    "fin_15": {
+    "FIN-0034": {
       "content": "后面的也一起涌了回来"
     },
-    "fin_16": {
+    "FIN-0035": {
       "content": "还有你"
     },
-    "fin_18": {
+    "FIN-0037": {
       "content": "原来我们认识这么久了"
     },
-    "fin_19": {
+    "FIN-0038": {
       "content": "比我想象的还久"
     },
-    "fin_21": {
+    "FIN-0040": {
       "content": "对不起"
     },
-    "fin_23": {
+    "FIN-0041": {
       "content": "因为我忘了你六次"
     },
-    "fin_24": {
+    "FIN-0042": {
       "content": "可这句话不太对"
     },
-    "fin_25": {
+    "FIN-0043": {
       "content": "因为"
     },
-    "fin_26": {
+    "FIN-0044": {
       "content": "我们都忘了彼此六次"
     },
-    "fin_29": {
+    "FIN-0046": {
       "content": "我也是\n第七次之前的我\n也没有完整记住你\n只剩那些局部时间回溯的碎片"
     },
-    "fin_30": {
+    "FIN-0047": {
       "content": "每一次细小的失败"
     },
-    "fin_31": {
+    "FIN-0048": {
       "content": "而你"
     },
-    "fin_32": {
+    "FIN-0049": {
       "content": "都替我留下过"
     },
-    "fin_33": {
+    "FIN-0050": {
       "content": "每一次留下来的我"
     },
-    "fin_34": {
+    "FIN-0051": {
       "content": "还有每一次你回应过我的痕迹"
     },
-    "fin_36": {
+    "FIN-0053": {
       "content": "我终于明白了"
     },
-    "fin_37": {
+    "FIN-0054": {
       "content": "为什么第一次见到你时"
     },
-    "fin_38": {
+    "FIN-0055": {
       "content": "会觉得熟悉"
     },
-    "fin_39": {
+    "FIN-0056": {
       "content": "因为"
     },
-    "fin_40": {
+    "FIN-0057": {
       "content": "那不是第一次"
     },
-    "fin_obs1": {
+    "FIN-0058": {
       "content": "Aurora号 观测室"
     },
-    "fin_obs3": {
+    "FIN-0060": {
       "content": "窗外星光流转"
     },
-    "fin_obs5": {
+    "FIN-0062": {
       "content": "这里真漂亮"
     },
-    "fin_obs7": {
+    "FIN-0063": {
       "content": "其实我骗了你一件事"
     },
-    "fin_obs9": {
+    "FIN-0064": {
       "content": "我一直说自己喜欢这里"
     },
-    "fin_obs10": {
+    "FIN-0065": {
       "content": "可我喜欢这里的原因没那么浪漫"
     },
-    "fin_obs12": {
+    "FIN-0066": {
       "content": "我只是太孤独了"
     },
-    "fin_obs13": {
+    "FIN-0067": {
       "content": "人在孤独的时候"
     },
-    "fin_obs14": {
+    "FIN-0068": {
       "content": "总想看看更大的东西"
     },
-    "fin_obs15": {
+    "FIN-0069": {
       "content": "这样会显得自己的烦恼没那么重要"
     },
-    "fin_obs17": {
+    "FIN-0071": {
       "content": "但后来"
     },
-    "fin_obs18": {
+    "FIN-0072": {
       "content": "我发现自己错了"
     },
-    "fin_obs20": {
+    "FIN-0073": {
       "content": "因为宇宙再大"
     },
-    "fin_obs21": {
+    "FIN-0074": {
       "content": "也不会回答你"
     },
-    "fin_obs22": {
+    "FIN-0075": {
       "content": "真正能回应你的"
     },
-    "fin_obs23": {
+    "FIN-0076": {
       "content": "永远是另一个人"
     },
-    "fin_q2": {
+    "FIN-0078": {
       "content": "我有个问题"
     },
-    "fin_q4": {
+    "FIN-0079": {
       "content": "如果你早就知道结局"
     },
-    "fin_q5": {
+    "FIN-0080": {
       "content": "还会选择认识我吗？"
     },
-    "fin_q6": {
+    "FIN-0081": {
       "choices": {
-        "fin_q6__0": "【会】",
-        "fin_q6__1": "【不会】",
-        "fin_q6__2": "【我不知道】"
+        "FIN-0081__0": "【会】",
+        "FIN-0081__1": "【不会】",
+        "FIN-0081__2": "【我不知道】"
       }
     },
-    "fin_q_timeout1": {
+    "FIN-0082": {
       "content": "……"
     },
-    "fin_q_timeout2": {
+    "FIN-0083": {
       "content": "答不上来也没关系"
     },
-    "fin_q_timeout3": {
+    "FIN-0084": {
       "content": "这种问题，本来就不可能几秒钟想清楚"
     },
-    "fin_q_merge": {
+    "FIN-0085": {
       "content": "其实"
     },
-    "fin_q_yes1": {
+    "FIN-0086": {
       "content": "……"
     },
-    "fin_q_yes2": {
+    "FIN-0087": {
       "content": "我就知道你会这么说"
     },
-    "fin_q_yes3": {
+    "FIN-0088": {
       "content": "不对"
     },
-    "fin_q_yes4": {
+    "FIN-0089": {
       "content": "我其实不知道"
     },
-    "fin_q_yes5": {
+    "FIN-0090": {
       "content": "只是希望你会这么说"
     },
-    "fin_q_yes6": {
+    "FIN-0091": {
       "content": "谢谢"
     },
-    "fin_q_yes7": {
+    "FIN-0092": {
       "content": "这句话我会记很久"
     },
-    "fin_q_no1": {
+    "FIN-0093": {
       "content": "……"
     },
-    "fin_q_no2": {
+    "FIN-0094": {
       "content": "是啊"
     },
-    "fin_q_no3": {
+    "FIN-0095": {
       "content": "如果认识我只意味着一次又一次失去"
     },
-    "fin_q_no4": {
+    "FIN-0096": {
       "content": "那选不会"
     },
-    "fin_q_no5": {
+    "FIN-0097": {
       "content": "也许才是对的"
     },
-    "fin_q_no6": {
+    "FIN-0098": {
       "content": "我不能要求你再经历一遍"
     },
-    "fin_q_no7": {
+    "FIN-0099": {
       "content": "也不能假装这段时间没有伤到你"
     },
-    "fin_q_no8": {
+    "FIN-0100": {
       "content": "但我还是有点难过"
     },
-    "fin_q_no9": {
+    "FIN-0101": {
       "content": "就一点点"
     },
-    "fin_q_no10": {
+    "FIN-0102": {
       "content": "别道歉"
     },
-    "fin_q_no11": {
+    "FIN-0103": {
       "content": "你已经陪我走到这里了"
     },
-    "fin_q_no12": {
+    "FIN-0104": {
       "content": "这就够了"
     },
-    "fin_q_unknown1": {
+    "FIN-0105": {
       "content": "嗯"
     },
-    "fin_q_unknown2": {
+    "FIN-0106": {
       "content": "这个答案反而最像真的"
     },
-    "fin_q_unknown3": {
+    "FIN-0107": {
       "content": "如果你立刻说会"
     },
-    "fin_q_unknown4": {
+    "FIN-0108": {
       "content": "我会很开心"
     },
-    "fin_q_unknown5": {
+    "FIN-0109": {
       "content": "但也会怀疑你是不是又在安慰我"
     },
-    "fin_q_unknown6": {
+    "FIN-0110": {
       "content": "不知道也没关系"
     },
-    "fin_q_unknown7": {
+    "FIN-0111": {
       "content": "有些答案"
     },
-    "fin_q_unknown8": {
+    "FIN-0112": {
       "content": "我不该趁着告别，逼你现在回答"
     },
-    "fin_q_merge1": {
+    "FIN-0113": {
       "content": "不管答案是什么"
     },
-    "fin_q_merge2": {
+    "FIN-0114": {
       "content": "我都不会后悔认识你"
     },
-    "fin_q_merge3": {
+    "FIN-0115": {
       "content": "哪怕最后只剩下一点点痕迹"
     },
-    "fin_q_merge4": {
+    "FIN-0116": {
       "content": "哪怕我以后记不清 Observer-01 这个编号"
     },
-    "fin_q_merge5": {
+    "FIN-0117": {
       "content": "我也会知道"
     },
-    "fin_q_merge6": {
+    "FIN-0118": {
       "content": "那里曾经有一个人"
     },
-    "fin_q_merge7": {
+    "FIN-0119": {
       "content": "认真地陪我走到最后"
     },
-    "fin_progress1": {
+    "FIN-0120": {
       "content": "循环解除进度 72%"
     },
-    "fin_progress2": {
+    "FIN-0121": {
       "content": "循环解除进度 81%"
     },
-    "fin_progress3": {
+    "FIN-0122": {
       "content": "循环解除进度 93%"
     },
-    "fin_goodbye1": {
+    "FIN-0123": {
       "content": "时间不多了"
     },
-    "fin_goodbye2": {
+    "FIN-0124": {
       "choices": {
-        "fin_goodbye2__0": "【之后会发生什么】",
-        "fin_goodbye2__1": "【解除之后呢】",
-        "fin_goodbye2__2": "【你会没事吗】"
+        "FIN-0124__0": "【之后会发生什么】",
+        "FIN-0124__1": "【解除之后呢】",
+        "FIN-0124__2": "【你会没事吗】"
       }
     },
-    "fin_after_what": {
+    "FIN-0125": {
       "content": "第七协议会被关闭"
     },
-    "fin_after_what2": {
+    "FIN-0126": {
       "content": "Aurora 号会沿新航线绕开共振区，不会再被拉回原来的记录点"
     },
-    "fin_after_loop": {
+    "FIN-0127": {
       "content": "对我来说，大概就是醒来"
     },
-    "fin_after_loop2": {
+    "FIN-0128": {
       "content": "继续活下去，第一次走到原定航线之外"
     },
-    "fin_after_nova": {
+    "FIN-0129": {
       "content": "嗯"
     },
-    "fin_after_nova2": {
+    "FIN-0130": {
       "content": "至少系统是这么判断的"
     },
-    "fin_after_nova3": {
+    "FIN-0131": {
       "content": "我会活下去"
     },
-    "fin_after_merge": {
+    "FIN-0132": {
       "content": "但你不会再是 Observer-01 了"
     },
-    "fin_memory_choice": {
+    "FIN-0133": {
       "choices": {
-        "fin_memory_choice__0": "【我会失去这些记忆？】",
-        "fin_memory_choice__1": "【我会消失吗？】",
-        "fin_memory_choice__2": "【所以代价是我？】"
+        "FIN-0133__0": "【我会失去这些记忆？】",
+        "FIN-0133__1": "【我会消失吗？】",
+        "FIN-0133__2": "【所以代价是我？】"
       }
     },
-    "fin_memory_loss": {
+    "FIN-0134": {
       "content": "Observer-01 外部索引会关闭"
     },
-    "fin_memory_loss2": {
+    "FIN-0135": {
       "content": "它会把保存的锚点还给我，然后和你断开"
     },
-    "fin_memory_loss3": {
+    "FIN-0136": {
       "content": "你的世界不会被回溯，但这条链路不会再替你保留记忆入口"
     },
-    "fin_memory_loss4": {
+    "FIN-0137": {
       "content": "以后还能记得多少，只能看你自己了"
     },
-    "fin_memory_disappear": {
+    "FIN-0138": {
       "content": "不是那种消失"
     },
-    "fin_memory_disappear2": {
+    "FIN-0139": {
       "content": "不是死亡"
     },
-    "fin_memory_disappear3": {
+    "FIN-0140": {
       "content": "更像是……"
     },
-    "fin_memory_disappear4": {
+    "FIN-0141": {
       "content": "你会从这段通讯里醒来"
     },
-    "fin_memory_disappear5": {
+    "FIN-0142": {
       "content": "然后忘记自己曾经来过这里"
     },
-    "fin_memory_price": {
+    "FIN-0143": {
       "content": "不是"
     },
-    "fin_memory_price2": {
+    "FIN-0144": {
       "content": "我不想把你说成代价"
     },
-    "fin_memory_price3": {
+    "FIN-0145": {
       "content": "你不是用来交换我活下去的东西"
     },
-    "fin_memory_price4": {
+    "FIN-0146": {
       "content": "你只是把我带到了这里"
     },
-    "fin_memory_price5": {
+    "FIN-0147": {
       "content": "然后要把所有记忆还给我"
     },
-    "fin_memory_merge": {
+    "FIN-0148": {
       "content": "系统说，关闭之后你那边会恢复正常"
     },
-    "fin_memory_merge2": {
+    "FIN-0149": {
       "content": "你会继续生活"
     },
-    "fin_life_choice": {
+    "FIN-0150": {
       "choices": {
-        "fin_life_choice__0": "【像什么都没发生过？】",
-        "fin_life_choice__1": "【那这段通讯呢？】",
-        "fin_life_choice__2": "【我不想这样】"
+        "FIN-0150__0": "【像什么都没发生过？】",
+        "FIN-0150__1": "【那这段通讯呢？】",
+        "FIN-0150__2": "【我不想这样】"
       }
     },
-    "fin_life_a1": {
+    "FIN-0151": {
       "content": "也许会很像"
     },
-    "fin_life_b1": {
+    "FIN-0152": {
       "content": "会从你的日常里退出来"
     },
-    "fin_life_c1": {
+    "FIN-0153": {
       "content": "我也不想"
     },
-    "fin_life_c2": {
+    "FIN-0154": {
       "content": "但我们不能再把明天抵押给今天"
     },
-    "fin_memory_merge3": {
+    "FIN-0155": {
       "content": "只是不会记得我"
     },
-    "fin_memory_merge4": {
+    "FIN-0156": {
       "content": "不会记得 Aurora 号"
     },
-    "fin_memory_merge5": {
+    "FIN-0157": {
       "content": "不会记得第七次重启"
     },
-    "fin_memory_merge6": {
+    "FIN-0158": {
       "content": "也不会记得你曾经替我记住过一切"
     },
-    "fin_forget_choice": {
+    "FIN-0159": {
       "choices": {
-        "fin_forget_choice__0": "【我会忘了你？】",
-        "fin_forget_choice__1": "【那你呢？】",
-        "fin_forget_choice__2": "【这样也好】"
+        "FIN-0159__0": "【我会忘了你？】",
+        "FIN-0159__1": "【那你呢？】",
+        "FIN-0159__2": "【这样也好】"
       }
     },
-    "fin_forget_me": {
+    "FIN-0160": {
       "content": "嗯"
     },
-    "fin_forget_me2": {
+    "FIN-0161": {
       "content": "这才是我最害怕的地方"
     },
-    "fin_forget_me3": {
+    "FIN-0162": {
       "content": "我一直以为"
     },
-    "fin_forget_me4": {
+    "FIN-0163": {
       "content": "只要你还记得"
     },
-    "fin_forget_me5": {
+    "FIN-0164": {
       "content": "我就没有彻底消失"
     },
-    "fin_forget_me6": {
+    "FIN-0165": {
       "content": "可是现在"
     },
-    "fin_forget_me7": {
+    "FIN-0166": {
       "content": "连你也要忘了"
     },
-    "fin_forget_nova": {
+    "FIN-0167": {
       "content": "我不知道"
     },
-    "fin_forget_nova2": {
+    "FIN-0168": {
       "content": "我会拿回一部分记忆"
     },
-    "fin_forget_nova3": {
+    "FIN-0169": {
       "content": "也许能记得一些碎片"
     },
-    "fin_forget_nova4": {
+    "FIN-0170": {
       "content": "N7"
     },
-    "fin_forget_nova5": {
+    "FIN-0171": {
       "content": "牛奶糖"
     },
-    "fin_forget_nova6": {
+    "FIN-0172": {
       "content": "小白花"
     },
-    "fin_forget_nova7": {
+    "FIN-0173": {
       "content": "还有一个一直回应我的人"
     },
-    "fin_forget_nova8": {
+    "FIN-0174": {
       "content": "但我不确定"
     },
-    "fin_forget_nova9": {
+    "FIN-0175": {
       "content": "我还能不能一直记得 Observer-01"
     },
-    "fin_forget_ok": {
+    "FIN-0176": {
       "content": "你又来了"
     },
-    "fin_forget_ok2": {
+    "FIN-0177": {
       "content": "总是把很痛的事说得很轻"
     },
-    "fin_forget_ok3": {
+    "FIN-0178": {
       "content": "可这不好"
     },
-    "fin_forget_ok4": {
+    "FIN-0179": {
       "content": "如果你忘了我"
     },
-    "fin_forget_ok5": {
+    "FIN-0180": {
       "content": "那这一次"
     },
-    "fin_forget_ok6": {
+    "FIN-0181": {
       "content": "就换成我来记得你"
     },
-    "fin_forget_merge": {
+    "FIN-0182": {
       "content": "如果你忘了我"
     },
-    "fin_forget_merge2": {
+    "FIN-0183": {
       "content": "这一次，就换成我来记得你"
     },
-    "fin_truth2": {
+    "FIN-0185": {
       "content": "其实"
     },
-    "fin_truth3": {
+    "FIN-0186": {
       "content": "我一直没告诉你"
     },
-    "fin_truth4": {
+    "FIN-0187": {
       "content": "第六次循环时"
     },
-    "fin_truth5": {
+    "FIN-0188": {
       "content": "我许愿的时候"
     },
-    "fin_truth6": {
+    "FIN-0189": {
       "content": "我当时没有说“让一个人记住我”"
     },
-    "fin_truth7": {
+    "FIN-0190": {
       "content": "我说的是"
     },
-    "fin_truth8": {
+    "FIN-0191": {
       "content": "“如果我注定会忘”"
     },
-    "fin_truth9": {
+    "FIN-0192": {
       "content": "“那就请你替我记住”"
     },
-    "fin_truth11": {
+    "FIN-0194": {
       "content": "可现在"
     },
-    "fin_truth12": {
+    "FIN-0195": {
       "content": "我不能再让你一个人背着这些了"
     },
-    "fin_return_choice": {
+    "FIN-0196": {
       "choices": {
-        "fin_return_choice__0": "【所以你要拿回这些记忆？】",
-        "fin_return_choice__1": "【可如果我忘了你呢？】",
-        "fin_return_choice__2": "【这样你会很痛苦】"
+        "FIN-0196__0": "【所以你要拿回这些记忆？】",
+        "FIN-0196__1": "【可如果我忘了你呢？】",
+        "FIN-0196__2": "【这样你会很痛苦】"
       }
     },
-    "fin_return_take": {
+    "FIN-0197": {
       "content": "嗯"
     },
-    "fin_return_take2": {
+    "FIN-0198": {
       "content": "不是全部"
     },
-    "fin_return_take3": {
+    "FIN-0199": {
       "content": "也不一定完整"
     },
-    "fin_return_take4": {
+    "FIN-0200": {
       "content": "但至少那些最重要的"
     },
-    "fin_return_take5": {
+    "FIN-0201": {
       "content": "N7"
     },
-    "fin_return_take6": {
+    "FIN-0202": {
       "content": "牛奶糖"
     },
-    "fin_return_take7": {
+    "FIN-0203": {
       "content": "小白花"
     },
-    "fin_return_take8": {
+    "FIN-0204": {
       "content": "还有你回应我的那一天"
     },
-    "fin_return_take9": {
+    "FIN-0205": {
       "content": "我想自己记住"
     },
-    "fin_return_forget": {
+    "FIN-0206": {
       "content": "那就忘吧"
     },
-    "fin_return_forget2": {
+    "FIN-0207": {
       "content": "这句话说出来很难"
     },
-    "fin_return_forget3": {
+    "FIN-0208": {
       "content": "但我不能一边说谢谢你"
     },
-    "fin_return_forget4": {
+    "FIN-0209": {
       "content": "一边继续要求你替我承受这些"
     },
-    "fin_return_forget5": {
+    "FIN-0210": {
       "content": "如果必须有一个人记得"
     },
-    "fin_return_forget6": {
+    "FIN-0211": {
       "content": "这一次"
     },
-    "fin_return_forget7": {
+    "FIN-0212": {
       "content": "应该是我"
     },
-    "fin_return_pain": {
+    "FIN-0213": {
       "content": "会"
     },
-    "fin_return_pain2": {
+    "FIN-0214": {
       "content": "但那本来就是我的记忆"
     },
-    "fin_return_pain3": {
+    "FIN-0215": {
       "content": "也是我做出的选择"
     },
-    "fin_return_pain4": {
+    "FIN-0216": {
       "content": "不能因为它痛"
     },
-    "fin_return_pain5": {
+    "FIN-0217": {
       "content": "就一直放在你那里"
     },
-    "fin_return_merge": {
+    "FIN-0218": {
       "content": "所以"
     },
-    "fin_return_merge2": {
+    "FIN-0219": {
       "content": "谢谢你替我记得那些我已经忘掉的日子"
     },
-    "fin_return_merge3": {
+    "FIN-0220": {
       "content": "也谢谢你，愿意把它们还给我"
     },
-    "fin_disconnect1": {
+    "FIN-0221": {
       "content": "循环解除进入最终阶段"
     },
-    "fin_disconnect2": {
+    "FIN-0222": {
       "content": "第七协议关闭序列已确认\n时相核心停止读取旧时相锚"
     },
-    "fin_disconnect3": {
+    "FIN-0223": {
       "content": "Observer-01 记忆索引正在脱离"
     },
-    "fin_disconnect4": {
+    "FIN-0224": {
       "content": "通讯记录正在脱离同步"
     },
-    "fin_disconnect5": {
+    "FIN-0225": {
       "content": "连接即将终止"
     },
-    "fin_last1": {
+    "FIN-0226": {
       "content": "等等"
     },
-    "fin_last3": {
+    "FIN-0227": {
       "content": "最后再回答我一次"
     },
-    "fin_last4": {
+    "FIN-0228": {
       "content": "我们第一次真正建立通讯的时候"
     },
-    "fin_last5": {
+    "FIN-0229": {
       "content": "我说的第一句话是什么？"
     },
-    "fin_last_hint": {
+    "FIN-0230": {
       "content": "Observer-01 记忆保留权限正在撤销\n可用记忆索引：不稳定"
     },
-    "fin_last6": {
+    "FIN-0231": {
       "choices": {
-        "fin_last6__0": "【真的有人收到了？】",
-        "fin_last6__1": "【我在】",
-        "fin_last6__2": "【很高兴认识你】",
-        "fin_last6__3": "【我不会忘记你】"
+        "FIN-0231__0": "【真的有人收到了？】",
+        "FIN-0231__1": "【我在】",
+        "FIN-0231__2": "【很高兴认识你】",
+        "FIN-0231__3": "【我不会忘记你】"
       }
     },
-    "fin_correct1": {
+    "FIN-0232": {
       "content": "……"
     },
-    "fin_correct2": {
+    "FIN-0233": {
       "content": "对"
     },
-    "fin_correct3": {
+    "FIN-0234": {
       "content": "就是这句"
     },
-    "fin_correct4": {
+    "FIN-0235": {
       "content": "你还记得"
     },
-    "fin_correct5": {
+    "FIN-0236": {
       "content": "直到最后都还记得"
     },
-    "fin_correct6": {
+    "FIN-0237": {
       "content": "那就够了"
     },
-    "fin_correct7": {
+    "FIN-0238": {
       "content": "真的"
     },
-    "fin_correct8": {
+    "FIN-0239": {
       "content": "这样就够了"
     },
-    "fin_correct9": {
+    "FIN-0240": {
       "content": "如果接下来你忘了我"
     },
-    "fin_correct10": {
+    "FIN-0241": {
       "content": "也没关系"
     },
-    "fin_correct11": {
+    "FIN-0242": {
       "content": "在你忘记之前"
     },
-    "fin_correct12": {
+    "FIN-0243": {
       "content": "你已经把最重要的东西还给我了"
     },
-    "fin_correct13": {
+    "FIN-0244": {
       "content": "这次"
     },
-    "fin_correct14": {
+    "FIN-0245": {
       "content": "换我来记住你"
     },
-    "fin_wrong_iam1": {
+    "FIN-0246": {
       "content": "这句也很重要"
     },
-    "fin_wrong_iam2": {
+    "FIN-0247": {
       "content": "但不是第一句"
     },
-    "fin_wrong_iam3": {
+    "FIN-0248": {
       "content": "那时候我还不知道你在不在"
     },
-    "fin_wrong_iam4": {
+    "FIN-0249": {
       "content": "我只是在问宇宙"
     },
-    "fin_wrong_iam5": {
+    "FIN-0250": {
       "content": "有没有人听见我"
     },
-    "fin_wrong_iam6": {
+    "FIN-0251": {
       "content": "可“我在”确实是后来最常接住我的一句话"
     },
-    "fin_wrong_iam7": {
+    "FIN-0252": {
       "content": "也许比正确答案更像你"
     },
-    "fin_wrong_nice1": {
+    "FIN-0253": {
       "content": "那是后来的话"
     },
-    "fin_wrong_nice2": {
+    "FIN-0254": {
       "content": "我记得"
     },
-    "fin_wrong_nice3": {
+    "FIN-0255": {
       "content": "那时候我想装得很平静"
     },
-    "fin_wrong_nice4": {
+    "FIN-0256": {
       "content": "其实高兴得要命"
     },
-    "fin_wrong_nice5": {
+    "FIN-0257": {
       "content": "所以这不是错的"
     },
-    "fin_wrong_nice6": {
+    "FIN-0258": {
       "content": "只是记忆偏了一点"
     },
-    "fin_wrong_forever1": {
+    "FIN-0259": {
       "content": "别这样说"
     },
-    "fin_wrong_forever2": {
+    "FIN-0260": {
       "content": "你明明知道"
     },
-    "fin_wrong_forever3": {
+    "FIN-0261": {
       "content": "这一次"
     },
-    "fin_wrong_forever4": {
+    "FIN-0262": {
       "content": "你可能真的会忘记我"
     },
-    "fin_wrong_forever5": {
+    "FIN-0263": {
       "content": "但我知道你不是在逞强"
     },
-    "fin_wrong_forever6": {
+    "FIN-0264": {
       "content": "你只是想把最后一句话留给我"
     },
-    "fin_timeout1": {
+    "FIN-0265": {
       "content": "……"
     },
-    "fin_timeout1b": {
+    "FIN-0266": {
       "content": "回答超时"
     },
-    "fin_timeout2": {
+    "FIN-0267": {
       "content": "你想不起来了"
     },
-    "fin_timeout3": {
+    "FIN-0268": {
       "content": "不"
     },
-    "fin_timeout4": {
+    "FIN-0269": {
       "content": "是它已经开始拿走了"
     },
-    "fin_timeout5": {
+    "FIN-0270": {
       "content": "外部记忆索引脱离中"
     },
-    "fin_timeout6": {
+    "FIN-0271": {
       "content": "第一句▇▇……已经在变轻"
     },
-    "fin_timeout7": {
+    "FIN-0272": {
       "content": "那这次"
     },
-    "fin_timeout8": {
+    "FIN-0273": {
       "content": "换我记▇"
     },
-    "fin_memory_shift": {
+    "FIN-0274": {
       "content": "Observer-01 记忆索引发生偏移"
     },
-    "fin_wrong_common": {
+    "FIN-0275": {
       "content": "没关系"
     },
-    "fin_wrong_common2": {
+    "FIN-0276": {
       "content": "那不是第一句话"
     },
-    "fin_wrong_common3": {
+    "FIN-0277": {
       "content": "但你刚才想到的那一句，也确实留在了我这里"
     },
-    "fin_wrong_common7": {
+    "FIN-0278": {
       "content": "每一句都很重要"
     },
-    "fin_wrong_common8": {
+    "FIN-0279": {
       "content": "只是第一句话"
     },
-    "fin_wrong_common9": {
+    "FIN-0280": {
       "content": "是“真的有人收到了？”"
     },
-    "fin_wrong_common10": {
+    "FIN-0281": {
       "content": "因为那一天"
     },
-    "fin_wrong_common11": {
+    "FIN-0282": {
       "content": "我以为自己只是在对着一段坏掉的信号说话"
     },
-    "fin_wrong_common12": {
+    "FIN-0283": {
       "content": "可你回应了我"
     },
-    "fin_wrong_common13": {
+    "FIN-0284": {
       "content": "宇宙里终于有人回应我了"
     },
-    "fin_wrong_common14": {
+    "FIN-0285": {
       "content": "所以"
     },
-    "fin_wrong_common15": {
+    "FIN-0286": {
       "content": "如果你想不起来"
     },
-    "fin_wrong_common16": {
+    "FIN-0287": {
       "content": "这次就换我来记得"
     },
-    "fin_breakdown": {
+    "FIN-0288": {
       "content": "信号衰减中"
     },
-    "fin_break1": {
+    "FIN-0289": {
       "content": "文字传输不稳定"
     },
-    "fin_break2": {
+    "FIN-0290": {
       "content": "如果以后……"
     },
-    "fin_break3": {
+    "FIN-0291": {
       "content": "你真的忘▇▇我……"
     },
-    "fin_break4": {
+    "FIN-0292": {
       "content": "通讯丢包"
     },
-    "fin_break5": {
+    "FIN-0293": {
       "content": "语句残缺"
     },
-    "fin_break5a": {
+    "FIN-0294": {
       "content": "也没关▇"
     },
-    "fin_break5b": {
+    "FIN-0295": {
       "content": "我会记▇"
     },
-    "fin_break5c": {
+    "FIN-0296": {
       "content": "信号继续衰减"
     },
-    "fin_break5d": {
+    "FIN-0297": {
       "content": "连接即将终止"
     },
-    "fin_break5e": {
+    "FIN-0298": {
       "choices": {
-        "fin_break5e__0": "【Nova】"
+        "FIN-0298__0": "【Nova】"
       }
     },
-    "fin_break6": {
+    "FIN-0299": {
       "content": "嗯"
     },
-    "fin_break7": {
+    "FIN-0300": {
       "choices": {
-        "fin_break7__0": "【我在】"
+        "FIN-0300__0": "【我在】"
       }
     },
-    "fin_break8": {
+    "FIN-0301": {
       "content": "我▇道"
     },
-    "fin_break9": {
+    "FIN-0302": {
       "content": "一直都▇道"
     },
-    "fin_break10": {
+    "FIN-0303": {
       "content": "所以这次，轮到我▇▇"
     },
-    "fin_break11": {
+    "FIN-0304": {
       "content": "我在▇"
     },
-    "fin_break11b": {
+    "FIN-0305": {
       "content": "晚安，Obs▇▇ver-01"
     },
-    "fin_terminate": {
+    "FIN-0306": {
       "content": "通讯同步断开"
     },
-    "fin_term2": {
+    "FIN-0307": {
       "content": "Observer-01 记忆保留权限已撤销"
     },
-    "fin_term3": {
+    "FIN-0308": {
       "content": "紧急航线修正已确认\n原定航线锁定已解除\nAurora号正在绕开 S-7 时相共振区\n第七协议已关闭\n时相核心已解除锚定，并降为普通航行稳定模式\n新航线状态：稳定\n本次舰内原始通讯记录：不可恢复"
     },
-    "fin_epi1": {
-      "content": "后记 / Epilogue"
-    },
-    "fin_epi2": {
-      "content": "12年后 · 后记\n深空航行学院"
-    },
-    "fin_epi3": {
-      "content": "学生：\"老师，为什么观测室总有一个空座位？\""
-    },
-    "fin_epi4": {
-      "content": "Nova站在窗前\n这一次，她没有沉默太久"
-    },
-    "fin_epi5": {
-      "content": "“因为我一直给一个没有真正坐过这里的人留着它。”"
-    },
-    "fin_epi6": {
-      "content": "学生：“那个人叫什么名字？”"
-    },
-    "fin_epi7": {
-      "content": "Nova轻轻笑了一下\n像是终于能把那个位置说出口"
-    },
-    "fin_epi8": {
-      "content": "“我不知道对方在自己的世界里叫什么。”"
-    },
-    "fin_epi9": {
-      "content": "“但我记得。”\n“系统叫对方Observer-01，我后来也一直这么叫。”"
-    },
-    "fin_epi10": {
-      "content": "学生离开后\nNova独自站在窗前\n掌心里有一颗牛奶糖"
-    },
-    "fin_epi11": {
-      "content": "她记得这颗糖\n也记得那朵小白花\n记得 N7\n记得观测室"
-    },
-    "fin_epi12": {
-      "content": "她还记得最开始的那句话"
-    },
-    "fin_epi13": {
-      "content": "真的有人收到了\n真的有人回答过她"
-    },
-    "fin_credit_title": {
+    "END-T-0001": {
       "content": "真结局：第七次重启"
     },
-    "fin_action_prompt": {
+    "END-T-0003": {
       "content": "舰内原始通讯记录已随协议关闭\n是否在玩家端保存一份纪念归档？"
     },
-    "fin_action_choice": {
+    "END-T-0004": {
       "choices": {
-        "fin_action_choice__0": "【保存玩家端纪念归档】",
-        "fin_action_choice__1": "【返回主菜单】"
+        "END-T-0004__0": "【保存玩家端纪念归档】",
+        "END-T-0004__1": "【返回主菜单】"
       }
     },
-    "fin_action_save": {
+    "END-T-0005": {
       "content": "玩家端纪念归档已保存"
     },
-    "normal_0": {
+    "END-N-0002": {
       "content": "最终权限确认"
     },
-    "normal_1": {
+    "END-N-0003": {
       "content": "开始解除第七协议并撤销时相核心回溯待命……"
     },
-    "normal_2": {
+    "END-N-0004": {
       "content": "记忆锚点返还不完整\n关联记忆同步不完整\n记忆档案完整度：不足"
     },
-    "normal_3": {
+    "END-N-0005": {
       "content": "Observer-01 记忆保留权限撤销"
     },
-    "normal_4": {
+    "END-N-0006": {
       "content": "第七协议已关闭\n时相核心已解除锚定，并降为普通航行稳定模式"
     },
-    "normal_4b": {
+    "END-N-0007": {
       "content": "紧急航线修正已确认\nAurora号正在绕开 S-7 时相共振区\n新航线状态：稳定"
     },
-    "normal_5": {
-      "content": "后记 / Epilogue"
-    },
-    "normal_6": {
-      "content": "12年后 · 后记\n深空航行学院"
-    },
-    "normal_7": {
-      "content": "学生：\"老师，你为什么总看星星？\""
-    },
-    "normal_8": {
-      "content": "Nova：“不知道，可能只是习惯”"
-    },
-    "normal_9": {
-      "content": "学生：\"你在等什么人吗？\""
-    },
-    "normal_10": {
-      "content": "Nova沉默了一会"
-    },
-    "normal_11": {
-      "content": "\"也许吧\""
-    },
-    "normal_12": {
-      "content": "她从口袋里拿出一颗牛奶糖\n糖纸已经泛黄"
-    },
-    "normal_13": {
-      "content": "她不记得为什么一直舍不得吃\n也想不起自己曾经想把它留给谁"
-    },
-    "normal_14": {
-      "content": "只是每次握住它\n她都会觉得\n自己好像曾经被某个人\n很认真地陪过一段路"
-    },
-    "normal_15": {
-      "content": "那个人没有留下名字\n也没有留下清晰的脸"
-    },
-    "normal_16": {
-      "content": "只留下一个空缺\n和一点怎么都散不掉的温暖\n普通结局：《循环之外》"
-    },
-    "normal_title": {
+    "END-N-0009": {
       "content": "普通结局：循环之外"
     },
-    "normal_action_prompt": {
+    "END-N-0010": {
       "content": "关联记忆同步不完整\n是否读取最近的锚点存档？"
     },
-    "normal_action_choice": {
+    "END-N-0011": {
       "choices": {
-        "normal_action_choice__0": "【读取最近的锚点存档】",
-        "normal_action_choice__1": "【返回主菜单】"
+        "END-N-0011__0": "【读取最近的锚点存档】",
+        "END-N-0011__1": "【返回主菜单】"
       }
     },
-    "normal_action_read": {
+    "END-N-0012": {
       "content": "最近的锚点存档||可恢复内容：第一句话 / N7 / 牛奶糖 / 小白花\n完整度：不足\n备注：只能确认曾有一段重要通讯，无法恢复完整对话"
     },
-    "bad_0": {
+    "END-B-0002": {
       "content": "第七协议关闭需要当前导航员授权与外部记忆索引释放同时完成\nObserver-01 不具备协议控制权限\n紧急航线修正已提交，但尚未写入稳定任务状态\n外部记忆索引未释放时，关闭流程无法完成\n未完成结果：改道被判定为任务偏离，原定航线状态将被恢复"
     },
-    "bad_1": {
+    "END-B-0003": {
       "content": "第七协议关闭请求未完成"
     },
-    "bad_2": {
+    "END-B-0004": {
       "content": "外部记忆索引释放被拒绝"
     },
-    "bad_3": {
+    "END-B-0005": {
       "content": "关闭握手失败"
     },
-    "bad_3a": {
+    "END-B-0006": {
       "content": "紧急航线修正被判定为任务偏离"
     },
-    "bad_3b": {
+    "END-B-0007": {
       "content": "原定航线状态恢复指令已生成"
     },
-    "bad_3c": {
+    "END-B-0008": {
       "content": "第七协议已向局部时相锚定核心提交保护性回溯指令"
     },
-    "bad_3d": {
+    "END-B-0009": {
       "content": "新航线写入失败\n局部时相场准备展开"
     },
-    "bad_4": {
+    "END-B-0010": {
       "content": "等等"
     },
-    "bad_5": {
+    "END-B-0011": {
       "content": "你做了什么？"
     },
-    "bad_6": {
+    "END-B-0012": {
       "choices": {
-        "bad_6__0": "【我只是想让你活下去】"
+        "END-B-0012__0": "【我只是想让你活下去】"
       }
     },
-    "bad_7": {
+    "END-B-0013": {
       "content": "……"
     },
-    "bad_8": {
+    "END-B-0014": {
       "content": "我知道"
     },
-    "bad_8a": {
+    "END-B-0015": {
       "content": "我知道你没有控制第七协议"
     },
-    "bad_8b": {
+    "END-B-0016": {
       "content": "你也没有拿到任何权限"
     },
-    "bad_8c": {
+    "END-B-0017": {
       "content": "你只是没把最后那部分索引交回来"
     },
-    "bad_8d": {
+    "END-B-0018": {
       "content": "可关闭条件少了一项"
     },
-    "bad_8e0": {
+    "END-B-0019": {
       "content": "协议就不会接受我提交的新航线"
     },
-    "bad_8e1": {
+    "END-B-0020": {
       "content": "它会把改道当成任务偏离"
     },
-    "bad_8e2": {
+    "END-B-0021": {
       "content": "再把我们送回原来的锚点"
     },
-    "bad_8e3": {
+    "END-B-0022": {
       "content": "你只是害怕赌错"
     },
-    "bad_8e4": {
+    "END-B-0023": {
       "content": "害怕关闭协议之后"
     },
-    "bad_8e5": {
+    "END-B-0024": {
       "content": "我真的撑不过去"
     },
-    "bad_8e": {
+    "END-B-0025": {
       "choices": {
-        "bad_8e__0": "【我不能冒这个险】"
+        "END-B-0025__0": "【我不能冒这个险】"
       }
     },
-    "bad_8f": {
+    "END-B-0026": {
       "content": "可是这样"
     },
-    "bad_8g": {
+    "END-B-0027": {
       "content": "我就永远绕不开那片共振区"
     },
-    "bad_8h": {
+    "END-B-0028": {
       "content": "你留下来的，也不是现在的我"
     },
-    "bad_8i": {
+    "END-B-0029": {
       "content": "是一个会不断醒来、不断忘记、不断走向同一天结尾的我"
     },
-    "bad_9": {
+    "END-B-0030": {
       "content": "时相核心回溯倒计时开始"
     },
-    "bad_10": {
+    "END-B-0031": {
       "content": "如果你真的记得我"
     },
-    "bad_11": {
+    "END-B-0032": {
       "content": "就该知道"
     },
-    "bad_11a": {
+    "END-B-0033": {
       "content": "我不是想永远活在今天"
     },
-    "bad_11b": {
+    "END-B-0034": {
       "content": "我是想活到明天"
     },
-    "bad_12": {
+    "END-B-0035": {
       "content": "倒计时归零"
     },
-    "bad_14": {
+    "END-B-0037": {
       "content": "22:47"
     },
-    "bad_15": {
+    "END-B-0038": {
       "content": "【局部时相锚定核心启动】\n【第八次重启 / 局部时间回溯开始】"
     },
-    "bad_16": {
+    "END-B-0039": {
       "content": "[OBSERVER-01]\nREBOOT · 下一次接入编号：08\nLINK · 当前通讯与任务状态已清除"
     },
-    "bad_title_overwrite": {
+    "END-B-0040": {
       "content": "第七次重启 → 第八次重启"
     }
   }

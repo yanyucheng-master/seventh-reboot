@@ -54,7 +54,7 @@ async function runViewport(browser, name, viewport) {
   const page = await context.newPage();
   const reports = [];
 
-  await openInteraction(page, 'ch3_airlock_interaction');
+  await openInteraction(page, 'CH03-0144');
   reports.push({ name: 'bulkhead-initial', ...(await inspectLayout(page)) });
   await page.screenshot({ path: path.join(outputRoot, `${name}-bulkhead-initial.png`) });
   await page.getByRole('button', { name: '封闭观测室侧隔离门' }).click();
@@ -63,14 +63,14 @@ async function runViewport(browser, name, viewport) {
   await page.getByTestId('bulkhead-result-safe').waitFor();
   await page.screenshot({ path: path.join(outputRoot, `${name}-bulkhead-safe.png`) });
 
-  await openInteraction(page, 'ch5a_auth_input');
+  await openInteraction(page, 'CH05A-0016');
   await page.getByTestId('critical-log-password').fill('07-01');
   await page.getByTestId('password-submit').click();
   await page.getByTestId('password-success').waitFor();
   reports.push({ name: 'joint-auth-success', ...(await inspectLayout(page)) });
   await page.screenshot({ path: path.join(outputRoot, `${name}-joint-auth.png`) });
 
-  await openInteraction(page, 'ch5b_power_interaction');
+  await openInteraction(page, 'CH05B-0017');
   await setRange(page, 'power-transit-lifeSupport', 55);
   await setRange(page, 'power-core_read-coreScan', 40);
   await page.getByTestId('power-submit').click();
@@ -78,24 +78,24 @@ async function runViewport(browser, name, viewport) {
   reports.push({ name: 'power-first-success', ...(await inspectLayout(page)) });
   await page.screenshot({ path: path.join(outputRoot, `${name}-power-success.png`) });
 
-  await openInteraction(page, 'ch5b_power_interaction');
+  await openInteraction(page, 'CH05B-0017');
   await page.getByTestId('power-submit').click();
   await page.getByTestId('power-result-fail').waitFor();
   const checkpoint = await page.evaluate(() => JSON.parse(localStorage.getItem('seventh_reboot_save') || 'null'));
-  if (!checkpoint?.stats?.nova06PowerOverrideUsed || checkpoint.pendingNodeId !== 'ch5b_power_first_fail1') {
+  if (!checkpoint?.stats?.nova06PowerOverrideUsed || checkpoint.pendingNodeId !== 'CH05B-0021') {
     throw new Error(`First-failure checkpoint is invalid: ${JSON.stringify(checkpoint)}`);
   }
   await page.screenshot({ path: path.join(outputRoot, `${name}-power-first-fail.png`) });
 
-  await openInteraction(page, 'ch5b_power_retry_interaction');
+  await openInteraction(page, 'CH05B-0029');
   reports.push({ name: 'power-final-attempt', ...(await inspectLayout(page)) });
   await page.screenshot({ path: path.join(outputRoot, `${name}-power-final.png`) });
 
-  await openInteraction(page, 'ch5b_memory_seal');
+  await openInteraction(page, 'CH05B-0193');
   reports.push({ name: 'memory-seal', ...(await inspectLayout(page)) });
   await page.screenshot({ path: path.join(outputRoot, `${name}-memory-seal.png`) });
 
-  await openInteraction(page, 'fin_memory_restore', 'white_flower');
+  await openInteraction(page, 'FIN-0014', 'white_flower');
   await page.getByTestId('memory-restore-maintenance_board').click();
   await page.getByTestId('memory-restore-white_flower').click();
   reports.push({ name: 'memory-restore', ...(await inspectLayout(page)) });

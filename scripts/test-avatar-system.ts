@@ -40,44 +40,44 @@ function advance(state: NovaAvatarStoryState, nodeId: string): NovaAvatarStorySt
 let state = createDefaultNovaAvatarState();
 assert.deepEqual(resolveNovaAvatarPresentation(state), { base: 'unknown_signal', overlay: 'signal_weak' });
 
-const firstNotice = applyNovaAvatarNodeEffect(state, 'p9');
+const firstNotice = applyNovaAvatarNodeEffect(state, 'PRO-0002');
 assert.deepEqual(firstNotice.noticeKeys, ['avatar.connection.unregistered']);
 state = firstNotice.state;
-assert.deepEqual(applyNovaAvatarNodeEffect(state, 'p9').noticeKeys, [], 'Unknown contact notice must be idempotent');
+assert.deepEqual(applyNovaAvatarNodeEffect(state, 'PRO-0002').noticeKeys, [], 'Unknown contact notice must be idempotent');
 
-state = advance(state, 'ch1_pet5');
-state = advance(state, 'ch1_n7photo');
-state = advance(state, 'ch3_flower1');
+state = advance(state, 'CH01-0128');
+state = advance(state, 'CH01-0137');
+state = advance(state, 'CH03-0006');
 assert.equal(state.n7AvatarQueued, true);
 assert.equal(state.whiteFlowerAvatarQueued, true);
 assert.equal(resolveNovaAvatarPresentation(state).base, 'unknown_signal', 'Story photos must not become avatars before identity proof');
 
-const verified = applyNovaAvatarNodeEffect(state, 'ch4_id_confirm');
+const verified = applyNovaAvatarNodeEffect(state, 'CH04-0124');
 state = verified.state;
 assert.equal(verified.transition, 'identity-verification');
 assert.equal(resolveNovaAvatarPresentation(state).base, 'official_navigator');
 
-const privateProfile = applyNovaAvatarNodeEffect(state, 'ch4_trust1');
+const privateProfile = applyNovaAvatarNodeEffect(state, 'CH04-0153');
 state = privateProfile.state;
 assert.equal(privateProfile.transition, 'private-profile');
 assert.equal(resolveNovaAvatarPresentation(state).base, 'n7_private');
 
-const flowerProfile = applyNovaAvatarNodeEffect(state, 'ch4_gn1');
+const flowerProfile = applyNovaAvatarNodeEffect(state, 'CH04-0213');
 state = flowerProfile.state;
 assert.equal(flowerProfile.transition, 'flower-profile');
 assert.equal(resolveNovaAvatarPresentation(state).base, 'white_flower');
 
-state = advance(state, 'ch4_offline');
+state = advance(state, 'CH04-0221');
 assert.deepEqual(resolveNovaAvatarPresentation(state), { base: 'n7_private', overlay: 'offline_residual' });
-state = advance(state, 'ch5a_1');
+state = advance(state, 'CH05A-0003');
 assert.deepEqual(resolveNovaAvatarPresentation(state), { base: 'n7_private', overlay: 'none' });
 
-const trueEnding = advance(state, 'fin_action_prompt');
+const trueEnding = advance(state, 'END-T-0003');
 assert.deepEqual(resolveNovaAvatarPresentation(trueEnding), { base: 'n7_private', overlay: 'archived' });
-const normalEnding = advance(state, 'normal_action_prompt');
+const normalEnding = advance(state, 'END-N-0010');
 assert.deepEqual(resolveNovaAvatarPresentation(normalEnding), { base: 'n7_private', overlay: 'offline_residual' });
 
-const badEndingEffect = applyNovaAvatarNodeEffect(state, 'bad_15');
+const badEndingEffect = applyNovaAvatarNodeEffect(state, 'END-B-0038');
 assert.equal(badEndingEffect.transition, 'profile-clear');
 assert.deepEqual(badEndingEffect.noticeKeys, ['avatar.badEnding.profileReset']);
 assert.deepEqual(resolveNovaAvatarPresentation(badEndingEffect.state), {
@@ -86,12 +86,12 @@ assert.deepEqual(resolveNovaAvatarPresentation(badEndingEffect.state), {
 });
 
 let missingN7 = createDefaultNovaAvatarState();
-missingN7 = advance(missingN7, 'ch4_id_confirm');
-missingN7 = advance(missingN7, 'ch4_trust1');
+missingN7 = advance(missingN7, 'CH04-0124');
+missingN7 = advance(missingN7, 'CH04-0153');
 assert.equal(resolveNovaAvatarPresentation(missingN7).base, 'official_navigator');
 
 let missingFlower = createDefaultNovaAvatarState();
-for (const nodeId of ['ch1_pet5', 'ch1_n7photo', 'ch4_id_confirm', 'ch4_trust1', 'ch4_gn1']) {
+for (const nodeId of ['CH01-0128', 'CH01-0137', 'CH04-0124', 'CH04-0153', 'CH04-0213']) {
   missingFlower = advance(missingFlower, nodeId);
 }
 assert.equal(resolveNovaAvatarPresentation(missingFlower).base, 'n7_private');
@@ -105,28 +105,28 @@ assert.equal(resolveNovaAvatarOverlay(state, { activeSpecialInteraction: 'bulkhe
 
 const legacyMessages = [
   {
-    id: 'ch1_pet5_1',
+    id: 'CH01-0128_1',
     speaker: 'nova',
     type: 'text',
     content: 'N7',
-    sourceNodeId: 'ch1_pet5',
+    sourceNodeId: 'CH01-0128',
     emotion: 'smile',
     avatarProfile: 'nova_normal',
     avatarUrl: '/assets/nova_normal.png',
     contactStage: 'named',
   },
   {
-    id: 'ch1_n7photo_2',
+    id: 'CH01-0137_2',
     speaker: 'nova',
     type: 'image',
     content: 'N7 photo',
     image: '/assets/nova_n7_photo.png',
-    sourceNodeId: 'ch1_n7photo',
+    sourceNodeId: 'CH01-0137',
   },
 ] as unknown as DisplayMessage[];
 
 const migrated = migrateSaveData({
-  pendingNodeId: 'ch4_trust1',
+  pendingNodeId: 'CH04-0153',
   messages: legacyMessages,
   novaEmotion: 'sad',
   contactStage: 'verified',

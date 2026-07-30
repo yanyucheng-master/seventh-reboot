@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { Archive, ArrowLeft, LogOut, SkipForward } from 'lucide-react';
+import { Archive, LogOut, SkipForward } from 'lucide-react';
 import { type Choice, type StoryNode } from './story';
 import { relocalizeChapterBanner, relocalizeDisplayMessages, useI18n } from '../i18n';
 import type { Locale } from '../i18n';
@@ -88,7 +88,7 @@ import { useVisualViewport } from '../hooks/useVisualViewport';
 import { getSaveProgressLabel } from './progress';
 import { formatChoiceText, shouldShowNovaAvatar, shouldShowTypingAvatar } from './format';
 import { resolveEndingStart } from './endings';
-import { ANCHOR_ARCHIVE_IDS, getArchiveUnlocksForNode } from './archive';
+import { ANCHOR_ARCHIVE_IDS, applyArchiveUnlocks, getArchiveUnlocksForNode } from './archive';
 import {
   applyPersistentStoryNodeEffects,
   applyStoryChoiceEffects,
@@ -178,7 +178,7 @@ function createCycleNoticeMessages(keys: CycleNoticeKey[], t: Translate): Displa
 
 function getWaitConfig(node: StoryNode, t: Translate): WaitConfig | null {
   if (!node.nextId) return null;
-  if (/^fin_|^normal_|^bad_/.test(node.id)) return null;
+  if (/^(?:FIN|END-[TNB])-/.test(node.id)) return null;
 
   if (node.type === 'status' && /Nova is offline|Nova 已离线/i.test(node.content)) {
     return {
@@ -265,7 +265,7 @@ function getSignalGlitchLevel(node: StoryNode): GlitchLevel | null {
   if (/(Seventh Protocol|第七协议)/i.test(node.content) && (node.type === 'status' || node.type === 'glitch')) return 2;
   if (/Reconnected|Reconnection successful|重连成功/i.test(node.content)) return 1;
   if (node.type === 'glitch' || node.isGlitch) {
-    return /^fin_|^bad_/.test(node.id) ? 3 : 1;
+    return /^(?:FIN|END-B)-/.test(node.id) ? 3 : 1;
   }
   return null;
 }
@@ -292,7 +292,7 @@ function getSignalGlitchCue(node: StoryNode): SignalGlitchCue | null {
 
   // The prologue is one escalating incident: 30% local corruption, a text-only
   // dropout, then a 70% disconnect. Full-strength flashes remain for later acts.
-  if (node.id === 'p10') {
+  if (node.id === 'PRO-0003') {
     return {
       level,
       tone,
@@ -303,8 +303,8 @@ function getSignalGlitchCue(node: StoryNode): SignalGlitchCue | null {
       haptic: false,
     };
   }
-  if (node.id === 'p12') return null;
-  if (node.id === 'p13b_u06') {
+  if (node.id === 'PRO-0005') return null;
+  if (node.id === 'PRO-0008') {
     return {
       level,
       tone,
@@ -349,7 +349,7 @@ function getNovaTypingLeadDelay(node: StoryNode, previousMessage?: DisplayMessag
   if (explicitDelay >= 2500) delay = Math.max(delay, 1250);
   if (isNovaHesitationBeat(node.content)) delay = Math.max(delay, 1180);
   if (isNovaSilentBeat(node.content)) delay = Math.max(delay, 1550);
-  if (/^fin_|^normal_|^bad_/.test(node.id)) {
+  if (/^(?:FIN|END-[TNB])-/.test(node.id)) {
     delay = Math.max(delay, isConsecutiveNova ? 720 : 1150);
   }
 
@@ -377,7 +377,9 @@ function getNovaPostMessageDelay(node: StoryNode): number {
 
   if (isNovaHesitationBeat(node.content)) delay = Math.max(delay, explicitDelay, 780);
   if (isNovaSilentBeat(node.content)) delay = Math.max(delay, explicitDelay, 1450);
-  if (/^fin_|^normal_|^bad_/.test(node.id) && explicitDelay >= 700) delay = Math.max(delay, explicitDelay);
+  if (/^(?:FIN|END-[TNB])-/.test(node.id) && explicitDelay >= 700) {
+    delay = Math.max(delay, explicitDelay);
+  }
 
   return Math.min(delay, 4200);
 }
@@ -474,7 +476,7 @@ export default function GameApp() {
   const skipToChoiceRef = useRef(false);
   const forceFastForwardBottomRef = useRef(false);
   const messagesRef = useRef(messages);
-  const pendingNodeIdRef = useRef('p0');
+  const pendingNodeIdRef = useRef('PRO-0001');
   const deliveryRuntimeRef = useRef(deliveryRuntime);
   const deliveryControllerRef = useRef<DeliveryController | null>(null);
   const avatarStateRef = useRef(avatarState);
@@ -640,6 +642,11 @@ export default function GameApp() {
     setShowMenuSettings(false);
     setScreen('menu');
   }, [cancelActiveSequence, t]);
+
+  const finishRunToMenu = useCallback(() => {
+    clearSave();
+    goToMenu();
+  }, [goToMenu]);
 
   const updateNearBottomState = useCallback(() => {
     const el = chatScrollRef.current;
@@ -954,32 +961,9 @@ export default function GameApp() {
   }, [addMessage, t]);
 
   const unlockArchives = useCallback((entryIds: string | string[]) => {
-    const ids = Array.isArray(entryIds) ? entryIds : [entryIds];
-    const normalized = [...new Set(ids.filter(Boolean))];
-    if (normalized.length === 0) return false;
-
     const current = statsRef.current;
-    const existingArchives = new Set(current.unlockedArchives);
-    const existingEndings = new Set(current.endingsUnlocked);
-    let changed = false;
-
-    normalized.forEach(id => {
-      if (!existingArchives.has(id)) {
-        existingArchives.add(id);
-        changed = true;
-      }
-      if ((id === 'ending_true' || id === 'ending_normal' || id === 'ending_bad') && !existingEndings.has(id)) {
-        existingEndings.add(id);
-        changed = true;
-      }
-    });
-
-    if (!changed) return false;
-    const nextStats: GameStats = {
-      ...current,
-      unlockedArchives: [...existingArchives],
-      endingsUnlocked: [...existingEndings],
-    };
+    const nextStats = applyArchiveUnlocks(current, entryIds);
+    if (nextStats === current) return false;
     statsRef.current = nextStats;
     setStats(nextStats);
     return true;
@@ -987,7 +971,7 @@ export default function GameApp() {
 
   const markCommemorativeArchiveSaved = useCallback(() => {
     const current = statsRef.current;
-    const nextStats = applyPersistentStoryNodeEffects(current, 'fin_action_save');
+    const nextStats = applyPersistentStoryNodeEffects(current, 'END-T-0005');
     if (nextStats === current) return false;
     statsRef.current = nextStats;
     setStats(nextStats);
@@ -1097,8 +1081,8 @@ export default function GameApp() {
       }
 
       if (node.interactionPrerequisite && !matchesInteractionPrerequisite(statsRef.current, node.interactionPrerequisite)) {
-        const fallbackId = node.id === 'ch5b_power_retry_interaction'
-          ? 'ch5b_power_interaction'
+        const fallbackId = node.id === 'CH05B-0029'
+          ? 'CH05B-0017'
           : node.nextId;
         if (fallbackId) {
           persistState(fallbackId, messagesRef.current);
@@ -1117,7 +1101,7 @@ export default function GameApp() {
         }
       }
 
-      if (node.id === 'fin_action_save') markCommemorativeArchiveSaved();
+      if (node.id === 'END-T-0005') markCommemorativeArchiveSaved();
 
       if (node.requiresAnchor && !statsRef.current.memoryAnchors.includes(node.requiresAnchor)) {
         if (node.nextId) nodeQueueRef.current.push(node.nextId);
@@ -1557,9 +1541,12 @@ export default function GameApp() {
     messagesRef.current = [];
     statsRef.current = testStats;
     const testAvatarState = createNovaAvatarStateForCheckpoint(INTERNAL_TEST_NODE_ID);
+    const testPrologueIndex = /^PRO-\d{4}$/.test(INTERNAL_TEST_NODE_ID)
+      ? Number(INTERNAL_TEST_NODE_ID.slice(-4))
+      : Number.POSITIVE_INFINITY;
     const testContactStage: ContactStage = testAvatarState.novaIdentityVerified
       ? 'verified'
-      : /^(?:p0|p9|p1[0-3])(?:_|$)/.test(INTERNAL_TEST_NODE_ID)
+      : testPrologueIndex <= 38
         ? 'unknown'
         : 'named';
     avatarStateRef.current = testAvatarState;
@@ -1636,9 +1623,9 @@ export default function GameApp() {
         'cycle.memoryProjection',
         'cycle.projectionWarning',
       ]);
-      persistState('p0', currentMessages);
+      persistState('PRO-0001', currentMessages);
     } else {
-      persistState('p0', messagesRef.current);
+      persistState('PRO-0001', messagesRef.current);
     }
 
     if (plan.events.length === 0 || initialCursor >= plan.events.length) {
@@ -1665,7 +1652,7 @@ export default function GameApp() {
       }
 
       if (nextCursor % Math.max(step * 8, 1) === 0) {
-        persistState('p0', messagesRef.current);
+        persistState('PRO-0001', messagesRef.current);
       }
       syncTimerRef.current = window.setTimeout(advance, 46);
     };
@@ -1850,7 +1837,7 @@ export default function GameApp() {
       cycleStateRef.current = freshCycle;
       persistentProgressRef.current = progress;
       previousCycleRecordRef.current = previousCycle;
-      pendingNodeIdRef.current = 'p0';
+      pendingNodeIdRef.current = 'PRO-0001';
       setMessages(initialMessages);
       setAvatarState(freshAvatarState);
       setContactStage(defaultContactStage);
@@ -1866,7 +1853,7 @@ export default function GameApp() {
       setShowArchive(false);
       setScreen('playing');
       saveGame(createSaveData(
-        'p0',
+        'PRO-0001',
         initialMessages,
         freshAvatarState,
         defaultContactStage,
@@ -1879,7 +1866,7 @@ export default function GameApp() {
       if (previousCycle) {
         setSyncOfferVisible(true);
       } else {
-        startSequence('p0');
+        startSequence('PRO-0001');
       }
     },
     [activateChoice, beginCycleSync, cancelActiveSequence, memoryAnchorLabels, scheduleSequence, startSequence, storyNodeMap, t],
@@ -1972,7 +1959,7 @@ export default function GameApp() {
         nextId: node.timeoutNextId!,
       }), node.id));
 
-      const updated = node.id === 'fin_last6'
+      const updated = node.id === 'FIN-0231'
         ? addMessage({
           id: `choice_timeout_${node.id}_${Date.now()}`,
           speaker: 'system',
@@ -2235,6 +2222,23 @@ export default function GameApp() {
   const menuAvatarPresentation = resolveNovaAvatarPresentation(
     saveSnapshot?.avatarState ?? createDefaultNovaAvatarState(),
   );
+  const menuArchiveStats: GameStats = saveSnapshot?.stats ?? {
+    ...stats,
+    unlockedArchives: [...new Set([
+      ...stats.unlockedArchives,
+      ...persistentProgress.unlockedArchives,
+    ])],
+    endingsUnlocked: [...new Set([
+      ...stats.endingsUnlocked,
+      ...persistentProgress.endingsUnlocked,
+    ])],
+    commemorativeArchiveSaved:
+      stats.commemorativeArchiveSaved || persistentProgress.commemorativeArchiveSaved,
+    normalEpilogueUnlocked:
+      stats.normalEpilogueUnlocked || persistentProgress.normalEpilogueUnlocked,
+    trueEpilogueUnlocked:
+      stats.trueEpilogueUnlocked || persistentProgress.trueEpilogueUnlocked,
+  };
   const contactSubtitle = contactStage === 'unknown'
     ? t('contact.unknownSubtitle')
     : avatarState.novaConnectionState === 'archived'
@@ -2246,11 +2250,16 @@ export default function GameApp() {
         : avatarState.novaConnectionState === 'weak'
           ? t('contact.weakSubtitle')
           : t('contact.stableSubtitle');
-  const isEpilogueMode = messages.some(message => message.type === 'epilogue');
   const isFinished = messages.some(message => message.type === 'end');
   const isSignalActive = isSyncing || isTyping || isTypewriterActive || Boolean(deliveryRuntime.activeMessageId);
   const shouldShowMediaSafeSpace = Boolean(choices && hasRecentMediaMessage(messages));
   const isReboot08Menu = persistentProgress.reboot08TitleUnlocked;
+  const hasPersistentArchive =
+    persistentProgress.unlockedArchives.length > 0
+    || persistentProgress.endingsUnlocked.length > 0
+    || persistentProgress.normalEpilogueUnlocked
+    || persistentProgress.trueEpilogueUnlocked
+    || persistentProgress.failedCycles.length > 0;
   const menuRebootNumber = isReboot08Menu ? 8 : 7;
 
   if (screen === 'menu') {
@@ -2343,15 +2352,24 @@ export default function GameApp() {
                   </div>
                 </>
               ) : (
-                <button
-                  type="button"
-                  onClick={() => startGame('new')}
-                  className="menu-command menu-command-primary"
-                >
-                  <span aria-hidden="true" className="menu-command-corner menu-command-corner-left" />
-                  <strong>{t('menu.connect')}</strong>
-                  <span aria-hidden="true" className="menu-command-corner menu-command-corner-right" />
-                </button>
+                <>
+                  <button
+                    type="button"
+                    onClick={() => startGame('new')}
+                    className="menu-command menu-command-primary"
+                  >
+                    <span aria-hidden="true" className="menu-command-corner menu-command-corner-left" />
+                    <strong>{t('menu.connect')}</strong>
+                    <span aria-hidden="true" className="menu-command-corner menu-command-corner-right" />
+                  </button>
+                  {hasPersistentArchive && (
+                    <div className="menu-secondary-actions">
+                      <button type="button" onClick={() => setShowArchive(true)}>
+                        {t('menu.archive')}
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </nav>
           </section>
@@ -2367,7 +2385,7 @@ export default function GameApp() {
         </footer>
         {showArchive && (
           <MemoryArchiveOverlay
-            stats={saveSnapshot?.stats ?? stats}
+            stats={menuArchiveStats}
             contactStage={menuContactStage}
             avatarPresentation={menuAvatarPresentation}
             onClose={() => setShowArchive(false)}
@@ -2524,34 +2542,22 @@ export default function GameApp() {
         }`}
       >
           <header className="game-header chat-header flex items-center gap-3 px-3 sm:px-4 py-3 bg-[#151A26]/92 border-b border-[#1A2236]/80 shrink-0">
-            {isEpilogueMode ? (
-              <>
-                <div className="epilogue-header-mark" aria-hidden />
-                <div className="flex flex-col min-w-0 flex-1">
-                  <span className="text-[#E8EEF4] text-[15px] font-medium leading-tight">{t('game.epilogueTitle')}</span>
-                  <span className="text-[#6E8498] text-[11px] leading-snug truncate">{t('game.epilogueSubtitle')}</span>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="relative shrink-0">
-                  <NovaAvatar
-                    presentation={avatarPresentation}
-                    transition={avatarTransition}
-                    className={`nova-header-avatar ${signalGlitch ? `signal-glitch-avatar signal-glitch-avatar-${signalGlitch.tone} signal-glitch-avatar-style-${signalGlitch.style}` : ''}`}
-                  />
-                  <span
-                    className="contact-status-dot"
-                    data-connection={avatarState.novaConnectionState}
-                    data-link-state={deliveryRuntime.linkState}
-                  />
-                </div>
-                <div className="flex flex-col min-w-0 flex-1">
-                  <span className="text-[#E8EEF4] text-[15px] font-medium leading-tight">{contactMeta.name}</span>
-                  <span className="text-[#6E8498] text-[11px] leading-snug truncate">{contactSubtitle}</span>
-                </div>
-              </>
-              )}
+            <div className="relative shrink-0">
+              <NovaAvatar
+                presentation={avatarPresentation}
+                transition={avatarTransition}
+                className={`nova-header-avatar ${signalGlitch ? `signal-glitch-avatar signal-glitch-avatar-${signalGlitch.tone} signal-glitch-avatar-style-${signalGlitch.style}` : ''}`}
+              />
+              <span
+                className="contact-status-dot"
+                data-connection={avatarState.novaConnectionState}
+                data-link-state={deliveryRuntime.linkState}
+              />
+            </div>
+            <div className="flex flex-col min-w-0 flex-1">
+              <span className="text-[#E8EEF4] text-[15px] font-medium leading-tight">{contactMeta.name}</span>
+              <span className="text-[#6E8498] text-[11px] leading-snug truncate">{contactSubtitle}</span>
+            </div>
               <div
                 className="chat-link-readout"
                 data-link-state={deliveryRuntime.linkState}
@@ -2614,15 +2620,11 @@ export default function GameApp() {
                 type="button"
                 onClick={goToMenu}
                 className="header-tool-btn header-disconnect-btn text-[11px] px-2.5 py-1.5 rounded transition-colors"
-                aria-label={isEpilogueMode ? t('game.back') : t('game.disconnect')}
-                title={isEpilogueMode ? t('game.back') : t('game.disconnect')}
+                aria-label={t('game.disconnect')}
+                title={t('game.disconnect')}
               >
-                {isEpilogueMode ? (
-                  <ArrowLeft size={14} strokeWidth={1.7} aria-hidden="true" />
-                ) : (
-                  <LogOut size={14} strokeWidth={1.7} aria-hidden="true" />
-                )}
-                <span className="header-btn-label">{isEpilogueMode ? t('game.back') : t('game.disconnect')}</span>
+                <LogOut size={14} strokeWidth={1.7} aria-hidden="true" />
+                <span className="header-btn-label">{t('game.disconnect')}</span>
               </button>
             </div>
           </header>
@@ -2650,28 +2652,6 @@ export default function GameApp() {
               />
             ))}
 
-            {choiceNodeId === 'p4' && choices && (
-              <div className="comm-connect-inline animate-fade-in">
-                <div className="flex flex-col items-end gap-2 mt-2">
-                  {choices.map((choice, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => handleChoice(choice)}
-                      className={
-                        i === 0
-                          ? 'comm-connect-inline-btn menu-btn px-5 py-2.5 rounded-lg text-sm tracking-widest'
-                          : 'comm-connect-secondary menu-btn px-4 py-2 rounded-lg text-xs tracking-wide'
-                      }
-                    >
-                      {formatChoiceText(choice.text)}
-                    </button>
-                  ))}
-                </div>
-                <p className="comm-risk-hint text-right mt-2 pr-1">{t('game.commConnectHint')}</p>
-              </div>
-            )}
-
             {isTyping && (
               <RemoteTypingRow
                 avatarPresentation={avatarPresentation}
@@ -2685,7 +2665,7 @@ export default function GameApp() {
                 <div className="flex flex-col items-center gap-2">
                   <div className="w-12 h-px bg-[#4A6C8C]/40" />
                   <span className="text-[#8B949E] text-xs tracking-wider">{t('game.commEnded')}</span>
-                  <button type="button" onClick={goToMenu} className="mt-4 text-sm text-[#F0A030] hover:underline">
+                  <button type="button" onClick={finishRunToMenu} className="mt-4 text-sm text-[#F0A030] hover:underline">
                     {t('game.backToMenu')}
                   </button>
                 </div>
@@ -2756,7 +2736,7 @@ export default function GameApp() {
                   <span className="chat-wait-progress" aria-hidden />
                 </div>
               </button>
-            ) : choices && choiceNodeId !== 'p4' ? (
+            ) : choices ? (
                 <div className="choice-panel flex flex-col gap-1.5">
                   <p className="choice-prompt">{t('game.choicePrompt')}</p>
                   {choices.map((choice, i) => (
@@ -2770,12 +2750,6 @@ export default function GameApp() {
                     </button>
                   ))}
                 </div>
-            ) : choiceNodeId === 'p4' && choices ? (
-              <div className="chat-idle-bar flex items-center gap-3 px-3 py-2 rounded-lg">
-                <div className="flex-1">
-                  <span className="chat-idle-text text-xs">{t('game.waitingProtocol')}</span>
-                </div>
-              </div>
             ) : isFinished ? (
               <div className="chat-idle-bar chat-finished-bar flex items-center gap-3 px-3 py-2 rounded-lg">
                 <div className="flex-1">

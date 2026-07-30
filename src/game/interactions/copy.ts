@@ -32,16 +32,40 @@ export type SpecialInteractionCopy = {
     mission: string;
     liveMarker: string;
     anomalyMarker: string;
+    pressureMapLabel: string;
+    observationLabel: string;
+    transitionLabel: string;
+    hallwayLabel: string;
+    safeMarker: string;
     remaining: string;
     instruction: string;
     sealStep: string;
     routeStep: string;
+    sealPrompt: string;
+    routePrompt: string;
+    reviseSeal: string;
     observationSeal: string;
     hallwaySeal: string;
     routeHallway: string;
     routeObservation: string;
     purgeTransition: string;
+    selectRoute: string;
     execute: string;
+    startFlow: string;
+    lockPressure: string;
+    lockPrompt: string;
+    pressureLocking: string;
+    pressureTelemetry: string;
+    safeBand: string;
+    pressureFalling: string;
+    pressureHolding: string;
+    pressureRising: string;
+    pressureReady: string;
+    pressureCritical: string;
+    purgeAccess: string;
+    purgeConfirmTitle: string;
+    purgeWarning: string;
+    purgeConfirm: string;
     safeTitle: string;
     injuredTitle: string;
     fatalTitle: string;
@@ -121,26 +145,50 @@ const zh: SpecialInteractionCopy = {
     phase: '阶段',
   },
   bulkhead: {
-    kicker: 'AURORA / 观测室隔离控制',
-    title: '观测室隔离与手动均压',
-    mission: 'LIVE-07 位于中间过渡舱。先隔离异常生命信号，再把人员所在舱接向安全出口。',
-    liveMarker: 'LIVE-07 / NOVA',
-    anomalyMarker: '重复生命信号 / 应隔离',
-    remaining: '密封完整度剩余',
-    instruction: '我在中间。把我身后的观测室封住，再让我这边接主走廊。',
-    sealStep: '第一步 / 选择要封闭的隔离门',
-    routeStep: '第二步 / 选择均压方向',
-    observationSeal: '封闭观测室侧隔离门',
-    hallwaySeal: '封闭主走廊侧隔离门',
-    routeHallway: '连接过渡舱与主走廊',
-    routeObservation: '连接过渡舱与观测室',
+    kicker: 'AURORA / PRESSURE CONTROL',
+    title: '隔离舱均压',
+    mission: '隔离异常源 · 接通安全出口',
+    liveMarker: 'LIVE-07',
+    anomalyMarker: '异常信号 ×2',
+    pressureMapLabel: '观测室、过渡舱与主走廊压力图',
+    observationLabel: '观测室',
+    transitionLabel: '过渡舱',
+    hallwayLabel: '主走廊',
+    safeMarker: '安全出口',
+    remaining: '操作窗口',
+    instruction: '我在中间舱，压力还在掉。',
+    sealStep: '01 / 隔离',
+    routeStep: '02 / 均压',
+    sealPrompt: '封锁哪一侧？',
+    routePrompt: '点选目标舱室',
+    reviseSeal: '重新选择隔离门',
+    observationSeal: '封锁观测室侧',
+    hallwaySeal: '封锁主走廊侧',
+    routeHallway: '接通主走廊',
+    routeObservation: '接通观测室',
     purgeTransition: '净化过渡舱',
-    execute: '确认并执行均压序列',
+    selectRoute: '请选择均压目标',
+    execute: '执行均压',
+    startFlow: '开启均压阀',
+    lockPressure: '锁定压力',
+    lockPrompt: '压力进入安全区后锁定',
+    pressureLocking: '锁定中',
+    pressureTelemetry: 'LIVE-07 舱压',
+    safeBand: '安全区 94–101',
+    pressureFalling: '压力缓降',
+    pressureHolding: '隔离完成',
+    pressureRising: '正在升压',
+    pressureReady: '可以锁定',
+    pressureCritical: '压力异常',
+    purgeAccess: '应急净化指令',
+    purgeConfirmTitle: '确认净化过渡舱？',
+    purgeWarning: 'LIVE-07 位于该舱室。指令执行后无法撤销。',
+    purgeConfirm: '确认净化',
     safeTitle: '均压完成 / LIVE-07 安全',
     injuredTitle: '均压完成 / LIVE-07 短时缺氧',
     fatalTitle: '均压失败 / LIVE-07 信号丢失',
     safeDetail: '观测室已隔离，过渡舱正在接入主走廊。',
-    injuredDetail: '方向正确，但密封延迟使过渡舱压力短时跌破安全线。',
+    injuredDetail: '路线正确，但锁定时机偏早或操作延迟使 LIVE-07 一度低于安全线。',
     failures: {
       wrong_observation_door: '低压观测室被接入过渡舱，人员舱压力快速下降。',
       hallway_sealed: '安全出口被封闭，异常观测室仍与人员舱相连。',
@@ -270,26 +318,50 @@ const en: SpecialInteractionCopy = {
     phase: 'Phase',
   },
   bulkhead: {
-    kicker: 'AURORA / OBSERVATION ISOLATION',
-    title: 'Observation isolation and manual equalization',
-    mission: 'LIVE-07 is in the middle transition chamber. Isolate the anomalous life signal, then connect the occupied chamber to the safe exit.',
-    liveMarker: 'LIVE-07 / NOVA',
-    anomalyMarker: 'DUPLICATE LIFE SIGNAL / ISOLATE',
-    remaining: 'Seal integrity remaining',
-    instruction: "I'm in the middle. Seal the observatory behind me, then connect my side to the main corridor.",
-    sealStep: 'Step 1 / Select the isolation door to seal',
-    routeStep: 'Step 2 / Select the equalization path',
-    observationSeal: 'Seal the observation-side door',
-    hallwaySeal: 'Seal the main-corridor door',
-    routeHallway: 'Connect transition chamber to main corridor',
-    routeObservation: 'Connect transition chamber to observatory',
-    purgeTransition: 'Purge transition chamber',
-    execute: 'Confirm and execute equalization',
+    kicker: 'AURORA / PRESSURE CONTROL',
+    title: 'Chamber equalization',
+    mission: 'Isolate anomaly · Reach safe exit',
+    liveMarker: 'LIVE-07',
+    anomalyMarker: 'ANOMALY ×2',
+    pressureMapLabel: 'Observatory, transition chamber, and main corridor pressure map',
+    observationLabel: 'OBSERVATORY',
+    transitionLabel: 'TRANSITION',
+    hallwayLabel: 'MAIN CORRIDOR',
+    safeMarker: 'SAFE EXIT',
+    remaining: 'Operation window',
+    instruction: "I'm in the middle chamber. Pressure is still falling.",
+    sealStep: '01 / ISOLATE',
+    routeStep: '02 / EQUALIZE',
+    sealPrompt: 'Which side do you seal?',
+    routePrompt: 'Tap a target chamber',
+    reviseSeal: 'Change isolation-door selection',
+    observationSeal: 'Seal observatory side',
+    hallwaySeal: 'Seal corridor side',
+    routeHallway: 'Connect main corridor',
+    routeObservation: 'Connect observatory',
+    purgeTransition: 'Purge transition',
+    selectRoute: 'Select an equalization target',
+    execute: 'Execute equalization',
+    startFlow: 'Open equalization valve',
+    lockPressure: 'Lock pressure',
+    lockPrompt: 'Lock when pressure enters the safe band',
+    pressureLocking: 'Locking',
+    pressureTelemetry: 'LIVE-07 PRESSURE',
+    safeBand: 'SAFE 94–101',
+    pressureFalling: 'PRESSURE FALLING',
+    pressureHolding: 'ISOLATION HOLDING',
+    pressureRising: 'PRESSURE RISING',
+    pressureReady: 'LOCK AVAILABLE',
+    pressureCritical: 'PRESSURE ANOMALY',
+    purgeAccess: 'Emergency purge command',
+    purgeConfirmTitle: 'Purge the transition chamber?',
+    purgeWarning: 'LIVE-07 is inside. This command cannot be undone.',
+    purgeConfirm: 'Confirm purge',
     safeTitle: 'Equalization complete / LIVE-07 safe',
     injuredTitle: 'Equalization complete / brief hypoxia',
     fatalTitle: 'Equalization failed / LIVE-07 lost',
     safeDetail: 'The observatory is isolated and the transition chamber is connecting to the main corridor.',
-    injuredDetail: 'The direction was correct, but delayed sealing briefly dropped the chamber below its safe pressure.',
+    injuredDetail: 'The route was correct, but an early lock or delayed response briefly left LIVE-07 below the safe line.',
     failures: {
       wrong_observation_door: 'The low-pressure observatory was connected to the occupied transition chamber.',
       hallway_sealed: 'The safe exit was sealed while the anomalous observatory remained connected.',

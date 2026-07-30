@@ -14,6 +14,7 @@ export type BulkheadEqualizeTarget = 'hallway' | 'observation' | 'purge';
 export type BulkheadDecision = {
   sealTarget: BulkheadSealTarget;
   equalizeTarget: BulkheadEqualizeTarget;
+  transitionPressure?: number;
   elapsedMs: number;
   timedOut?: boolean;
 };
@@ -36,7 +37,13 @@ export function evaluateBulkheadDecision(decision: BulkheadDecision): BulkheadEv
   if (decision.equalizeTarget === 'observation') {
     return { result: 'fatal', failureReason: 'wrong_observation_door' };
   }
-  return { result: decision.elapsedMs >= BULKHEAD_INJURY_AFTER_MS ? 'injured' : 'safe' };
+  const pressureLockedBelowSafeBand = decision.transitionPressure !== undefined
+    && decision.transitionPressure < 94;
+  return {
+    result: pressureLockedBelowSafeBand || decision.elapsedMs >= BULKHEAD_INJURY_AFTER_MS
+      ? 'injured'
+      : 'safe',
+  };
 }
 
 export type PowerChannel = 'lifeSupport' | 'communications' | 'coreScan';

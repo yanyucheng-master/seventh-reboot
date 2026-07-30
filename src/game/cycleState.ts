@@ -25,6 +25,11 @@ import type {
   SpecialInteractionCompletion,
   SpecialInteractionKind,
 } from './types';
+import {
+  migrateLegacyChoiceId,
+  migrateLegacyMainNodeId,
+  STORY_START_NODE_ID,
+} from './storyIds';
 
 export type CycleSyncEventKind = 'message' | 'image' | 'timestamp' | 'choice' | 'input' | 'interaction';
 
@@ -125,9 +130,9 @@ function normalizeChoiceHistory(value: unknown): CycleChoiceRecord[] {
     const choiceIndex = numberValue(record.choiceIndex);
     if (!nodeId || !choiceId || !nextId || choiceIndex == null || choiceIndex < 0) return [];
     return [{
-      nodeId,
-      choiceId,
-      nextId,
+      nodeId: migrateLegacyMainNodeId(nodeId),
+      choiceId: migrateLegacyChoiceId(choiceId),
+      nextId: migrateLegacyMainNodeId(nextId),
       choiceIndex: Math.floor(choiceIndex),
       committedAt: numberValue(record.committedAt) ?? 0,
     }];
@@ -146,7 +151,7 @@ function normalizeInteractionResults(value: unknown): CycleInteractionRecord[] {
     const failureReason = stringValue(record.failureReason);
     const anchor = stringValue(record.anchor);
     return [{
-      nodeId,
+      nodeId: migrateLegacyMainNodeId(nodeId),
       kind,
       routeKey,
       ...(record.attempt === 1 || record.attempt === 2 ? { attempt: record.attempt } : {}),
@@ -170,10 +175,12 @@ function normalizeTimedResults(value: unknown): CycleTimedResult[] {
     const nextId = stringValue(record.nextId);
     if (!nodeId || !nextId || (record.outcome !== 'choice' && record.outcome !== 'timeout')) return [];
     return [{
-      nodeId,
-      nextId,
+      nodeId: migrateLegacyMainNodeId(nodeId),
+      nextId: migrateLegacyMainNodeId(nextId),
       outcome: record.outcome,
-      ...(stringValue(record.choiceId) ? { choiceId: stringValue(record.choiceId) } : {}),
+      ...(stringValue(record.choiceId)
+        ? { choiceId: migrateLegacyChoiceId(stringValue(record.choiceId)!) }
+        : {}),
     }];
   });
 }
@@ -186,7 +193,11 @@ function normalizeFreeInputs(value: unknown): CycleFreeInputRecord[] {
     const nodeId = stringValue(record.nodeId);
     const nextId = stringValue(record.nextId);
     if (!nodeId || !nextId || typeof record.value !== 'string') return [];
-    return [{ nodeId, nextId, value: record.value }];
+    return [{
+      nodeId: migrateLegacyMainNodeId(nodeId),
+      nextId: migrateLegacyMainNodeId(nextId),
+      value: record.value,
+    }];
   });
 }
 
@@ -203,8 +214,10 @@ export function normalizeCurrentCycleState(
     cycleStateVersion: 1,
     cycleId: stringValue(source.cycleId) ?? cycleId(currentRebootNumber, timestamp),
     currentRebootNumber,
-    completedNodeIds: uniqueStrings(source.completedNodeIds),
-    maxCompletedNodeId: stringValue(source.maxCompletedNodeId),
+    completedNodeIds: uniqueStrings(source.completedNodeIds).map(migrateLegacyMainNodeId),
+    maxCompletedNodeId: stringValue(source.maxCompletedNodeId)
+      ? migrateLegacyMainNodeId(stringValue(source.maxCompletedNodeId)!)
+      : undefined,
     choiceHistory: normalizeChoiceHistory(source.choiceHistory),
     interactionResults: normalizeInteractionResults(source.interactionResults),
     timedResults: normalizeTimedResults(source.timedResults),
@@ -212,7 +225,9 @@ export function normalizeCurrentCycleState(
     syncAvailable: source.syncAvailable === true,
     syncActive: source.syncActive === true,
     syncInterrupted: source.syncInterrupted === true,
-    syncBoundaryNodeId: stringValue(source.syncBoundaryNodeId),
+    syncBoundaryNodeId: stringValue(source.syncBoundaryNodeId)
+      ? migrateLegacyMainNodeId(stringValue(source.syncBoundaryNodeId)!)
+      : undefined,
     syncCursor: Math.max(0, Math.floor(numberValue(source.syncCursor) ?? 0)),
     currentCycleDeviationStarted: source.currentCycleDeviationStarted === true,
     observerCandyEchoPlayed: source.observerCandyEchoPlayed === true,
@@ -236,10 +251,12 @@ export function normalizeFailedCycleRecord(value: unknown): FailedCycleRecord | 
     rebootNumber: Math.max(7, Math.floor(numberValue(source.rebootNumber) ?? 7)),
     failedAt: numberValue(source.failedAt) ?? Date.now(),
     fatalEndingTriggered: true,
-    failedInteractionId,
+    failedInteractionId: migrateLegacyMainNodeId(failedInteractionId),
     failureCause,
-    previousCycleMaxNodeId: stringValue(source.previousCycleMaxNodeId),
-    completedNodeIds: uniqueStrings(source.completedNodeIds),
+    previousCycleMaxNodeId: stringValue(source.previousCycleMaxNodeId)
+      ? migrateLegacyMainNodeId(stringValue(source.previousCycleMaxNodeId)!)
+      : undefined,
+    completedNodeIds: uniqueStrings(source.completedNodeIds).map(migrateLegacyMainNodeId),
     choiceHistory: normalizeChoiceHistory(source.choiceHistory),
     interactionResults: normalizeInteractionResults(source.interactionResults),
     timedResults: normalizeTimedResults(source.timedResults),
@@ -312,7 +329,7 @@ export function createCycleInteractionRecord(
 }
 
 export function getStoryNodeForReboot(node: StoryNode, rebootNumber: number): StoryNode {
-  if (node.id !== 'p0') return node;
+  if (node.id !== STORY_START_NODE_ID) return node;
   const paddedRebootNumber = String(rebootNumber).padStart(2, '0');
   return {
     ...node,
@@ -367,17 +384,17 @@ export function interactionDeviatesFromRecord(
 }
 
 export function getFailedInteractionId(cause: FatalFailureCause): string {
-  if (cause === 'protocol_rollback') return 'ch5b_fin3';
+  if (cause === 'protocol_rollback') return 'CH05B-0293';
   return cause === 'power_routing_failure'
-    ? 'ch5b_power_retry_interaction'
-    : 'ch3_airlock_interaction';
+    ? 'CH05B-0029'
+    : 'CH03-0144';
 }
 
 export function getSyncBoundaryNodeId(cause: FatalFailureCause): string {
-  if (cause === 'protocol_rollback') return 'ch5b_fin3';
+  if (cause === 'protocol_rollback') return 'CH05B-0293';
   return cause === 'power_routing_failure'
-    ? 'ch5b_power_interaction'
-    : 'ch3_airlock_interaction';
+    ? 'CH05B-0017'
+    : 'CH03-0144';
 }
 
 export function createFailedCycleRecord(
@@ -492,7 +509,7 @@ export function replayFailedCycle(
   eventLimit = Number.POSITIVE_INFINITY,
 ): CycleReplayResult {
   const boundary = getSyncBoundaryNodeId(record.failureCause);
-  let nodeId = 'p0';
+  let nodeId = STORY_START_NODE_ID;
   let stats = { ...initialStats, memoryAnchors: [...initialStats.memoryAnchors] };
   let contactStage: ContactStage = 'unknown';
   let avatarState = createDefaultNovaAvatarState();

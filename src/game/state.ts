@@ -3,10 +3,10 @@ import { determineEnding } from './endings';
 import type { FinalFarewellVariant, GameStats } from './types';
 
 const FINAL_MEMORY_VARIANT_BY_CHOICE_ID: Record<string, FinalFarewellVariant> = {
-  fin_last6__0: 'remembered_until_end',
-  fin_last6__1: 'remembered_wrong',
-  fin_last6__2: 'remembered_wrong',
-  fin_last6__3: 'remembered_wrong',
+  'FIN-0231__0': 'remembered_until_end',
+  'FIN-0231__1': 'remembered_wrong',
+  'FIN-0231__2': 'remembered_wrong',
+  'FIN-0231__3': 'remembered_wrong',
 };
 
 export function clampStat(value: number): number {
@@ -18,9 +18,11 @@ export function getFinalFarewellVariant(choice: Choice): FinalFarewellVariant | 
     return FINAL_MEMORY_VARIANT_BY_CHOICE_ID[choice.id];
   }
 
-  // Compatibility for saves created before runtime choice IDs were introduced.
-  if (choice.nextId === 'fin_correct1') return 'remembered_until_end';
-  if (/^fin_wrong_/.test(choice.nextId)) return 'remembered_wrong';
+  // Fallback for callers that still provide a choice object without its stable ID.
+  if (choice.nextId === 'FIN-0232') return 'remembered_until_end';
+  if (choice.nextId === 'FIN-0246' || choice.nextId === 'FIN-0253' || choice.nextId === 'FIN-0259') {
+    return 'remembered_wrong';
+  }
   return undefined;
 }
 
@@ -45,15 +47,15 @@ export function applyStoryChoiceEffects(current: GameStats, choice: Choice): Gam
 
   if (choice.acceptFarewell !== undefined) {
     next.acceptFarewell = choice.acceptFarewell;
-  } else if (choice.nextId === 'FINALE_DECISION_END') {
+  } else if (choice.nextId === 'CH05B-0294') {
     next.acceptFarewell = true;
   }
 
   if (choice.finalChoice) {
     next.finalChoice = choice.finalChoice;
-  } else if (choice.nextId === 'FINALE_DECISION_END') {
+  } else if (choice.nextId === 'CH05B-0294') {
     next.finalChoice = 'accept_farewell';
-  } else if (choice.nextId === 'BAD_END_START') {
+  } else if (choice.nextId === 'END-B-0001') {
     next.finalChoice = 'refuse_farewell';
   }
 
@@ -66,8 +68,8 @@ export function applyStoryChoiceEffects(current: GameStats, choice: Choice): Gam
   if (choice.timedProof) next.timedProof = choice.timedProof;
 
   const isFinalDecision =
-    choice.nextId === 'FINALE_DECISION_END' ||
-    choice.nextId === 'BAD_END_START' ||
+    choice.nextId === 'CH05B-0294' ||
+    choice.nextId === 'END-B-0001' ||
     choice.acceptFarewell !== undefined ||
     choice.finalChoice !== undefined;
   if (isFinalDecision) next.ending = determineEnding(next);
@@ -77,12 +79,12 @@ export function applyStoryChoiceEffects(current: GameStats, choice: Choice): Gam
 
 export function applyTimedChoiceTimeoutEffects(current: GameStats, nodeId: string): GameStats {
   const next = cloneStats(current);
-  if (nodeId === 'fin_last6') next.finalFarewellVariant = 'forgetting_started';
+  if (nodeId === 'FIN-0231') next.finalFarewellVariant = 'forgetting_started';
   return next;
 }
 
 export function applyPersistentStoryNodeEffects(current: GameStats, nodeId: string): GameStats {
-  if (nodeId === 'fin_action_save' && !current.commemorativeArchiveSaved) {
+  if (nodeId === 'END-T-0005' && !current.commemorativeArchiveSaved) {
     return { ...current, commemorativeArchiveSaved: true };
   }
   return current;
