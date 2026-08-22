@@ -7,17 +7,26 @@
     "CH05A-0016": {
       "content": "Joint authorization key"
     },
-    "CH05B-0017": {
-      "content": "Emergency power routing / first submission"
+    "CH05B-0016": {
+      "content": "OBSERVATION EMERGENCY POWER WINDOW||STAGE A / LOW-PRESSURE TRANSIT · Life support must remain high; communications must not drop\nSTAGE B / RESIDUAL-CORE READ · Scan must enter its working range; life support and communications must remain above safe lines\nBUS LIMIT · Each stage has a fixed power budget; current Nova cannot withdraw a confirmed submission\nHISTORICAL AUTHORITY · One NOVA-06 emergency intervention signature detected"
     },
-    "CH05B-0029": {
-      "content": "Emergency power routing / final submission"
+    "CH05B-0028": {
+      "content": "Never mind. This time no one can undo it for us again."
     },
-    "CH05B-0193": {
-      "content": "Temporary memory capacity"
+    "CH05B-0032": {
+      "content": "She only undid our mistake once. You did everything after that."
     },
-    "FIN-0014": {
-      "content": "Restore temporarily sealed anchor"
+    "CH05B-0069": {
+      "content": "We have only known each other for seven days."
+    },
+    "CH05B-0080": {
+      "content": "OBSERVER-01||Off-ship real time: Unaffected by local temporal reversion\nCommunication-linked memory: Access sealed when link closes\nMemory retention authority: Retained only by external index copy\nIdentity source: NOVA-06 navigation-continuity data request\nIndex type: External memory index\nHost type: Real external consciousness\nHost location: Inaccessible\nAdministrator privileges: None\nPermitted operations: Store / read / return memory anchors\nPurpose: Preserve an index capable of reawakening memory after link closure"
+    },
+    "CH05B-0102": {
+      "content": "woke up before you did."
+    },
+    "FIN-0010": {
+      "content": "I finally remember some of it.\nNot everything.\nBut the most important pieces are here."
     }
   }
 }

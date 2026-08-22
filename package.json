@@ -13,6 +13,7 @@
     "import:story": "npx tsx scripts/import-exported-story.mjs",
     "build:bilingual": "npx tsx scripts/build-bilingual-stories.mjs",
     "build:interaction-locales": "npx tsx scripts/build-interaction-locales.mjs",
+    "sync:story-locales": "npx tsx scripts/sync-current-zh-story.mjs && npx tsx scripts/sync-final-english-story.mjs",
     "normalize:story-source": "npx tsx scripts/normalize-story-source.ts",
     "test": "npm run test:story-source-format && npm run test:story-audit && npm run validate:story && npm run test:interactions && npm run test:avatar && npm run test:delivery && npm run test:reboot-cycle && npm run test:immersive-story && npm run test:epilogues && npm run test:integrity",
     "test:story-source-format": "npx tsx scripts/test-story-source-format.ts",

@@ -58,16 +58,6 @@ export const POWER_STAGE_THRESHOLDS: Record<PowerStage, PowerThresholds> = {
   core_read: { lifeSupport: 30, communications: 25, coreScan: 35 },
 };
 
-export function normalizeAuthorizationKey(value: string): string {
-  return value
-    .replace(/[０-９]/g, digit => String.fromCharCode(digit.charCodeAt(0) - 0xfee0))
-    .replace(/[\s\u00a0\-‐‑‒–—﹘﹣－/]/g, '');
-}
-
-export function isCriticalLogPassword(value: string): boolean {
-  return normalizeAuthorizationKey(value) === '0701';
-}
-
 function clampPercentage(value: number): number {
   if (!Number.isFinite(value)) return 0;
   return Math.max(0, Math.min(100, Math.round(value)));
@@ -121,12 +111,16 @@ function interactionResultForStats(current: GameStats, kind: InteractionConditio
   switch (kind) {
     case 'bulkhead-isolation':
       return current.bulkheadResult;
-    case 'critical-log-password':
+    case 'sealed-record-order':
       return current.jointAuthorizationCompleted ? 'success' : undefined;
     case 'power-routing':
       return current.powerRoutingResult;
     case 'memory-seal':
       return current.temporaryAnchorSealed;
+    case 'course-lock':
+      return current.courseLockCompleted ? 'success' : undefined;
+    case 'protocol-cut':
+      return current.protocolCutCompleted ? 'success' : undefined;
     case 'memory-restore':
       return current.memoryRestoreResult;
   }
@@ -164,12 +158,13 @@ export function applySpecialInteractionCompletion(
             }
           : {}),
       };
-    case 'critical-log-password':
+    case 'sealed-record-order':
       if (completion.routeKey === 'retry') return current;
       return {
         ...current,
         jointAuthorizationCompleted: true,
         criticalLogUnlocked: true,
+        nova06RollbackAuthorizationAvailable: !current.damagedSeventh,
       };
     case 'power-routing': {
       if (completion.attempt === 1 && completion.routeKey === 'success') {
@@ -177,7 +172,7 @@ export function applySpecialInteractionCompletion(
           ...current,
           powerRoutingAttempt: 1,
           powerRoutingResult: 'first_success',
-          nova06PowerOverrideExpired: true,
+          nova06RollbackAuthorizationAvailable: false,
         };
       }
       if (completion.attempt === 1) {
@@ -185,8 +180,9 @@ export function applySpecialInteractionCompletion(
           ...current,
           powerRoutingAttempt: 1,
           ...(completion.failureReason ? { powerFirstFailureReason: completion.failureReason } : {}),
-          nova06PowerOverrideUsed: true,
-          nova06PowerOverrideExpired: true,
+          nova06RollbackAuthorizationAvailable: false,
+          nova06RollbackAuthorizationUsed: true,
+          aiEmergencyRollbackExecuted: true,
         };
       }
       if (completion.routeKey === 'success') {
@@ -210,6 +206,25 @@ export function applySpecialInteractionCompletion(
         temporaryAnchorSealed: completion.anchor,
         temporaryAnchorRestored: false,
         memoryRestoreResult: undefined,
+      };
+    case 'course-lock':
+      if (completion.routeKey === 'retry') return current;
+      if (completion.routeKey === 'success') {
+        return { ...current, courseLockCompleted: true };
+      }
+      return {
+        ...current,
+        earlyFailureCause: 'course_lock_failure',
+        pendingReboot08: true,
+      };
+    case 'protocol-cut':
+      if (completion.routeKey === 'success') {
+        return { ...current, protocolCutCompleted: true };
+      }
+      return {
+        ...current,
+        earlyFailureCause: 'protocol_cut_failure',
+        pendingReboot08: true,
       };
     case 'memory-restore':
       return {

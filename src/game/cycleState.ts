@@ -1,15 +1,8 @@
-import { ANCHOR_ARCHIVE_IDS } from './archive';
-import { applyNovaAvatarNodeEffect, createDefaultNovaAvatarState } from './avatarState';
-import { resolveEndingStart } from './endings';
-import {
-  applySpecialInteractionCompletion,
-  matchesInteractionCondition,
-  matchesInteractionPrerequisite,
-} from './interactions/logic';
-import type { Choice, StoryNode } from './story';
-import { applyStoryChoiceEffects, applyTimedChoiceTimeoutEffects, clampStat } from './state';
+import type { StoryNode } from './story';
+import { applyTimedChoiceTimeoutEffects } from './state';
 import type {
   BulkheadFailureReason,
+  ChatDeliveryRuntime,
   ContactStage,
   CurrentCycleState,
   CycleChoiceRecord,
@@ -19,9 +12,11 @@ import type {
   FailedCycleRecord,
   FatalFailureCause,
   GameStats,
+  DisplayMessage,
   NovaAvatarStoryState,
   PowerFailureReason,
   SealableMemoryAnchor,
+  StableCheckpointSnapshot,
   SpecialInteractionCompletion,
   SpecialInteractionKind,
 } from './types';
@@ -30,26 +25,6 @@ import {
   migrateLegacyMainNodeId,
   STORY_START_NODE_ID,
 } from './storyIds';
-
-export type CycleSyncEventKind = 'message' | 'image' | 'timestamp' | 'choice' | 'input' | 'interaction';
-
-export type CycleSyncEvent = {
-  nodeId: string;
-  kind: CycleSyncEventKind;
-  speaker: 'nova' | 'system' | 'player' | 'observer';
-  label: string;
-};
-
-export type CycleReplayResult = {
-  events: CycleSyncEvent[];
-  stats: GameStats;
-  contactStage: ContactStage;
-  avatarState: NovaAvatarStoryState;
-  cycleState: CurrentCycleState;
-  nextNodeId: string;
-  reachedBoundary: boolean;
-  stoppedBecauseRecordEnded: boolean;
-};
 
 const BULKHEAD_FAILURE_REASONS = new Set<BulkheadFailureReason>([
   'wrong_observation_door',
@@ -66,9 +41,11 @@ const POWER_FAILURE_REASONS = new Set<PowerFailureReason>([
 ]);
 const INTERACTION_KINDS = new Set<SpecialInteractionKind>([
   'bulkhead-isolation',
-  'critical-log-password',
+  'sealed-record-order',
   'power-routing',
   'memory-seal',
+  'course-lock',
+  'protocol-cut',
   'memory-restore',
 ]);
 const SEALABLE_ANCHORS = new Set<SealableMemoryAnchor>([
@@ -100,7 +77,7 @@ export function createCurrentCycleState(
   timestamp = Date.now(),
 ): CurrentCycleState {
   return {
-    cycleStateVersion: 1,
+    cycleStateVersion: 2,
     cycleId: cycleId(currentRebootNumber, timestamp),
     currentRebootNumber,
     completedNodeIds: [],
@@ -108,14 +85,45 @@ export function createCurrentCycleState(
     interactionResults: [],
     timedResults: [],
     freeInputs: [],
-    syncAvailable: Boolean(previousCycle),
+    syncAvailable: false,
     syncActive: false,
     syncInterrupted: false,
-    syncBoundaryNodeId: previousCycle ? getSyncBoundaryNodeId(previousCycle.failureCause) : undefined,
+    syncBoundaryNodeId: undefined,
     syncCursor: 0,
     currentCycleDeviationStarted: false,
     observerCandyEchoPlayed: false,
     previousCycleId: previousCycle?.cycleId,
+    damagedSeventh: false,
+  };
+}
+
+function normalizeStableCheckpoint(value: unknown): StableCheckpointSnapshot | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  const source = value as Partial<StableCheckpointSnapshot>;
+  if (
+    !stringValue(source.nodeId)
+    || !source.stats
+    || !Array.isArray(source.messages)
+    || !source.avatarState
+    || !source.deliveryRuntime
+    || (source.contactStage !== 'unknown' && source.contactStage !== 'named' && source.contactStage !== 'verified')
+  ) return undefined;
+  const normalizedCycle = normalizeCurrentCycleState(
+    source.cycleState,
+    7,
+    numberValue(source.capturedAt) ?? Date.now(),
+  );
+  const cycleState = { ...normalizedCycle };
+  delete cycleState.lastStableCheckpoint;
+  return {
+    nodeId: migrateLegacyMainNodeId(source.nodeId!),
+    capturedAt: numberValue(source.capturedAt) ?? Date.now(),
+    stats: source.stats,
+    messages: source.messages.map(message => ({ ...message })),
+    contactStage: source.contactStage,
+    avatarState: { ...source.avatarState },
+    deliveryRuntime: { ...source.deliveryRuntime },
+    cycleState,
   };
 }
 
@@ -211,7 +219,7 @@ export function normalizeCurrentCycleState(
     : {};
   const currentRebootNumber = Math.max(7, Math.floor(numberValue(source.currentRebootNumber) ?? fallbackRebootNumber));
   return {
-    cycleStateVersion: 1,
+    cycleStateVersion: 2,
     cycleId: stringValue(source.cycleId) ?? cycleId(currentRebootNumber, timestamp),
     currentRebootNumber,
     completedNodeIds: uniqueStrings(source.completedNodeIds).map(migrateLegacyMainNodeId),
@@ -232,6 +240,8 @@ export function normalizeCurrentCycleState(
     currentCycleDeviationStarted: source.currentCycleDeviationStarted === true,
     observerCandyEchoPlayed: source.observerCandyEchoPlayed === true,
     previousCycleId: stringValue(source.previousCycleId),
+    damagedSeventh: source.damagedSeventh === true,
+    lastStableCheckpoint: normalizeStableCheckpoint(source.lastStableCheckpoint),
   };
 }
 
@@ -240,6 +250,9 @@ export function normalizeFailedCycleRecord(value: unknown): FailedCycleRecord | 
   const source = value as Partial<FailedCycleRecord>;
   const failureCause = source.failureCause === 'bulkhead_failure'
     || source.failureCause === 'power_routing_failure'
+    || source.failureCause === 'course_lock_failure'
+    || source.failureCause === 'protocol_cut_failure'
+    || source.failureCause === 'protocol_refusal'
     || source.failureCause === 'protocol_rollback'
     ? source.failureCause
     : undefined;
@@ -261,6 +274,7 @@ export function normalizeFailedCycleRecord(value: unknown): FailedCycleRecord | 
     interactionResults: normalizeInteractionResults(source.interactionResults),
     timedResults: normalizeTimedResults(source.timedResults),
     freeInputs: normalizeFreeInputs(source.freeInputs),
+    lastStableCheckpoint: normalizeStableCheckpoint(source.lastStableCheckpoint),
   };
 }
 
@@ -352,54 +366,18 @@ export function shouldStopReadSkip(node: StoryNode, readNodeIds: readonly string
     || !readNodeIds.includes(node.id);
 }
 
-export function choiceDeviatesFromRecord(
-  record: FailedCycleRecord | null | undefined,
-  nodeId: string,
-  choiceId: string,
-): boolean {
-  const previous = record?.choiceHistory.find(item => item.nodeId === nodeId);
-  return Boolean(previous && previous.choiceId !== choiceId);
-}
-
-export function inputDeviatesFromRecord(
-  record: FailedCycleRecord | null | undefined,
-  nodeId: string,
-  value: string,
-): boolean {
-  const previous = record?.freeInputs.find(item => item.nodeId === nodeId);
-  return Boolean(previous && previous.value !== value);
-}
-
-export function interactionDeviatesFromRecord(
-  record: FailedCycleRecord | null | undefined,
-  result: CycleInteractionRecord,
-): boolean {
-  const previous = record?.interactionResults.find(item => item.nodeId === result.nodeId);
-  return Boolean(previous && (
-    previous.routeKey !== result.routeKey
-    || previous.attempt !== result.attempt
-    || previous.failureReason !== result.failureReason
-    || previous.anchor !== result.anchor
-  ));
-}
-
 export function getFailedInteractionId(cause: FatalFailureCause): string {
-  if (cause === 'protocol_rollback') return 'CH05B-0293';
-  return cause === 'power_routing_failure'
-    ? 'CH05B-0029'
-    : 'CH03-0144';
-}
-
-export function getSyncBoundaryNodeId(cause: FatalFailureCause): string {
-  if (cause === 'protocol_rollback') return 'CH05B-0293';
-  return cause === 'power_routing_failure'
-    ? 'CH05B-0017'
-    : 'CH03-0144';
+  if (cause === 'power_routing_failure') return 'CH05B-0028';
+  if (cause === 'course_lock_failure') return 'CH05B-0080';
+  if (cause === 'protocol_cut_failure') return 'CH05B-0102';
+  if (cause === 'protocol_refusal' || cause === 'protocol_rollback') return 'CH05B-0091';
+  return 'CH03-0144';
 }
 
 export function createFailedCycleRecord(
   cycle: CurrentCycleState,
   cause: FatalFailureCause,
+  failedInteractionId = getFailedInteractionId(cause),
   failedAt = Date.now(),
 ): FailedCycleRecord {
   return {
@@ -407,7 +385,7 @@ export function createFailedCycleRecord(
     rebootNumber: cycle.currentRebootNumber,
     failedAt,
     fatalEndingTriggered: true,
-    failedInteractionId: getFailedInteractionId(cause),
+    failedInteractionId,
     failureCause: cause,
     previousCycleMaxNodeId: cycle.maxCompletedNodeId,
     completedNodeIds: [...cycle.completedNodeIds],
@@ -415,216 +393,138 @@ export function createFailedCycleRecord(
     interactionResults: cycle.interactionResults.map(record => ({ ...record })),
     timedResults: cycle.timedResults.map(record => ({ ...record })),
     freeInputs: cycle.freeInputs.map(record => ({ ...record })),
+    lastStableCheckpoint: cycle.lastStableCheckpoint
+      ? {
+          ...cycle.lastStableCheckpoint,
+          stats: { ...cycle.lastStableCheckpoint.stats },
+          messages: cycle.lastStableCheckpoint.messages.map(message => ({ ...message })),
+          avatarState: { ...cycle.lastStableCheckpoint.avatarState },
+          deliveryRuntime: { ...cycle.lastStableCheckpoint.deliveryRuntime },
+          cycleState: {
+            ...cycle.lastStableCheckpoint.cycleState,
+            completedNodeIds: [...cycle.lastStableCheckpoint.cycleState.completedNodeIds],
+            choiceHistory: cycle.lastStableCheckpoint.cycleState.choiceHistory.map(record => ({ ...record })),
+            interactionResults: cycle.lastStableCheckpoint.cycleState.interactionResults.map(record => ({ ...record })),
+            timedResults: cycle.lastStableCheckpoint.cycleState.timedResults.map(record => ({ ...record })),
+            freeInputs: cycle.lastStableCheckpoint.cycleState.freeInputs.map(record => ({ ...record })),
+          },
+        }
+      : undefined,
   };
 }
 
-function completionFromRecord(record: CycleInteractionRecord): SpecialInteractionCompletion | null {
-  switch (record.kind) {
-    case 'bulkhead-isolation':
-      if (record.routeKey !== 'safe' && record.routeKey !== 'injured' && record.routeKey !== 'fatal') return null;
-      return {
-        kind: record.kind,
-        routeKey: record.routeKey,
-        ...(record.failureReason && BULKHEAD_FAILURE_REASONS.has(record.failureReason as BulkheadFailureReason)
-          ? { failureReason: record.failureReason as BulkheadFailureReason }
-          : {}),
-      };
-    case 'critical-log-password':
-      if (record.routeKey !== 'success' && record.routeKey !== 'retry') return null;
-      return { kind: record.kind, routeKey: record.routeKey };
-    case 'power-routing':
-      if (record.routeKey !== 'success' && record.routeKey !== 'fail' && record.routeKey !== 'fatal') return null;
-      return {
-        kind: record.kind,
-        routeKey: record.routeKey,
-        attempt: record.attempt ?? 1,
-        ...(record.failureReason && POWER_FAILURE_REASONS.has(record.failureReason as PowerFailureReason)
-          ? { failureReason: record.failureReason as PowerFailureReason }
-          : {}),
-      };
-    case 'memory-seal':
-      if (!record.anchor) return null;
-      return { kind: record.kind, routeKey: record.anchor, anchor: record.anchor };
-    case 'memory-restore':
-      if (record.routeKey === 'none') return { kind: record.kind, routeKey: 'none' };
-      if (!record.anchor) return null;
-      return { kind: record.kind, routeKey: record.anchor, anchor: record.anchor };
-  }
-}
-
-function findRecordedChoice(record: FailedCycleRecord, node: StoryNode): { choice: Choice; history: CycleChoiceRecord } | null {
-  const history = record.choiceHistory.find(item => item.nodeId === node.id);
-  if (!history || !node.choices) return null;
-  const choice = node.choices.find(item => item.id === history.choiceId)
-    ?? node.choices[history.choiceIndex];
-  return choice ? { choice, history } : null;
-}
-
-function eventForNode(node: StoryNode, label?: string): CycleSyncEvent | null {
-  if (
-    node.type === 'delay'
-    || node.type === 'typing'
-    || node.type === 'end'
-    || node.type === 'internal-chapter-marker'
-    || node.type === 'internal-ending-marker'
-    || node.type === 'observer-echo'
-    || node.type === 'title-state'
-  ) return null;
-  if (!label && !node.content) return null;
-  const kind: CycleSyncEventKind = node.type === 'image'
-    ? 'image'
-    : node.type === 'timestamp'
-      ? 'timestamp'
-      : node.type === 'choice'
-        ? 'choice'
-        : node.type === 'input'
-          ? 'input'
-          : node.type === 'interaction'
-            ? 'interaction'
-            : 'message';
-  return {
-    nodeId: node.id,
-    kind,
-    speaker: node.type === 'choice' || node.type === 'input' ? 'player' : node.speaker,
-    label: label ?? node.content,
-  };
-}
-
-function applyMemoryAnchor(stats: GameStats, node: StoryNode): GameStats {
-  const anchor = node.memoryAnchor;
-  if (!anchor || stats.memoryAnchors.includes(anchor)) return stats;
+function cloneStatsForCheckpoint(stats: GameStats): GameStats {
   return {
     ...stats,
-    memory: clampStat(stats.memory + 1),
-    memoryAnchors: [...stats.memoryAnchors, anchor],
-    unlockedArchives: [...new Set([...stats.unlockedArchives, ANCHOR_ARCHIVE_IDS[anchor]])],
+    memoryAnchors: [...stats.memoryAnchors],
+    unlockedArchives: [...stats.unlockedArchives],
+    endingsUnlocked: [...stats.endingsUnlocked],
   };
 }
 
-export function replayFailedCycle(
-  record: FailedCycleRecord,
-  nodeMap: Map<string, StoryNode>,
-  initialStats: GameStats,
-  baseCycle: CurrentCycleState,
-  eventLimit = Number.POSITIVE_INFINITY,
-): CycleReplayResult {
-  const boundary = getSyncBoundaryNodeId(record.failureCause);
-  let nodeId = STORY_START_NODE_ID;
-  let stats = { ...initialStats, memoryAnchors: [...initialStats.memoryAnchors] };
-  let contactStage: ContactStage = 'unknown';
-  let avatarState = createDefaultNovaAvatarState();
-  let cycleState: CurrentCycleState = {
-    ...baseCycle,
-    completedNodeIds: [],
-    choiceHistory: [],
-    interactionResults: [],
-    timedResults: [],
-    freeInputs: [],
-    maxCompletedNodeId: undefined,
+function cloneCycleWithoutCheckpoint(
+  cycle: CurrentCycleState,
+): Omit<CurrentCycleState, 'lastStableCheckpoint'> {
+  const { lastStableCheckpoint: _checkpoint, ...snapshot } = cycle;
+  void _checkpoint;
+  return {
+    ...snapshot,
+    completedNodeIds: [...snapshot.completedNodeIds],
+    choiceHistory: snapshot.choiceHistory.map(record => ({ ...record })),
+    interactionResults: snapshot.interactionResults.map(record => ({ ...record })),
+    timedResults: snapshot.timedResults.map(record => ({ ...record })),
+    freeInputs: snapshot.freeInputs.map(record => ({ ...record })),
   };
-  const events: CycleSyncEvent[] = [];
-  let guard = 0;
+}
 
-  const result = (
-    reachedBoundary: boolean,
-    stoppedBecauseRecordEnded: boolean,
-  ): CycleReplayResult => ({
-    events,
-    stats,
+export function createStableCheckpointSnapshot(
+  nodeId: string,
+  cycle: CurrentCycleState,
+  stats: GameStats,
+  messages: DisplayMessage[],
+  contactStage: ContactStage,
+  avatarState: NovaAvatarStoryState,
+  deliveryRuntime: ChatDeliveryRuntime,
+  capturedAt = Date.now(),
+): StableCheckpointSnapshot {
+  return {
+    nodeId,
+    capturedAt,
+    stats: cloneStatsForCheckpoint(stats),
+    messages: messages.map(message => ({ ...message, isNew: false })),
     contactStage,
-    avatarState,
+    avatarState: { ...avatarState },
+    deliveryRuntime: { ...deliveryRuntime },
+    cycleState: cloneCycleWithoutCheckpoint(cycle),
+  };
+}
+
+export type DamagedSeventhRestore = {
+  nodeId: string;
+  stats: GameStats;
+  messages: DisplayMessage[];
+  contactStage: ContactStage;
+  avatarState: NovaAvatarStoryState;
+  deliveryRuntime: ChatDeliveryRuntime;
+  cycleState: CurrentCycleState;
+};
+
+export function restoreDamagedSeventhCheckpoint(
+  record: FailedCycleRecord | null | undefined,
+): DamagedSeventhRestore | null {
+  const checkpoint = record?.lastStableCheckpoint;
+  if (!checkpoint) return null;
+
+  const {
+    earlyFailureCause: _earlyFailureCause,
+    fatalSourceNodeId: _fatalSourceNodeId,
+    ...checkpointStats
+  } = cloneStatsForCheckpoint(checkpoint.stats);
+  void _earlyFailureCause;
+  void _fatalSourceNodeId;
+
+  const stats: GameStats = {
+    ...checkpointStats,
+    ending: undefined,
+    pendingReboot08: false,
+    damagedSeventh: true,
+    binaryScarUI: true,
+    reboot08FallbackUsed: true,
+    reboot08TitleUnlocked: true,
+    fatalEndingTriggered: true,
+    nova06RecordingDamaged: true,
+    nova06RollbackAuthorizationAvailable: false,
+    nova06RollbackAuthorizationUsed: false,
+    aiEmergencyRollbackExecuted: false,
+  };
+  const cycleState: CurrentCycleState = {
+    ...checkpoint.cycleState,
+    cycleStateVersion: 2,
+    currentRebootNumber: 7,
+    damagedSeventh: true,
+    syncAvailable: false,
+    syncActive: false,
+    syncInterrupted: false,
+    syncBoundaryNodeId: undefined,
+    syncCursor: 0,
+    currentCycleDeviationStarted: false,
+    lastStableCheckpoint: undefined,
+    completedNodeIds: [...checkpoint.cycleState.completedNodeIds],
+    choiceHistory: checkpoint.cycleState.choiceHistory.map(item => ({ ...item })),
+    interactionResults: checkpoint.cycleState.interactionResults.map(item => ({ ...item })),
+    timedResults: checkpoint.cycleState.timedResults.map(item => ({ ...item })),
+    freeInputs: checkpoint.cycleState.freeInputs.map(item => ({ ...item })),
+  };
+
+  return {
+    nodeId: checkpoint.nodeId,
+    stats,
+    messages: checkpoint.messages.map(message => ({ ...message, isNew: false })),
+    contactStage: checkpoint.contactStage,
+    avatarState: { ...checkpoint.avatarState },
+    deliveryRuntime: { ...checkpoint.deliveryRuntime, activeMessageId: undefined, pendingAutoRetryIds: [] },
     cycleState,
-    nextNodeId: nodeId,
-    reachedBoundary,
-    stoppedBecauseRecordEnded,
-  });
-
-  while (nodeId && nodeId !== 'MENU' && guard < 5000) {
-    guard += 1;
-    if (nodeId === boundary) return result(true, false);
-    const node = nodeMap.get(nodeId);
-    if (!node) return result(false, true);
-
-    if (node.interactionCondition && !matchesInteractionCondition(stats, node.interactionCondition)) {
-      nodeId = node.conditionElseNextId ?? node.nextId ?? nodeId;
-      continue;
-    }
-    if (node.interactionPrerequisite && !matchesInteractionPrerequisite(stats, node.interactionPrerequisite)) {
-      nodeId = node.nextId ?? nodeId;
-      continue;
-    }
-    if (node.requiresAnchor && !stats.memoryAnchors.includes(node.requiresAnchor)) {
-      nodeId = node.nextId ?? nodeId;
-      continue;
-    }
-
-    let nextId = node.nextId ?? node.id;
-    let event: CycleSyncEvent | null = null;
-
-    if (node.type === 'choice') {
-      const recorded = findRecordedChoice(record, node);
-      const timedOut = record.timedResults.find(item => item.nodeId === node.id && item.outcome === 'timeout');
-      if (!recorded && !timedOut) return result(false, true);
-      event = eventForNode(node, recorded?.choice.text ?? '[TIMEOUT]');
-      if (event && events.length >= eventLimit) return result(false, false);
-      if (recorded) {
-        stats = applyStoryChoiceEffects(stats, recorded.choice);
-        nextId = resolveEndingStart(recorded.history.nextId || recorded.choice.nextId, stats);
-        cycleState = recordCycleChoice(cycleState, { ...recorded.history, nextId });
-        if (node.choiceTimeoutMs) {
-          cycleState = recordCycleTimedResult(cycleState, {
-            nodeId: node.id,
-            outcome: 'choice',
-            choiceId: recorded.history.choiceId,
-            nextId,
-          });
-        }
-      } else if (timedOut) {
-        stats = applyTimedChoiceTimeoutEffects(stats, node.id);
-        nextId = timedOut.nextId;
-        cycleState = markCycleNodeCompleted(recordCycleTimedResult(cycleState, timedOut), node.id);
-      }
-    } else if (node.type === 'input') {
-      const input = record.freeInputs.find(item => item.nodeId === node.id);
-      const timed = record.timedResults.find(item => item.nodeId === node.id && item.outcome === 'timeout');
-      if (!input && !timed) return result(false, true);
-      event = eventForNode(node, input?.value ?? '[TIMEOUT]');
-      if (event && events.length >= eventLimit) return result(false, false);
-      if (timed) {
-        nextId = timed.nextId;
-        cycleState = markCycleNodeCompleted(recordCycleTimedResult(cycleState, timed), node.id);
-      } else if (input) {
-        nextId = input.nextId;
-        cycleState = recordCycleFreeInput(cycleState, input);
-      }
-    } else if (node.type === 'interaction' && node.interactionKind) {
-      const interaction = record.interactionResults.find(item => item.nodeId === node.id);
-      if (!interaction) return result(false, true);
-      const completion = completionFromRecord(interaction);
-      if (!completion) return result(false, true);
-      event = eventForNode(node, `${node.content} / ${interaction.routeKey}`);
-      if (event && events.length >= eventLimit) return result(false, false);
-      stats = applySpecialInteractionCompletion(stats, completion);
-      nextId = node.interactionNextIds?.[interaction.routeKey] ?? node.nextId ?? node.id;
-      cycleState = recordCycleInteraction(cycleState, interaction);
-    } else if (node.type === 'observer-echo') {
-      nodeId = nextId;
-      continue;
-    } else {
-      event = eventForNode(node);
-      if (event && events.length >= eventLimit) return result(false, false);
-      stats = applyMemoryAnchor(stats, node);
-      cycleState = markCycleNodeCompleted(cycleState, node.id);
-    }
-
-    const avatarEffect = applyNovaAvatarNodeEffect(avatarState, node.id);
-    avatarState = avatarEffect.state;
-    if (node.contactStage) contactStage = node.contactStage;
-    if (event) events.push(event);
-    nodeId = nextId;
-  }
-
-  return result(nodeId === boundary, true);
+  };
 }
 
 export function applyRecordedTimeout(

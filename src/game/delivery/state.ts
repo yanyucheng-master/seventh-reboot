@@ -9,13 +9,12 @@ import type {
   OutgoingMessageDeliveryState,
 } from '../types';
 
-export const DELIVERY_STATE_VERSION = 1 as const;
+export const DELIVERY_STATE_VERSION = 2 as const;
 
 export const DELIVERY_RECEIPT_KEYS: Record<DeliveryEventKey, keyof DeliveryEventReceipts> = {
   prologue_first_reply: 'prologueFirstReply',
   chapter3_reconnect_reply: 'chapter3ReconnectReply',
-  chapter5_explicit_failure: 'chapter5ExplicitFailure',
-  finale_last_answer: 'finaleLastAnswer',
+  final_protocol_choice: 'finalProtocolChoice',
 };
 
 const DELIVERY_STATES: OutgoingMessageDeliveryState[] = [
@@ -40,8 +39,7 @@ export function createDefaultDeliveryReceipts(): DeliveryEventReceipts {
   return {
     prologueFirstReply: 'not_started',
     chapter3ReconnectReply: 'not_started',
-    chapter5ExplicitFailure: 'not_started',
-    finaleLastAnswer: 'not_started',
+    finalProtocolChoice: 'not_started',
   };
 }
 
@@ -80,8 +78,7 @@ export function normalizeChatDeliveryRuntime(value: unknown): ChatDeliveryRuntim
     receipts: {
       prologueFirstReply: normalizeEventPhase(rawReceipts.prologueFirstReply),
       chapter3ReconnectReply: normalizeEventPhase(rawReceipts.chapter3ReconnectReply),
-      chapter5ExplicitFailure: normalizeEventPhase(rawReceipts.chapter5ExplicitFailure),
-      finaleLastAnswer: normalizeEventPhase(rawReceipts.finaleLastAnswer),
+      finalProtocolChoice: normalizeEventPhase(rawReceipts.finalProtocolChoice),
     },
   };
 }
@@ -108,12 +105,19 @@ function inferChoiceId(message: DisplayMessage): string | undefined {
 }
 
 function inferBranchTarget(message: DisplayMessage): string | undefined {
-  if (message.branchTargetNodeId) return message.branchTargetNodeId;
+  if (
+    message.branchTargetNodeId
+    && (message.branchTargetNodeId === 'MENU' || storyNodeMap.has(message.branchTargetNodeId))
+  ) return message.branchTargetNodeId;
   if (message.sourceNodeId == null || message.sourceChoiceIndex == null) return undefined;
   return storyNodeMap.get(message.sourceNodeId)?.choices?.[message.sourceChoiceIndex]?.nextId;
 }
 
-function inferEventKey(message: DisplayMessage): DeliveryEventKey | undefined {
+function isCurrentDeliveryEventKey(value: unknown): value is DeliveryEventKey {
+  return typeof value === 'string' && value in DELIVERY_RECEIPT_KEYS;
+}
+
+function inferEventKey(message: DisplayMessage): DisplayMessage['scriptedDeliveryEvent'] {
   if (message.scriptedDeliveryEvent) return message.scriptedDeliveryEvent;
   if (!message.sourceNodeId) return undefined;
   return storyNodeMap.get(message.sourceNodeId)?.deliveryEvent;
@@ -134,8 +138,7 @@ function normalizePlayerDeliveryMessage(
   const rawState = DELIVERY_STATES.includes(message.deliveryState as OutgoingMessageDeliveryState)
     ? message.deliveryState as OutgoingMessageDeliveryState
     : 'delivered';
-  const allowFail = scriptedDeliveryEvent === 'chapter5_explicit_failure';
-  const deliveryState = rawState === 'failed' && !allowFail ? 'delivered' : rawState;
+  const deliveryState = rawState === 'failed' ? 'delivered' : rawState;
   const committedAt = typeof message.committedAt === 'number' && Number.isFinite(message.committedAt)
     ? message.committedAt
     : fallbackTimestamp + committedOrder;
@@ -161,8 +164,8 @@ function normalizePlayerDeliveryMessage(
     retryCount: typeof message.retryCount === 'number' && message.retryCount >= 0
       ? Math.floor(message.retryCount)
       : 0,
-    autoRetry: message.autoRetry === true || allowFail,
-    allowFail,
+    autoRetry: false,
+    allowFail: false,
     branchCommitted: message.branchCommitted !== false,
     branchTargetNodeId: inferBranchTarget(message),
     deliveryLabelVisible: message.deliveryLabelVisible === true,
@@ -200,19 +203,14 @@ export function migrateDeliveryState(
   let runtime = normalizeChatDeliveryRuntime(runtimeValue);
 
   for (const message of normalizedMessages) {
-    if (message.deliveryState !== 'delivered' || !message.scriptedDeliveryEvent) continue;
+    if (
+      message.deliveryState !== 'delivered'
+      || !isCurrentDeliveryEventKey(message.scriptedDeliveryEvent)
+    ) continue;
     runtime = setDeliveryReceipt(runtime, message.scriptedDeliveryEvent, 'completed');
   }
 
-  let activeMessageId = runtime.activeMessageId;
-  if (!activeMessageId) {
-    const restorableFailure = [...normalizedMessages].reverse().find(message =>
-      message.speaker === 'player'
-      && message.deliveryState === 'failed'
-      && message.scriptedDeliveryEvent === 'chapter5_explicit_failure');
-    activeMessageId = restorableFailure?.id;
-  }
-
+  const activeMessageId = runtime.activeMessageId;
   const activeIndex = activeMessageId
     ? normalizedMessages.findIndex(message => message.id === activeMessageId)
     : -1;
@@ -236,29 +234,6 @@ export function migrateDeliveryState(
 
   const activeMessage = normalizedMessages[activeIndex];
   const targetNodeId = activeMessage.branchTargetNodeId ?? pendingNodeId;
-  if (activeMessage.scriptedDeliveryEvent === 'chapter5_explicit_failure') {
-    normalizedMessages = normalizedMessages.map((message, index) => index === activeIndex
-      ? {
-          ...message,
-          deliveryState: 'failed' as const,
-          deliveryLabelVisible: true,
-          autoRetry: true,
-          allowFail: true,
-        }
-      : message);
-    runtime = setDeliveryReceipt(runtime, 'chapter5_explicit_failure', 'in_progress');
-    return {
-      messages: normalizedMessages,
-      runtime: {
-        ...runtime,
-        linkState: 'interrupted',
-        activeMessageId: activeMessage.id,
-        pendingAutoRetryIds: [activeMessage.id],
-      },
-      pendingNodeId: targetNodeId,
-    };
-  }
-
   normalizedMessages = normalizedMessages.map((message, index) => index === activeIndex
     ? {
         ...message,
@@ -267,7 +242,7 @@ export function migrateDeliveryState(
         deliveryLabelVisible: false,
       }
     : message);
-  if (activeMessage.scriptedDeliveryEvent) {
+  if (isCurrentDeliveryEventKey(activeMessage.scriptedDeliveryEvent)) {
     runtime = setDeliveryReceipt(runtime, activeMessage.scriptedDeliveryEvent, 'completed');
   }
   return {

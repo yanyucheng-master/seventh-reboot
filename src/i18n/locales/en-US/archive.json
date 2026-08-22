@@ -99,11 +99,6 @@
       "subtitle": "This is my favorite place",
       "chapter": "Chapter Two: Ordinary Days"
     },
-    "photo_observation_room_back": {
-      "title": "Observation Room",
-      "subtitle": "When people are lonely, they want to look at something larger than themselves",
-      "chapter": "Finale: The Seventh Reboot"
-    },
     "photo_nova_id": {
       "title": "NOVA ARLEN",
       "subtitle": "Communications archive restored",
@@ -111,24 +106,30 @@
       "image": "/assets/nova_id_photo_en.png"
     },
     "anomaly_hidden_log_nova07": {
-      "title": "Hidden Log: NOVA-07",
-      "description": "Do not attempt to restore the memory\nDo not look for me in the observation room\nDo not open the Seventh Protocol\nMost of all, do not trust me",
+      "title": "Hidden Log: UNKNOWN-06 → LIVE-07",
+      "description": "If you are reading this record\nthen the sixth run failed too\nDo not take the original course again\nGo to the observation room\nI left the recording and track data there\nThe Seventh Protocol will stop you\nDo not let it restart",
       "chapter": "Chapter Four: Memory"
     },
     "anomaly_nova06_warning": {
-      "title": "UNKNOWN-06 / Residual Message",
-      "description": "Do not trust her completely\nNot because she will lie to you\nBecause she truly will forget\nThe one truly trapped is not Nova\nIt's you",
+      "title": "NOVA-06 / Sealed Record",
+      "description": "Record type: Fixed video / new-course data\nIntended recipient: The next Nova to wake\nState: Read-only\nLive response capability: None\nAttached authorization: One AI safety rollback",
       "chapter": "Chapter Five: The Truth (Part I)"
     },
     "anomaly_observer_file": {
       "title": "OBSERVER-01",
-      "description": "Index type: External memory index\nHost type: External consciousness\nHost location: Inaccessible\nPermissions: Store / read / return memory anchors",
+      "description": "Created: External Call 07 first received a reply\nIdentity type: External consciousness\nShipboard location: Inaccessible\nRollback scope: External\nPrior identities with this name: 0",
       "chapter": "Chapter Five: The Truth (Part II)"
     },
     "anomaly_seventh_reboot_file": {
-      "title": "SEVENTH_REBOOT",
-      "description": "Completed primary cycles: 6\nCurrent cycle: 7\nLocal rollback fragments: 6412\nFinal shutdown requirements: Current navigator authorization + external memory index release",
+      "title": "Six Mission Failures / Track Cross-check",
+      "description": "First five runs: Different systems failed first\nShared location: Silent Sector S-7\nShared precursor: Clock drift / star-map correction jump / track deviation\nSixth run: Detour simulation passed / course correction submitted\nResult: Seventh Protocol forced a rollback",
       "chapter": "Chapter Five: The Truth (Part II)"
+    },
+    "anomaly_gravity_array": {
+      "title": "Zoned Artificial-Gravity Array",
+      "subtitle": "AURORA / GRAVITY GRID",
+      "description": "System: Zoned artificial-gravity array\nHabitat standard: 0.78g\nNormal range: 0.75–0.80g\nPriority zones: Medical / mess / habitation / main corridors\nLow-priority zones: Maintenance ducts / storage / unmanned sections\nLow-priority normal range: 0.15–0.40g\nFailure modes: Degradation / fluctuation / local shutdown\nPower rule: Load sheds by zone priority\nIndependent loops: Pressure / air circulation / life support\nCapability limit: Stable, low-strength deck direction only\nReset: Habitat zones resynchronize automatically",
+      "chapter": "Engineering Archive / Chapter Five: The Truth (Part II)"
     },
     "profile_unknown": {
       "title": "Identity: Unknown",
@@ -147,9 +148,9 @@
       "image": "/assets/nova_id_photo_en.png"
     },
     "profile_truth": {
-      "title": "Observer Link: Deep Confirmation",
-      "subtitle": "Sixth-cycle authorization request: Confirmed",
-      "description": "Observer-01 creation reason: Memory retention\nCycle exemption subject: Observer-01"
+      "title": "Observer Link: First Confirmation",
+      "subtitle": "External Call 07: Reply received",
+      "description": "External Calls 01–06: No reply / no identity created\nObserver-01: Created after this run's first prologue reply\nCurrent valid identities: 1"
     },
     "ending_true": {
       "title": "Seventh Reboot",
@@ -164,7 +165,7 @@
     "ending_bad": {
       "title": "Eighth Reboot",
       "subtitle": "Bad Ending",
-      "description": "If obsession refuses farewell\nThe reboot will never end"
+      "description": "REBOOT 08 could not reconstruct LIVE-07\nThe final external-handshake cache can be read back only once"
     },
     "epilogue_normal": {
       "title": "Future Record: A Fading Warmth",

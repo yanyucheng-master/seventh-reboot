@@ -19,12 +19,11 @@ import type { DeliveryEventKey, DisplayMessage } from '../src/game/types.ts';
 const EXPECTED_EVENTS = new Map<string, DeliveryEventKey>([
   ['PRO-0012', 'prologue_first_reply'],
   ['CH03-0170', 'chapter3_reconnect_reply'],
-  ['CH05A-0266', 'chapter5_explicit_failure'],
-  ['FIN-0231', 'finale_last_answer'],
+  ['CH05B-0091', 'final_protocol_choice'],
 ]);
 
 const eventNodes = storyNodes.filter(node => node.deliveryEvent);
-assert.equal(eventNodes.length, EXPECTED_EVENTS.size, 'Only the four approved choice nodes may declare delivery events');
+assert.equal(eventNodes.length, EXPECTED_EVENTS.size, 'Only the three current choice nodes may declare delivery events');
 for (const [nodeId, eventKey] of EXPECTED_EVENTS) {
   const node = storyNodeMap.get(nodeId);
   assert.ok(node, `Missing delivery node ${nodeId}`);
@@ -42,25 +41,14 @@ assert.deepEqual(
   [[0, 'queued'], [80, 'sending'], [1200, 'delayed'], [3800, 'delivered']],
 );
 assert.deepEqual(
-  DELIVERY_EVENT_SPECS.chapter5_explicit_failure.phases.map(phase => [phase.atMs, phase.state]),
-  [
-    [0, 'queued'],
-    [80, 'sending'],
-    [900, 'delayed'],
-    [4200, 'failed'],
-    [5100, 'sending'],
-    [5900, 'delivered'],
-  ],
-);
-assert.deepEqual(
-  DELIVERY_EVENT_SPECS.finale_last_answer.phases.map(phase => [phase.atMs, phase.state]),
+  DELIVERY_EVENT_SPECS.final_protocol_choice.phases.map(phase => [phase.atMs, phase.state]),
   [[0, 'queued'], [80, 'sending'], [1200, 'delayed'], [3000, 'delayed'], [3400, 'sending'], [4200, 'delivered']],
 );
-assert.equal(DELIVERY_EVENT_SPECS.finale_last_answer.completeAtMs, 4700);
+assert.equal(DELIVERY_EVENT_SPECS.final_protocol_choice.completeAtMs, 4700);
 
 const failureSpecs = Object.values(DELIVERY_EVENT_SPECS).filter(spec =>
   spec.phases.some(phase => phase.state === 'failed'));
-assert.deepEqual(failureSpecs.map(spec => spec.key), ['chapter5_explicit_failure']);
+assert.deepEqual(failureSpecs.map(spec => spec.key), []);
 
 for (const seed of ['PRO-0012__0', 'PRO-0024__1', 'END-T-0004__0']) {
   const first = createNormalDeliverySpec(seed);
@@ -71,13 +59,13 @@ for (const seed of ['PRO-0012__0', 'PRO-0024__1', 'END-T-0004__0']) {
 }
 assert.equal(createNormalDeliverySpec('offline-choice', 'interrupted').finalLinkState, 'interrupted');
 
-const chapterFiveSpec = DELIVERY_EVENT_SPECS.chapter5_explicit_failure;
-assert.equal(projectDeliverySpec(chapterFiveSpec, 4199).phase.state, 'delayed');
-assert.equal(projectDeliverySpec(chapterFiveSpec, 4200).phase.state, 'failed');
-assert.equal(projectDeliverySpec(chapterFiveSpec, 5100).phase.retryCount, 1);
-assert.equal(projectDeliverySpec(chapterFiveSpec, 5900).phase.state, 'delivered');
-assert.equal(projectDeliverySpec(chapterFiveSpec, 5899).complete, false);
-assert.equal(projectDeliverySpec(chapterFiveSpec, 5900).complete, true);
+const finalProtocolSpec = DELIVERY_EVENT_SPECS.final_protocol_choice;
+assert.equal(projectDeliverySpec(finalProtocolSpec, 2999).phase.state, 'delayed');
+assert.equal(projectDeliverySpec(finalProtocolSpec, 3000).phase.linkState, 'interrupted');
+assert.equal(projectDeliverySpec(finalProtocolSpec, 3400).phase.linkState, 'restoring');
+assert.equal(projectDeliverySpec(finalProtocolSpec, 4200).phase.state, 'delivered');
+assert.equal(projectDeliverySpec(finalProtocolSpec, 4699).complete, false);
+assert.equal(projectDeliverySpec(finalProtocolSpec, 4700).complete, true);
 
 for (const spec of Object.values(DELIVERY_EVENT_SPECS)) {
   const compressed = compressDeliverySpec(spec);
@@ -135,13 +123,14 @@ const failedRuntime = {
 const restoredFailure = migrateDeliveryState(
   [failedMessage],
   failedRuntime,
-  'CH05A-0267',
+  'CH05B-0091',
   3000,
 );
-assert.equal(restoredFailure.messages[0].deliveryState, 'failed');
-assert.equal(restoredFailure.runtime.activeMessageId, failedMessage.id);
-assert.deepEqual(restoredFailure.runtime.pendingAutoRetryIds, [failedMessage.id]);
-assert.equal(restoredFailure.pendingNodeId, 'CH05A-0267');
+assert.equal(restoredFailure.messages[0].deliveryState, 'delivered');
+assert.equal(restoredFailure.messages[0].allowFail, false);
+assert.equal(restoredFailure.runtime.activeMessageId, undefined);
+assert.deepEqual(restoredFailure.runtime.pendingAutoRetryIds, []);
+assert.equal(restoredFailure.pendingNodeId, 'CH05B-0091');
 
 const interruptedP14: DisplayMessage = {
   id: 'PRO-0012_pending',
@@ -173,4 +162,4 @@ for (const forbidden of ['Math.random', 'navigator.onLine', 'fetch(', 'performan
 }
 assert.equal(deliverySource.includes('reordered: true'), false, 'Production delivery must never reorder messages');
 
-console.log('Delivery system tests passed: 4 scripted events, deterministic timing, migration, and deadline boundaries verified.');
+console.log('Delivery system tests passed: 3 scripted events, deterministic timing, legacy migration, and deadline boundaries verified.');

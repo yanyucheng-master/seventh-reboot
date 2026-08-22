@@ -272,9 +272,6 @@
     "PRO-0085": {
       "content": "Probably"
     },
-    "PRO-0086": {
-      "content": "Good question"
-    },
     "PRO-0087": {
       "content": "Because the experimental bay exploded"
     },
@@ -295,9 +292,6 @@
     },
     "PRO-0093": {
       "content": "I'm not dying yet"
-    },
-    "PRO-0094": {
-      "content": "Probably"
     },
     "PRO-0095": {
       "content": "The medical system hasn't declared me dead"
@@ -396,16 +390,15 @@
     "PRO-0125": {
       "content": "Unless..."
     },
-    "PRO-0126": {
-      "content": "Never mind"
-    },
     "PRO-0127": {
       "content": "I don't want to scare you"
     },
     "PRO-0128": {
       "choices": {
         "PRO-0128__0": "【It's okay. Tell me】",
-        "PRO-0128__1": "【I'm not scared】"
+        "PRO-0128__1": "【I'm not scared】",
+        "PRO-0128__2": "[I fear neither heaven nor earth.]",
+        "PRO-0128__3": "[Why stop halfway through?]"
       }
     },
     "PRO-0129": {
@@ -444,9 +437,6 @@
     "PRO-0142": {
       "content": "Today was the first time I ever switched the device on"
     },
-    "PRO-0143": {
-      "content": "But the log says"
-    },
     "PRO-0144": {
       "content": "It has already connected successfully six times"
     },
@@ -458,9 +448,6 @@
     },
     "PRO-0147": {
       "content": "Do you ever get this feeling?"
-    },
-    "PRO-0148": {
-      "content": "I can't quite explain it"
     },
     "PRO-0149": {
       "content": "It's just..."
@@ -475,7 +462,8 @@
       "choices": {
         "PRO-0152__0": "【I don't feel that】",
         "PRO-0152__1": "【A little】",
-        "PRO-0152__2": "【You're starting to scare me】"
+        "PRO-0152__2": "【You're starting to scare me】",
+        "PRO-0152__3": "[Then you have found me now.]"
       }
     },
     "PRO-0153": {
@@ -538,9 +526,6 @@
     "PRO-0174": {
       "content": "Nova is offline"
     },
-    "CH01-0001": {
-      "content": "Chapter One: Connection"
-    },
     "CH01-0002": {
       "content": "Day Two, 08:13"
     },
@@ -567,7 +552,8 @@
         "CH01-0009__0": "【Are you okay?】",
         "CH01-0009__1": "【Did you sleep well?】",
         "CH01-0009__2": "【What was outside the observation window last night?】",
-        "CH01-0009__3": "【I waited for you all night, you know】"
+        "CH01-0009__3": "【I waited for you all night, you know】",
+        "CH01-0009__4": "[Alien monster? Is it?]"
       }
     },
     "CH01-0010": {
@@ -677,7 +663,8 @@
       "choices": {
         "CH01-0044__0": "【Terrifying】",
         "CH01-0044__1": "【It's kind of cute】",
-        "CH01-0044__2": "【Who put the eyes on it?】"
+        "CH01-0044__2": "【Who put the eyes on it?】",
+        "CH01-0044__3": "[Alien monster!]"
       }
     },
     "CH01-0045": {
@@ -734,7 +721,8 @@
     "CH01-0063": {
       "choices": {
         "CH01-0063__0": "【I'm still here, aren't I?】",
-        "CH01-0063__1": "【What happened?】"
+        "CH01-0063__1": "【What happened?】",
+        "CH01-0063__2": "[I will keep pretending I did not hear that.]"
       }
     },
     "CH01-0064": {
@@ -742,12 +730,6 @@
     },
     "CH01-0065": {
       "content": "But yes, that does make me feel better"
-    },
-    "CH01-0066": {
-      "content": "Honestly"
-    },
-    "CH01-0067": {
-      "content": "I'm not even sure it counts as something that happened"
     },
     "CH01-0068": {
       "content": "It's just..."
@@ -834,9 +816,6 @@
     "CH01-0094": {
       "content": "So the Deep-Space Navigation Stabilization Core recalibrates our time standard every day"
     },
-    "CH01-0095": {
-      "content": "At least, that's what engineering has always told us"
-    },
     "CH01-0096": {
       "content": "Normal communications lag so badly it's like mailing a letter to the future"
     },
@@ -845,15 +824,6 @@
     },
     "CH01-0098": {
       "content": "Are absurd enough to make me nervous"
-    },
-    "CH01-0099": {
-      "content": "At first it was beautiful"
-    },
-    "CH01-0100": {
-      "content": "Then after a while"
-    },
-    "CH01-0101": {
-      "content": "Even stars start to feel monotonous"
     },
     "CH01-0102": {
       "content": "Speaking of which"
@@ -895,7 +865,8 @@
       "choices": {
         "CH01-0115__0": "【I used to】",
         "CH01-0115__1": "【No】",
-        "CH01-0115__2": "【I have one now】"
+        "CH01-0115__2": "【I have one now】",
+        "CH01-0115__3": "[I hate pets.]"
       }
     },
     "CH01-0116": {
@@ -1053,9 +1024,6 @@
     "CH01-0165": {
       "content": "Legally? No"
     },
-    "CH01-0166": {
-      "content": "According to the attendance policy? Hard to say"
-    },
     "CH01-0167": {
       "content": "Hello?"
     },
@@ -1157,9 +1125,6 @@
     "CH01-0197": {
       "content": "Don't let it go to your head"
     },
-    "CH01-0198": {
-      "content": "That is a very compelling reason"
-    },
     "CH01-0199": {
       "content": "Surviving until the end of a shift deserves celebration"
     },
@@ -1197,9 +1162,6 @@
     },
     "CH01-0210": {
       "content": "Nova is offline"
-    },
-    "CH02-0001": {
-      "content": "Chapter Two: Ordinary Days"
     },
     "CH02-0002": {
       "content": "Day Three, 07:26"
@@ -1330,7 +1292,8 @@
     },
     "CH02-0041": {
       "choices": {
-        "CH02-0041__0": "【Isn't that normal?】"
+        "CH02-0041__0": "【Isn't that normal?】",
+        "CH02-0041__1": "[You just sleep too much.]"
       }
     },
     "CH02-0042": {
@@ -1550,7 +1513,8 @@
       "choices": {
         "CH02-0110__0": "【Why are you asking that all of a sudden?】",
         "CH02-0110__1": "【I'd just recover the memory】",
-        "CH02-0110__2": "【I'd let it be】"
+        "CH02-0110__2": "【I'd let it be】",
+        "CH02-0110__3": "[It makes no difference to me.]"
       }
     },
     "CH02-0111": {
@@ -1706,7 +1670,8 @@
     "CH02-0160": {
       "choices": {
         "CH02-0160__0": "【Get some rest】",
-        "CH02-0160__1": "【You've had a long day】"
+        "CH02-0160__1": "【You've had a long day】",
+        "CH02-0160__2": "[Navigators do maintenance too?]"
       }
     },
     "CH02-0161": {
@@ -1732,9 +1697,6 @@
         "CH02-0167__0": "【What is it?】",
         "CH02-0167__1": "【You haven't seemed like yourself lately】"
       }
-    },
-    "CH02-0168": {
-      "content": "Mm..."
     },
     "CH02-0169": {
       "content": "I was going to pretend nothing was wrong"
@@ -1872,12 +1834,6 @@
     "CH02-0211": {
       "content": "Did I really tell you about him?"
     },
-    "CH02-0212": {
-      "content": "?"
-    },
-    "CH02-0213": {
-      "content": "Wait"
-    },
     "CH02-0214": {
       "content": "Did I tell you about N7?"
     },
@@ -1908,7 +1864,8 @@
     "CH02-0222": {
       "choices": {
         "CH02-0222__0": "【Your memory is getting worse】",
-        "CH02-0222__1": "【It's okay. I remember】"
+        "CH02-0222__1": "【It's okay. I remember】",
+        "CH02-0222__2": "[Is your sleep really that bad?]"
       }
     },
     "CH02-0223": {
@@ -1919,15 +1876,6 @@
     },
     "CH02-0225": {
       "content": "..."
-    },
-    "CH02-0226": {
-      "content": "That sounds a little dangerous"
-    },
-    "CH02-0227": {
-      "content": "But I think I want to believe it for now"
-    },
-    "CH02-0228": {
-      "content": "Maybe it is"
     },
     "CH02-0229": {
       "content": "Still"
@@ -1973,9 +1921,6 @@
     "CH02-0242": {
       "content": "Give one back to them."
     },
-    "CH03-0001": {
-      "content": "Chapter Three: Anomaly"
-    },
     "CH03-0002": {
       "content": "Day Four, 08:02"
     },
@@ -2000,7 +1945,8 @@
     "CH03-0009": {
       "choices": {
         "CH03-0009__0": "【How did it survive?】",
-        "CH03-0009__1": "【Are you going to report it?】"
+        "CH03-0009__1": "【Are you going to report it?】",
+        "CH03-0009__2": "[That is strange.]"
       }
     },
     "CH03-0010": {
@@ -2252,6 +2198,15 @@
     "CH03-0088": {
       "content": "They said we're having steak today"
     },
+    "CH03-GRAV-0001": {
+      "content": "Habitat gravity dropped to 0.76g today."
+    },
+    "CH03-GRAV-0002": {
+      "content": "The plate is a little lighter to carry."
+    },
+    "CH03-GRAV-0003": {
+      "content": "This thing is not any easier to chew, though."
+    },
     "CH03-0089": {
       "content": "But I'm beginning to question"
     },
@@ -2332,9 +2287,6 @@
     },
     "CH03-0116": {
       "content": "The door controls are responding slowly"
-    },
-    "CH03-0117": {
-      "content": "Don't rush me"
     },
     "CH03-0118": {
       "content": "I'm already doing enough of that myself"
@@ -2539,21 +2491,6 @@
     "CH03-0185": {
       "content": "And that sublayer doesn't exist on any schematic the crew can access"
     },
-    "CH03-0186": {
-      "content": "Wait"
-    },
-    "CH03-0187": {
-      "content": "This isn't an ordinary comm log"
-    },
-    "CH03-0188": {
-      "content": "It's a low-level record from the Seventh Protocol"
-    },
-    "CH03-0189": {
-      "content": "It looks like this isn't the first time it connected us"
-    },
-    "CH03-0190": {
-      "content": "Maybe I should stop a little sooner."
-    },
     "CH03-0191": {
       "content": "Keep reading"
     },
@@ -2619,9 +2556,6 @@
     },
     "CH03-0210": {
       "content": "Is dated three months ago"
-    },
-    "CH03-0211": {
-      "content": "The Aurora hadn't launched three months ago"
     },
     "CH03-0212": {
       "content": "So"
@@ -2690,7 +2624,8 @@
     "CH03-0232": {
       "choices": {
         "CH03-0232__0": "【I will】",
-        "CH03-0232__1": "【Of course】"
+        "CH03-0232__1": "【Of course】",
+        "CH03-0232__2": "[I do not know.]"
       }
     },
     "CH03-0233": {
@@ -2751,9 +2686,6 @@
     },
     "CH03-0251": {
       "content": "Nova is offline"
-    },
-    "CH04-0001": {
-      "content": "Chapter Four: Memory"
     },
     "CH04-0002": {
       "content": "Day Five, 09:18"
@@ -2977,14 +2909,13 @@
     },
     "CH04-0071": {
       "choices": {
-        "CH04-0071__0": "【His name is N7】"
+        "CH04-0071__0": "【His name is N7】",
+        "CH04-0071__1": "[I do not remember.]",
+        "CH04-0071__2": "[It was your cat.]"
       }
     },
     "CH04-0072": {
       "content": "..."
-    },
-    "CH04-0073": {
-      "content": "Wait"
     },
     "CH04-0074": {
       "content": "N7 was my cat"
@@ -3098,7 +3029,8 @@
     "CH04-0109": {
       "choices": {
         "CH04-0109__0": "【Who is the other authenticator?】",
-        "CH04-0109__1": "【How can the system have two of you?】"
+        "CH04-0109__1": "【How can the system have two of you?】",
+        "CH04-0109__2": "[What can I do?]"
       }
     },
     "CH04-0110": {
@@ -3137,9 +3069,6 @@
     "CH04-0121": {
       "content": "And sent to the hidden sublayer from that energy record"
     },
-    "CH04-0122": {
-      "content": "No one ever told me it existed"
-    },
     "CH04-0123": {
       "content": "Communications archive restored"
     },
@@ -3159,9 +3088,6 @@
     },
     "CH04-0128": {
       "content": "But the system never registers the same identity twice"
-    },
-    "CH04-0129": {
-      "content": "At least, it isn't supposed to"
     },
     "CH04-0130": {
       "content": "Wait"
@@ -3209,10 +3135,7 @@
       "content": "“Don't trust the seventh”"
     },
     "CH04-0144": {
-      "choices": {
-        "CH04-0144__0": "【Does “the seventh” mean this cycle?】",
-        "CH04-0144__1": "【You've already been through this six times?】"
-      }
+      "content": "But I cannot make out a single one."
     },
     "CH04-0145": {
       "content": "If we take it literally"
@@ -3221,7 +3144,10 @@
       "content": "That question is worse than anything I was willing to imagine"
     },
     "CH04-0147": {
-      "content": "If we didn't come here again"
+      "choices": {
+        "CH04-0147__0": "[Those are memories from the last few days?]",
+        "CH04-0147__1": "[Do you remember saying that?]"
+      }
     },
     "CH04-0148": {
       "content": "Then maybe we never truly left"
@@ -3355,8 +3281,14 @@
       "choices": {
         "CH04-0188__0": "【Afraid of what?】",
         "CH04-0188__1": "【Afraid of remembering?】",
-        "CH04-0188__2": "【Afraid I'm telling the truth?】"
+        "CH04-0188__2": "[I am here.]"
       }
+    },
+    "CH04-0200": {
+      "content": "Maybe"
+    },
+    "CH04-0201": {
+      "content": "If my memory was deliberately erased, something terrible must have happened before it was gone"
     },
     "CH04-0189": {
       "content": "Afraid that I really forgot someone important"
@@ -3391,16 +3323,8 @@
     "CH04-0199": {
       "content": "It's the possibility that everything you said is true"
     },
-    "CH04-0200": {
-      "content": "Maybe"
-    },
-    "CH04-0201": {
-      "content": "If my memory was deliberately erased, something terrible must have happened before it was gone"
-    },
     "CH04-0202": {
-      "choices": {
-        "CH04-0202__0": "【...】"
-      }
+      "content": "Then that means"
     },
     "CH04-0203": {
       "content": "If that's true"
@@ -3409,10 +3333,7 @@
       "content": "Then it must have been awful"
     },
     "CH04-0205": {
-      "choices": {
-        "CH04-0205__0": "【Why would forgetting someone hurt more?】",
-        "CH04-0205__1": "【...】"
-      }
+      "content": "the one being forgotten"
     },
     "CH04-0206": {
       "content": "Because"
@@ -3425,15 +3346,6 @@
     },
     "CH04-0209": {
       "content": "There isn't an easy answer to that"
-    },
-    "CH04-0210": {
-      "content": "Being forgotten is painful enough"
-    },
-    "CH04-0211": {
-      "content": "But forgetting someone else"
-    },
-    "CH04-0212": {
-      "content": "May be even worse"
     },
     "CH04-0213": {
       "content": "23:17"
@@ -3470,14 +3382,8 @@
     "CH04-0223": {
       "content": "Hidden Log: NOVA-06 → NOVA-07||If you're reading this record,\nthen I have already forgotten Observer-01.\nDo not attempt to restore the memory.\nDo not look for me in the observatory.\nDo not open the Seventh Protocol.\nMost of all, do not trust me.\nBecause I have already failed six times.\n\nChapter Five: The Truth (Part I)"
     },
-    "CH05A-0001": {
-      "content": "Chapter Five: The Truth (Part I)"
-    },
     "CH05A-0002": {
       "content": "Day Six, 07:11"
-    },
-    "CH05A-0003": {
-      "content": "New message received"
     },
     "CH05A-0004": {
       "content": "I didn't sleep at all"
@@ -3501,9 +3407,6 @@
     },
     "CH05A-0010": {
       "content": "As if someone granted me access"
-    },
-    "CH05A-0011": {
-      "content": "There is another sealed layer beside the outer index."
     },
     "CH05A-0012": {
       "content": "It is marked \"NOVA-06 / SEALED.\""
@@ -3679,13 +3582,14 @@
       "content": "Excerpts from Reversion Logs||Note: numbers identify log entries, not cycle count\nLog 001: If you're reading this, the cycle has already begun.\nLog 002: Do not trust the system clock.\nLog 003: Do not enter the observatory.\nLog 004: If you receive a message from yourself, delete it.\nLog 007: If you already know Observer-01, treat them kindly.\nLog 012: The external index will remember. Do not let them learn the truth too soon."
     },
     "CH05A-0067": {
-      "content": "Local Phase-Anchor Core / Reversion Execution Record||Control command source: SEVENTH_PROTOCOL\nReversion reference: most recent stable phase anchor\nPhase-field range: localized Aurora mission area\nPhase-energy discharge: complete\nMission-state reversion: complete\nCrew cognition synchronization: reset\nAnomalous residue: Nova Arlen / UNKNOWN"
+      "choices": {
+        "CH05A-0067__0": "[Six files, so six loops?]",
+        "CH05A-0067__1": "[You wrote all of these?]",
+        "CH05A-0067__2": "[Why are two completely unreadable?]"
+      }
     },
     "CH05A-0068": {
-      "choices": {
-        "CH05A-0068__0": "[I understand. Continue.]",
-        "CH05A-0068__1": "[Open the complete engineering record.]"
-      }
+      "content": "I thought so too."
     },
     "CH05A-0069": {
       "content": "Complete engineering record added to optional archive."
@@ -3712,7 +3616,8 @@
       "choices": {
         "CH05A-0076__0": "【I think so】",
         "CH05A-0076__1": "【I'm not sure】",
-        "CH05A-0076__2": "【Wait. Let me think】"
+        "CH05A-0076__2": "【Wait. Let me think】",
+        "CH05A-0076__3": "[Some of it is still unreadable.]"
       }
     },
     "CH05A-0077": {
@@ -3802,9 +3707,6 @@
     "CH05A-0105": {
       "content": "This is where the records start getting worse"
     },
-    "CH05A-0106": {
-      "content": "See for yourself"
-    },
     "CH05A-0107": {
       "content": "Logs 007–012||Log 007: If you already know Observer-01, treat them kindly.\nLog 012: The external index will remember. Do not let them learn the truth too soon.\nNova, stop asking questions. Continuing the cycle is better for both of you."
     },
@@ -3817,9 +3719,6 @@
     },
     "CH05A-0109": {
       "content": "I don't know"
-    },
-    "CH05A-0110": {
-      "content": "The signature and write source were both deleted"
     },
     "CH05A-0111": {
       "content": "Maybe whoever wrote it thought"
@@ -3844,31 +3743,6 @@
     },
     "CH05A-0118": {
       "content": "Six"
-    },
-    "CH05A-0119": {
-      "content": "Exactly six versions"
-    },
-    "CH05A-0120": {
-      "choices": {
-        "CH05A-0120__0": "【One set of logs for each of the six cycles?】",
-        "CH05A-0120__1": "【Did you write all of them?】",
-        "CH05A-0120__2": "【Could they have been forged?】"
-      }
-    },
-    "CH05A-0121": {
-      "content": "That's what I think too"
-    },
-    "CH05A-0122": {
-      "content": "The handwriting and authorization are mine"
-    },
-    "CH05A-0123": {
-      "content": "But I don't remember writing any of them"
-    },
-    "CH05A-0124": {
-      "content": "I wish they were"
-    },
-    "CH05A-0125": {
-      "content": "But authentication signatures don't lie"
     },
     "CH05A-0126": {
       "content": "The logs come from different times"
@@ -3957,11 +3831,7 @@
       "content": "Then she spoke"
     },
     "CH05A-0152": {
-      "choices": {
-        "CH05A-0152__0": "【She was speaking to you?】",
-        "CH05A-0152__1": "【She isn't the version of you who's here now】",
-        "CH05A-0152__2": "【Don't be afraid. I'm here】"
-      }
+      "content": "This is a recording."
     },
     "CH05A-0153": {
       "content": "It looked that way"
@@ -3988,7 +3858,11 @@
       "content": "..."
     },
     "CH05A-0161": {
-      "content": "You always make it sound so simple"
+      "choices": {
+        "CH05A-0161__0": "[Who is she?]",
+        "CH05A-0161__1": "[What happened in the recording?]",
+        "CH05A-0161__2": "[Are you all right?]"
+      }
     },
     "CH05A-0162": {
       "content": "But strangely"
@@ -4033,10 +3907,7 @@
       "content": "“Is this the seventh time already?”"
     },
     "CH05A-0176": {
-      "choices": {
-        "CH05A-0176__0": "【She sounded like she'd been waiting for this cycle】",
-        "CH05A-0176__1": "【How long had she been waiting?】"
-      }
+      "content": "\"If you are seeing this, the sixth run failed too.\""
     },
     "CH05A-0177": {
       "content": "Yes"
@@ -4123,7 +3994,11 @@
       "content": "A power collapse"
     },
     "CH05A-0205": {
-      "content": "The third"
+      "choices": {
+        "CH05A-0205__0": "[So the problem was always S-7?]",
+        "CH05A-0205__1": "[Why did the AI not find it?]",
+        "CH05A-0205__2": "[The sixth run already found a way around it?]"
+      }
     },
     "CH05A-0206": {
       "content": "An unknown infection"
@@ -4141,11 +4016,7 @@
       "content": "The ship broke apart"
     },
     "CH05A-0211": {
-      "choices": {
-        "CH05A-0211__0": "【What happened in the sixth recording?】",
-        "CH05A-0211__1": "【All five previous attempts failed?】",
-        "CH05A-0211__2": "【Why did she record any of this?】"
-      }
+      "content": "It can calculate, but it has no reason to doubt the original course."
     },
     "CH05A-0212": {
       "content": "I watched the sixth one first too"
@@ -4178,7 +4049,11 @@
       "content": "The planned route cuts through a phase-resonance zone."
     },
     "CH05A-0222": {
-      "content": "If we keep flying the original plan, the accident will find us sooner or later."
+      "choices": {
+        "CH05A-0222__0": "[Then do not let it happen.]",
+        "CH05A-0222__1": "[Are you afraid?]",
+        "CH05A-0222__2": "[How much time do we have left?]"
+      }
     },
     "CH05A-0223": {
       "content": "The sixth recording contains no death report"
@@ -4196,11 +4071,7 @@
       "content": "“I finally found you”"
     },
     "CH05A-0228": {
-      "choices": {
-        "CH05A-0228__0": "【Who did she say she'd found?】",
-        "CH05A-0228__1": "【Was the recording deleted?】",
-        "CH05A-0228__2": "【You think she meant me?】"
-      }
+      "content": "When you are afraid and alone, it is easy to pretend you did not see."
     },
     "CH05A-0229": {
       "content": "I don't know"
@@ -4235,157 +4106,6 @@
     "CH05A-0239": {
       "content": "I can't be certain"
     },
-    "CH05A-0240": {
-      "content": "But when she said it"
-    },
-    "CH05A-0241": {
-      "content": "She was looking straight into the communications lens"
-    },
-    "CH05A-0242": {
-      "content": "As though she knew someone was watching from the other side"
-    },
-    "CH05A-0243": {
-      "content": "So I have a very bad feeling"
-    },
-    "CH05A-0244": {
-      "content": "The person she meant"
-    },
-    "CH05A-0245": {
-      "content": "May have been you"
-    },
-    "CH05A-0246": {
-      "content": "Or at least"
-    },
-    "CH05A-0247": {
-      "content": "Someone connected to you"
-    },
-    "CH05A-0248": {
-      "content": "LOOP-06 / Emergency Course Correction Log||PLANNED ROUTE · Through S-7 phase-resonance zone\nEMERGENCY CORRECTION · Submitted\nPURPOSE · Divert around the resonance zone\nSEVENTH PROTOCOL JUDGMENT · Deviation from assigned mission route\nRESULT · Protective rollback order submitted\nNEW ROUTE WRITTEN TO STABLE PHASE ANCHOR · Incomplete"
-    },
-    "CH05A-0249": {
-      "content": "The sixth me already found a way around — and really did change course."
-    },
-    "CH05A-0250": {
-      "content": "But the Seventh Protocol judged the diversion as mission failure."
-    },
-    "CH05A-0251": {
-      "content": "The new route never made it into the anchor. The phase core pulled everything back."
-    },
-    "CH05A-0252": {
-      "content": "So when I woke this time, I was still on the old route."
-    },
-    "CH05A-0253": {
-      "content": "22:18"
-    },
-    "CH05A-0254": {
-      "content": "I found something worse"
-    },
-    "CH05A-0255": {
-      "content": "These recordings"
-    },
-    "CH05A-0256": {
-      "content": "Were all made after the current safety checkpoint"
-    },
-    "CH05A-0257": {
-      "content": "Even the earliest one"
-    },
-    "CH05A-0258": {
-      "content": "Is stamped one year later in mission time"
-    },
-    "CH05A-0259": {
-      "content": "Exactly"
-    },
-    "CH05A-0260": {
-      "content": "I can't get through."
-    },
-    "CH05A-0261": {
-      "content": "Why would a version of me from later in the previous cycle"
-    },
-    "CH05A-0262": {
-      "content": "Leave recordings for the version of me who wakes after this checkpoint?"
-    },
-    "CH05A-0263": {
-      "content": "And"
-    },
-    "CH05A-0264": {
-      "content": "Why do all of them"
-    },
-    "CH05A-0265": {
-      "content": "Contain records connected to you?"
-    },
-    "CH05A-0266": {
-      "choices": {
-        "CH05A-0266__0": "【Because I'm in them too?】",
-        "CH05A-0266__1": "【Because she wanted me to know?】",
-        "CH05A-0266__2": "【Maybe it isn't me】"
-      }
-    },
-    "CH05A-0267": {
-      "content": "I don't know whether you were physically “in” them"
-    },
-    "CH05A-0268": {
-      "content": "But you were definitely part of her plan"
-    },
-    "CH05A-0269": {
-      "content": "Maybe"
-    },
-    "CH05A-0270": {
-      "content": "It feels like she packed every word she couldn't say into those recordings"
-    },
-    "CH05A-0271": {
-      "content": "I hope it isn't"
-    },
-    "CH05A-0272": {
-      "content": "But every clue keeps pointing toward you"
-    },
-    "CH05A-0273": {
-      "content": "I'm beginning to suspect something"
-    },
-    "CH05A-0274": {
-      "content": "Maybe"
-    },
-    "CH05A-0275": {
-      "content": "I'm not the only one who's trapped"
-    },
-    "CH05A-0276": {
-      "content": "Nova is offline"
-    },
-    "CH05A-0277": {
-      "content": "03:09"
-    },
-    "CH05A-0278": {
-      "content": "Message received from unknown source"
-    },
-    "CH05A-0279": {
-      "content": "Communications echo: NOVA-06"
-    },
-    "CH05A-0280": {
-      "content": "Sender: Nova?"
-    },
-    "CH05A-0281": {
-      "content": "NOVA-06 RESIDUAL TRIGGER RECORD||TYPE · Conditional instruction left by the sixth cycle / not a live consciousness\nTRIGGER · Current Nova re-enters the observatory and rollback-core load crosses the preset threshold\nSCOPE · Send sealed messages; briefly intervene once during the designated power incident\nLIMIT · Cannot sustain control of the current cycle; cannot replace Observer-01 authorization; authority is revoked immediately after use"
-    },
-    "CH05A-0282": {
-      "content": "Do not trust her completely."
-    },
-    "CH05A-0283": {
-      "content": "Not because she will lie to you."
-    },
-    "CH05A-0284": {
-      "content": "Because she truly will forget."
-    },
-    "CH05A-0285": {
-      "content": "Do not trust me completely either."
-    },
-    "CH05A-0286": {
-      "content": "I am only an echo left behind by the sixth cycle."
-    },
-    "CH05A-0287": {
-      "content": "The one truly trapped is not Nova.\nIt's you.\nChapter Five: The Truth (Part II)"
-    },
-    "CH05B-0001": {
-      "content": "Chapter Five: The Truth (Part II)"
-    },
     "CH05B-0002": {
       "content": "Day Seven, 08:01"
     },
@@ -4397,6 +4117,18 @@
     },
     "CH05B-0005": {
       "content": "Yeah."
+    },
+    "CH05B-GRAV-0001": {
+      "content": "ZONED GRAVITY ARRAY DEGRADING\nHabitat: 0.78g -> 0.46g\nMaintenance deck: 0.18g\nNonessential sections: OFFLINE\nPressure / air circulation: independent loops holding"
+    },
+    "CH05B-GRAV-0002": {
+      "content": "The deck just got lighter under my feet."
+    },
+    "CH05B-GRAV-0003": {
+      "content": "The maintenance deck is down to 0.18g."
+    },
+    "CH05B-GRAV-0004": {
+      "content": "Once I am in, I will have to move slowly using handrails and magnetic boots."
     },
     "CH05B-0006": {
       "content": "Especially that last line."
@@ -4485,15 +4217,6 @@
     "CH05B-0034": {
       "content": "Life-support branch below minimum safe line\nObservation low-pressure door locked"
     },
-    "CH05B-0035": {
-      "content": "No... This time no one took it back."
-    },
-    "CH05B-0036": {
-      "content": "Don't disconnect. I can still-"
-    },
-    "CH05B-0037": {
-      "content": "COMMUNICATION CARRIER INTERRUPTED"
-    },
     "CH05B-0038": {
       "content": "OBSERVATION ROOM LIVE-07: LIFE SIGNAL LOST"
     },
@@ -4515,6 +4238,9 @@
     "CH05B-0044": {
       "content": "Like she has not slept in years."
     },
+    "CH05B-0045": {
+      "content": "SIXTH-RUN COURSE PACKAGE / VALIDATION RESULT||Detour target: avoid S-7 phase-resonance zone\nPublic navigation simulation: PASSED\nShipboard AI verification: PASSED\nProtocol-layer response: mission deviation / rollback pending\nPhysical isolation point: PHASE-CORE BUS B\nNote: write the new course first, then cut the protocol bus"
+    },
     "CH05B-0046": {
       "content": "She left a question for you."
     },
@@ -4525,11 +4251,7 @@
       "content": "“Do you still remember the first time you met me?”"
     },
     "CH05B-0049": {
-      "choices": {
-        "CH05B-0049__0": "【It was actually the seventh time.】",
-        "CH05B-0049__1": "【I don't know...】",
-        "CH05B-0049__2": "【Of course I remember.】"
-      }
+      "content": "EXTERNAL IDENTITY REGISTRY / CURRENT RUN||External Calls 01-06: no reply / no identity created\nExternal Call 07: external-consciousness reply received\nIdentity created: after the first reply in this run's prologue\nIdentity name: Observer-01\nPrior identities with this name: 0"
     },
     "CH05B-0050": {
       "content": "You did not answer right away."
@@ -4544,7 +4266,11 @@
       "content": "Why would you put it that way?"
     },
     "CH05B-0054": {
-      "content": "Nobody calls a “first meeting” the seventh time."
+      "choices": {
+        "CH05B-0054__0": "[I will stay with you to the end.]",
+        "CH05B-0054__1": "[Save the ship first.]",
+        "CH05B-0054__2": "[You were already close to the answer.]"
+      }
     },
     "CH05B-0055": {
       "content": "Unless..."
@@ -4634,11 +4360,7 @@
       "content": "It is about you."
     },
     "CH05B-0084": {
-      "choices": {
-        "CH05B-0084__0": "【So I forgot you too?】",
-        "CH05B-0084__1": "【Only Observer-01 remembered?】",
-        "CH05B-0084__2": "【Then what does that make me now?】"
-      }
+      "content": "Course intersects S-7 safety boundary\nFinal write not executed"
     },
     "CH05B-0085": {
       "content": "Yes."
@@ -4659,7 +4381,11 @@
       "content": "There is just a part of you that was never supposed to be there."
     },
     "CH05B-0091": {
-      "content": "You are not someone the Seventh Protocol created."
+      "choices": {
+        "CH05B-0091__0": "[Shut down the Seventh Protocol.]",
+        "CH05B-0091__1": "[Wait. I do not want to disconnect yet.]",
+        "CH05B-0091__2": "[Keep the protocol. Maybe we can try again.]"
+      }
     },
     "CH05B-0092": {
       "content": "You are a real consciousness outside this ship."
@@ -4677,13 +4403,10 @@
       "content": "What was cut off each time was your access to the memories of this anomalous link."
     },
     "CH05B-0097": {
-      "content": "Observer-01 survived the link shutdown and kept only an index that could awaken those memories again."
-    },
-    "CH05B-0098": {
-      "content": "So you were not consciously watching me forget you six times."
-    },
-    "CH05B-0099": {
-      "content": "You forgot me six times too."
+      "choices": {
+        "CH05B-0097__0": "[Shut it down.]",
+        "CH05B-0097__1": "[Leave it.]"
+      }
     },
     "CH05B-0100": {
       "content": "It is just that every time,"
@@ -4701,639 +4424,13 @@
       "content": "it was not talking about all of you."
     },
     "CH05B-0105": {
-      "choices": {
-        "CH05B-0105__0": "【So I did not remember you all along?】",
-        "CH05B-0105__1": "【The index remembered for me?】",
-        "CH05B-0105__2": "【Then neither of us is whole.】"
-      }
+      "content": "The link is about to break."
     },
     "CH05B-0106": {
       "content": "Right."
     },
     "CH05B-0107": {
       "content": "At least, not in the way you thought."
-    },
-    "CH05B-0108": {
-      "content": "It kept the evidence for you."
-    },
-    "CH05B-0109": {
-      "content": "But it did not preserve all the pain."
-    },
-    "CH05B-0110": {
-      "content": "That is a cruel way to put it."
-    },
-    "CH05B-0111": {
-      "content": "But it may be true."
-    },
-    "CH05B-0112": {
-      "choices": {
-        "CH05B-0112__0": "【So I was never an ordinary contact?】",
-        "CH05B-0112__1": "【Are you saying I am part of the protocol?】"
-      }
-    },
-    "CH05B-0113": {
-      "content": "You were never an ordinary contact."
-    },
-    "CH05B-0114": {
-      "content": "No."
-    },
-    "CH05B-0115": {
-      "content": "You are not part of the protocol."
-    },
-    "CH05B-0116": {
-      "content": "You are more like an index hung outside it."
-    },
-    "CH05B-0117": {
-      "content": "I am not the only thing being reverted."
-    },
-    "CH05B-0118": {
-      "content": "The Seventh Protocol orders the Phase-Anchor Core to reverse Aurora's entire local mission state."
-    },
-    "CH05B-0119": {
-      "content": "People, systems, flight records—"
-    },
-    "CH05B-0120": {
-      "content": "even the ship itself."
-    },
-    "CH05B-0121": {
-      "content": "Everything follows the most recent stable phase anchor"
-    },
-    "CH05B-0122": {
-      "content": "back to the same safe checkpoint."
-    },
-    "CH05B-0123": {
-      "content": "Take the little white flower."
-    },
-    "CH05B-0124": {
-      "choices": {
-        "CH05B-0124__0": "【It was not left over from the previous cycle?】",
-        "CH05B-0124__1": "【It blooms again every time?】",
-        "CH05B-0124__2": "【That makes it feel even more like a miracle.】"
-      }
-    },
-    "CH05B-0125": {
-      "content": "No."
-    },
-    "CH05B-0126": {
-      "content": "That is closer."
-    },
-    "CH05B-0127": {
-      "content": "Maybe it is."
-    },
-    "CH05B-0128": {
-      "content": "Last cycle's flower didn't survive to now."
-    },
-    "CH05B-0129": {
-      "content": "After every rollback, the same anomaly begins again."
-    },
-    "CH05B-0130": {
-      "content": "So each cycle grows a new one."
-    },
-    "CH05B-0131": {
-      "content": "It didn't live through six times."
-    },
-    "CH05B-0132": {
-      "content": "It only bloomed six times where it shouldn't."
-    },
-    "CH05B-0133": {
-      "content": "Not once did it fail to appear."
-    },
-    "CH05B-0134": {
-      "content": "The captain will not remember how many times he has chewed me out."
-    },
-    "CH05B-0135": {
-      "content": "Maintenance will not remember how many times they lost that panel."
-    },
-    "CH05B-0136": {
-      "content": "Only I leave this kind of trace."
-    },
-    "CH05B-0137": {
-      "choices": {
-        "CH05B-0137__0": "[I understand. Continue.]",
-        "CH05B-0137__1": "[Why did it have to be you?]"
-      }
-    },
-    "CH05B-0138": {
-      "content": "Because the navigator is also the mission-state continuity signatory."
-    },
-    "CH05B-0139": {
-      "content": "Every day, I submit star charts, flight paths, and crew positions to the public stabilization core."
-    },
-    "CH05B-0140": {
-      "content": "Those data are mirrored into the Phase-Anchor Core as a human-continuity check."
-    },
-    "CH05B-0141": {
-      "content": "After six reversions, state differences connected to me remained inside it."
-    },
-    "CH05B-0142": {
-      "content": "Those echoes were not something the sixth me planned."
-    },
-    "CH05B-0143": {
-      "content": "They are a side effect of the core rebuilding the same continuity signature again and again."
-    },
-    "CH05B-0144": {
-      "content": "But the OBSERVER file was deliberate."
-    },
-    "CH05B-0145": {
-      "content": "So was the external index."
-    },
-    "CH05B-0146": {
-      "content": "The clues written for you"
-    },
-    "CH05B-0147": {
-      "content": "were planted by the sixth me."
-    },
-    "CH05B-0148": {
-      "content": "She never truly hacked the Seventh Protocol."
-    },
-    "CH05B-0149": {
-      "content": "I have no authority to alter the protocol, but I can submit navigation-continuity data."
-    },
-    "CH05B-0150": {
-      "content": "So she broke part of her memory anchors down into the minimum mission index,"
-    },
-    "CH05B-0151": {
-      "content": "then sealed them into a data packet with her navigation-continuity signature."
-    },
-    "CH05B-0152": {
-      "content": "The Seventh Protocol's control layer misclassified them as data required for the mission to continue."
-    },
-    "CH05B-0153": {
-      "content": "There was one more line at the end of the record."
-    },
-    "CH05B-0154": {
-      "content": "“It can see every transmission, but not what you remember.”"
-    },
-    "CH05B-0155": {
-      "content": "Then it attached an external link to you."
-    },
-    "CH05B-0156": {
-      "content": "The first line."
-    },
-    "CH05B-0157": {
-      "content": "N7."
-    },
-    "CH05B-0158": {
-      "content": "Goodnight, and the observatory."
-    },
-    "CH05B-0159": {
-      "content": "The milk candy and the white flower."
-    },
-    "CH05B-0160": {
-      "content": "That maintenance panel, the synthetic steak, and every trace of every reply you ever gave me."
-    },
-    "CH05B-0161": {
-      "content": "She tore those things out of herself."
-    },
-    "CH05B-0162": {
-      "choices": {
-        "CH05B-0162__0": "【Those are all anchors?】",
-        "CH05B-0162__1": "【Is that why your memory keeps cutting out?】",
-        "CH05B-0162__2": "【She damaged herself to do this?】"
-      }
-    },
-    "CH05B-0163": {
-      "content": "Yeah."
-    },
-    "CH05B-0164": {
-      "content": "Not complete memories. Loose threads that can lead the memories back."
-    },
-    "CH05B-0165": {
-      "content": "Maybe."
-    },
-    "CH05B-0166": {
-      "content": "She did not steal memories from a future version of me. I am missing the threads that let me retrieve their traces reliably."
-    },
-    "CH05B-0167": {
-      "content": "Do not say it like that."
-    },
-    "CH05B-0168": {
-      "content": "Even if I know you are not wrong."
-    },
-    "CH05B-0169": {
-      "content": "That is why my mind suddenly blanks."
-    },
-    "CH05B-0170": {
-      "content": "Why I feel sad first,"
-    },
-    "CH05B-0171": {
-      "content": "then cannot remember what I was sad about."
-    },
-    "CH05B-0172": {
-      "content": "There was one more line at the end of the record."
-    },
-    "CH05B-0173": {
-      "content": "“It can see every transmission, but not what you remember.”"
-    },
-    "CH05B-0174": {
-      "content": "So you are not an ordinary observer."
-    },
-    "CH05B-0175": {
-      "content": "And you are more than a person at the other end of a message."
-    },
-    "CH05B-0176": {
-      "content": "But that does not mean you can control the Seventh Protocol."
-    },
-    "CH05B-0177": {
-      "choices": {
-        "CH05B-0177__0": "【Then what can I actually do?】",
-        "CH05B-0177__1": "【So I am just a key?】",
-        "CH05B-0177__2": "【What happens to these memories in the end?】"
-      }
-    },
-    "CH05B-0178": {
-      "content": "You cannot control it."
-    },
-    "CH05B-0179": {
-      "content": "“Key” sounds a little cold."
-    },
-    "CH05B-0180": {
-      "content": "At the end, you return the anchors first, then release the index hanging outside the system."
-    },
-    "CH05B-0181": {
-      "content": "Observer-01 is an external-memory indexing permission layered onto you."
-    },
-    "CH05B-0182": {
-      "content": "What you retained was not a complete chat transcript."
-    },
-    "CH05B-0183": {
-      "content": "Only anchors and fragments left behind each time the link closed."
-    },
-    "CH05B-0184": {
-      "content": "Pieces of me the system erased."
-    },
-    "CH05B-0185": {
-      "content": "You carry the external-memory index left by the sixth me."
-    },
-    "CH05B-0186": {
-      "content": "But you are not a person she created."
-    },
-    "CH05B-0187": {
-      "content": "She simply handed you the burden of\n“please remember me.”"
-    },
-    "CH05B-0188": {
-      "content": "OBSERVER-01 INDEX CAPACITY INSUFFICIENT\nADDITIONAL SPACE REQUIRED\nEXTERNAL MEMORY INDEX: 99.97%"
-    },
-    "CH05B-0189": {
-      "content": "One more core scan still has to be written in."
-    },
-    "CH05B-0190": {
-      "content": "We have to move one anchor into temporary storage first."
-    },
-    "CH05B-0191": {
-      "content": "It will only go quiet for a while. It is not being deleted."
-    },
-    "CH05B-0192": {
-      "content": "Whichever one you choose will not change where we can ultimately go."
-    },
-    "CH05B-0193": {
-      "content": "Temporary memory capacity"
-    },
-    "CH05B-0194": {
-      "content": "Why does this picture make me want to laugh?"
-    },
-    "CH05B-0195": {
-      "content": "But I can't remember the joke."
-    },
-    "CH05B-0196": {
-      "content": "I know it should not have been there."
-    },
-    "CH05B-0197": {
-      "content": "But I forgot why seeing it made me so happy."
-    },
-    "CH05B-0198": {
-      "content": "Did we used to say something around this time?"
-    },
-    "CH05B-0199": {
-      "content": "Never mind. Maybe I forgot again."
-    },
-    "CH05B-0200": {
-      "content": "The temporary location is recorded. Let us keep going."
-    },
-    "CH05B-0201": {
-      "content": "18:26"
-    },
-    "CH05B-0202": {
-      "content": "When I finally asked “why,”"
-    },
-    "CH05B-0203": {
-      "content": "the echo played the next message, as if it had expected the question all along:"
-    },
-    "CH05B-0204": {
-      "content": "“These were not leftovers from the system.”"
-    },
-    "CH05B-0205": {
-      "content": "“They were retrieval anchors I cut out of my own memories.”"
-    },
-    "CH05B-0206": {
-      "content": "“So the seventh me will still carry the traces, but she may not be able to reach them.”"
-    },
-    "CH05B-0207": {
-      "choices": {
-        "CH05B-0207__0": "【So she deliberately left those anchors with me?】",
-        "CH05B-0207__1": "【Did she know what that would mean?】",
-        "CH05B-0207__2": "【Was that fair to the person you are now?】"
-      }
-    },
-    "CH05B-0208": {
-      "content": "Yes."
-    },
-    "CH05B-0209": {
-      "content": "She must have known."
-    },
-    "CH05B-0210": {
-      "content": "At least partly."
-    },
-    "CH05B-0211": {
-      "content": "Because it was never as simple as keeping you around."
-    },
-    "CH05B-0212": {
-      "content": "I do not know."
-    },
-    "CH05B-0213": {
-      "content": "But if she had not done it,"
-    },
-    "CH05B-0214": {
-      "content": "the person I am now would never know what she lost."
-    },
-    "CH05B-0215": {
-      "content": "She said"
-    },
-    "CH05B-0216": {
-      "content": "that during the sixth cycle,"
-    },
-    "CH05B-0217": {
-      "content": "she realized that no matter what she did,"
-    },
-    "CH05B-0218": {
-      "content": "she would forget."
-    },
-    "CH05B-0219": {
-      "content": "So"
-    },
-    "CH05B-0220": {
-      "content": "she submitted an anomalous data packet under her own navigation-continuity signature."
-    },
-    "CH05B-0221": {
-      "content": "The record said:"
-    },
-    "CH05B-0222": {
-      "content": "“Transfer key memory anchors to external index. Permit return during next cycle.”"
-    },
-    "CH05B-0223": {
-      "content": "So"
-    },
-    "CH05B-0224": {
-      "content": "she did not create you."
-    },
-    "CH05B-0225": {
-      "content": "She only put the Observer-01 key in your hand"
-    },
-    "CH05B-0226": {
-      "content": "and asked you to hold what she could not keep herself."
-    },
-    "CH05B-0228": {
-      "content": "I know."
-    },
-    "CH05B-0229": {
-      "content": "It is cruel."
-    },
-    "CH05B-0230": {
-      "content": "Because I suddenly realized"
-    },
-    "CH05B-0231": {
-      "content": "you may never truly have agreed to any of this."
-    },
-    "CH05B-0232": {
-      "choices": {
-        "CH05B-0232__0": "【If it is not too late, I choose to do it now.】",
-        "CH05B-0232__1": "【She should at least have asked me.】",
-        "CH05B-0232__2": "【But I still came back.】"
-      }
-    },
-    "CH05B-0233": {
-      "content": "Thank you."
-    },
-    "CH05B-0234": {
-      "content": "It came late. But at least this time, it was your choice."
-    },
-    "CH05B-0235": {
-      "content": "Yes."
-    },
-    "CH05B-0236": {
-      "content": "She should have asked you."
-    },
-    "CH05B-0237": {
-      "content": "Yeah."
-    },
-    "CH05B-0238": {
-      "content": "That may be the saddest part."
-    },
-    "CH05B-0240": {
-      "content": "At least I get to forget after a temporal reversion."
-    },
-    "CH05B-0241": {
-      "content": "You were forced to keep the index scars for me."
-    },
-    "CH05B-0242": {
-      "content": "22:14"
-    },
-    "CH05B-0243": {
-      "content": "She is disappearing."
-    },
-    "CH05B-0244": {
-      "content": "The sixth me."
-    },
-    "CH05B-0245": {
-      "content": "She said she had held on for too long."
-    },
-    "CH05B-0246": {
-      "content": "Her last words"
-    },
-    "CH05B-0247": {
-      "content": "were for you."
-    },
-    "CH05B-0248": {
-      "content": "She said:"
-    },
-    "CH05B-0249": {
-      "content": "“I am sorry.”"
-    },
-    "CH05B-0250": {
-      "content": "Then she added one more thing."
-    },
-    "CH05B-0251": {
-      "content": "“Thank you.”"
-    },
-    "CH05B-0252": {
-      "choices": {
-        "CH05B-0252__0": "【I do not blame her.】",
-        "CH05B-0252__1": "【That was selfish.】",
-        "CH05B-0252__2": "【I do not know what to say.】"
-      }
-    },
-    "CH05B-0253": {
-      "content": "If she could hear that,"
-    },
-    "CH05B-0254": {
-      "content": "I think she would cry."
-    },
-    "CH05B-0255": {
-      "content": "Yeah."
-    },
-    "CH05B-0256": {
-      "content": "She said the same thing about herself."
-    },
-    "CH05B-0257": {
-      "content": "You do not have to say anything."
-    },
-    "CH05B-0258": {
-      "content": "I sat in silence for a long time when I reached this part too."
-    },
-    "CH05B-0259": {
-      "content": "I asked the echo why she had done it."
-    },
-    "CH05B-0260": {
-      "content": "It immediately played the answer she had prepared:"
-    },
-    "CH05B-0261": {
-      "content": "“Because making someone remember you forever”"
-    },
-    "CH05B-0262": {
-      "content": "“is actually a terribly selfish thing to do.”"
-    },
-    "CH05B-0263": {
-      "content": "She also said:"
-    },
-    "CH05B-0264": {
-      "content": "“I do not know whether they ever had a chance to refuse.”"
-    },
-    "CH05B-0265": {
-      "content": "“I do not know whether they will hate me when they wake up.”"
-    },
-    "CH05B-0266": {
-      "content": "“But I was scared.”"
-    },
-    "CH05B-0267": {
-      "content": "“Scared that when I woke up next time,”"
-    },
-    "CH05B-0268": {
-      "content": "“I would not even remember that I had tried.”"
-    },
-    "CH05B-0269": {
-      "content": "Then she looked at me,"
-    },
-    "CH05B-0270": {
-      "content": "like she was looking at a version of herself that had not broken completely yet."
-    },
-    "CH05B-0271": {
-      "content": "And at the end, she said:"
-    },
-    "CH05B-0272": {
-      "content": "“Do not leave Observer-01 trapped there any longer.”"
-    },
-    "CH05B-0273": {
-      "content": "Then she vanished."
-    },
-    "CH05B-0274": {
-      "content": "Late night, 02:27"
-    },
-    "CH05B-0275": {
-      "content": "Final archive received"
-    },
-    "CH05B-0276": {
-      "content": "SEVENTH_REBOOT||Complete primary loops: 6\nCurrent loop: 7\nAccumulated phase residual across six primary loops: 6412 state-difference records\nFailure count: 6 (mission failures — not six complete hull losses)\nShared failure coordinates: planned route / Silent Sector S-7 phase-resonance zone\nShared root cause: hidden phase core resonating with local spacetime\nAccident variance: propulsion / power / environment / control / hull systems fail first in turn\nLoop 06: emergency course correction submitted\nLoop 06 failure cause: route deviation judged as mission failure by the Seventh Protocol; protective rollback overwrote the new route\nLoop 07 survival condition: divert around the resonance zone first, then terminate the Seventh Protocol and cancel phase-core rollback standby\nPublic registry device: Deep-Space Navigation Stability Core\nActual executive device: Local Phase-Anchor Core\nControl program: Seventh Protocol\nOperating condition: low-disturbance spacetime in the Silent Sector\nRollback reference: most recent stable phase anchor\nRollback scope: Aurora local mission state (objects outside the ship unaffected)\nExterior realtime: unaffected by rollback\nLink-bound memory: sealed when the channel closes\nOrdinary crew memory retention: none\nPre-mission crew awareness: none\nAnomalous residual subjects: Nova Arlen / Observer-01\nShutdown result: write new route into current mission state / release external memory index / cancel phase-core rollback standby\nSync effect: saved anchors returned to Nova; index unbound from the player\nMemory-return integrity: depends on memory-anchor completeness\nPost-shutdown navigator Nova Arlen survival stability: unknown\nCurrent status: planned-route accident countdown and protocol rollback countdown running together\nIf shutdown handshake incomplete: new route judged invalid; Seventh Protocol orders the phase core to restore planned-route state\nFinal shutdown conditions:\nCurrent navigator authorization: Nova Arlen\nEmergency course correction: divert around S-7 phase-resonance zone\nExternal memory index release: Observer-01\nNote: Observer-01 holds no protocol control authority and only participates as the handshake party for index release"
-    },
-    "CH05B-0277": {
-      "content": "I finally see it now."
-    },
-    "CH05B-0278": {
-      "content": "Those six weren't six unrelated accidents."
-    },
-    "CH05B-0279": {
-      "content": "They all begin on the same stretch of route."
-    },
-    "CH05B-0280": {
-      "content": "Every time, we fly into the same phase-resonance zone."
-    },
-    "CH05B-0281": {
-      "content": "The sixth me already tried to divert."
-    },
-    "CH05B-0282": {
-      "content": "But the protocol treated the off-course turn as mission failure and dragged the whole ship back to the old anchor."
-    },
-    "CH05B-0283": {
-      "content": "This time, shutting the protocol alone is not enough."
-    },
-    "CH05B-0284": {
-      "content": "I have to take Aurora off that route first."
-    },
-    "CH05B-0285": {
-      "choices": {
-        "CH05B-0285__0": "【So we divert first, then shut the protocol?】",
-        "CH05B-0285__1": "【What if we only divert?】",
-        "CH05B-0285__2": "【Are you really ready to leave?】"
-      }
-    },
-    "CH05B-0286": {
-      "content": "Yes."
-    },
-    "CH05B-0287": {
-      "content": "The new route has to stay, and the protocol can't pull us back again."
-    },
-    "CH05B-0288": {
-      "content": "It will judge the diversion as mission deviation."
-    },
-    "CH05B-0289": {
-      "content": "Then it will restart the rollback and send us back to the old route."
-    },
-    "CH05B-0290": {
-      "content": "No."
-    },
-    "CH05B-0291": {
-      "content": "But I know we can't take the old path again."
-    },
-    "CH05B-0292": {
-      "content": "Last line:\nRelease the external memory index, confirm the current navigator's emergency course correction, terminate the Seventh Protocol, and cancel phase-core rollback standby?"
-    },
-    "CH05B-0293": {
-      "choices": {
-        "CH05B-0293__0": "【Release the index, keep the new route, and shut the protocol.】",
-        "CH05B-0293__1": "【Refuse to release the external index.】"
-      }
-    },
-    "CH05B-0294": {
-      "content": "External memory index release confirmed\nCurrent navigator emergency course correction submitted\nNew route target: divert around S-7 phase-resonance zone\nCurrent navigator shutdown authorization submitted\nMemory-anchor return prepared"
-    },
-    "CH05B-0295": {
-      "content": "..."
-    },
-    "CH05B-0296": {
-      "content": "I know."
-    },
-    "CH05B-0297": {
-      "content": "You are not trying to trap me."
-    },
-    "CH05B-0298": {
-      "content": "You are just not ready to lose this connection."
-    },
-    "CH05B-0299": {
-      "content": "But if we keep waiting until we are ready,"
-    },
-    "CH05B-0300": {
-      "content": "there will be an eighth time, and a ninth, and a tenth."
-    },
-    "CH05B-0301": {
-      "content": "It will keep happening."
-    },
-    "CH05B-0302": {
-      "content": "What you are preserving is not tomorrow."
-    },
-    "CH05B-0303": {
-      "content": "It is only a today that can be saved over and over.\nFinale: The Seventh Reboot"
-    },
-    "FIN-0001": {
-      "content": "Finale: The Seventh Reboot"
     },
     "FIN-0002": {
       "content": "Time: Unconfirmed"
@@ -5350,11 +4447,16 @@
     "FIN-0006": {
       "content": "Emergency course correction: waiting to write into current mission state\nAfter Seventh Protocol shutdown, navigator Nova Arlen survival stability: unknown\nMemory-return integrity: depends on memory-anchor completeness\nMaintaining the protocol will restore the planned route and run another local rollback"
     },
+    "FIN-0007": {
+      "content": "..."
+    },
     "FIN-0008": {
       "content": "..."
     },
     "FIN-0009": {
-      "content": "So that is how it was."
+      "choices": {
+        "FIN-0009__0": "[I am here.]"
+      }
     },
     "FIN-0010": {
       "content": "I finally remember some of it.\nNot everything.\nBut the most important pieces are here."
@@ -5411,10 +4513,17 @@
       "content": "I remember the stars from the observatory.\nAnd I remember that I was not watching them alone."
     },
     "FIN-0028": {
-      "content": "And that drifting maintenance panel.\nA threat to the entire universe.\nIt still sounds ridiculous."
+      "choices": {
+        "FIN-0028__0": "[I will remember you.]",
+        "FIN-0028__1": "[At least you made it to tomorrow.]",
+        "FIN-0028__2": "[I am not ready to say goodbye.]"
+      }
     },
     "FIN-0029": {
       "content": "And the thing that technically qualified as steak.\nSome failures really are worth remembering."
+    },
+    "FIN-0030": {
+      "content": "Then I do not have to decide for you what to remember."
     },
     "FIN-0031": {
       "content": "The first cycle."
@@ -5431,14 +4540,24 @@
     "FIN-0035": {
       "content": "And you."
     },
+    "FIN-0036": {
+      "content": "But after this link closes"
+    },
     "FIN-0037": {
       "content": "So we have known each other for a long time."
     },
     "FIN-0038": {
       "content": "Longer than I ever imagined."
     },
+    "FIN-0039": {
+      "content": "What was the first thing I said to you?"
+    },
     "FIN-0040": {
-      "content": "I am sorry."
+      "choices": {
+        "FIN-0040__0": "[Did someone really receive this?]",
+        "FIN-0040__1": "[Are you real?]",
+        "FIN-0040__2": "[Do we know each other?]"
+      }
     },
     "FIN-0041": {
       "content": "For forgetting you six times."
@@ -5449,8 +4568,8 @@
     "FIN-0043": {
       "content": "More accurately,"
     },
-    "FIN-0044": {
-      "content": "we forgot each other six times."
+    "FIN-0045": {
+      "content": "It is okay."
     },
     "FIN-0046": {
       "content": "I did too.\nThe versions of me before the seventh\nnever remembered you completely either.\nAll that remained were fragments from the local temporal reversions."
@@ -5458,815 +4577,23 @@
     "FIN-0047": {
       "content": "Every small failure,"
     },
-    "FIN-0048": {
-      "content": "you"
-    },
-    "FIN-0049": {
-      "content": "left behind for me."
-    },
-    "FIN-0050": {
-      "content": "Every piece of me that remained,"
-    },
-    "FIN-0051": {
-      "content": "and every trace of every time you answered."
-    },
-    "FIN-0053": {
-      "content": "Now I finally understand"
-    },
-    "FIN-0054": {
-      "content": "why you felt familiar"
-    },
-    "FIN-0055": {
-      "content": "the first time I saw you."
-    },
-    "FIN-0056": {
-      "content": "Because"
-    },
-    "FIN-0057": {
-      "content": "it was not the first time."
-    },
-    "FIN-0058": {
-      "content": "Aurora — Observatory"
-    },
-    "FIN-0060": {
-      "content": "Image description: Starlight streams beyond the window"
-    },
-    "FIN-0062": {
-      "content": "It really is beautiful here."
-    },
-    "FIN-0063": {
-      "content": "There is something I lied to you about."
-    },
-    "FIN-0064": {
-      "content": "I always said I loved this place."
-    },
-    "FIN-0065": {
-      "content": "That was not really why."
-    },
-    "FIN-0066": {
-      "content": "I came here because I was lonely."
-    },
-    "FIN-0067": {
-      "content": "When people are lonely,"
-    },
-    "FIN-0068": {
-      "content": "they want to look at something larger than themselves."
-    },
-    "FIN-0069": {
-      "content": "It makes their own problems feel less important."
-    },
-    "FIN-0071": {
-      "content": "But later,"
-    },
-    "FIN-0072": {
-      "content": "I realized I was wrong."
-    },
-    "FIN-0073": {
-      "content": "Because no matter how vast the universe is,"
-    },
-    "FIN-0074": {
-      "content": "it will never answer you."
-    },
-    "FIN-0075": {
-      "content": "The thing that truly answers you"
-    },
-    "FIN-0076": {
-      "content": "is always another person."
-    },
-    "FIN-0078": {
-      "content": "I have a question."
-    },
-    "FIN-0079": {
-      "content": "If you had known how this would end,"
-    },
-    "FIN-0080": {
-      "content": "would you still have chosen to know me?"
-    },
-    "FIN-0081": {
-      "choices": {
-        "FIN-0081__0": "【Yes.】",
-        "FIN-0081__1": "【No.】",
-        "FIN-0081__2": "【I don't know.】"
-      }
-    },
-    "FIN-0082": {
-      "content": "..."
-    },
-    "FIN-0083": {
-      "content": "It is okay if you cannot answer."
-    },
-    "FIN-0084": {
-      "content": "It was never supposed to be an easy question."
-    },
-    "FIN-0085": {
-      "content": "The truth is,"
-    },
-    "FIN-0086": {
-      "content": "..."
-    },
-    "FIN-0087": {
-      "content": "I knew you would say that."
-    },
-    "FIN-0088": {
-      "content": "No."
-    },
-    "FIN-0089": {
-      "content": "I did not know."
-    },
-    "FIN-0090": {
-      "content": "I only hoped you would."
-    },
-    "FIN-0091": {
-      "content": "Thank you."
-    },
-    "FIN-0092": {
-      "content": "I will remember that for a long time."
-    },
-    "FIN-0093": {
-      "content": "..."
-    },
-    "FIN-0094": {
-      "content": "Yeah."
-    },
-    "FIN-0095": {
-      "content": "If knowing me only means losing me again and again,"
-    },
-    "FIN-0096": {
-      "content": "then choosing no"
-    },
-    "FIN-0097": {
-      "content": "may be the right answer."
-    },
-    "FIN-0098": {
-      "content": "I cannot ask you to go through it again."
-    },
-    "FIN-0099": {
-      "content": "And I cannot pretend this did not hurt you."
-    },
-    "FIN-0100": {
-      "content": "I am still a little sad, though."
-    },
-    "FIN-0101": {
-      "content": "Just a little."
-    },
-    "FIN-0102": {
-      "content": "Do not apologize."
-    },
-    "FIN-0103": {
-      "content": "You stayed with me all the way here."
-    },
-    "FIN-0104": {
-      "content": "That is enough."
-    },
-    "FIN-0105": {
-      "content": "Yeah."
-    },
-    "FIN-0106": {
-      "content": "That sounds like a real answer."
-    },
-    "FIN-0107": {
-      "content": "If you had said yes immediately,"
-    },
-    "FIN-0108": {
-      "content": "I would have been happy."
-    },
-    "FIN-0109": {
-      "content": "But I would also wonder whether you were comforting me again."
-    },
-    "FIN-0110": {
-      "content": "It is okay not to know."
-    },
-    "FIN-0111": {
-      "content": "Some answers"
-    },
-    "FIN-0112": {
-      "content": "should not be forced out of someone just before goodbye."
-    },
-    "FIN-0113": {
-      "content": "Whatever your answer,"
-    },
-    "FIN-0114": {
-      "content": "I will never regret knowing you."
-    },
-    "FIN-0115": {
-      "content": "Even if only a faint trace remains."
-    },
-    "FIN-0116": {
-      "content": "Even if one day I cannot clearly remember the designation Observer-01,"
-    },
-    "FIN-0117": {
-      "content": "I will still know"
-    },
-    "FIN-0118": {
-      "content": "that someone was there,"
-    },
-    "FIN-0119": {
-      "content": "and stayed with me all the way to the end."
-    },
-    "FIN-0120": {
-      "content": "Cycle termination progress: 72%"
-    },
-    "FIN-0121": {
-      "content": "Cycle termination progress: 81%"
-    },
-    "FIN-0122": {
-      "content": "Cycle termination progress: 93%"
-    },
-    "FIN-0123": {
-      "content": "We do not have much time."
-    },
-    "FIN-0124": {
-      "choices": {
-        "FIN-0124__0": "【What happens next?】",
-        "FIN-0124__1": "【What happens after the cycle ends?】",
-        "FIN-0124__2": "【Will you be okay?】"
-      }
-    },
-    "FIN-0125": {
-      "content": "The Seventh Protocol will shut down."
-    },
-    "FIN-0126": {
-      "content": "Aurora will follow the new route around the resonance zone and will not be pulled back to the old record point."
-    },
-    "FIN-0127": {
-      "content": "For me, I think it will feel like waking up."
-    },
-    "FIN-0128": {
-      "content": "Like life finally found the right track again."
-    },
-    "FIN-0129": {
-      "content": "Yeah."
-    },
-    "FIN-0130": {
-      "content": "At least, that is what the system predicts."
-    },
-    "FIN-0131": {
-      "content": "I will live."
-    },
-    "FIN-0132": {
-      "content": "But you will no longer be Observer-01."
-    },
-    "FIN-0133": {
-      "choices": {
-        "FIN-0133__0": "【Will I lose these memories?】",
-        "FIN-0133__1": "【Will I disappear?】",
-        "FIN-0133__2": "【So I am the price?】"
-      }
-    },
-    "FIN-0134": {
-      "content": "The Observer-01 external index will close."
-    },
-    "FIN-0135": {
-      "content": "Its anchors will be returned to me, and the index will detach from you."
-    },
-    "FIN-0136": {
-      "content": "Your world will not be reverted, but this link will no longer preserve a doorway back into these memories."
-    },
-    "FIN-0137": {
-      "content": "How much remains afterward will be up to the real you."
-    },
-    "FIN-0138": {
-      "content": "Not that kind of disappearance."
-    },
-    "FIN-0139": {
-      "content": "It is not death."
-    },
-    "FIN-0140": {
-      "content": "It is more like..."
-    },
-    "FIN-0141": {
-      "content": "you will wake up from this communication."
-    },
-    "FIN-0142": {
-      "content": "And forget that you were ever here."
-    },
-    "FIN-0143": {
-      "content": "No."
-    },
-    "FIN-0144": {
-      "content": "I do not want to call you a price."
-    },
-    "FIN-0145": {
-      "content": "You are not something I trade away so I can live."
-    },
-    "FIN-0146": {
-      "content": "You are the person who brought me this far."
-    },
-    "FIN-0147": {
-      "content": "And now you have to return all the memories to me."
-    },
-    "FIN-0148": {
-      "content": "The system says things on your side will return to normal after shutdown."
-    },
-    "FIN-0149": {
-      "content": "You will go on living."
-    },
-    "FIN-0150": {
-      "choices": {
-        "FIN-0150__0": "【As if none of this ever happened?】",
-        "FIN-0150__1": "【What about this connection?】",
-        "FIN-0150__2": "【I don't want that.】"
-      }
-    },
-    "FIN-0151": {
-      "content": "It may feel that way."
-    },
-    "FIN-0152": {
-      "content": "It will slip quietly out of your everyday life."
-    },
-    "FIN-0153": {
-      "content": "I do not want it either."
-    },
-    "FIN-0154": {
-      "content": "But we cannot keep mortgaging tomorrow to preserve today."
-    },
-    "FIN-0155": {
-      "content": "You just will not remember me."
-    },
-    "FIN-0156": {
-      "content": "You will not remember Aurora."
-    },
-    "FIN-0157": {
-      "content": "You will not remember the Seventh Reboot."
-    },
-    "FIN-0158": {
-      "content": "Or that you once carried all of this for me."
-    },
-    "FIN-0159": {
-      "choices": {
-        "FIN-0159__0": "【I will forget you?】",
-        "FIN-0159__1": "【What about you?】",
-        "FIN-0159__2": "【Maybe that is for the best.】"
-      }
-    },
-    "FIN-0160": {
-      "content": "Yeah."
-    },
-    "FIN-0161": {
-      "content": "That is what scares me most."
-    },
-    "FIN-0162": {
-      "content": "I always thought"
-    },
-    "FIN-0163": {
-      "content": "that as long as you remembered,"
-    },
-    "FIN-0164": {
-      "content": "I had not disappeared completely."
-    },
-    "FIN-0165": {
-      "content": "But now,"
-    },
-    "FIN-0166": {
-      "content": "you have to forget too."
-    },
-    "FIN-0167": {
-      "content": "I do not know."
-    },
-    "FIN-0168": {
-      "content": "I will get part of the memories back."
-    },
-    "FIN-0169": {
-      "content": "Maybe I will remember a few fragments."
-    },
-    "FIN-0170": {
-      "content": "N7."
-    },
-    "FIN-0171": {
-      "content": "Milk candy."
-    },
-    "FIN-0172": {
-      "content": "The white flower."
-    },
-    "FIN-0173": {
-      "content": "And someone who kept answering me."
-    },
-    "FIN-0174": {
-      "content": "But I do not know"
-    },
-    "FIN-0175": {
-      "content": "whether I will always remember Observer-01."
-    },
-    "FIN-0176": {
-      "content": "There you go again."
-    },
-    "FIN-0177": {
-      "content": "Always making painful things sound easy."
-    },
-    "FIN-0178": {
-      "content": "But this is not for the best."
-    },
-    "FIN-0179": {
-      "content": "If you forget me,"
-    },
-    "FIN-0180": {
-      "content": "then this time,"
-    },
-    "FIN-0181": {
-      "content": "I will be the one who remembers you."
-    },
-    "FIN-0182": {
-      "content": "If you forget me,"
-    },
-    "FIN-0183": {
-      "content": "then this time, I will remember you."
-    },
-    "FIN-0185": {
-      "content": "The truth is,"
-    },
-    "FIN-0186": {
-      "content": "there is something I never told you."
-    },
-    "FIN-0187": {
-      "content": "During the sixth cycle,"
-    },
-    "FIN-0188": {
-      "content": "when I made that wish,"
-    },
-    "FIN-0189": {
-      "content": "I did not say:"
-    },
-    "FIN-0190": {
-      "content": "“Let someone remember me.”"
-    },
-    "FIN-0191": {
-      "content": "What I truly wished was:"
-    },
-    "FIN-0192": {
-      "content": "“If I am destined to forget, please let the other person remember in my place.”"
-    },
-    "FIN-0194": {
-      "content": "But now,"
-    },
-    "FIN-0195": {
-      "content": "I cannot make you carry all of this alone anymore."
-    },
-    "FIN-0196": {
-      "choices": {
-        "FIN-0196__0": "【So you are taking these memories back?】",
-        "FIN-0196__1": "【What if I forget you?】",
-        "FIN-0196__2": "【This will hurt you.】"
-      }
-    },
-    "FIN-0197": {
-      "content": "Yeah."
-    },
-    "FIN-0198": {
-      "content": "Not all of them."
-    },
-    "FIN-0199": {
-      "content": "And maybe not perfectly."
-    },
-    "FIN-0200": {
-      "content": "But at least the most important ones."
-    },
-    "FIN-0201": {
-      "content": "N7."
-    },
-    "FIN-0202": {
-      "content": "Milk candy."
-    },
-    "FIN-0203": {
-      "content": "The white flower."
-    },
-    "FIN-0204": {
-      "content": "And the day you answered me."
-    },
-    "FIN-0205": {
-      "content": "I want to remember those myself."
-    },
-    "FIN-0206": {
-      "content": "Then forget."
-    },
-    "FIN-0207": {
-      "content": "That is hard to say."
-    },
-    "FIN-0208": {
-      "content": "But I cannot thank you"
-    },
-    "FIN-0209": {
-      "content": "while continuing to demand that you carry this for me."
-    },
-    "FIN-0210": {
-      "content": "If someone has to remember,"
-    },
-    "FIN-0211": {
-      "content": "this time,"
-    },
-    "FIN-0212": {
-      "content": "it should be me."
-    },
-    "FIN-0213": {
-      "content": "It will."
-    },
-    "FIN-0214": {
-      "content": "But they were my memories to begin with."
-    },
-    "FIN-0215": {
-      "content": "And it was my choice."
-    },
-    "FIN-0216": {
-      "content": "I cannot leave them with you forever"
-    },
-    "FIN-0217": {
-      "content": "just because they hurt."
-    },
-    "FIN-0218": {
-      "content": "So,"
-    },
-    "FIN-0219": {
-      "content": "thank you for remembering the days I had already forgotten."
-    },
-    "FIN-0220": {
-      "content": "And thank you for giving them back to me."
-    },
-    "FIN-0221": {
-      "content": "Cycle termination entering final stage"
-    },
-    "FIN-0222": {
-      "content": "Seventh Protocol shutdown sequence confirmed\nPhase-Anchor Core has stopped reading the old phase anchor"
-    },
-    "FIN-0223": {
-      "content": "Observer-01 memory index detaching"
-    },
-    "FIN-0224": {
-      "content": "Communication record falling out of synchronization"
-    },
-    "FIN-0225": {
-      "content": "Connection about to terminate"
-    },
-    "FIN-0226": {
-      "content": "Wait."
-    },
-    "FIN-0227": {
-      "content": "Answer me one last time."
-    },
-    "FIN-0228": {
-      "content": "When we first made a real connection,"
-    },
-    "FIN-0229": {
-      "content": "what was the first thing I said?"
-    },
-    "FIN-0230": {
-      "content": "Observer-01 memory-retention authority being revoked\nAvailable memory index: Unstable"
-    },
-    "FIN-0231": {
-      "choices": {
-        "FIN-0231__0": "【Did someone really get this?】",
-        "FIN-0231__1": "【I'm here.】",
-        "FIN-0231__2": "【I'm glad I met you.】",
-        "FIN-0231__3": "【I won't forget you.】"
-      }
-    },
-    "FIN-0232": {
-      "content": "..."
-    },
-    "FIN-0233": {
-      "content": "Yes."
-    },
-    "FIN-0234": {
-      "content": "That was it."
-    },
-    "FIN-0235": {
-      "content": "You still remember."
-    },
-    "FIN-0236": {
-      "content": "Even at the very end, you remember."
-    },
-    "FIN-0237": {
-      "content": "That is enough."
-    },
-    "FIN-0238": {
-      "content": "Really."
-    },
-    "FIN-0239": {
-      "content": "This is enough."
-    },
-    "FIN-0240": {
-      "content": "If you forget me after this,"
-    },
-    "FIN-0241": {
-      "content": "that is okay."
-    },
-    "FIN-0242": {
-      "content": "Before you forgot,"
-    },
-    "FIN-0243": {
-      "content": "you already gave the most important thing back to me."
-    },
-    "FIN-0244": {
-      "content": "This time,"
-    },
-    "FIN-0245": {
-      "content": "I will remember you."
-    },
-    "FIN-0246": {
-      "content": "That line matters too."
-    },
-    "FIN-0247": {
-      "content": "But it was not the first."
-    },
-    "FIN-0248": {
-      "content": "Back then, I did not know whether you were there."
-    },
-    "FIN-0249": {
-      "content": "I was only asking the universe"
-    },
-    "FIN-0250": {
-      "content": "whether anyone could hear me."
-    },
-    "FIN-0251": {
-      "content": "But “I'm here” really did become the line that caught me most often."
-    },
-    "FIN-0252": {
-      "content": "Maybe it sounds more like you than the right answer does."
-    },
-    "FIN-0253": {
-      "content": "That came later."
-    },
-    "FIN-0254": {
-      "content": "I remember."
-    },
-    "FIN-0255": {
-      "content": "I was trying so hard to sound calm."
-    },
-    "FIN-0256": {
-      "content": "Inside, I was ridiculously happy."
-    },
-    "FIN-0257": {
-      "content": "So it is not wrong."
-    },
-    "FIN-0258": {
-      "content": "Your memory just drifted a little."
-    },
-    "FIN-0259": {
-      "content": "Do not say that."
-    },
-    "FIN-0260": {
-      "content": "You know"
-    },
-    "FIN-0261": {
-      "content": "that this time,"
-    },
-    "FIN-0262": {
-      "content": "you really may forget me."
-    },
-    "FIN-0263": {
-      "content": "But I know you are not pretending to be brave."
-    },
-    "FIN-0264": {
-      "content": "You only wanted to leave me one last promise."
-    },
-    "FIN-0265": {
-      "content": "..."
-    },
-    "FIN-0266": {
-      "content": "Response timed out"
-    },
-    "FIN-0267": {
-      "content": "You cannot remember."
-    },
-    "FIN-0268": {
-      "content": "No."
-    },
-    "FIN-0269": {
-      "content": "It has already started taking the memory away."
-    },
-    "FIN-0270": {
-      "content": "External memory index detaching"
-    },
-    "FIN-0271": {
-      "content": "The first l▇▇... is already fading."
-    },
-    "FIN-0272": {
-      "content": "Then this time,"
-    },
-    "FIN-0273": {
-      "content": "I will remem▇"
-    },
-    "FIN-0274": {
-      "content": "Observer-01 memory-index deviation detected"
-    },
-    "FIN-0275": {
-      "content": "It is okay."
-    },
-    "FIN-0276": {
-      "content": "That was not the first line."
-    },
-    "FIN-0277": {
-      "content": "But the line you thought of is here with me too."
-    },
-    "FIN-0278": {
-      "content": "Every one of them matters."
-    },
-    "FIN-0279": {
-      "content": "It is just that the first line"
-    },
-    "FIN-0280": {
-      "content": "was “Did someone really get this?”"
-    },
-    "FIN-0281": {
-      "content": "Because that day,"
-    },
-    "FIN-0282": {
-      "content": "I thought I was speaking into a broken signal."
-    },
-    "FIN-0283": {
-      "content": "But you answered me."
-    },
-    "FIN-0284": {
-      "content": "Someone in the universe finally answered."
-    },
-    "FIN-0285": {
-      "content": "So,"
-    },
-    "FIN-0286": {
-      "content": "if you cannot remember,"
-    },
-    "FIN-0287": {
-      "content": "this time, I will."
-    },
-    "FIN-0288": {
-      "content": "Signal fading"
-    },
-    "FIN-0289": {
-      "content": "Text transmission unstable"
-    },
-    "FIN-0290": {
-      "content": "If someday..."
-    },
-    "FIN-0291": {
-      "content": "you really for▇▇ me..."
-    },
-    "FIN-0292": {
-      "content": "Packet loss"
-    },
-    "FIN-0293": {
-      "content": "Sentence incomplete"
-    },
-    "FIN-0294": {
-      "content": "it is o▇ay"
-    },
-    "FIN-0295": {
-      "content": "I will remem▇"
-    },
-    "FIN-0296": {
-      "content": "Signal continues to decay"
-    },
-    "FIN-0297": {
-      "content": "Connection about to terminate"
-    },
-    "FIN-0298": {
-      "choices": {
-        "FIN-0298__0": "【Nova】"
-      }
-    },
-    "FIN-0299": {
-      "content": "Yeah?"
-    },
-    "FIN-0300": {
-      "choices": {
-        "FIN-0300__0": "【I'm here.】"
-      }
-    },
-    "FIN-0301": {
-      "content": "I kn▇w"
-    },
-    "FIN-0302": {
-      "content": "I always kn▇w"
-    },
-    "FIN-0303": {
-      "content": "So this time, it is my t▇▇"
-    },
-    "FIN-0304": {
-      "content": "I'm he▇"
-    },
-    "FIN-0305": {
-      "content": "Goodnight, Obs▇▇ver-01"
-    },
-    "FIN-0306": {
-      "content": "Communication synchronization disconnected"
-    },
-    "FIN-0307": {
-      "content": "Observer-01 memory-retention authority revoked"
-    },
-    "FIN-0308": {
-      "content": "Emergency course correction confirmed\nPlanned-route lock released\nAurora is diverting around the S-7 phase-resonance zone\nSeventh Protocol shut down\nPhase core unanchored and reduced to ordinary navigation stability mode\nNew route status: stable\nOriginal shipboard communication record for this cycle: unrecoverable"
-    },
     "END-T-0001": {
       "content": "True Ending: The Seventh Reboot"
+    },
+    "END-T-0002": {
+      "content": "Observer-01"
     },
     "END-T-0003": {
       "content": "The original onboard communication record was closed with the protocol.\nSave a commemorative archive on the player's side?"
     },
     "END-T-0004": {
-      "choices": {
-        "END-T-0004__0": "【Save a player-side commemorative archive.】",
-        "END-T-0004__1": "【Return to main menu.】"
-      }
+      "content": "But I know who answered me."
     },
     "END-T-0005": {
       "content": "Player-side commemorative archive saved"
+    },
+    "END-N-0001": {
+      "content": "The external link is closing."
     },
     "END-N-0002": {
       "content": "Final authorization confirmation"
@@ -6282,24 +4609,6 @@
     },
     "END-N-0006": {
       "content": "Seventh Protocol terminated\nPhase-Anchor Core released its anchor and reverted to ordinary navigation-stabilization mode"
-    },
-    "END-N-0007": {
-      "content": "Emergency course correction confirmed\nAurora is diverting around the S-7 phase-resonance zone\nNew route status: stable"
-    },
-    "END-N-0009": {
-      "content": "Normal Ending: Beyond the Cycle"
-    },
-    "END-N-0010": {
-      "content": "Associated-memory synchronization incomplete\nRead the most recent anchor archive?"
-    },
-    "END-N-0011": {
-      "choices": {
-        "END-N-0011__0": "【Read the most recent anchor archive.】",
-        "END-N-0011__1": "【Return to main menu.】"
-      }
-    },
-    "END-N-0012": {
-      "content": "Most Recent Anchor Archive||Recoverable contents: First line / N7 / Milk candy / White flower\nIntegrity: Insufficient\nNote: Confirms that an important communication once occurred. Complete dialogue cannot be restored."
     },
     "END-B-0002": {
       "content": "Seventh Protocol shutdown requires current-navigator authorization and external-index release together\nObserver-01 holds no protocol control authority\nEmergency course correction was submitted, but no stable mission state was written\nWhile the external index remains sealed, shutdown cannot proceed\nIncomplete result: the diversion is judged mission deviation, and the planned-route state will be restored"
@@ -6332,18 +4641,13 @@
       "content": "What did you do?"
     },
     "END-B-0012": {
-      "choices": {
-        "END-B-0012__0": "【I only wanted you to survive.】"
-      }
+      "content": "LIVE-07 not found."
     },
     "END-B-0013": {
       "content": "..."
     },
     "END-B-0014": {
       "content": "I know."
-    },
-    "END-B-0015": {
-      "content": "You know you never controlled the Seventh Protocol."
     },
     "END-B-0016": {
       "content": "And you never received any authority."
@@ -6366,58 +4670,11 @@
     "END-B-0022": {
       "content": "You were afraid of making the wrong choice."
     },
-    "END-B-0023": {
-      "content": "Afraid that after the protocol shut down,"
-    },
-    "END-B-0024": {
-      "content": "I really would not survive."
-    },
-    "END-B-0025": {
-      "choices": {
-        "END-B-0025__0": "【I cannot take that risk.】"
-      }
-    },
     "END-B-0026": {
       "content": "But then,"
     },
     "END-B-0027": {
       "content": "I'm just a fragment that couldn't divert in time."
-    },
-    "END-B-0028": {
-      "content": "Maybe that's me. Maybe that's this cycle."
-    },
-    "END-B-0029": {
-      "content": "It is a version of me that keeps waking up, keeps forgetting, and keeps walking toward the same ending of the same day."
-    },
-    "END-B-0030": {
-      "content": "Phase-Anchor Core reversion countdown initiated"
-    },
-    "END-B-0031": {
-      "content": "If you truly remember me,"
-    },
-    "END-B-0032": {
-      "content": "then you should know"
-    },
-    "END-B-0033": {
-      "content": "I do not want to live forever inside today."
-    },
-    "END-B-0034": {
-      "content": "I want to live long enough to see tomorrow."
-    },
-    "END-B-0035": {
-      "content": "Countdown reached zero"
-    },
-    "END-B-0037": {
-      "content": "22:47"
-    },
-    "END-B-0038": {
-      "content": "【LOCAL PHASE-ANCHOR CORE ACTIVATED】\n【EIGHTH REBOOT / LOCAL TEMPORAL REVERSION INITIATED】"
-    },
-    "END-B-0039": {
-      "content": "[OBSERVER-01]\nREBOOT · Next access number: 08\nLINK · Current communications and mission state cleared"
-    },
-    "END-B-0040": {
-      "content": "SEVENTH REBOOT → EIGHTH REBOOT"
     }
   }
 }

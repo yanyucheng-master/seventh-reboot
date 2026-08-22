@@ -43,20 +43,24 @@ export type CommunicationLinkState =
 export type DeliveryEventKey =
   | 'prologue_first_reply'
   | 'chapter3_reconnect_reply'
+  | 'final_protocol_choice';
+
+export type LegacyDeliveryEventKey =
   | 'chapter5_explicit_failure'
   | 'finale_last_answer';
+
+export type PersistedDeliveryEventKey = DeliveryEventKey | LegacyDeliveryEventKey;
 
 export type DeliveryEventPhase = 'not_started' | 'in_progress' | 'completed';
 
 export type DeliveryEventReceipts = {
   prologueFirstReply: DeliveryEventPhase;
   chapter3ReconnectReply: DeliveryEventPhase;
-  chapter5ExplicitFailure: DeliveryEventPhase;
-  finaleLastAnswer: DeliveryEventPhase;
+  finalProtocolChoice: DeliveryEventPhase;
 };
 
 export type ChatDeliveryRuntime = {
-  deliveryStateVersion: 1;
+  deliveryStateVersion: 2;
   linkState: CommunicationLinkState;
   activeMessageId?: string;
   pendingAutoRetryIds: string[];
@@ -132,7 +136,10 @@ export type FinalFarewellVariant =
 export type FinalFarewellTone =
   | 'warm_acceptance'
   | 'painful_truth'
-  | 'uncertain_but_honest';
+  | 'uncertain_but_honest'
+  | 'promise'
+  | 'relief'
+  | 'honest';
 
 export type TimedResponse = 'calm_nova' | 'investigate_log';
 
@@ -140,9 +147,11 @@ export type TimedProof = 'n7_core_anchor';
 
 export type SpecialInteractionKind =
   | 'bulkhead-isolation'
-  | 'critical-log-password'
+  | 'sealed-record-order'
   | 'power-routing'
   | 'memory-seal'
+  | 'course-lock'
+  | 'protocol-cut'
   | 'memory-restore';
 
 export type BulkheadResult = 'safe' | 'injured' | 'fatal';
@@ -172,7 +181,7 @@ export type SpecialInteractionCompletion =
       routeKey: BulkheadResult;
       failureReason?: BulkheadFailureReason;
     }
-  | { kind: 'critical-log-password'; routeKey: 'success' | 'retry' }
+  | { kind: 'sealed-record-order'; routeKey: 'success' | 'retry' }
   | {
       kind: 'power-routing';
       routeKey: 'success' | 'fail' | 'fatal';
@@ -180,9 +189,17 @@ export type SpecialInteractionCompletion =
       failureReason?: PowerFailureReason;
     }
   | { kind: 'memory-seal'; routeKey: SealableMemoryAnchor; anchor: SealableMemoryAnchor }
+  | { kind: 'course-lock'; routeKey: 'success' | 'retry' | 'fatal' }
+  | { kind: 'protocol-cut'; routeKey: 'success' | 'fatal' }
   | { kind: 'memory-restore'; routeKey: SealableMemoryAnchor | 'none'; anchor?: SealableMemoryAnchor };
 
-export type FatalFailureCause = 'bulkhead_failure' | 'power_routing_failure' | 'protocol_rollback';
+export type FatalFailureCause =
+  | 'bulkhead_failure'
+  | 'power_routing_failure'
+  | 'course_lock_failure'
+  | 'protocol_cut_failure'
+  | 'protocol_refusal'
+  | 'protocol_rollback';
 
 export type CycleChoiceRecord = {
   nodeId: string;
@@ -215,7 +232,7 @@ export type CycleFreeInputRecord = {
 };
 
 export type CurrentCycleState = {
-  cycleStateVersion: 1;
+  cycleStateVersion: 2;
   cycleId: string;
   currentRebootNumber: number;
   completedNodeIds: string[];
@@ -232,6 +249,8 @@ export type CurrentCycleState = {
   currentCycleDeviationStarted: boolean;
   observerCandyEchoPlayed: boolean;
   previousCycleId?: string;
+  damagedSeventh: boolean;
+  lastStableCheckpoint?: StableCheckpointSnapshot;
 };
 
 export type FailedCycleRecord = {
@@ -247,6 +266,7 @@ export type FailedCycleRecord = {
   interactionResults: CycleInteractionRecord[];
   timedResults: CycleTimedResult[];
   freeInputs: CycleFreeInputRecord[];
+  lastStableCheckpoint?: StableCheckpointSnapshot;
 };
 
 export interface ArchiveEntry {
@@ -279,6 +299,10 @@ export type MessageType =
   | 'observer-echo'
   | 'ending-title'
   | 'title-state'
+  | 'route'
+  | 'state-write'
+  | 'dynamic-jump'
+  | 'menu'
   | 'draft'
   | 'glitch'
   | 'file'
@@ -318,6 +342,9 @@ export interface GameStats {
   endingsUnlocked: EndingId[];
   /** 玩家端纪念归档已确认保存；跨周目保留。 */
   commemorativeArchiveSaved: boolean;
+  relationshipStrain: number;
+  firstMessageCorrect: boolean;
+  n7ProofSucceeded: boolean;
   bulkheadResult?: BulkheadResult;
   bulkheadInjured: boolean;
   bulkheadFailureReason?: BulkheadFailureReason;
@@ -326,12 +353,21 @@ export interface GameStats {
   powerRoutingAttempt: PowerRoutingAttempt;
   powerFirstFailureReason?: PowerFailureReason;
   powerRoutingResult?: PowerRoutingResult;
-  nova06PowerOverrideUsed: boolean;
-  nova06PowerOverrideExpired: boolean;
+  nova06RollbackAuthorizationAvailable: boolean;
+  nova06RollbackAuthorizationUsed: boolean;
+  aiEmergencyRollbackExecuted: boolean;
+  nova06RecordingDamaged: boolean;
+  damagedSeventh: boolean;
+  binaryScarUI: boolean;
+  reboot08FallbackUsed: boolean;
+  courseLockCompleted: boolean;
+  protocolCutCompleted: boolean;
+  gravityArrayDegraded: boolean;
   temporaryAnchorSealed?: SealableMemoryAnchor;
   temporaryAnchorRestored: boolean;
   memoryRestoreResult?: SealableMemoryAnchor | 'none';
   earlyFailureCause?: FatalFailureCause;
+  fatalSourceNodeId?: string;
   pendingReboot08: boolean;
   fatalEndingTriggered: boolean;
   fatalRebootCount: number;
@@ -396,7 +432,7 @@ export type DisplayMessage = {
   committedOrder?: number;
   deliverySequence?: number;
   deliveryState?: OutgoingMessageDeliveryState;
-  scriptedDeliveryEvent?: DeliveryEventKey;
+  scriptedDeliveryEvent?: PersistedDeliveryEventKey;
   retryCount?: number;
   autoRetry?: boolean;
   allowFail?: boolean;
@@ -405,6 +441,17 @@ export type DisplayMessage = {
   deliveryLatencyMs?: number;
   deliveryLabelVisible?: boolean;
   reordered?: boolean;
+};
+
+export type StableCheckpointSnapshot = {
+  nodeId: string;
+  capturedAt: number;
+  stats: GameStats;
+  messages: DisplayMessage[];
+  contactStage: ContactStage;
+  avatarState: NovaAvatarStoryState;
+  deliveryRuntime: ChatDeliveryRuntime;
+  cycleState: Omit<CurrentCycleState, 'lastStableCheckpoint'>;
 };
 
 export interface SaveData {
@@ -421,8 +468,8 @@ export interface SaveData {
   /** 内部剧情内容版本；玩家可见版本仍保持 V1.0 */
   storyContentVersion?: string;
   /** 内部存档结构版本；与玩家可见版本号无关。 */
-  saveStateVersion?: 4;
-  deliveryStateVersion?: 1;
+  saveStateVersion?: 5;
+  deliveryStateVersion?: 2;
   /** @deprecated 旧版存档字段，仅用于兼容 */
   currentNodeId?: string;
 }

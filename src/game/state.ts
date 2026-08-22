@@ -1,29 +1,9 @@
 import type { Choice } from './story';
 import { determineEnding } from './endings';
-import type { FinalFarewellVariant, GameStats } from './types';
-
-const FINAL_MEMORY_VARIANT_BY_CHOICE_ID: Record<string, FinalFarewellVariant> = {
-  'FIN-0231__0': 'remembered_until_end',
-  'FIN-0231__1': 'remembered_wrong',
-  'FIN-0231__2': 'remembered_wrong',
-  'FIN-0231__3': 'remembered_wrong',
-};
+import type { GameStats } from './types';
 
 export function clampStat(value: number): number {
   return Math.max(0, Math.min(6, value));
-}
-
-export function getFinalFarewellVariant(choice: Choice): FinalFarewellVariant | undefined {
-  if (choice.id && FINAL_MEMORY_VARIANT_BY_CHOICE_ID[choice.id]) {
-    return FINAL_MEMORY_VARIANT_BY_CHOICE_ID[choice.id];
-  }
-
-  // Fallback for callers that still provide a choice object without its stable ID.
-  if (choice.nextId === 'FIN-0232') return 'remembered_until_end';
-  if (choice.nextId === 'FIN-0246' || choice.nextId === 'FIN-0253' || choice.nextId === 'FIN-0259') {
-    return 'remembered_wrong';
-  }
-  return undefined;
 }
 
 function cloneStats(current: GameStats): GameStats {
@@ -43,17 +23,18 @@ export function applyStoryChoiceEffects(current: GameStats, choice: Choice): Gam
     next.trust = clampStat(next.trust + (choice.trustDelta ?? 0));
     next.memory = clampStat(next.memory + (choice.memoryDelta ?? 0));
     next.attachment = clampStat(next.attachment + (choice.attachmentDelta ?? 0));
+    next.relationshipStrain = clampStat(next.relationshipStrain + (choice.relationshipStrainDelta ?? 0));
   }
 
   if (choice.acceptFarewell !== undefined) {
     next.acceptFarewell = choice.acceptFarewell;
-  } else if (choice.nextId === 'CH05B-0294') {
+  } else if (choice.nextId === 'CH05B-0092') {
     next.acceptFarewell = true;
   }
 
   if (choice.finalChoice) {
     next.finalChoice = choice.finalChoice;
-  } else if (choice.nextId === 'CH05B-0294') {
+  } else if (choice.nextId === 'CH05B-0092') {
     next.finalChoice = 'accept_farewell';
   } else if (choice.nextId === 'END-B-0001') {
     next.finalChoice = 'refuse_farewell';
@@ -61,14 +42,14 @@ export function applyStoryChoiceEffects(current: GameStats, choice: Choice): Gam
 
   if (next.finalChoice === 'refuse_farewell') next.acceptFarewell = false;
 
-  const finalFarewellVariant = getFinalFarewellVariant(choice);
-  if (finalFarewellVariant) next.finalFarewellVariant = finalFarewellVariant;
   if (choice.finalFarewellTone) next.finalFarewellTone = choice.finalFarewellTone;
   if (choice.timedResponse) next.timedResponse = choice.timedResponse;
   if (choice.timedProof) next.timedProof = choice.timedProof;
+  if (choice.n7ProofSucceeded !== undefined) next.n7ProofSucceeded = choice.n7ProofSucceeded;
+  if (choice.firstMessageCorrect !== undefined) next.firstMessageCorrect = choice.firstMessageCorrect;
 
   const isFinalDecision =
-    choice.nextId === 'CH05B-0294' ||
+    choice.nextId === 'CH05B-0092' ||
     choice.nextId === 'END-B-0001' ||
     choice.acceptFarewell !== undefined ||
     choice.finalChoice !== undefined;
@@ -79,11 +60,17 @@ export function applyStoryChoiceEffects(current: GameStats, choice: Choice): Gam
 
 export function applyTimedChoiceTimeoutEffects(current: GameStats, nodeId: string): GameStats {
   const next = cloneStats(current);
-  if (nodeId === 'FIN-0231') next.finalFarewellVariant = 'forgetting_started';
+  if (nodeId === 'FIN-0040') next.firstMessageCorrect = false;
   return next;
 }
 
 export function applyPersistentStoryNodeEffects(current: GameStats, nodeId: string): GameStats {
+  if (nodeId === 'CH05B-GRAV-0001' && !current.gravityArrayDegraded) {
+    return { ...current, gravityArrayDegraded: true };
+  }
+  if ((nodeId === 'FIN-0001' || nodeId === 'END-B-0001') && current.gravityArrayDegraded) {
+    return { ...current, gravityArrayDegraded: false };
+  }
   if (nodeId === 'END-T-0005' && !current.commemorativeArchiveSaved) {
     return { ...current, commemorativeArchiveSaved: true };
   }

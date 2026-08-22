@@ -64,22 +64,8 @@ export const DELIVERY_EVENT_SPECS: Record<DeliveryEventKey, DeliverySpec> = {
     compressedTargetMs: 500,
     finalLinkState: 'restoring',
   },
-  chapter5_explicit_failure: {
-    key: 'chapter5_explicit_failure',
-    phases: [
-      { atMs: 0, state: 'queued', linkState: 'unstable' },
-      { atMs: 80, state: 'sending', linkState: 'unstable' },
-      { atMs: 900, state: 'delayed', linkState: 'unstable', showLabel: true },
-      { atMs: 4200, state: 'failed', linkState: 'interrupted', showLabel: true },
-      { atMs: 5100, state: 'sending', linkState: 'restoring', retryCount: 1, showLabel: true },
-      { atMs: 5900, state: 'delivered', linkState: 'stable', retryCount: 1 },
-    ],
-    completeAtMs: 5900,
-    compressedTargetMs: 1000,
-    finalLinkState: 'stable',
-  },
-  finale_last_answer: {
-    key: 'finale_last_answer',
+  final_protocol_choice: {
+    key: 'final_protocol_choice',
     phases: [
       { atMs: 0, state: 'queued', linkState: 'unstable' },
       { atMs: 80, state: 'sending', linkState: 'unstable' },
@@ -94,18 +80,6 @@ export const DELIVERY_EVENT_SPECS: Record<DeliveryEventKey, DeliverySpec> = {
   },
 };
 
-export const RESTORED_FAILURE_RETRY_SPEC: DeliverySpec = {
-  key: 'chapter5_explicit_failure',
-  phases: [
-    { atMs: 0, state: 'failed', linkState: 'interrupted', showLabel: true },
-    { atMs: 500, state: 'sending', linkState: 'restoring', retryCount: 1, showLabel: true },
-    { atMs: 1300, state: 'delivered', linkState: 'stable', retryCount: 1 },
-  ],
-  completeAtMs: 1300,
-  compressedTargetMs: 800,
-  finalLinkState: 'stable',
-};
-
 const NODE_LINK_STATE_EFFECTS: Record<string, CommunicationLinkState> = {
   'CH03-0163': 'interrupted',
   'CH03-0164': 'interrupted',
@@ -113,14 +87,13 @@ const NODE_LINK_STATE_EFFECTS: Record<string, CommunicationLinkState> = {
   'CH03-0166': 'interrupted',
   'CH03-0167': 'restoring',
   'CH03-0174': 'stable',
-  'CH05A-0276': 'interrupted',
-  'FIN-0223': 'unstable',
-  'FIN-0224': 'unstable',
-  'FIN-0225': 'unstable',
-  'FIN-0232': 'unstable',
-  'FIN-0246': 'unstable',
-  'FIN-0253': 'unstable',
-  'FIN-0259': 'unstable',
+  'CH05B-0091': 'unstable',
+  'CH05B-0104': 'unstable',
+  'CH05B-0105': 'unstable',
+  'CH05B-0106': 'unstable',
+  'CH05B-0107': 'interrupted',
+  'FIN-0003': 'restoring',
+  'FIN-0004': 'unstable',
 };
 
 function stableHash(value: string): number {

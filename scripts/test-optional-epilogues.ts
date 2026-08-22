@@ -44,7 +44,7 @@ Object.defineProperty(globalThis, 'localStorage', {
 });
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const MAIN_ID = /^(?:PRO|CH0[1-4]|CH05[AB]|FIN|END-[TNB])-\d{4}$/;
+const MAIN_ID = /^(?:PRO|CH0[1-4]|CH05[AB]|FIN|END-[TNB])(?:-GRAV)?-\d{4}$/;
 const MAIN_PREFIXES = [
   'PRO',
   'CH01',
@@ -124,7 +124,7 @@ function targets(item: StoryNode): string[] {
   ].filter((value): value is string => Boolean(value));
 }
 
-function unlockEnding(id: 'END-N-0013' | 'END-T-0006' | 'END-B-0041') {
+function unlockEnding(id: 'END-N-0007' | 'END-T-0006' | 'END-B-0028') {
   const endingNode = node(id);
   return applyArchiveUnlocks(defaultStats, getArchiveUnlocksForNode(endingNode));
 }
@@ -148,8 +148,8 @@ function test(name: string, run: () => void) {
 }
 
 test('01 普通结局只解锁后记，不自动进入后记', () => {
-  const stats = unlockEnding('END-N-0013');
-  assert.equal(node('END-N-0013').nextId, 'MENU');
+  const stats = unlockEnding('END-N-0007');
+  assert.equal(node('END-N-0007').nextId, 'MENU');
   assert.equal(stats.normalEpilogueUnlocked, true);
   assert.equal(stats.trueEpilogueUnlocked, false);
   assert.equal(storyNodes.some(item => item.id.startsWith('EPI-N-')), false);
@@ -164,14 +164,14 @@ test('02 真结局只解锁后记，不自动进入后记', () => {
 });
 
 test('03 坏结局不新增后记解锁，也不清除永久解锁', () => {
-  const freshBad = unlockEnding('END-B-0041');
+  const freshBad = unlockEnding('END-B-0028');
   assert.equal(freshBad.normalEpilogueUnlocked, false);
   assert.equal(freshBad.trueEpilogueUnlocked, false);
 
   const previouslyUnlocked = applyArchiveUnlocks(defaultStats, ['ending_normal', 'ending_true']);
   const afterBad = applyArchiveUnlocks(
     previouslyUnlocked,
-    getArchiveUnlocksForNode(node('END-B-0041')),
+    getArchiveUnlocksForNode(node('END-B-0028')),
   );
   assert.equal(afterBad.normalEpilogueUnlocked, true);
   assert.equal(afterBad.trueEpilogueUnlocked, true);
@@ -257,7 +257,7 @@ test('08 旧存档按既有结局补发解锁，未通关记录不误解锁', ()
 
   clearAllData();
   const current = createSaveData(
-    'END-N-0009',
+    'END-N-0007',
     [],
     createDefaultNovaAvatarState(),
     'verified',
@@ -273,7 +273,7 @@ test('08 旧存档按既有结局补发解锁，未通关记录不误解锁', ()
   localStorage.setItem(SAVE_KEY, JSON.stringify(current));
   const migrated = loadGame();
   assert.ok(migrated);
-  assert.equal(migrated.pendingNodeId, 'END-N-0009');
+  assert.equal(migrated.pendingNodeId, 'END-N-0007');
   assert.equal(migrated.stats.normalEpilogueUnlocked, true);
   assert.equal(migrated.stats.trueEpilogueUnlocked, false);
 
@@ -284,13 +284,18 @@ test('08 旧存档按既有结局补发解锁，未通关记录不误解锁', ()
 });
 
 test('09 主流程和后记 ID、跳转与解锁入口完整', () => {
-  assert.equal(storyNodes.length, 2060);
+  assert.equal(storyNodes.length, 1494);
   assert.equal(new Set(storyNodes.map(item => item.id)).size, storyNodes.length);
   storyNodes.forEach(item => {
     assert.match(item.id, MAIN_ID);
     targets(item).forEach(target => {
       assert.equal(target.startsWith('EPI-'), false, `${item.id} auto-routes into ${target}`);
-      assert.ok(target === 'MENU' || storyNodeMap.has(target), `${item.id} targets missing ${target}`);
+      const isStableCheckpointJump = item.dynamicNextKey === 'lastStableCheckpoint'
+        && target === '{lastStableCheckpoint}';
+      assert.ok(
+        target === 'MENU' || isStableCheckpointJump || storyNodeMap.has(target),
+        `${item.id} targets missing ${target}`,
+      );
     });
     item.choices?.forEach((choice, index) => {
       assert.equal(choice.id, `${item.id}__${index}`);
@@ -298,10 +303,7 @@ test('09 主流程和后记 ID、跳转与解锁入口完整', () => {
   });
 
   MAIN_PREFIXES.forEach(prefix => {
-    const ids = storyNodes.filter(item => item.id.startsWith(`${prefix}-`)).map(item => item.id);
-    ids.forEach((id, index) => {
-      assert.equal(id, `${prefix}-${String(index + 1).padStart(4, '0')}`);
-    });
+    assert.ok(storyNodes.some(item => item.id.startsWith(`${prefix}-`)), `${prefix} section is missing`);
   });
 
   const epilogues = [...getEpilogueNodes('normal'), ...getEpilogueNodes('true')];

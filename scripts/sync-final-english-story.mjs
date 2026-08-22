@@ -1,174 +1,167 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { storyNodeMap } from '../src/game/story.ts';
+import { storyNodes } from '../src/game/story.ts';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const enPath = path.join(root, 'src/i18n/locales/en-US/story.json');
 const en = JSON.parse(fs.readFileSync(enPath, 'utf8'));
 
-const content = {
-  'PRO-0001': '[OBSERVER-01]\nPROTOCOL · Seventh Protocol residual link detected\nREBOOT · Access number: {currentRebootNumber:02}\nLINK · Communications unstable',
-  'PRO-0115': 'Wait.',
-  'PRO-0116': 'This line is changing bands on its own.',
-  'PRO-0117': 'All I can hear are three layers of noise on top of each other.',
-  'PRO-0118': 'Live carrier locked automatically.',
-  'PRO-0119': '...It was almost checking whether you had answered.',
-  'CH03-0137': 'Observation-room isolation door locked abnormally.',
-  'CH03-0138': 'Wait.',
-  'CH03-0139': "The door has trapped me in the middle transition chamber.",
-  'CH03-0140': 'The system says there are two life signs inside, so it refuses automatic equalization.',
-  'CH03-0141': [
-    'OBSERVATION-ROOM ISOLATION / MANUAL EQUALIZATION||OBSERVATORY · 71 kPa',
-    'TRANSITION CHAMBER · 84 kPa / LIVE-07 located here',
-    'MAIN CORRIDOR · 101 kPa',
-    'ANOMALY · Duplicate life signal detected in observatory',
-    'SAFETY · Isolate the anomalous chamber; equalize the occupied chamber with the main corridor',
-    'WARNING · Purging the transition chamber will directly endanger LIVE-07',
+// These are the entries introduced by the current V1.0 topology that have no
+// verified translation in the previous English locale. Existing translations
+// are retained only when their stable node or choice ID still exists.
+const contentPatches = {
+  'CH03-GRAV-0001': 'Habitat gravity dropped to 0.76g today.',
+  'CH03-GRAV-0002': 'The plate is a little lighter to carry.',
+  'CH03-GRAV-0003': 'This thing is not any easier to chew, though.',
+  'CH04-0144': 'But I cannot make out a single one.',
+  'CH04-0202': 'Then that means',
+  'CH04-0205': 'the one being forgotten',
+  'CH05A-0068': 'I thought so too.',
+  'CH05A-0152': 'This is a recording.',
+  'CH05A-0176': '"If you are seeing this, the sixth run failed too."',
+  'CH05A-0211': 'It can calculate, but it has no reason to doubt the original course.',
+  'CH05A-0228': 'When you are afraid and alone, it is easy to pretend you did not see.',
+  'CH05B-GRAV-0001': [
+    'ZONED GRAVITY ARRAY DEGRADING',
+    'Habitat: 0.78g -> 0.46g',
+    'Maintenance deck: 0.18g',
+    'Nonessential sections: OFFLINE',
+    'Pressure / air circulation: independent loops holding',
   ].join('\n'),
-  'CH03-0142': "I'm in the middle.",
-  'CH03-0143': 'Seal the observatory behind me, then connect my side to the main corridor.',
-  'CH03-0144': 'Observation isolation and manual equalization',
-  'CH03-0145': 'Observatory isolated\nTransition chamber equalized with main corridor',
-  'CH03-0146': 'The door is open.',
-  'CH03-0147': 'That other "me" was still standing inside.',
-  'CH03-0148': 'Observatory isolated\nEqualization delayed\nLIVE-07 brief hypoxia detected',
-  'CH03-0149': 'Cough...',
-  'CH03-0150': "I'm out.",
-  'CH03-0151': "Don't hang up. I can still see her standing in there.",
-  'CH03-0152': 'Transition-chamber pressure falling rapidly.',
-  'CH03-0153': 'Not that side.',
-  'CH03-0154': "I'm in the mid-",
-  'CH03-0155': 'LIVE-07 LIFE SIGNAL LOST',
-  'CH03-0156': 'Seventh Protocol has assumed observation-room and navigation authority.',
-  'CH03-0157': 'Early Termination: Seventh Mission Failed',
-  'CH03-0158': 'Aurora mission continuity: UNSUSTAINABLE',
-  'CH03-0159': 'Protective rollback request submitted.',
-  'CH03-0160': 'Current transmission records are being erased.',
-  'CH03-0161': 'TIME: UNCONFIRMED',
-  'CH03-0172': "I'm still a little short of breath.",
-  'CH03-0173': 'But much better than before.',
-  'CH05A-0011': 'There is another sealed layer beside the outer index.',
-  'CH05A-0012': 'It is marked "NOVA-06 / SEALED."',
-  'CH05A-0013': 'She left a note beside the verification field.',
-  'CH05A-0014': '"Current link number / external index number"',
-  'CH05A-0015': "Looks like this time, you have to enter it for both of us.",
-  'CH05A-0016': 'Joint authorization key',
-  'CH05A-0017': 'JOINT KEY REJECTED',
-  'CH05A-0018': 'It is not a riddle. Put 07 and 01 together in the order she left.',
-  'CH05A-0019': 'Both endpoint identities confirmed\nJoint key established\nNOVA-06 sealed record changed from read-only',
-  'CH05A-0020': '07 is the seventh link, and the version of me in this cycle.',
-  'CH05A-0021': '01 is what the system has always called you: Observer-01.',
-  'CH05A-0022': 'This seal was meant for the two of us to open together from the very beginning.',
-  'CH05A-0023': [
-    'NOVA-06 SEALED RECORD / INDEX HEADER||AUTHORIZATION · Current Nova outer authorization + Observer-01 index key',
-    'ACCESS · Read-only records and one-time emergency power authorization only',
-    'RESIDUAL · NOVA-06 is condition-triggered residue, not a live consciousness',
-    'RESTRICTION · No Seventh Protocol or phase-core control granted',
+  'CH05B-GRAV-0002': 'The deck just got lighter under my feet.',
+  'CH05B-GRAV-0003': 'The maintenance deck is down to 0.18g.',
+  'CH05B-GRAV-0004': 'Once I am in, I will have to move slowly using handrails and magnetic boots.',
+  'CH05B-0045': [
+    'SIXTH-RUN COURSE PACKAGE / VALIDATION RESULT||Detour target: avoid S-7 phase-resonance zone',
+    'Public navigation simulation: PASSED',
+    'Shipboard AI verification: PASSED',
+    'Protocol-layer response: mission deviation / rollback pending',
+    'Physical isolation point: PHASE-CORE BUS B',
+    'Note: write the new course first, then cut the protocol bus',
   ].join('\n'),
-  'CH05A-0069': 'Complete engineering record added to optional archive.',
-  'CH05A-0281': [
-    'NOVA-06 RESIDUAL TRIGGER RECORD||TYPE · Conditional instruction left by the sixth cycle / not a live consciousness',
-    'TRIGGER · Current Nova re-enters the observatory and rollback-core load crosses the preset threshold',
-    'SCOPE · Send sealed messages; briefly intervene once during the designated power incident',
-    'LIMIT · Cannot sustain control of the current cycle; cannot replace Observer-01 authorization; authority is revoked immediately after use',
+  'CH05B-0049': [
+    'EXTERNAL IDENTITY REGISTRY / CURRENT RUN||External Calls 01-06: no reply / no identity created',
+    'External Call 07: external-consciousness reply received',
+    'Identity created: after the first reply in this run\'s prologue',
+    'Identity name: Observer-01',
+    'Prior identities with this name: 0',
   ].join('\n'),
-  'CH05B-0011': 'But the observation room does not have enough main power.',
-  'CH05B-0012': 'Life support, communications, and the core read in the low-pressure passage all draw from the same bus.',
-  'CH05B-0013': "I'm giving you the temporary power window.",
-  'CH05B-0014': 'Keep me alive first, then keep communications and the scan above their safe lines.',
-  'CH05B-0015': 'The system will lock the submission. Check every branch minimum before you confirm.',
-  'CH05B-0016': [
-    'OBSERVATION EMERGENCY POWER WINDOW||STAGE A / LOW-PRESSURE TRANSIT · Life support must remain high; communications must not drop',
-    'STAGE B / RESIDUAL-CORE READ · Scan must enter its working range; life support and communications must remain above safe lines',
-    'BUS LIMIT · Each stage has a fixed power budget; current Nova cannot withdraw a confirmed submission',
-    'HISTORICAL AUTHORITY · One NOVA-06 emergency intervention signature detected',
-  ].join('\n'),
-  'CH05B-0017': 'Emergency power routing / first submission',
-  'CH05B-0018': 'Two-stage power route complete\nLife support, communications, and core read all remain safe',
-  'CH05B-0019': 'It is holding.',
-  'CH05B-0020': 'One try was enough. The emergency intervention authority was never invoked.',
-  'CH05B-0021': 'Power route crossed a safe minimum\nIncorrect route locked',
-  'CH05B-0022': "No. Life support is dropping.",
-  'CH05B-0023': 'EXPIRED NAVIGATION AUTHORITY DETECTED: NOVA-06',
-  'CH05B-0024': 'NOVA-06 briefly assumed power-bus control\nReverting most recent submission',
-  'CH05B-0025': 'NOVA-06 RESIDUAL INSTRUCTION: CAN ONLY ROLL BACK ONCE',
-  'CH05B-0026': 'Incorrect submission reverted\nOne-time intervention authority revoked\nFinal power window reopened',
-  'CH05B-0027': 'Who was that just now?',
-  'CH05B-0028': "Never mind. This time no one can undo it for us again.",
-  'CH05B-0029': 'Emergency power routing / final submission',
-  'CH05B-0030': 'Final power route complete\nLife support, communications, and core read all remain safe',
-  'CH05B-0031': 'It is holding this time.',
-  'CH05B-0032': 'She only undid our mistake once. You did everything after that.',
-  'CH05B-0033': 'FINAL POWER SUBMISSION LOCKED\nEMERGENCY INTERVENTION AUTHORITY: NONE',
-  'CH05B-0034': 'Life-support branch below minimum safe line\nObservation low-pressure door locked',
-  'CH05B-0035': 'No... This time no one took it back.',
-  'CH05B-0036': "Don't disconnect. I can still-",
-  'CH05B-0037': 'COMMUNICATION CARRIER INTERRUPTED',
-  'CH05B-0038': 'OBSERVATION ROOM LIVE-07: LIFE SIGNAL LOST',
-  'CH05B-0188': 'OBSERVER-01 INDEX CAPACITY INSUFFICIENT\nADDITIONAL SPACE REQUIRED\nEXTERNAL MEMORY INDEX: 99.97%',
-  'CH05B-0189': 'One more core scan still has to be written in.',
-  'CH05B-0190': 'We have to move one anchor into temporary storage first.',
-  'CH05B-0191': 'It will only go quiet for a while. It is not being deleted.',
-  'CH05B-0192': 'Whichever one you choose will not change where we can ultimately go.',
-  'CH05B-0193': 'Temporary memory capacity',
-  'CH05B-0194': 'Why does this picture make me want to laugh?',
-  'CH05B-0195': "But I can't remember the joke.",
-  'CH05B-0196': 'I know it should not have been there.',
-  'CH05B-0197': 'But I forgot why seeing it made me so happy.',
-  'CH05B-0198': 'Did we used to say something around this time?',
-  'CH05B-0199': 'Never mind. Maybe I forgot again.',
-  'CH05B-0200': 'The temporary location is recorded. Let us keep going.',
-  'FIN-0011': 'One temporarily sealed memory anchor detected.',
-  'FIN-0012': 'Wait. There is one more thing we left outside for a while.',
-  'FIN-0013': 'Let us bring it back first.',
-  'FIN-0014': 'Restore temporarily sealed anchor',
-  'FIN-0015': 'TEMPORARY ANCHOR RESTORED\nmaintenance_board',
-  'FIN-0016': 'Wait, I put those eyes on it myself?\nI actually scared myself from yesterday.',
-  'FIN-0017': 'TEMPORARY ANCHOR RESTORED\nwhite_flower',
-  'FIN-0018': 'I remember now.\nIt should not have survived, but it still bloomed.',
-  'FIN-0019': 'TEMPORARY ANCHOR RESTORED\ngoodnight',
-  'FIN-0020': 'So that was the phrase.\nNo wonder every time we disconnected, I felt as though something was still missing.',
-  'CH02-0242': 'Give one back to them.',
-  'CH05B-0153': 'There was one more line at the end of the record.',
-  'CH05B-0154': '“It can see every transmission, but not what you remember.”',
-  'END-B-0039': '[OBSERVER-01]\nREBOOT · Next access number: 08\nLINK · Current communications and mission state cleared',
-  'END-B-0040': 'SEVENTH REBOOT → EIGHTH REBOOT',
+  'CH05B-0084': 'Course intersects S-7 safety boundary\nFinal write not executed',
+  'CH05B-0105': 'The link is about to break.',
+  'FIN-0007': '...',
+  'FIN-0030': 'Then I do not have to decide for you what to remember.',
+  'FIN-0036': 'But after this link closes',
+  'FIN-0039': 'What was the first thing I said to you?',
+  'FIN-0045': 'It is okay.',
+  'END-T-0002': 'Observer-01',
+  'END-T-0004': 'But I know who answered me.',
+  'END-N-0001': 'The external link is closing.',
+  'END-B-0012': 'LIVE-07 not found.',
 };
 
-const choices = {
-  'CH05A-0068__0': '[I understand. Continue.]',
-  'CH05A-0068__1': '[Open the complete engineering record.]',
-  'CH05B-0137__0': '[I understand. Continue.]',
-  'CH05B-0137__1': '[Why did it have to be you?]',
+const choicePatches = {
+  'PRO-0128__2': '[I fear neither heaven nor earth.]',
+  'PRO-0128__3': '[Why stop halfway through?]',
+  'PRO-0152__3': '[Then you have found me now.]',
+  'CH01-0044__3': '[Alien monster!]',
+  'CH01-0009__4': '[Alien monster? Is it?]',
+  'CH01-0063__2': '[I will keep pretending I did not hear that.]',
+  'CH01-0115__3': '[I hate pets.]',
+  'CH02-0041__1': '[You just sleep too much.]',
+  'CH02-0110__3': '[It makes no difference to me.]',
+  'CH02-0160__2': '[Navigators do maintenance too?]',
+  'CH02-0222__2': '[Is your sleep really that bad?]',
+  'CH03-0009__2': '[That is strange.]',
+  'CH03-0232__2': '[I do not know.]',
+  'CH04-0071__1': '[I do not remember.]',
+  'CH04-0071__2': '[It was your cat.]',
+  'CH04-0109__2': '[What can I do?]',
+  'CH04-0147__0': '[Those are memories from the last few days?]',
+  'CH04-0147__1': '[Do you remember saying that?]',
+  'CH04-0188__2': '[I am here.]',
+  'CH05A-0067__0': '[Six files, so six loops?]',
+  'CH05A-0067__1': '[You wrote all of these?]',
+  'CH05A-0067__2': '[Why are two completely unreadable?]',
+  'CH05A-0076__3': '[Some of it is still unreadable.]',
+  'CH05A-0161__0': '[Who is she?]',
+  'CH05A-0161__1': '[What happened in the recording?]',
+  'CH05A-0161__2': '[Are you all right?]',
+  'CH05A-0205__0': '[So the problem was always S-7?]',
+  'CH05A-0205__1': '[Why did the AI not find it?]',
+  'CH05A-0205__2': '[The sixth run already found a way around it?]',
+  'CH05A-0222__0': '[Then do not let it happen.]',
+  'CH05A-0222__1': '[Are you afraid?]',
+  'CH05A-0222__2': '[How much time do we have left?]',
+  'CH05B-0054__0': '[I will stay with you to the end.]',
+  'CH05B-0054__1': '[Save the ship first.]',
+  'CH05B-0054__2': '[You were already close to the answer.]',
+  'CH05B-0091__0': '[Shut down the Seventh Protocol.]',
+  'CH05B-0091__1': '[Wait. I do not want to disconnect yet.]',
+  'CH05B-0091__2': '[Keep the protocol. Maybe we can try again.]',
+  'CH05B-0097__0': '[Shut it down.]',
+  'CH05B-0097__1': '[Leave it.]',
+  'FIN-0009__0': '[I am here.]',
+  'FIN-0028__0': '[I will remember you.]',
+  'FIN-0028__1': '[At least you made it to tomorrow.]',
+  'FIN-0028__2': '[I am not ready to say goodbye.]',
+  'FIN-0040__0': '[Did someone really receive this?]',
+  'FIN-0040__1': '[Are you real?]',
+  'FIN-0040__2': '[Do we know each other?]',
 };
 
-for (const [id, translated] of Object.entries(content)) {
-  if (!storyNodeMap.has(id)) throw new Error(`Translation references missing story node: ${id}`);
-  const current = en.nodes[id] ?? {};
-  en.nodes[id] = { ...current, content: translated };
+const nextNodes = {};
+const missing = [];
+
+for (const node of storyNodes) {
+  const previous = en.nodes?.[node.id] ?? {};
+  const localized = {};
+
+  if (node.content.trim().length > 0) {
+    const content = contentPatches[node.id] ?? previous.content;
+    if (typeof content !== 'string' || content.trim().length === 0) {
+      missing.push(`${node.id}.content`);
+    } else {
+      localized.content = content;
+    }
+  }
+
+  if (node.choices?.length) {
+    localized.choices = {};
+    for (const choice of node.choices) {
+      const choiceId = choice.id;
+      const translated = choicePatches[choiceId] ?? previous.choices?.[choiceId];
+      if (typeof translated !== 'string' || translated.trim().length === 0) {
+        missing.push(`${node.id}.choices.${choiceId}`);
+      } else {
+        localized.choices[choiceId] = translated;
+      }
+    }
+  }
+
+  if (Object.keys(localized).length > 0) nextNodes[node.id] = localized;
 }
 
-for (const [choiceId, translated] of Object.entries(choices)) {
-  const separator = choiceId.lastIndexOf('__');
-  const nodeId = choiceId.slice(0, separator);
-  const current = en.nodes[nodeId] ?? {};
-  en.nodes[nodeId] = {
-    ...current,
-    choices: { ...(current.choices ?? {}), [choiceId]: translated },
-  };
+if (missing.length > 0) {
+  throw new Error(`English story is missing current-topology translations:\n${missing.join('\n')}`);
 }
 
 const cjkLeaks = [];
-for (const [id, entry] of Object.entries(en.nodes)) {
+for (const [id, entry] of Object.entries(nextNodes)) {
   if (/\p{Script=Han}/u.test(entry.content ?? '')) cjkLeaks.push(`${id}.content`);
   for (const [choiceId, value] of Object.entries(entry.choices ?? {})) {
     if (/\p{Script=Han}/u.test(value)) cjkLeaks.push(`${id}.choices.${choiceId}`);
   }
 }
+
 if (cjkLeaks.length > 0) {
-  throw new Error(`English story still contains CJK fallback text:\n${cjkLeaks.join('\n')}`);
+  throw new Error(`English story contains Chinese fallback text:\n${cjkLeaks.join('\n')}`);
 }
 
-fs.writeFileSync(enPath, `${JSON.stringify(en, null, 2)}\n`, 'utf8');
-console.log(`Applied ${Object.keys(content).length} content translations and ${Object.keys(choices).length} choice translations.`);
+const previousCount = Object.keys(en.nodes ?? {}).length;
+const next = { ...en, version: 'V1.0', nodes: nextNodes };
+fs.writeFileSync(enPath, `${JSON.stringify(next, null, 2)}\n`, 'utf8');
+
+console.log(`English topology synchronized: ${Object.keys(nextNodes).length} localized nodes.`);
+console.log(`Removed ${Math.max(0, previousCount - Object.keys(nextNodes).length)} obsolete locale entries.`);
+console.log(`Applied ${Object.keys(contentPatches).length} content patches and ${Object.keys(choicePatches).length} choice patches.`);

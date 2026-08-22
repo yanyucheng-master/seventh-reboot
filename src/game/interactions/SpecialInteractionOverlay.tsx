@@ -10,16 +10,19 @@ import type {
   SpecialInteractionKind,
 } from '../types';
 import { BulkheadIsolationInteraction } from './BulkheadIsolationInteraction';
+import { CourseLockInteraction } from './CourseLockInteraction';
 import { getSpecialInteractionCopy } from './copy';
 import { MemoryCapacityInteraction } from './MemoryCapacityInteraction';
-import { PasswordInteraction } from './PasswordInteraction';
 import { PowerRoutingInteraction } from './PowerRoutingInteraction';
+import { ProtocolCutInteraction } from './ProtocolCutInteraction';
+import { SealedRecordOrderInteraction } from './SealedRecordOrderInteraction';
 
 type SpecialInteractionOverlayProps = {
   node: StoryNode;
   locale: Locale;
   sealedAnchor?: SealableMemoryAnchor;
   powerFirstFailureReason?: PowerFailureReason;
+  lowGravity?: boolean;
   avatarPresentation: NovaAvatarPresentation;
   onResultLocked: (result: SpecialInteractionCompletion) => void;
   onComplete: (result: SpecialInteractionCompletion) => void;
@@ -32,9 +35,11 @@ const FORCE_REDUCED_MOTION_FOR_TEST = import.meta.env.DEV
 
 const INTERACTION_TERMINAL_CODES: Record<SpecialInteractionKind, string> = {
   'bulkhead-isolation': 'PRESSURE CONTROL / LIVE-07',
-  'critical-log-password': 'JOINT AUTH / 07+01',
+  'sealed-record-order': 'SEALED RECORD / 06→07',
   'power-routing': 'POWER PROXY / AURORA',
   'memory-seal': 'MEMORY INDEX / SEAL',
+  'course-lock': 'NAVIGATION WRITE / S-7',
+  'protocol-cut': 'PHASE-CORE / BUS B',
   'memory-restore': 'MEMORY INDEX / RESTORE',
 };
 
@@ -52,6 +57,7 @@ export function SpecialInteractionOverlay({
   locale,
   sealedAnchor,
   powerFirstFailureReason,
+  lowGravity = false,
   avatarPresentation,
   onResultLocked,
   onComplete,
@@ -78,10 +84,14 @@ export function SpecialInteractionOverlay({
 
   const title = node.interactionKind === 'bulkhead-isolation'
     ? copy.bulkhead.title
-    : node.interactionKind === 'critical-log-password'
+    : node.interactionKind === 'sealed-record-order'
       ? copy.password.title
       : node.interactionKind === 'power-routing'
         ? copy.power.title
+        : node.interactionKind === 'course-lock'
+          ? locale === 'zh-CN' ? '新航线锁定' : 'Lock new course'
+          : node.interactionKind === 'protocol-cut'
+            ? locale === 'zh-CN' ? '第七协议物理隔离' : 'Physical protocol isolation'
         : node.interactionKind === 'memory-restore'
           ? copy.memory.restoreTitle
           : copy.memory.sealTitle;
@@ -95,6 +105,7 @@ export function SpecialInteractionOverlay({
       aria-label={title}
       tabIndex={-1}
       data-interaction-kind={node.interactionKind}
+      data-gravity-state={lowGravity ? 'degraded' : 'nominal'}
     >
       <div className="interaction-grid-backdrop" aria-hidden />
       <header className="interaction-header">
@@ -131,9 +142,9 @@ export function SpecialInteractionOverlay({
             onComplete={onComplete}
           />
         )}
-        {node.interactionKind === 'critical-log-password' && (
-          <PasswordInteraction
-            copy={copy}
+        {node.interactionKind === 'sealed-record-order' && (
+          <SealedRecordOrderInteraction
+            locale={locale}
             onResultLocked={onResultLocked}
             onComplete={onComplete}
           />
@@ -141,8 +152,26 @@ export function SpecialInteractionOverlay({
         {node.interactionKind === 'power-routing' && (
           <PowerRoutingInteraction
             copy={copy}
-            attempt={node.interactionAttempt ?? 1}
+            attempt={node.interactionStage === 'first' ? 1 : 2}
+            damaged={node.interactionStage === 'damaged_seventh'}
             previousFailure={powerFirstFailureReason}
+            lowGravity={lowGravity}
+            onResultLocked={onResultLocked}
+            onComplete={onComplete}
+          />
+        )}
+        {node.interactionKind === 'course-lock' && (
+          <CourseLockInteraction
+            locale={locale}
+            reducedMotion={reducedMotion}
+            onResultLocked={onResultLocked}
+            onComplete={onComplete}
+          />
+        )}
+        {node.interactionKind === 'protocol-cut' && (
+          <ProtocolCutInteraction
+            locale={locale}
+            reducedMotion={reducedMotion}
             onResultLocked={onResultLocked}
             onComplete={onComplete}
           />

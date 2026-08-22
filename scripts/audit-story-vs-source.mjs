@@ -91,7 +91,7 @@ function parseExport(text) {
       const [, id, speakerLabel, typeLabel] = nodeMatch;
       const speaker = SPEAKER.get(speakerLabel.trim()) ?? speakerLabel.trim().toLowerCase();
       const type = TYPE.get(typeLabel.trim()) ?? typeLabel.trim();
-      if (type === 'menu' || id === 'MENU') {
+      if (id === 'MENU') {
         current = null;
         continue;
       }
@@ -245,7 +245,7 @@ function checkLocaleCoverage(label, sourceNodes, localeNodes) {
   return { label, missingContent, missingChoices, cjkLeaks };
 }
 
-const zhScript = path.join(root, '..', '第七次重启_V1.0_无后记主流程_规范化ID版.txt');
+const zhScript = path.join(root, '..', '第七次重启_V1.0_主流程_8月4日人工重力整合版.txt');
 const enScript = process.env.SEVENTH_REBOOT_EN_SOURCE;
 
 if (!fs.existsSync(zhScript)) throw new Error(`Missing ZH script: ${zhScript}`);

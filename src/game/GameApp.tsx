@@ -22,31 +22,28 @@ import {
   hasSaveFile,
   loadGame,
   loadPersistentProgress,
+  markReboot08FallbackUsed,
+  persistLegacyMessageState,
   resolveResumeNodeId,
   saveGame,
 } from './storage';
 import {
-  choiceDeviatesFromRecord,
   createCycleInteractionRecord,
   createCurrentCycleState,
+  createStableCheckpointSnapshot,
   getStoryNodeForReboot,
-  inputDeviatesFromRecord,
-  interactionDeviatesFromRecord,
   markCycleNodeCompleted,
   recordCycleChoice,
   recordCycleFreeInput,
   recordCycleInteraction,
   recordCycleTimedResult,
-  replayFailedCycle,
+  restoreDamagedSeventhCheckpoint,
   shouldStopReadSkip,
-  type CycleReplayResult,
-  type CycleSyncEvent,
 } from './cycleState';
 import type {
   ChatDeliveryRuntime,
   CommunicationLinkState,
   ContactStage,
-  CycleNoticeKey,
   CurrentCycleState,
   DisplayMessage,
   FailedCycleRecord,
@@ -59,6 +56,11 @@ import type {
   NovaAvatarTransition,
   SpecialInteractionCompletion,
 } from './types';
+import {
+  getOrCreateLegacyMessageSnapshot,
+  isLegacyMessageReadable,
+  type LegacyMessageSnapshot,
+} from './legacyMessages';
 import { DeliveryController } from './delivery/controller';
 import {
   createDefaultChatDeliveryRuntime,
@@ -68,7 +70,6 @@ import {
   getNodeLinkStateEffect,
   isCommittedWithinDeadline,
   resolveDeliverySpec,
-  RESTORED_FAILURE_RETRY_SPEC,
   type DeliverySpec,
   type DeliveryTimelinePhase,
 } from './delivery/specs';
@@ -79,7 +80,8 @@ import { ChapterBanner, RemoteTypingRow } from './components/ChatPrimitives';
 import { RestartDialog } from './components/RestartDialog';
 import { MemoryArchiveOverlay } from './components/MemoryArchive';
 import { GameTitle } from './components/GameTitle';
-import { CycleSyncOverlay } from './components/CycleSyncOverlay';
+import { RebootFallbackOverlay } from './components/RebootFallbackOverlay';
+import { LowGravityLayer } from './components/LowGravityLayer';
 import { NovaAvatar } from './components/NovaAvatar';
 import { AvatarDebugPanel } from './components/AvatarDebugPanel';
 import { DeliveryDebugPanel } from './components/DeliveryDebugPanel';
@@ -87,7 +89,7 @@ import { ObserverEchoLayer } from './components/ObserverEchoLayer';
 import { useVisualViewport } from '../hooks/useVisualViewport';
 import { getSaveProgressLabel } from './progress';
 import { formatChoiceText, shouldShowNovaAvatar, shouldShowTypingAvatar } from './format';
-import { resolveEndingStart } from './endings';
+import { resolveEndingStart, resolveFinalEndingNode } from './endings';
 import { ANCHOR_ARCHIVE_IDS, applyArchiveUnlocks, getArchiveUnlocksForNode } from './archive';
 import {
   applyPersistentStoryNodeEffects,
@@ -163,17 +165,40 @@ type ActiveInputNode = {
   specialInputNextIds?: Record<string, string>;
 };
 
-function createCycleNoticeMessages(keys: CycleNoticeKey[], t: Translate): DisplayMessage[] {
-  const timestamp = Date.now();
-  return keys.map((uiKey, index) => ({
-    id: `cycle_notice_${uiKey.replaceAll('.', '_')}_${timestamp}_${index}`,
-    speaker: 'system',
-    type: 'status',
-    content: t(uiKey),
-    isNew: true,
-    uiKind: 'cycleNotice',
-    uiKey,
-  }));
+const STABLE_CHECKPOINT_TARGETS = new Map<string, string>([
+  ['CH03-0144', 'CH03-0144'],
+  ['CH05B-0028', 'CH05B-0032'],
+  ['CH05B-0080', 'CH05B-0080'],
+  ['CH05B-0091', 'CH05B-0091'],
+  ['CH05B-0102', 'CH05B-0102'],
+]);
+
+function getVisibleChoices(
+  node: StoryNode,
+  stats: GameStats,
+  legacySnapshot: LegacyMessageSnapshot | null,
+): Choice[] {
+  return (node.choices ?? []).filter(choice => {
+    switch (choice.visibilityCondition) {
+      case 'n7-proof-succeeded':
+        return stats.n7ProofSucceeded;
+      case 'legacy-prologue-alien-choice':
+        return false;
+      case 'legacy-ef-both':
+        return isLegacyMessageReadable(legacySnapshot ?? undefined, 'E')
+          && isLegacyMessageReadable(legacySnapshot ?? undefined, 'F');
+      case 'legacy-ef-any': {
+        const e = isLegacyMessageReadable(legacySnapshot ?? undefined, 'E');
+        const f = isLegacyMessageReadable(legacySnapshot ?? undefined, 'F');
+        return e !== f;
+      }
+      case 'legacy-ef-none':
+        return !isLegacyMessageReadable(legacySnapshot ?? undefined, 'E')
+          && !isLegacyMessageReadable(legacySnapshot ?? undefined, 'F');
+      default:
+        return true;
+    }
+  });
 }
 
 function getWaitConfig(node: StoryNode, t: Translate): WaitConfig | null {
@@ -416,9 +441,8 @@ export default function GameApp() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [isSkippingToChoice, setIsSkippingToChoice] = useState(false);
   const [isSkippingRead, setIsSkippingRead] = useState(false);
-  const [syncOfferVisible, setSyncOfferVisible] = useState(false);
-  const [activeSyncEvents, setActiveSyncEvents] = useState<CycleSyncEvent[]>([]);
-  const [syncVisibleCount, setSyncVisibleCount] = useState(0);
+  const [legacySnapshot, setLegacySnapshot] = useState<LegacyMessageSnapshot | null>(null);
+  const [showRebootFallback, setShowRebootFallback] = useState(false);
   const [showMenuSettings, setShowMenuSettings] = useState(false);
   const [observerEcho, setObserverEcho] = useState<string | null>(null);
   const [deliveryRuntime, setDeliveryRuntime] = useState<ChatDeliveryRuntime>(
@@ -485,8 +509,7 @@ export default function GameApp() {
   const cycleStateRef = useRef(cycleState);
   const persistentProgressRef = useRef(persistentProgress);
   const previousCycleRecordRef = useRef<FailedCycleRecord | null>(null);
-  const syncPlanRef = useRef<CycleReplayResult | null>(null);
-  const syncTimerRef = useRef<number | null>(null);
+  const legacySnapshotRef = useRef<LegacyMessageSnapshot | null>(null);
   const skipReadRef = useRef(false);
   const contactStageRef = useRef(contactStage);
   const internalTestBootstrappedRef = useRef(false);
@@ -514,6 +537,10 @@ export default function GameApp() {
   useEffect(() => {
     persistentProgressRef.current = persistentProgress;
   }, [persistentProgress]);
+
+  useEffect(() => {
+    legacySnapshotRef.current = legacySnapshot;
+  }, [legacySnapshot]);
 
   useEffect(() => {
     contactStageRef.current = contactStage;
@@ -544,7 +571,7 @@ export default function GameApp() {
     if (choiceNodeId) {
       const node = storyNodeMap.get(choiceNodeId);
       if (node?.type === 'choice' && node.choices) {
-        setChoices(node.choices);
+        setChoices(getVisibleChoices(node, statsRef.current, legacySnapshotRef.current));
       }
     }
     if (inputNode) {
@@ -604,18 +631,12 @@ export default function GameApp() {
     }
     setSignalGlitch(null);
     setObserverEcho(null);
+    setShowRebootFallback(false);
     setAvatarTransition(null);
     setIsSyncing(false);
     setIsSkippingToChoice(false);
     skipReadRef.current = false;
     setIsSkippingRead(false);
-    if (syncTimerRef.current !== null) {
-      window.clearTimeout(syncTimerRef.current);
-      syncTimerRef.current = null;
-    }
-    syncPlanRef.current = null;
-    setActiveSyncEvents([]);
-    setSyncVisibleCount(0);
     setActiveInteraction(null);
     deliveryControllerRef.current?.cancelDelivery();
     deliveryControllerRef.current?.cancelLinkTimeline();
@@ -851,7 +872,7 @@ export default function GameApp() {
 
   const skipReadText = useCallback(() => {
     if (
-      !cycleStateRef.current.syncInterrupted
+      !cycleStateRef.current.damagedSeventh
       || choices
       || inputNode
       || activeInteraction
@@ -913,14 +934,6 @@ export default function GameApp() {
     setMessages(next);
     return next;
   }, []);
-
-  const appendCycleNotices = useCallback((keys: CycleNoticeKey[]) => {
-    let current = messagesRef.current;
-    createCycleNoticeMessages(keys, t).forEach(message => {
-      current = addMessage(message);
-    });
-    return current;
-  }, [addMessage, t]);
 
   const commitAvatarNodeEffect = useCallback((nodeId: string, currentMessages: DisplayMessage[]) => {
     const currentState = avatarStateRef.current;
@@ -1048,6 +1061,121 @@ export default function GameApp() {
     return true;
   }, [goToMenu]);
 
+  const captureStableCheckpoint = useCallback((sourceNodeId: string) => {
+    const checkpointNodeId = STABLE_CHECKPOINT_TARGETS.get(sourceNodeId);
+    const currentCycle = cycleStateRef.current;
+    if (
+      !checkpointNodeId
+      || currentCycle.currentRebootNumber !== 7
+      || currentCycle.damagedSeventh
+      || statsRef.current.damagedSeventh
+      || currentCycle.lastStableCheckpoint?.nodeId === checkpointNodeId
+    ) return;
+
+    const checkpoint = createStableCheckpointSnapshot(
+      checkpointNodeId,
+      currentCycle,
+      statsRef.current,
+      messagesRef.current,
+      contactStageRef.current,
+      avatarStateRef.current,
+      deliveryRuntimeRef.current,
+    );
+    const nextCycle = { ...currentCycle, lastStableCheckpoint: checkpoint };
+    cycleStateRef.current = nextCycle;
+    setCycleState(nextCycle);
+    persistState(sourceNodeId, messagesRef.current);
+  }, [persistState]);
+
+  const revealLegacyMessages = useCallback(() => {
+    const runId = cycleStateRef.current.cycleId;
+    const result = getOrCreateLegacyMessageSnapshot(
+      persistentProgressRef.current.legacyMessageState,
+      runId,
+    );
+    legacySnapshotRef.current = result.snapshot;
+    setLegacySnapshot(result.snapshot);
+
+    const progress = result.created
+      ? persistLegacyMessageState(result.state)
+      : loadPersistentProgress();
+    persistentProgressRef.current = progress;
+    setPersistentProgress(progress);
+
+    const existingIds = new Set(messagesRef.current.map(message => message.id));
+    const cards: DisplayMessage[] = result.snapshot.masks.flatMap(mask => {
+      const id = `legacy_message_${runId}_${mask.id}`;
+      if (existingIds.has(id)) return [];
+      return [{
+        id,
+        speaker: 'system' as const,
+        type: 'file' as const,
+        content: `@6 / 留言 ${mask.id}||写入者：Nova Arlen\n记录状态：${mask.fullyHidden ? '无法读取' : '残缺可读'}\n${mask.lines[0]}\n${mask.lines[1]}`,
+        isNew: true,
+        sourceNodeId: `LEGACY-@6-${mask.id}`,
+      }];
+    });
+    if (cards.length === 0) return messagesRef.current;
+    const nextMessages = [...messagesRef.current, ...cards];
+    messagesRef.current = nextMessages;
+    setMessages(nextMessages);
+    return nextMessages;
+  }, []);
+
+  const restoreDamagedSeventh = useCallback((): string | null => {
+    const progress = loadPersistentProgress();
+    const record = previousCycleRecordRef.current ?? getLatestFailedCycle(progress) ?? null;
+    const restored = restoreDamagedSeventhCheckpoint(record);
+    if (!restored || progress.reboot08FallbackUsed) return null;
+
+    const consumedProgress = markReboot08FallbackUsed();
+    const restoredMessages: DisplayMessage[] = [
+      ...restored.messages,
+      {
+        id: `reboot07_damaged_${Date.now()}`,
+        speaker: 'system',
+        type: 'status',
+        content: 'PREVIOUS LINK DETECTED\nREBOOT 07-DAMAGED / 外部握手缓存已耗尽',
+        isNew: true,
+        sourceNodeId: 'END-B-0022',
+      },
+    ];
+    const priorLegacySnapshot = consumedProgress.legacyMessageState.snapshotsByRunId[restored.cycleState.cycleId] ?? null;
+
+    statsRef.current = restored.stats;
+    messagesRef.current = restoredMessages;
+    avatarStateRef.current = restored.avatarState;
+    contactStageRef.current = restored.contactStage;
+    deliveryRuntimeRef.current = restored.deliveryRuntime;
+    cycleStateRef.current = restored.cycleState;
+    persistentProgressRef.current = consumedProgress;
+    legacySnapshotRef.current = priorLegacySnapshot;
+    pendingNodeIdRef.current = restored.nodeId;
+    previousCycleRecordRef.current = record;
+
+    setStats(restored.stats);
+    setMessages(restoredMessages);
+    setAvatarState(restored.avatarState);
+    setContactStage(restored.contactStage);
+    setDeliveryRuntime(restored.deliveryRuntime);
+    setCycleState(restored.cycleState);
+    setPersistentProgress(consumedProgress);
+    setLegacySnapshot(priorLegacySnapshot);
+
+    saveGame(createSaveData(
+      restored.nodeId,
+      restoredMessages,
+      restored.avatarState,
+      restored.contactStage,
+      restored.stats,
+      restored.deliveryRuntime,
+      restored.cycleState,
+    ));
+    setHasSave(true);
+    setSaveTime(t('saveTime.justNow'));
+    return restored.nodeId;
+  }, [t]);
+
   const processSingleNode = useCallback(
     async (nodeId: string, runId: number): Promise<boolean> => {
       const isCurrentRun = () => queueRunIdRef.current === runId;
@@ -1069,6 +1197,15 @@ export default function GameApp() {
         statsRef.current = persistentStats;
         setStats(persistentStats);
         persistState(node.id, messagesRef.current);
+      }
+
+      if (node.directCondition && matchesInteractionPrerequisite(statsRef.current, node.directCondition)) {
+        const directNextId = node.directConditionNextId ?? node.nextId;
+        if (directNextId) {
+          persistState(directNextId, messagesRef.current);
+          nodeQueueRef.current.push(directNextId);
+        }
+        return true;
       }
 
       if (node.interactionCondition && !matchesInteractionCondition(statsRef.current, node.interactionCondition)) {
@@ -1161,15 +1298,85 @@ export default function GameApp() {
         return true;
       }
 
-      if (node.type === 'title-state') {
-        await waitForPlayback(500);
-        if (!isCurrentRun()) return false;
-        archiveCurrentFatalCycle(messagesRef.current, statsRef.current.earlyFailureCause ?? 'protocol_rollback');
+      if (node.type === 'menu') {
+        goToMenu();
         return false;
+      }
+
+      if (node.type === 'route') {
+        await waitForPlayback(node.delay ?? 300);
+        if (!isCurrentRun()) return false;
+        let routeTarget = node.nextId;
+        if (node.id === 'FIN-0044') {
+          routeTarget = resolveFinalEndingNode(statsRef.current);
+        } else if (node.id === 'END-B-0015') {
+          const progress = loadPersistentProgress();
+          const failedRecord = previousCycleRecordRef.current ?? getLatestFailedCycle(progress);
+          routeTarget = !progress.reboot08FallbackUsed && failedRecord?.lastStableCheckpoint
+            ? 'END-B-0016'
+            : 'END-B-0026';
+        }
+        markCurrentCycleNode(node.id);
+        if (routeTarget) {
+          persistState(routeTarget, messagesRef.current);
+          nodeQueueRef.current.push(routeTarget);
+        }
+        return true;
+      }
+
+      if (node.type === 'title-state') {
+        if (node.id === 'END-B-0009') {
+          await waitForPlayback(500);
+          if (!isCurrentRun()) return false;
+          archiveCurrentFatalCycle(messagesRef.current, statsRef.current.earlyFailureCause ?? 'protocol_rollback');
+          return false;
+        }
+        if (node.id === 'END-B-0020') {
+          stopFastForwardAtInteraction();
+          stopReadSkip();
+          setShowRebootFallback(true);
+          await waitForPlayback(3600);
+          if (!isCurrentRun()) return false;
+          setShowRebootFallback(false);
+          markCurrentCycleNode(node.id);
+          if (node.nextId) {
+            persistState(node.nextId, messagesRef.current);
+            nodeQueueRef.current.push(node.nextId);
+          }
+          return true;
+        }
+      }
+
+      if (node.type === 'state-write' && node.stateWrites) {
+        const writableStats = { ...statsRef.current } as GameStats & Record<string, unknown>;
+        for (const [key, value] of Object.entries(node.stateWrites)) {
+          if (key === 'reboot08FallbackUsed') continue;
+          if (key in writableStats) writableStats[key] = value;
+        }
+        statsRef.current = writableStats;
+        setStats(writableStats);
+        if (node.stateWrites.damagedSeventh === true) {
+          const damagedCycle = { ...cycleStateRef.current, damagedSeventh: true };
+          cycleStateRef.current = damagedCycle;
+          setCycleState(damagedCycle);
+        }
+      }
+
+      if (node.type === 'dynamic-jump' && node.dynamicNextKey === 'lastStableCheckpoint') {
+        stopFastForwardAtInteraction();
+        stopReadSkip();
+        await waitForPlayback(node.delay ?? 600);
+        if (!isCurrentRun()) return false;
+        const restoredNodeId = restoreDamagedSeventh();
+        const targetNodeId = restoredNodeId ?? 'END-B-0026';
+        if (!restoredNodeId) persistState(targetNodeId, messagesRef.current);
+        nodeQueueRef.current.push(targetNodeId);
+        return true;
       }
 
       if (node.type === 'interaction' && node.interactionKind) {
         stopFastForwardAtInteraction();
+        captureStableCheckpoint(node.id);
         setActiveInteraction(node);
         setIsTyping(false);
         persistState(nodeId, messagesRef.current);
@@ -1245,8 +1452,9 @@ export default function GameApp() {
           if (!isCurrentRun()) return false;
         }
         stopFastForwardAtInteraction();
+        captureStableCheckpoint(node.id);
         activateChoice(nodeId);
-        setChoices(node.choices);
+        setChoices(getVisibleChoices(node, statsRef.current, legacySnapshotRef.current));
         setChoiceNodeId(nodeId);
         setIsTyping(false);
         persistState(nodeId, messagesRef.current);
@@ -1316,7 +1524,10 @@ export default function GameApp() {
       } else {
         const withDisplayMessage = addMessage(displayMsg);
         const avatarEffect = commitAvatarNodeEffect(nodeId, withDisplayMessage);
-        const currentMsgs = avatarEffect.messages;
+        let currentMsgs = avatarEffect.messages;
+        if (node.id === 'CH05A-0066') {
+          currentMsgs = revealLegacyMessages();
+        }
         unlockArchives(nodeArchiveUnlocks);
         markCurrentCycleNode(node.id);
 
@@ -1363,7 +1574,7 @@ export default function GameApp() {
       }
       return true;
     },
-    [activateChoice, addMessage, archiveCurrentFatalCycle, commitAvatarNodeEffect, markCommemorativeArchiveSaved, markCurrentCycleNode, persistState, saveMemoryAnchor, stopFastForwardAtInteraction, stopReadSkip, storyNodeMap, t, triggerSignalGlitch, unlockArchives, updateDeliveryRuntime, waitForPlayback, waitForSignal],
+    [activateChoice, addMessage, archiveCurrentFatalCycle, captureStableCheckpoint, commitAvatarNodeEffect, goToMenu, markCommemorativeArchiveSaved, markCurrentCycleNode, persistState, restoreDamagedSeventh, revealLegacyMessages, saveMemoryAnchor, stopFastForwardAtInteraction, stopReadSkip, storyNodeMap, t, triggerSignalGlitch, unlockArchives, updateDeliveryRuntime, waitForPlayback, waitForSignal],
   );
 
   const processQueue = useCallback(async (runId: number) => {
@@ -1531,11 +1742,19 @@ export default function GameApp() {
     if (testNode?.interactionKind === 'memory-restore' && !testStats.temporaryAnchorSealed) {
       testStats.temporaryAnchorSealed = 'maintenance_board';
     }
-    if (testNode?.interactionKind === 'power-routing' && testNode.interactionAttempt === 2) {
+    if (testNode?.interactionKind === 'power-routing' && testNode.interactionStage !== 'first') {
       testStats.powerRoutingAttempt = 1;
       testStats.powerFirstFailureReason = 'life_support_below_minimum';
-      testStats.nova06PowerOverrideUsed = true;
-      testStats.nova06PowerOverrideExpired = true;
+      testStats.nova06RollbackAuthorizationAvailable = false;
+      testStats.nova06RollbackAuthorizationUsed = true;
+      testStats.aiEmergencyRollbackExecuted = true;
+      if (testNode.interactionStage === 'damaged_seventh') {
+        testStats.damagedSeventh = true;
+        testStats.nova06RecordingDamaged = true;
+      }
+    }
+    if (testNode?.interactionKind === 'power-routing') {
+      testStats.gravityArrayDegraded = true;
     }
 
     messagesRef.current = [];
@@ -1566,152 +1785,6 @@ export default function GameApp() {
     startSequence(INTERNAL_TEST_NODE_ID);
   }, [cancelActiveSequence, startSequence, storyNodeMap]);
 
-  const completeCycleSync = useCallback((plan: CycleReplayResult) => {
-    const completedCycle: CurrentCycleState = {
-      ...plan.cycleState,
-      syncAvailable: false,
-      syncActive: false,
-      syncInterrupted: false,
-      syncCursor: plan.events.length,
-    };
-    statsRef.current = plan.stats;
-    avatarStateRef.current = plan.avatarState;
-    contactStageRef.current = plan.contactStage;
-    cycleStateRef.current = completedCycle;
-    pendingNodeIdRef.current = plan.nextNodeId;
-    setStats(plan.stats);
-    setAvatarState(plan.avatarState);
-    setContactStage(plan.contactStage);
-    setCycleState(completedCycle);
-    setActiveSyncEvents([]);
-    setSyncVisibleCount(0);
-    syncPlanRef.current = null;
-    syncTimerRef.current = null;
-
-    const currentMessages = appendCycleNotices(['cycle.syncCompleted']);
-    persistState(plan.nextNodeId, currentMessages);
-    scheduleSequence(plan.nextNodeId, 420);
-  }, [appendCycleNotices, persistState, scheduleSequence]);
-
-  const beginCycleSync = useCallback((record: FailedCycleRecord, resumeCursor = 0) => {
-    previousCycleRecordRef.current = record;
-    const baseCycle: CurrentCycleState = {
-      ...cycleStateRef.current,
-      currentRebootNumber: 8,
-      syncAvailable: true,
-      syncActive: true,
-      syncInterrupted: false,
-      syncBoundaryNodeId: cycleStateRef.current.syncBoundaryNodeId,
-      syncCursor: Math.max(0, resumeCursor),
-      previousCycleId: record.cycleId,
-    };
-    const plan = replayFailedCycle(record, storyNodeMap, createNewGameStats(), baseCycle);
-    syncPlanRef.current = plan;
-    const initialCursor = Math.min(Math.max(0, resumeCursor), plan.events.length);
-    const activeCycle = { ...baseCycle, syncCursor: initialCursor };
-    cycleStateRef.current = activeCycle;
-    setCycleState(activeCycle);
-    setSyncOfferVisible(false);
-    setActiveSyncEvents(plan.events);
-    setSyncVisibleCount(initialCursor);
-
-    if (
-      initialCursor === 0
-      && !messagesRef.current.some(message => message.uiKey === 'cycle.memoryProjection')
-    ) {
-      const currentMessages = appendCycleNotices([
-        'cycle.memoryProjection',
-        'cycle.projectionWarning',
-      ]);
-      persistState('PRO-0001', currentMessages);
-    } else {
-      persistState('PRO-0001', messagesRef.current);
-    }
-
-    if (plan.events.length === 0 || initialCursor >= plan.events.length) {
-      completeCycleSync(plan);
-      return;
-    }
-
-    const step = Math.max(1, Math.ceil(plan.events.length / 88));
-    const advance = () => {
-      const currentPlan = syncPlanRef.current;
-      if (!currentPlan) return;
-      const nextCursor = Math.min(
-        currentPlan.events.length,
-        cycleStateRef.current.syncCursor + step,
-      );
-      const nextCycle = { ...cycleStateRef.current, syncCursor: nextCursor };
-      cycleStateRef.current = nextCycle;
-      setCycleState(nextCycle);
-      setSyncVisibleCount(nextCursor);
-
-      if (nextCursor >= currentPlan.events.length) {
-        completeCycleSync(currentPlan);
-        return;
-      }
-
-      if (nextCursor % Math.max(step * 8, 1) === 0) {
-        persistState('PRO-0001', messagesRef.current);
-      }
-      syncTimerRef.current = window.setTimeout(advance, 46);
-    };
-    syncTimerRef.current = window.setTimeout(advance, 180);
-  }, [appendCycleNotices, completeCycleSync, persistState, storyNodeMap]);
-
-  const interruptCycleSyncAt = useCallback((eventLimit: number, showNotice: boolean) => {
-    const record = previousCycleRecordRef.current;
-    if (!record) return;
-    if (syncTimerRef.current !== null) {
-      window.clearTimeout(syncTimerRef.current);
-      syncTimerRef.current = null;
-    }
-    syncPlanRef.current = null;
-
-    const replay = replayFailedCycle(
-      record,
-      storyNodeMap,
-      createNewGameStats(),
-      cycleStateRef.current,
-      Math.max(0, eventLimit),
-    );
-    const interruptedCycle: CurrentCycleState = {
-      ...replay.cycleState,
-      syncAvailable: false,
-      syncActive: false,
-      syncInterrupted: true,
-      syncCursor: Math.max(0, eventLimit),
-      currentCycleDeviationStarted: false,
-      previousCycleId: record.cycleId,
-    };
-    statsRef.current = replay.stats;
-    avatarStateRef.current = replay.avatarState;
-    contactStageRef.current = replay.contactStage;
-    cycleStateRef.current = interruptedCycle;
-    pendingNodeIdRef.current = replay.nextNodeId;
-    setStats(replay.stats);
-    setAvatarState(replay.avatarState);
-    setContactStage(replay.contactStage);
-    setCycleState(interruptedCycle);
-    setSyncOfferVisible(false);
-    setActiveSyncEvents([]);
-    setSyncVisibleCount(0);
-
-    const currentMessages = showNotice
-      ? appendCycleNotices(['cycle.syncInterrupted'])
-      : messagesRef.current;
-    persistState(replay.nextNodeId, currentMessages);
-    scheduleSequence(replay.nextNodeId, 360);
-  }, [appendCycleNotices, persistState, scheduleSequence, storyNodeMap]);
-
-  const interruptCycleSync = useCallback(() => {
-    interruptCycleSyncAt(syncVisibleCount, true);
-  }, [interruptCycleSyncAt, syncVisibleCount]);
-
-  const declineCycleSync = useCallback(() => {
-    interruptCycleSyncAt(0, false);
-  }, [interruptCycleSyncAt]);
-
   const startGame = useCallback(
     (mode: 'new' | 'continue' | 'reconnect08') => {
       cancelActiveSequence();
@@ -1726,9 +1799,7 @@ export default function GameApp() {
       setShowArchive(false);
       setShowRestartConfirm(false);
       setShowMenuSettings(false);
-      setSyncOfferVisible(false);
-      setActiveSyncEvents([]);
-      setSyncVisibleCount(0);
+      setShowRebootFallback(false);
       setActiveInteraction(null);
 
       if (mode === 'continue') {
@@ -1750,6 +1821,8 @@ export default function GameApp() {
           cycleStateRef.current = save.cycleState;
           persistentProgressRef.current = progress;
           previousCycleRecordRef.current = previousCycle;
+          const restoredLegacySnapshot = progress.legacyMessageState.snapshotsByRunId[save.cycleState.cycleId] ?? null;
+          legacySnapshotRef.current = restoredLegacySnapshot;
           contactStageRef.current = save.contactStage;
           deliveryRuntimeRef.current = save.deliveryRuntime;
           pendingNodeIdRef.current = save.pendingNodeId;
@@ -1758,6 +1831,7 @@ export default function GameApp() {
           setStats(save.stats);
           setCycleState(save.cycleState);
           setPersistentProgress(progress);
+          setLegacySnapshot(restoredLegacySnapshot);
           setContactStage(save.contactStage);
           setDeliveryRuntime(save.deliveryRuntime);
           setScreen('playing');
@@ -1767,48 +1841,7 @@ export default function GameApp() {
             return;
           }
 
-          if (previousCycle && save.cycleState.syncActive) {
-            beginCycleSync(previousCycle, save.cycleState.syncCursor);
-            return;
-          }
-          if (previousCycle && save.cycleState.syncAvailable) {
-            setSyncOfferVisible(true);
-            return;
-          }
-
           const resumeId = resolveResumeNodeId(save);
-          const activeDeliveryMessage = save.deliveryRuntime.activeMessageId
-            ? localizedMessages.find(message => message.id === save.deliveryRuntime.activeMessageId)
-            : undefined;
-          if (
-            activeDeliveryMessage?.scriptedDeliveryEvent === 'chapter5_explicit_failure'
-            && activeDeliveryMessage.branchTargetNodeId
-          ) {
-            deliveryControllerRef.current?.start(
-              activeDeliveryMessage.id,
-              RESTORED_FAILURE_RETRY_SPEC,
-            );
-            return;
-          }
-          const resumeNode = storyNodeMap.get(resumeId);
-          if (resumeNode?.type === 'choice') {
-            activateChoice(resumeNode.id);
-            setChoices(resumeNode.choices ?? null);
-            setChoiceNodeId(resumeNode.id);
-            return;
-          }
-
-          if (resumeNode?.type === 'input') {
-            setInputNode(createActiveInputNode(resumeNode, t));
-            setPlayerInput('');
-            return;
-          }
-
-          if (resumeNode?.type === 'interaction' && resumeNode.interactionKind) {
-            setActiveInteraction(resumeNode);
-            return;
-          }
-
           scheduleSequence(resumeId, 500);
           return;
         }
@@ -1818,18 +1851,12 @@ export default function GameApp() {
       const progress = loadPersistentProgress();
       const rebootNumber = mode === 'reconnect08' || progress.reboot08TitleUnlocked ? 8 : 7;
       const previousCycle = rebootNumber >= 8 ? getLatestFailedCycle(progress) ?? null : null;
+      const startNodeId = rebootNumber >= 8 ? 'END-B-0011' : 'PRO-0001';
       const freshStats = createNewGameStats();
       const freshAvatarState = createDefaultNovaAvatarState();
       const freshDeliveryRuntime = createDefaultChatDeliveryRuntime();
       const freshCycle = createCurrentCycleState(rebootNumber, previousCycle ?? undefined);
-      const initialMessages = previousCycle
-        ? createCycleNoticeMessages([
-            'cycle.reboot08Link',
-            'cycle.previousRecordDetected',
-            'cycle.previousRecordSource',
-            'cycle.previousRecordCycle',
-          ], t)
-        : [];
+      const initialMessages: DisplayMessage[] = [];
       messagesRef.current = initialMessages;
       avatarStateRef.current = freshAvatarState;
       contactStageRef.current = defaultContactStage;
@@ -1837,13 +1864,15 @@ export default function GameApp() {
       cycleStateRef.current = freshCycle;
       persistentProgressRef.current = progress;
       previousCycleRecordRef.current = previousCycle;
-      pendingNodeIdRef.current = 'PRO-0001';
+      legacySnapshotRef.current = null;
+      pendingNodeIdRef.current = startNodeId;
       setMessages(initialMessages);
       setAvatarState(freshAvatarState);
       setContactStage(defaultContactStage);
       setStats(freshStats);
       setCycleState(freshCycle);
       setPersistentProgress(progress);
+      setLegacySnapshot(null);
       setDeliveryRuntime(freshDeliveryRuntime);
       statsRef.current = freshStats;
       setInputNode(null);
@@ -1853,7 +1882,7 @@ export default function GameApp() {
       setShowArchive(false);
       setScreen('playing');
       saveGame(createSaveData(
-        'PRO-0001',
+        startNodeId,
         initialMessages,
         freshAvatarState,
         defaultContactStage,
@@ -1863,36 +1892,20 @@ export default function GameApp() {
       ));
       setHasSave(true);
       setSaveTime(t('saveTime.justNow'));
-      if (previousCycle) {
-        setSyncOfferVisible(true);
-      } else {
-        startSequence('PRO-0001');
-      }
+      startSequence(startNodeId);
     },
-    [activateChoice, beginCycleSync, cancelActiveSequence, memoryAnchorLabels, scheduleSequence, startSequence, storyNodeMap, t],
+    [cancelActiveSequence, memoryAnchorLabels, scheduleSequence, startSequence, storyNodeMap, t],
   );
-
-  const appendDeviationNoticeIfNeeded = useCallback((deviated: boolean) => {
-    const current = cycleStateRef.current;
-    if (!deviated || !current.syncInterrupted || current.currentCycleDeviationStarted) {
-      return messagesRef.current;
-    }
-    updateCurrentCycle(cycle => ({ ...cycle, currentCycleDeviationStarted: true }));
-    return appendCycleNotices([
-      'cycle.deviationDetected',
-      'cycle.deviationConfirmed',
-    ]);
-  }, [appendCycleNotices, updateCurrentCycle]);
 
   const handleSpecialInteractionResultLocked = useCallback(
     (completion: SpecialInteractionCompletion) => {
       if (!activeInteraction) return;
       const interactionRecord = createCycleInteractionRecord(activeInteraction.id, completion);
       updateCurrentCycle(current => recordCycleInteraction(current, interactionRecord));
-      const currentMessages = appendDeviationNoticeIfNeeded(
-        interactionDeviatesFromRecord(previousCycleRecordRef.current, interactionRecord),
-      );
-      const nextStats = applySpecialInteractionCompletion(statsRef.current, completion);
+      const appliedStats = applySpecialInteractionCompletion(statsRef.current, completion);
+      const nextStats = completion.routeKey === 'fatal'
+        ? { ...appliedStats, fatalSourceNodeId: activeInteraction.id }
+        : appliedStats;
       statsRef.current = nextStats;
       setStats(nextStats);
       const nextId = activeInteraction.interactionNextIds?.[completion.routeKey]
@@ -1901,9 +1914,9 @@ export default function GameApp() {
       if (completion.kind === 'power-routing' && completion.routeKey === 'success') {
         deliveryControllerRef.current?.setLinkState('stable');
       }
-      persistState(nextId, currentMessages);
+      persistState(nextId, messagesRef.current);
     },
-    [activeInteraction, appendDeviationNoticeIfNeeded, persistState, updateCurrentCycle],
+    [activeInteraction, persistState, updateCurrentCycle],
   );
 
   const handleSpecialInteractionComplete = useCallback(
@@ -1911,10 +1924,10 @@ export default function GameApp() {
       if (!activeInteraction) return;
       const interactionRecord = createCycleInteractionRecord(activeInteraction.id, completion);
       updateCurrentCycle(current => recordCycleInteraction(current, interactionRecord));
-      const currentMessages = appendDeviationNoticeIfNeeded(
-        interactionDeviatesFromRecord(previousCycleRecordRef.current, interactionRecord),
-      );
-      const nextStats = applySpecialInteractionCompletion(statsRef.current, completion);
+      const appliedStats = applySpecialInteractionCompletion(statsRef.current, completion);
+      const nextStats = completion.routeKey === 'fatal'
+        ? { ...appliedStats, fatalSourceNodeId: activeInteraction.id }
+        : appliedStats;
       statsRef.current = nextStats;
       setStats(nextStats);
       const nextId = activeInteraction.interactionNextIds?.[completion.routeKey]
@@ -1924,10 +1937,10 @@ export default function GameApp() {
       if (completion.kind === 'power-routing' && completion.routeKey === 'success') {
         deliveryControllerRef.current?.setLinkState('stable');
       }
-      persistState(nextId, currentMessages);
+      persistState(nextId, messagesRef.current);
       scheduleSequence(nextId, 350);
     },
-    [activeInteraction, appendDeviationNoticeIfNeeded, persistState, scheduleSequence, updateCurrentCycle],
+    [activeInteraction, persistState, scheduleSequence, updateCurrentCycle],
   );
 
   const saveInteractionAndExit = useCallback(() => {
@@ -1959,7 +1972,7 @@ export default function GameApp() {
         nextId: node.timeoutNextId!,
       }), node.id));
 
-      const updated = node.id === 'FIN-0231'
+      const updated = node.id === 'FIN-0040'
         ? addMessage({
           id: `choice_timeout_${node.id}_${Date.now()}`,
           speaker: 'system',
@@ -1999,8 +2012,8 @@ export default function GameApp() {
         window.clearTimeout(choiceTimeoutRef.current);
         choiceTimeoutRef.current = null;
       }
-      const choiceIndex = choices
-        ? choices.findIndex(item =>
+      const choiceIndex = sourceNode?.choices
+        ? sourceNode.choices.findIndex(item =>
             item === choice
             || (item.id && choice.id
               ? item.id === choice.id
@@ -2009,8 +2022,19 @@ export default function GameApp() {
       setChoices(null);
       setChoiceNodeId(null);
 
-      const nextStats = applyChoiceEffects(choice);
-      const nextId = resolveEndingStart(choice.nextId, nextStats);
+      let nextStats = applyChoiceEffects(choice);
+      const nextId = resolveEndingStart(choice.nextId);
+      if (fromNodeId === 'CH05B-0097' && nextId === 'END-B-0001') {
+        nextStats = {
+          ...nextStats,
+          ending: 'bad',
+          earlyFailureCause: 'protocol_refusal',
+          fatalSourceNodeId: fromNodeId,
+          pendingReboot08: true,
+        };
+        statsRef.current = nextStats;
+        setStats(nextStats);
+      }
       const deliverySequence = messagesRef.current.reduce(
         (max, message) => Math.max(max, message.deliverySequence ?? 0),
         0,
@@ -2024,7 +2048,7 @@ export default function GameApp() {
         false,
         deliveryRuntimeRef.current.linkState,
       );
-      const allowFail = sourceNode?.deliveryEvent === 'chapter5_explicit_failure';
+      const allowFail = spec.phases.some(phase => phase.state === 'failed');
       const playerMsg: DisplayMessage = {
         id: messageId,
         speaker: 'player',
@@ -2068,9 +2092,6 @@ export default function GameApp() {
         }
         return nextCycle;
       });
-      const persistedMessages = appendDeviationNoticeIfNeeded(
-        choiceDeviatesFromRecord(previousCycleRecordRef.current, fromNodeId, choiceId),
-      );
       updateDeliveryRuntime(current => {
         const withReceipt = sourceNode?.deliveryEvent
           ? setDeliveryReceipt(current, sourceNode.deliveryEvent, 'in_progress')
@@ -2082,7 +2103,7 @@ export default function GameApp() {
           pendingAutoRetryIds: [],
         };
       });
-      persistState(nextId, persistedMessages);
+      persistState(nextId, messagesRef.current);
       jumpToBottom();
 
       if (deliveryControllerRef.current) {
@@ -2094,7 +2115,6 @@ export default function GameApp() {
     [
       applyChoiceEffects,
       choiceNodeId,
-      choices,
       claimChoiceResult,
       handleChoiceTimeout,
       handleDeliveryComplete,
@@ -2103,7 +2123,6 @@ export default function GameApp() {
       storyNodeMap,
       updateDeliveryRuntime,
       updateCurrentCycle,
-      appendDeviationNoticeIfNeeded,
     ],
   );
 
@@ -2194,15 +2213,12 @@ export default function GameApp() {
       value: text,
       nextId,
     }));
-    const persistedMessages = appendDeviationNoticeIfNeeded(
-      inputDeviatesFromRecord(previousCycleRecordRef.current, inputNode.id, text),
-    );
     setInputNode(null);
     setPlayerInput('');
-    persistState(nextId, persistedMessages);
+    persistState(nextId, messagesRef.current);
     jumpToBottom(true);
     scheduleSequence(nextId, 400);
-  }, [appendDeviationNoticeIfNeeded, inputNode, jumpToBottom, persistState, playerInput, scheduleSequence, updateCurrentCycle]);
+  }, [inputNode, jumpToBottom, persistState, playerInput, scheduleSequence, updateCurrentCycle]);
 
   const lastMsg = messages[messages.length - 1];
   const isLastNovaTyping =
@@ -2252,6 +2268,7 @@ export default function GameApp() {
           : t('contact.stableSubtitle');
   const isFinished = messages.some(message => message.type === 'end');
   const isSignalActive = isSyncing || isTyping || isTypewriterActive || Boolean(deliveryRuntime.activeMessageId);
+  const isEmptyReboot08Link = cycleState.currentRebootNumber >= 8 && !cycleState.damagedSeventh;
   const shouldShowMediaSafeSpace = Boolean(choices && hasRecentMediaMessage(messages));
   const isReboot08Menu = persistentProgress.reboot08TitleUnlocked;
   const hasPersistentArchive =
@@ -2307,16 +2324,14 @@ export default function GameApp() {
                 <>
                   <button
                     type="button"
-                    onClick={() => startGame(
-                      saveSnapshot?.cycleState.currentRebootNumber === 8 ? 'continue' : 'reconnect08'
-                    )}
+                    onClick={() => startGame(saveSnapshot ? 'continue' : 'reconnect08')}
                     className="menu-command menu-command-primary menu-command-reconnect08"
                   >
                     <span aria-hidden="true" className="menu-command-corner menu-command-corner-left" />
                     <strong>{t('menu.reconnect08')}</strong>
                     <span aria-hidden="true" className="menu-command-corner menu-command-corner-right" />
                   </button>
-                  {saveSnapshot?.cycleState.currentRebootNumber === 8 && (
+                  {saveSnapshot && (
                     <div className="menu-save-meta">
                       <span>{t('menu.lastConnection', { time: saveTime })}</span>
                       <span>{t('menu.currentProgress', { progress: saveProgress })}</span>
@@ -2440,9 +2455,11 @@ export default function GameApp() {
   }
 
   return (
-    <div className="app-shell game-shell chat-screen relative overflow-hidden">
+    <div className={`app-shell game-shell chat-screen relative overflow-hidden ${stats.gravityArrayDegraded ? 'gravity-array-degraded' : ''} ${stats.binaryScarUI ? 'binary-scar-active' : ''}`}>
       {!activeInteraction && <StarBackground />}
       {!activeInteraction && <div className="chat-atmosphere pointer-events-none" aria-hidden />}
+      {stats.gravityArrayDegraded && !activeInteraction && <LowGravityLayer />}
+      {showRebootFallback && <RebootFallbackOverlay />}
       {signalGlitch && (
         <div
           key={signalGlitch.pulse}
@@ -2484,40 +2501,13 @@ export default function GameApp() {
           currentRebootNumber={cycleState.currentRebootNumber}
         />
       )}
-      {syncOfferVisible && (
-        <div className="cycle-sync-offer" role="dialog" aria-modal="true" aria-label={t('cycle.offerTitle')}>
-          <span className="cycle-sync-offer-code">OBSERVER-01 / PREVIOUS LINK 07</span>
-          <h2>{t('cycle.offerTitle')}</h2>
-          <p>{t('cycle.offerBody')}</p>
-          <div className="cycle-sync-offer-warning">{t('cycle.offerWarning')}</div>
-          <div className="cycle-sync-offer-actions">
-            <button
-              type="button"
-              className="cycle-sync-offer-primary"
-              onClick={() => {
-                const record = previousCycleRecordRef.current;
-                if (record) beginCycleSync(record);
-              }}
-            >
-              {t('cycle.beginSync')}
-            </button>
-            <button type="button" onClick={declineCycleSync}>{t('cycle.enterManually')}</button>
-          </div>
-        </div>
-      )}
-      {activeSyncEvents.length > 0 && (
-        <CycleSyncOverlay
-          events={activeSyncEvents}
-          visibleCount={syncVisibleCount}
-          onInterrupt={interruptCycleSync}
-        />
-      )}
       {activeInteraction && (
         <SpecialInteractionOverlay
           node={activeInteraction}
           locale={locale}
           sealedAnchor={stats.temporaryAnchorSealed}
           powerFirstFailureReason={stats.powerFirstFailureReason}
+          lowGravity={stats.gravityArrayDegraded}
           avatarPresentation={avatarPresentation}
           onResultLocked={handleSpecialInteractionResultLocked}
           onComplete={handleSpecialInteractionComplete}
@@ -2537,17 +2527,22 @@ export default function GameApp() {
 
       <div
         data-link-state={deliveryRuntime.linkState}
+        data-gravity-state={stats.gravityArrayDegraded ? 'degraded' : 'nominal'}
         className={`game-layout relative z-10 flex flex-col flex-1 min-h-0 w-full max-w-[1160px] mx-auto bg-[#080A0D]/84 backdrop-blur-sm ${
           signalGlitch ? `signal-glitch-frame signal-glitch-frame-level-${signalGlitch.level} signal-glitch-frame-style-${signalGlitch.style}` : ''
         }`}
       >
           <header className="game-header chat-header flex items-center gap-3 px-3 sm:px-4 py-3 bg-[#151A26]/92 border-b border-[#1A2236]/80 shrink-0">
             <div className="relative shrink-0">
-              <NovaAvatar
-                presentation={avatarPresentation}
-                transition={avatarTransition}
-                className={`nova-header-avatar ${signalGlitch ? `signal-glitch-avatar signal-glitch-avatar-${signalGlitch.tone} signal-glitch-avatar-style-${signalGlitch.style}` : ''}`}
-              />
+              {isEmptyReboot08Link ? (
+                <div className="missing-contact-avatar" aria-label="LIVE-07 unavailable">07</div>
+              ) : (
+                <NovaAvatar
+                  presentation={avatarPresentation}
+                  transition={avatarTransition}
+                  className={`nova-header-avatar ${signalGlitch ? `signal-glitch-avatar signal-glitch-avatar-${signalGlitch.tone} signal-glitch-avatar-style-${signalGlitch.style}` : ''}`}
+                />
+              )}
               <span
                 className="contact-status-dot"
                 data-connection={avatarState.novaConnectionState}
@@ -2587,7 +2582,7 @@ export default function GameApp() {
                   <span className="header-btn-label">{isSkippingToChoice ? t('game.skipping') : t('game.skip')}</span>
                 </button>
               )}
-              {cycleState.syncInterrupted && !activeInteraction && !syncOfferVisible && !observerEcho && (
+              {cycleState.damagedSeventh && !activeInteraction && !observerEcho && (
                 <button
                   type="button"
                   onClick={skipReadText}

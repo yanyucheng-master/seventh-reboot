@@ -19,6 +19,8 @@ import { InteractionTitle } from './InteractionTitle';
 type PowerRoutingInteractionProps = {
   copy: SpecialInteractionCopy;
   attempt: 1 | 2;
+  damaged?: boolean;
+  lowGravity?: boolean;
   previousFailure?: PowerFailureReason;
   onResultLocked: (result: SpecialInteractionCompletion) => void;
   onComplete: (result: SpecialInteractionCompletion) => void;
@@ -43,6 +45,8 @@ function createInitialStages(): Record<PowerStage, PowerAllocation> {
 export function PowerRoutingInteraction({
   copy,
   attempt,
+  damaged = false,
+  lowGravity = false,
   previousFailure,
   onResultLocked,
   onComplete,
@@ -135,10 +139,23 @@ export function PowerRoutingInteraction({
   }
 
   return (
-    <section className="power-routing" aria-labelledby="power-routing-title">
+    <section className="power-routing" aria-labelledby="power-routing-title" data-low-gravity={lowGravity || undefined}>
+      {lowGravity && (
+        <div className="power-low-gravity-field" aria-hidden="true">
+          <i /><i /><i /><i />
+        </div>
+      )}
       <p className="interaction-kicker">{copy.power.kicker}</p>
       <InteractionTitle id="power-routing-title">{copy.power.title}</InteractionTitle>
       <p className="interaction-mission">{copy.power.mission}</p>
+
+      {lowGravity && (
+        <div className="power-gravity-readout" role="status">
+          <span>MAINTENANCE DECK / GRAVITY ARRAY</span>
+          <strong>0.18g</strong>
+          <small>MAG-BOOT ANCHOR / ACTIVE</small>
+        </div>
+      )}
 
       <div className="power-attempt-strip" data-final={attempt === 2 || undefined}>
         <span>{attempt === 1 ? copy.power.firstAttempt : copy.power.finalAttempt}</span>
@@ -147,9 +164,11 @@ export function PowerRoutingInteraction({
 
       {attempt === 2 && (
         <div className="power-previous-failure" role="note">
-          <span>{copy.power.previousFailure}</span>
+          <span>{damaged ? 'REBOOT 07-DAMAGED' : copy.power.previousFailure}</span>
           <strong>{previousFailure ? copy.power.failureReasons[previousFailure] : 'ROUTE FAULT / UNKNOWN'}</strong>
-          <small>{copy.power.rollbackConsumed}</small>
+          <small>{damaged
+            ? 'NOVA-06 ROLLBACK AUTHORIZATION / UNAVAILABLE'
+            : copy.power.rollbackConsumed}</small>
         </div>
       )}
 

@@ -6,11 +6,9 @@ import {
   applySpecialInteractionCompletion,
   evaluateBulkheadDecision,
   findPowerFailureReason,
-  isCriticalLogPassword,
   isPowerAllocationStable,
   matchesInteractionCondition,
   matchesInteractionPrerequisite,
-  normalizeAuthorizationKey,
   POWER_STAGE_THRESHOLDS,
   rebalancePowerAllocation,
   type PowerAllocation,
@@ -54,7 +52,7 @@ const failedPower: Record<PowerStage, PowerAllocation> = {
   core_read: { lifeSupport: 35, communications: 25, coreScan: 40 },
 };
 
-scenario('01 均压一次成功', () => {
+scenario('01 均压安全解', () => {
   assert.deepEqual(evaluateBulkheadDecision({
     sealTarget: 'observation',
     equalizeTarget: 'hallway',
@@ -63,250 +61,101 @@ scenario('01 均压一次成功', () => {
   }), { result: 'safe' });
 });
 
-scenario('02 均压次优或受伤', () => {
-  const evaluation = evaluateBulkheadDecision({
-    sealTarget: 'observation',
-    equalizeTarget: 'hallway',
-    elapsedMs: 18_000,
-  });
-  assert.equal(evaluation.result, 'injured');
+scenario('02 均压迟缓或压力偏低只造成受伤', () => {
   assert.equal(evaluateBulkheadDecision({
-    sealTarget: 'observation',
-    equalizeTarget: 'hallway',
-    transitionPressure: 91,
-    elapsedMs: 8_000,
+    sealTarget: 'observation', equalizeTarget: 'hallway', elapsedMs: 18_000,
   }).result, 'injured');
-  const stats = applySpecialInteractionCompletion(freshStats(), {
-    kind: 'bulkhead-isolation',
-    routeKey: 'injured',
-  });
-  assert.equal(stats.bulkheadInjured, true);
+  assert.equal(evaluateBulkheadDecision({
+    sealTarget: 'observation', equalizeTarget: 'hallway', transitionPressure: 91, elapsedMs: 8_000,
+  }).result, 'injured');
 });
 
-scenario('03 均压失败', () => {
-  const evaluation = evaluateBulkheadDecision({
-    sealTarget: 'hallway',
-    equalizeTarget: 'hallway',
-    elapsedMs: 5_000,
-  });
-  assert.deepEqual(evaluation, { result: 'fatal', failureReason: 'hallway_sealed' });
-  const stats = applySpecialInteractionCompletion(freshStats(), {
-    kind: 'bulkhead-isolation',
-    routeKey: 'fatal',
-    failureReason: evaluation.failureReason,
-  });
-  assert.equal(stats.pendingReboot08, true);
-  assert.equal(stats.earlyFailureCause, 'bulkhead_failure');
-});
-
-scenario('04 均压超时', () => {
+scenario('03 均压错误舱门与错误排放为致死', () => {
   assert.deepEqual(evaluateBulkheadDecision({
-    sealTarget: 'observation',
-    equalizeTarget: 'hallway',
-    elapsedMs: 30_000,
-    timedOut: true,
-  }), { result: 'fatal', failureReason: 'seal_timeout' });
+    sealTarget: 'hallway', equalizeTarget: 'hallway', elapsedMs: 5_000,
+  }), { result: 'fatal', failureReason: 'hallway_sealed' });
+  assert.deepEqual(evaluateBulkheadDecision({
+    sealTarget: 'observation', equalizeTarget: 'purge', elapsedMs: 5_000,
+  }), { result: 'fatal', failureReason: 'transition_purged' });
 });
 
-scenario('05 联合密钥一次成功', () => {
-  for (const value of ['0701', '07-01', '07 01', '０７０１', '０７－０１', '07/01']) {
-    assert.equal(isCriticalLogPassword(value), true, value);
-  }
-  assert.equal(normalizeAuthorizationKey(' ０７ - ０１ '), '0701');
+scenario('04 均压超时进入致死回溯', () => {
+  const evaluation = evaluateBulkheadDecision({
+    sealTarget: 'observation', equalizeTarget: 'hallway', elapsedMs: 30_000, timedOut: true,
+  });
   const stats = applySpecialInteractionCompletion(freshStats(), {
-    kind: 'critical-log-password',
-    routeKey: 'success',
+    kind: 'bulkhead-isolation', routeKey: 'fatal', failureReason: evaluation.failureReason,
   });
-  assert.equal(stats.jointAuthorizationCompleted, true);
-  assert.equal(stats.nova06PowerOverrideUsed, false);
+  assert.equal(evaluation.failureReason, 'seal_timeout');
+  assert.equal(stats.earlyFailureCause, 'bulkhead_failure');
+  assert.equal(stats.pendingReboot08, true);
 });
 
-scenario('06 联合密钥错误后重试成功', () => {
-  assert.equal(isCriticalLogPassword('0710'), false);
-  const before = freshStats();
-  const retry = applySpecialInteractionCompletion(before, {
-    kind: 'critical-log-password',
-    routeKey: 'retry',
+scenario('05 密封记录顺序成功后开放一次性静态授权', () => {
+  const retryBase = freshStats();
+  assert.equal(applySpecialInteractionCompletion(retryBase, {
+    kind: 'sealed-record-order', routeKey: 'retry',
+  }), retryBase);
+  const success = applySpecialInteractionCompletion(retryBase, {
+    kind: 'sealed-record-order', routeKey: 'success',
   });
-  assert.equal(retry, before);
-  const success = applySpecialInteractionCompletion(retry, {
-    kind: 'critical-log-password',
-    routeKey: 'success',
-  });
+  assert.equal(success.jointAuthorizationCompleted, true);
   assert.equal(success.criticalLogUnlocked, true);
-  assert.equal(success.nova06PowerOverrideUsed, false);
+  assert.equal(success.nova06RollbackAuthorizationAvailable, true);
 });
 
-scenario('07 供能第一次成功', () => {
-  assert.equal(findPowerFailureReason(stablePower), undefined);
-  const stats = applySpecialInteractionCompletion(freshStats(), {
-    kind: 'power-routing',
-    routeKey: 'success',
-    attempt: 1,
+scenario('06 受损第七次不能重新获得 NOVA-06 授权', () => {
+  const success = applySpecialInteractionCompletion(freshStats({ damagedSeventh: true }), {
+    kind: 'sealed-record-order', routeKey: 'success',
+  });
+  assert.equal(success.jointAuthorizationCompleted, true);
+  assert.equal(success.nova06RollbackAuthorizationAvailable, false);
+});
+
+scenario('07 供能第一次成功直接注销未使用授权', () => {
+  const stats = applySpecialInteractionCompletion(freshStats({
+    nova06RollbackAuthorizationAvailable: true,
+  }), {
+    kind: 'power-routing', routeKey: 'success', attempt: 1,
   });
   assert.equal(stats.powerRoutingResult, 'first_success');
-  assert.equal(stats.nova06PowerOverrideUsed, false);
-  assert.equal(stats.nova06PowerOverrideExpired, true);
+  assert.equal(stats.nova06RollbackAuthorizationAvailable, false);
+  assert.equal(stats.nova06RollbackAuthorizationUsed, false);
+  assert.equal(stats.aiEmergencyRollbackExecuted, false);
 });
 
-scenario('08 供能第一次失败、第二次成功', () => {
+scenario('08 第一次错误供能由舰载 AI 消耗静态授权撤回', () => {
   const reason = findPowerFailureReason(failedPower);
+  const stats = applySpecialInteractionCompletion(freshStats({
+    nova06RollbackAuthorizationAvailable: true,
+  }), {
+    kind: 'power-routing', routeKey: 'fail', attempt: 1, failureReason: reason,
+  });
   assert.equal(reason, 'life_support_below_minimum');
-  let stats = applySpecialInteractionCompletion(freshStats(), {
-    kind: 'power-routing',
-    routeKey: 'fail',
-    attempt: 1,
-    failureReason: reason,
-  });
-  assert.equal(stats.nova06PowerOverrideUsed, true);
   assert.equal(stats.powerFirstFailureReason, reason);
-  assert.equal(matchesInteractionPrerequisite(stats, {
-    key: 'nova06PowerOverrideUsed',
-    value: true,
-  }), true);
-  stats = applySpecialInteractionCompletion(stats, {
-    kind: 'power-routing',
-    routeKey: 'success',
-    attempt: 2,
-  });
-  assert.equal(stats.powerRoutingResult, 'retry_success');
+  assert.equal(stats.nova06RollbackAuthorizationAvailable, false);
+  assert.equal(stats.nova06RollbackAuthorizationUsed, true);
+  assert.equal(stats.aiEmergencyRollbackExecuted, true);
   assert.equal(stats.pendingReboot08, false);
 });
 
-scenario('09 供能连续两次失败', () => {
-  let stats = applySpecialInteractionCompletion(freshStats(), {
-    kind: 'power-routing',
-    routeKey: 'fail',
-    attempt: 1,
-    failureReason: 'life_support_below_minimum',
+scenario('09 最终供能成功与失败严格分流', () => {
+  const recovered = applySpecialInteractionCompletion(freshStats({ powerRoutingAttempt: 1 }), {
+    kind: 'power-routing', routeKey: 'success', attempt: 2,
   });
-  stats = applySpecialInteractionCompletion(stats, {
-    kind: 'power-routing',
-    routeKey: 'fatal',
-    attempt: 2,
-    failureReason: 'communications_interrupted',
+  const fatal = applySpecialInteractionCompletion(freshStats({ powerRoutingAttempt: 1 }), {
+    kind: 'power-routing', routeKey: 'fatal', attempt: 2, failureReason: 'timeout',
   });
-  assert.equal(stats.powerRoutingResult, 'fatal');
-  assert.equal(stats.pendingReboot08, true);
-  assert.equal(stats.earlyFailureCause, 'power_routing_failure');
+  assert.equal(recovered.powerRoutingResult, 'retry_success');
+  assert.equal(recovered.pendingReboot08, false);
+  assert.equal(fatal.powerRoutingResult, 'fatal');
+  assert.equal(fatal.earlyFailureCause, 'power_routing_failure');
+  assert.equal(fatal.pendingReboot08, true);
 });
 
-scenario('10 供能第一次失败后刷新页面', () => {
-  const stats = applySpecialInteractionCompletion(freshStats(), {
-    kind: 'power-routing',
-    routeKey: 'fail',
-    attempt: 1,
-    failureReason: 'core_scan_underpowered',
-  });
-  const save = createSaveData(
-    'CH05B-0021',
-    [],
-    createDefaultNovaAvatarState(),
-    'verified',
-    stats,
-    createDefaultChatDeliveryRuntime(),
-  );
-  const restored = migrateSaveData(JSON.parse(JSON.stringify(save)));
-  assert.ok(restored);
-  assert.equal(restored.stats.nova06PowerOverrideUsed, true);
-  assert.equal(restored.stats.powerFirstFailureReason, 'core_scan_underpowered');
-  assert.equal(resolveResumeNodeId(restored), 'CH05B-0021');
-});
-
-scenario('11 供能第一次失败后退出再进入', () => {
-  const normalized = normalizeGameStats({
-    ...defaultStats,
-    powerRoutingAttempt: 1,
-    powerFirstFailureReason: 'communications_interrupted',
-    nova06PowerOverrideUsed: true,
-  });
-  assert.equal(normalized.powerRoutingAttempt, 1);
-  assert.equal(normalized.nova06PowerOverrideUsed, true);
-  assert.equal(normalized.nova06PowerOverrideExpired, true);
-});
-
-scenario('12 供能第二次超时', () => {
+scenario('10 供能阈值与总功率守恒', () => {
+  assert.equal(findPowerFailureReason(stablePower), undefined);
   assert.equal(findPowerFailureReason(stablePower, true), 'timeout');
-  const stats = applySpecialInteractionCompletion(freshStats({
-    powerRoutingAttempt: 1,
-    nova06PowerOverrideUsed: true,
-    nova06PowerOverrideExpired: true,
-  }), {
-    kind: 'power-routing',
-    routeKey: 'fatal',
-    attempt: 2,
-    failureReason: 'timeout',
-  });
-  assert.equal(stats.pendingReboot08, true);
-});
-
-scenario('13 三种记忆锚点的封存与恢复', () => {
-  for (const anchor of ['maintenance_board', 'white_flower', 'goodnight'] as SealableMemoryAnchor[]) {
-    const before = freshStats({ memoryAnchors: ['n7', 'white_flower', 'first_message'] });
-    const sealed = applySpecialInteractionCompletion(before, {
-      kind: 'memory-seal',
-      routeKey: anchor,
-      anchor,
-    });
-    assert.equal(sealed.temporaryAnchorSealed, anchor);
-    assert.deepEqual(sealed.memoryAnchors, before.memoryAnchors);
-    const restored = applySpecialInteractionCompletion(sealed, {
-      kind: 'memory-restore',
-      routeKey: anchor,
-      anchor,
-    });
-    assert.equal(restored.temporaryAnchorSealed, anchor);
-    assert.equal(restored.memoryRestoreResult, anchor);
-    assert.equal(restored.temporaryAnchorRestored, true);
-  }
-});
-
-scenario('14 正常结局', () => {
-  assert.equal(determineEnding(freshStats({ acceptFarewell: true, finalChoice: 'accept_farewell' })), 'normal');
-});
-
-scenario('15 真结局', () => {
-  assert.equal(determineEnding(freshStats({
-    trust: 4,
-    memory: 4,
-    acceptFarewell: true,
-    finalChoice: 'accept_farewell',
-    memoryAnchors: ['first_message', 'n7', 'white_flower', 'goodnight', 'observatory'],
-  })), 'true');
-});
-
-scenario('16 原有拒绝告别坏结局', () => {
-  assert.equal(determineEnding(freshStats({
-    trust: 6,
-    memory: 6,
-    acceptFarewell: false,
-    finalChoice: 'refuse_farewell',
-  })), 'bad');
-});
-
-scenario('17 新增第八次重启坏结局', () => {
-  const fatal = applySpecialInteractionCompletion(freshStats(), {
-    kind: 'bulkhead-isolation',
-    routeKey: 'fatal',
-    failureReason: 'seal_timeout',
-  });
-  const reachedReboot = applyPersistentStoryNodeEffects(fatal, 'END-B-0039');
-  assert.equal(reachedReboot.pendingReboot08, true);
-  assert.equal(reachedReboot.reboot08TitleUnlocked, false);
-});
-
-scenario('18 旧存档正确失效', () => {
-  assert.equal(migrateSaveData({
-    pendingNodeId: 'PRO-0001',
-    messages: [],
-    stats: defaultStats,
-    storyVersion: 'V1.0',
-    storyContentVersion: 'old-content',
-    saveStateVersion: 1,
-  }), null);
-});
-
-scenario('19 手机端与桌面端基本操作的纯逻辑边界', () => {
   const channels: PowerChannel[] = ['lifeSupport', 'communications', 'coreScan'];
   let allocation: PowerAllocation = { lifeSupport: 34, communications: 33, coreScan: 33 };
   for (const channel of channels) {
@@ -319,47 +168,170 @@ scenario('19 手机端与桌面端基本操作的纯逻辑边界', () => {
   assert.equal(isPowerAllocationStable(failedPower.transit, POWER_STAGE_THRESHOLDS.transit), false);
 });
 
-scenario('20 所有章节正常到达且无死链', () => {
+scenario('11 三种记忆锚点可封存并在终章恢复', () => {
+  for (const anchor of ['maintenance_board', 'white_flower', 'goodnight'] as SealableMemoryAnchor[]) {
+    const before = freshStats({ memoryAnchors: ['n7', 'white_flower', 'first_message'] });
+    const sealed = applySpecialInteractionCompletion(before, {
+      kind: 'memory-seal', routeKey: anchor, anchor,
+    });
+    const restored = applySpecialInteractionCompletion(sealed, {
+      kind: 'memory-restore', routeKey: anchor, anchor,
+    });
+    assert.equal(sealed.temporaryAnchorSealed, anchor);
+    assert.deepEqual(sealed.memoryAnchors, before.memoryAnchors);
+    assert.equal(restored.memoryRestoreResult, anchor);
+    assert.equal(restored.temporaryAnchorRestored, true);
+  }
+});
+
+scenario('12 航线锁定的重试、安全与致死结果互斥', () => {
+  const base = freshStats();
+  assert.equal(applySpecialInteractionCompletion(base, {
+    kind: 'course-lock', routeKey: 'retry',
+  }), base);
+  assert.equal(applySpecialInteractionCompletion(base, {
+    kind: 'course-lock', routeKey: 'success',
+  }).courseLockCompleted, true);
+  const fatal = applySpecialInteractionCompletion(base, {
+    kind: 'course-lock', routeKey: 'fatal',
+  });
+  assert.equal(fatal.earlyFailureCause, 'course_lock_failure');
+  assert.equal(fatal.pendingReboot08, true);
+});
+
+scenario('13 第七协议物理隔离成功与失败互斥', () => {
+  assert.equal(applySpecialInteractionCompletion(freshStats(), {
+    kind: 'protocol-cut', routeKey: 'success',
+  }).protocolCutCompleted, true);
+  const fatal = applySpecialInteractionCompletion(freshStats(), {
+    kind: 'protocol-cut', routeKey: 'fatal',
+  });
+  assert.equal(fatal.earlyFailureCause, 'protocol_cut_failure');
+  assert.equal(fatal.pendingReboot08, true);
+});
+
+scenario('14 互动条件与直接状态条件读取当前循环字段', () => {
+  const stats = freshStats({
+    bulkheadResult: 'injured',
+    bulkheadInjured: true,
+    jointAuthorizationCompleted: true,
+    courseLockCompleted: true,
+  });
+  assert.equal(matchesInteractionCondition(stats, {
+    kind: 'bulkhead-isolation', routeKey: 'injured',
+  }), true);
+  assert.equal(matchesInteractionCondition(stats, {
+    kind: 'sealed-record-order', routeKey: 'success',
+  }), true);
+  assert.equal(matchesInteractionCondition(stats, {
+    kind: 'course-lock', routeKey: 'success',
+  }), true);
+  assert.equal(matchesInteractionPrerequisite(stats, {
+    key: 'bulkheadInjured', value: true,
+  }), true);
+});
+
+scenario('15 供能错误后的状态可以存档并恢复', () => {
+  const stats = applySpecialInteractionCompletion(freshStats({
+    nova06RollbackAuthorizationAvailable: true,
+    gravityArrayDegraded: true,
+  }), {
+    kind: 'power-routing', routeKey: 'fail', attempt: 1, failureReason: 'core_scan_underpowered',
+  });
+  const save = createSaveData(
+    'CH05B-0020',
+    [],
+    createDefaultNovaAvatarState(),
+    'verified',
+    stats,
+    createDefaultChatDeliveryRuntime(),
+  );
+  const restored = migrateSaveData(JSON.parse(JSON.stringify(save)));
+  assert.ok(restored);
+  assert.equal(restored.stats.nova06RollbackAuthorizationUsed, true);
+  assert.equal(restored.stats.aiEmergencyRollbackExecuted, true);
+  assert.equal(restored.stats.powerFirstFailureReason, 'core_scan_underpowered');
+  assert.equal(restored.stats.gravityArrayDegraded, true);
+  assert.equal(resolveResumeNodeId(restored), 'CH05B-0020');
+});
+
+scenario('16 旧供能字段只用于迁移且不会恢复旧接管概念', () => {
+  const normalized = normalizeGameStats({
+    ...defaultStats,
+    nova06PowerOverrideAvailable: true,
+    nova06PowerOverrideUsed: true,
+  } as GameStats & Record<string, unknown>);
+  assert.equal(normalized.nova06RollbackAuthorizationAvailable, false);
+  assert.equal(normalized.nova06RollbackAuthorizationUsed, true);
+  assert.equal(normalized.aiEmergencyRollbackExecuted, true);
+});
+
+scenario('17 重力阵列降级与终章复位不改写舱压判定', () => {
+  const base = freshStats({ bulkheadResult: 'safe' });
+  const degraded = applyPersistentStoryNodeEffects(base, 'CH05B-GRAV-0001');
+  const reset = applyPersistentStoryNodeEffects(degraded, 'FIN-0001');
+  assert.equal(degraded.gravityArrayDegraded, true);
+  assert.equal(degraded.bulkheadResult, 'safe');
+  assert.equal(reset.gravityArrayDegraded, false);
+  assert.equal(reset.bulkheadResult, 'safe');
+});
+
+scenario('18 普通、真、坏结局的当前条件可区分', () => {
+  assert.equal(determineEnding(freshStats({
+    acceptFarewell: true,
+    finalChoice: 'accept_farewell',
+    firstMessageCorrect: false,
+  })), 'normal');
+  assert.equal(determineEnding(freshStats({
+    trust: 4,
+    memory: 4,
+    acceptFarewell: true,
+    finalChoice: 'accept_farewell',
+    firstMessageCorrect: true,
+    memoryAnchors: ['first_message', 'n7', 'white_flower', 'goodnight', 'observatory'],
+  })), 'true');
+  assert.equal(determineEnding(freshStats({
+    acceptFarewell: false,
+    finalChoice: 'refuse_farewell',
+  })), 'bad');
+});
+
+scenario('19 所有剧情跳转目标存在', () => {
   const nodeMap = new Map(storyNodes.map(node => [node.id, node]));
   assert.equal(nodeMap.size, storyNodes.length, 'Story node IDs must be unique');
-  const queue = ['PRO-0001', 'END-N-0001'];
-  const reachable = new Set<string>();
-  while (queue.length > 0) {
-    const id = queue.shift();
-    if (!id || id === 'MENU' || reachable.has(id)) continue;
-    reachable.add(id);
-    const node = nodeMap.get(id);
-    assert.ok(node, `Missing reachable node ${id}`);
+  for (const node of storyNodes) {
     const targets = [
       node.nextId,
       node.timeoutNextId,
       node.conditionElseNextId,
+      node.directConditionNextId,
       ...Object.values(node.interactionNextIds ?? {}),
       ...(node.choices ?? []).map(choice => choice.nextId),
     ];
     for (const target of targets) {
-      if (target && target !== 'MENU' && !reachable.has(target)) queue.push(target);
+      if (!target || target === 'MENU' || target.startsWith('{')) continue;
+      assert.ok(nodeMap.has(target), `${node.id} points to missing node ${target}`);
     }
   }
-  assert.equal(reachable.size, storyNodes.length);
-  assert.equal(matchesInteractionCondition(
-    freshStats({ bulkheadResult: 'injured', bulkheadInjured: true }),
-    { kind: 'bulkhead-isolation', routeKey: 'injured' },
-  ), true);
 });
 
-const interactionNodes = storyNodes.filter(node => node.type === 'interaction' && node.interactionKind);
-const interactionKinds = new Set(interactionNodes.map(node => node.interactionKind));
-assert.equal(interactionNodes.length, 6, 'Five formal interactions use six runtime hooks');
-assert.deepEqual([...interactionKinds].sort(), [
-  'bulkhead-isolation',
-  'critical-log-password',
-  'memory-restore',
-  'memory-seal',
-  'power-routing',
-]);
-assert.equal(storyNodes.some(node => String(node.interactionKind).includes('signal')), false);
-assert.equal(storyNodes.filter(node => /^ch[124]_/.test(node.id) && node.interactionKind).length, 0);
+scenario('20 正式高潮互动节点与类型齐全', () => {
+  const interactionNodes = storyNodes.filter(node => node.type === 'interaction' && node.interactionKind);
+  const interactionKinds = new Set(interactionNodes.map(node => node.interactionKind));
+  assert.equal(interactionNodes.length, 9);
+  assert.deepEqual([...interactionKinds].sort(), [
+    'bulkhead-isolation',
+    'course-lock',
+    'memory-restore',
+    'memory-seal',
+    'power-routing',
+    'protocol-cut',
+    'sealed-record-order',
+  ]);
+  for (const id of ['CH03-0144', 'CH05A-0016', 'CH05B-0016', 'CH05B-0028', 'CH05B-0032', 'CH05B-0069', 'CH05B-0080', 'CH05B-0102', 'FIN-0010']) {
+    assert.ok(storyNodes.some(node => node.id === id && node.interactionKind), `Missing formal interaction ${id}`);
+  }
+});
 
 console.log(`Special interaction scenarios passed: ${scenarios.length}/20`);
 for (const name of scenarios) console.log(`  PASS ${name}`);

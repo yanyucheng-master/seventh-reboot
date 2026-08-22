@@ -72,12 +72,18 @@ assert.deepEqual(resolveNovaAvatarPresentation(state), { base: 'n7_private', ove
 state = advance(state, 'CH05A-0003');
 assert.deepEqual(resolveNovaAvatarPresentation(state), { base: 'n7_private', overlay: 'none' });
 
-const trueEnding = advance(state, 'END-T-0003');
+const stableLinkState = state;
+state = advance(state, 'CH05B-0107');
+assert.deepEqual(resolveNovaAvatarPresentation(state), { base: 'n7_private', overlay: 'offline_residual' });
+state = advance(state, 'FIN-0004');
+assert.deepEqual(resolveNovaAvatarPresentation(state), { base: 'n7_private', overlay: 'signal_weak' });
+
+const trueEnding = advance(state, 'END-T-0006');
 assert.deepEqual(resolveNovaAvatarPresentation(trueEnding), { base: 'n7_private', overlay: 'archived' });
-const normalEnding = advance(state, 'END-N-0010');
+const normalEnding = advance(state, 'END-N-0007');
 assert.deepEqual(resolveNovaAvatarPresentation(normalEnding), { base: 'n7_private', overlay: 'offline_residual' });
 
-const badEndingEffect = applyNovaAvatarNodeEffect(state, 'END-B-0038');
+const badEndingEffect = applyNovaAvatarNodeEffect(state, 'END-B-0009');
 assert.equal(badEndingEffect.transition, 'profile-clear');
 assert.deepEqual(badEndingEffect.noticeKeys, ['avatar.badEnding.profileReset']);
 assert.deepEqual(resolveNovaAvatarPresentation(badEndingEffect.state), {
@@ -96,12 +102,12 @@ for (const nodeId of ['CH01-0128', 'CH01-0137', 'CH04-0124', 'CH04-0153', 'CH04-
 }
 assert.equal(resolveNovaAvatarPresentation(missingFlower).base, 'n7_private');
 
-assert.equal(resolveNovaAvatarOverlay(state, {
+assert.equal(resolveNovaAvatarOverlay(stableLinkState, {
   nova06AvatarInterferenceActive: true,
   activeSpecialInteraction: 'power-routing',
 }), 'nova06_interference', 'NOVA-06 must outrank special-interaction overlays');
-assert.equal(resolveNovaAvatarOverlay(state, { activeSpecialInteraction: 'power-routing' }), 'special_power');
-assert.equal(resolveNovaAvatarOverlay(state, { activeSpecialInteraction: 'bulkhead-isolation' }), 'special_bulkhead');
+assert.equal(resolveNovaAvatarOverlay(stableLinkState, { activeSpecialInteraction: 'power-routing' }), 'special_power');
+assert.equal(resolveNovaAvatarOverlay(stableLinkState, { activeSpecialInteraction: 'bulkhead-isolation' }), 'special_bulkhead');
 
 const legacyMessages = [
   {

@@ -38,9 +38,13 @@ const TYPE = new Map([
   ['章节', 'chapter'],
   ['内部章节标记', 'internal-chapter-marker'],
   ['内部结局标记', 'internal-ending-marker'],
+  ['内部结局入口', 'internal-ending-marker'],
   ['观察者残响', 'observer-echo'],
   ['结局标题', 'ending-title'],
   ['标题状态', 'title-state'],
+  ['路由', 'route'],
+  ['状态写入', 'state-write'],
+  ['动态跳转', 'dynamic-jump'],
   ['草稿', 'draft'],
   ['故障', 'glitch'],
   ['文件', 'file'],
@@ -55,6 +59,7 @@ const TYPE = new Map([
   ['断连', 'disconnect'],
   ['重连失败', 'reconnectFailed'],
   ['信号错误', 'signalError'],
+  ['菜单', 'menu'],
   // English export labels
   ['Text', 'text'],
   ['Choice', 'choice'],
@@ -124,7 +129,8 @@ const NEXT_ID_ALIASES = new Map([
 ]);
 
 function cleanNextId(value) {
-  const cleaned = value.split('//')[0].trim();
+  const raw = value.split('//')[0].trim();
+  const cleaned = /^\[[A-Z][A-Z0-9-]*\]$/.test(raw) ? raw.slice(1, -1) : raw;
   return NEXT_ID_ALIASES.get(cleaned) ?? cleaned;
 }
 
@@ -191,9 +197,27 @@ function parseInteractionCondition(value) {
 }
 
 function parseMeta(metaText, node) {
+  const reservedStateWriteKeys = new Set([
+    '图片', 'image', '延迟', 'delay', '故障等级', 'glitch_level', '记忆锚点', 'memory_anchor',
+    '需要锚点', 'required_anchor', 'requires_anchor', '联系人阶段', 'contact_stage', '显示名称',
+    'display_name', '说话身份', 'speaker_identity', '投递事件', 'delivery_event', '档案解锁',
+    'archive_unlock', '显示选项', 'display_choice', 'display_option', '归档入口', 'archive_entry',
+    '外部入口', 'external_entry', '结局', 'ending', '限时', 'time_limit', '超时跳转', '超时',
+    '超时结果', 'timeout', 'timeout_target', 'timeout_result', '记录变量', 'record_variable',
+    '输入变量', 'input_variable', '自动聚焦', 'auto_focus', '长度', 'length', '特殊互动',
+    'interaction_kind', '阶段', 'stage', '尝试', 'attempt', '前置状态', 'prerequisite_state',
+    '前置', '条件', '条件结果', 'condition_result', '不满足则跳转', 'condition_else', '结果跳转',
+    'interaction_next', '动态跳转',
+  ]);
   for (const raw of metaText.split('|')) {
     const part = raw.trim();
     if (!part) continue;
+    const directCondition = part.match(/^若\s+([A-Za-z0-9_]+)=(true|false)\s+则直接跳转\s+([A-Z0-9-]+)$/);
+    if (directCondition) {
+      node.directCondition = { key: directCondition[1], value: directCondition[2] === 'true' };
+      node.directConditionNextId = cleanNextId(directCondition[3]);
+      continue;
+    }
     if (part === '故障效果' || part === 'glitch_effect') {
       node.isGlitch = true;
       continue;
@@ -233,11 +257,15 @@ function parseMeta(metaText, node) {
     if (key === '自动聚焦' || key === 'auto_focus') node.inputAutoFocus = value === 'true';
     if (key === '长度' || key === 'length') parseLengthRange(value, node);
     if (key === '特殊互动' || key === 'interaction_kind') node.interactionKind = value;
+    if (key === '阶段' || key === 'stage') node.interactionStage = value;
     if (key === '尝试' || key === 'attempt') {
       const attempt = Number(value);
       if (attempt === 1 || attempt === 2) node.interactionAttempt = attempt;
     }
-    if (key === '前置状态' || key === 'prerequisite_state') {
+    if (key === '前置状态' || key === 'prerequisite_state' || key === '前置') {
+      node.interactionPrerequisite = parsePair(value);
+    }
+    if (key === '条件' && value.includes(':')) {
       node.interactionPrerequisite = parsePair(value);
     }
     if (key === '条件结果' || key === 'condition_result') {
@@ -248,6 +276,12 @@ function parseMeta(metaText, node) {
     }
     if (key === '结果跳转' || key === 'interaction_next') {
       node.interactionNextIds = parseInteractionNextIds(value);
+    }
+    if (node.type === 'state-write' && value && !reservedStateWriteKeys.has(key) && !key.startsWith('特殊值')) {
+      node.stateWrites = { ...(node.stateWrites ?? {}), [key]: parseScalar(value) };
+    }
+    if (node.type === 'dynamic-jump' && /lastStableCheckpoint/.test(value || part)) {
+      node.dynamicNextKey = 'lastStableCheckpoint';
     }
     if (key.startsWith('特殊值') || key.startsWith('special_value')) {
       const specialValue = key.replace(/^(特殊值|special_value)/, '').trim();
@@ -263,6 +297,30 @@ function parseChoiceMeta(metaText, choice) {
   for (const raw of metaText.split('|')) {
     const part = raw.trim();
     if (!part) continue;
+    if (/^关系裂痕\+1$/.test(part)) {
+      choice.relationshipStrainDelta = 1;
+      continue;
+    }
+    if (/^仅当\s+E\/F\s+均可识别$/.test(part)) {
+      choice.visibilityCondition = 'legacy-ef-both';
+      continue;
+    }
+    if (/^仅当\s+E\s+或\s+F\s+至少一份可识别$/.test(part)) {
+      choice.visibilityCondition = 'legacy-ef-any';
+      continue;
+    }
+    if (/^E\/F\s+均不可识别$/.test(part)) {
+      choice.visibilityCondition = 'legacy-ef-none';
+      continue;
+    }
+    if (/^仅当\s+n7ProofSucceeded=true\s+时显示$/.test(part)) {
+      choice.visibilityCondition = 'n7-proof-succeeded';
+      continue;
+    }
+    if (/^仅当序章选择“不会是外星怪物吧”后显示$/.test(part)) {
+      choice.visibilityCondition = 'legacy-prologue-alien-choice';
+      continue;
+    }
     const [key, value = ''] = part.split('=').map(s => s.trim());
     if (key === '状态影响' || key === 'state_effect' || key === 'stat_effect') choice.statEffect = value;
     if (key === '信任变化' || key === 'trust_delta') choice.trustDelta = Number(value);
@@ -275,6 +333,10 @@ function parseChoiceMeta(metaText, choice) {
     if (key === '告别语气' || key === 'farewell_tone' || key === 'final_farewell_tone') {
       choice.finalFarewellTone = value;
     }
+    if (key === 'farewellTone') choice.finalFarewellTone = value;
+    if (key === 'firstMessageCorrect' || key === '首句回答正确') choice.firstMessageCorrect = value === 'true';
+    if (key === 'n7ProofSucceeded' || key === 'N7证明') choice.n7ProofSucceeded = value === 'true';
+    if (key === '可见条件' || key === 'visibility_condition') choice.visibilityCondition = value;
   }
 }
 
@@ -315,15 +377,18 @@ function parseExport(text) {
       pendingHeading = line.replace(/^##\s*/, '');
       continue;
     }
-    const nodeMatch = line.match(/^\[([^\]]+)\]\s+\(([^/]+)\/([^)]+)\)$/)
-      ?? line.match(/^\[([^\]]+)\]\s+([^/\n\[]+?)\s*\/\s*(.+)$/);
+    const looksLikeChoice = /^\[[A-Z]\]\s*→/.test(line);
+    const nodeMatch = looksLikeChoice
+      ? null
+      : line.match(/^\[([^\]]+)\]\s+\(([^/]+)\/([^)]+)\)$/)
+        ?? line.match(/^\[([^\]]+)\]\s+([^/\n\[]+?)\s*\/\s*(.+)$/);
     if (nodeMatch) {
       finish();
       const [, id, speakerLabel, typeLabel] = nodeMatch;
       if (id === 'MENU') continue;
       const speaker = SPEAKER.get(speakerLabel.trim()) ?? speakerLabel.trim().toLowerCase();
       const type = TYPE.get(typeLabel.trim()) ?? typeLabel.trim();
-      if (type === 'menu' || id === 'MENU') {
+      if (id === 'MENU') {
         current = null;
         continue;
       }
@@ -418,7 +483,8 @@ function preserveNodeRuntime(parsed) {
         oldChoices.find(c => normChoice(c.text) === normChoice(choice.text)) ??
         (sameTargetChoices.length === 1 ? sameTargetChoices[0] : undefined) ??
         oldChoices[index];
-      return match ? { ...match, text: choice.text, nextId: choice.nextId, ...choice } : choice;
+      const preserved = match ? { ...match, text: choice.text, nextId: choice.nextId, ...choice } : choice;
+      return { ...preserved, id: `${node.id}__${index}` };
     });
   }
 
@@ -550,6 +616,10 @@ function renderChoice(choice) {
   prop('timedResponse', choice.timedResponse, lines);
   prop('timedProof', choice.timedProof, lines);
   prop('finalFarewellTone', choice.finalFarewellTone, lines);
+  propRaw('relationshipStrainDelta', choice.relationshipStrainDelta, lines);
+  propRaw('n7ProofSucceeded', choice.n7ProofSucceeded, lines);
+  propRaw('firstMessageCorrect', choice.firstMessageCorrect, lines);
+  prop('visibilityCondition', choice.visibilityCondition, lines);
   lines.push('  }');
   return lines.join('\n  ');
 }
@@ -590,9 +660,14 @@ function renderNode(node) {
   prop('interactionKind', node.interactionKind, lines);
   propJson('interactionNextIds', node.interactionNextIds, lines);
   propRaw('interactionAttempt', node.interactionAttempt, lines);
+  prop('interactionStage', node.interactionStage, lines);
   propJson('interactionPrerequisite', node.interactionPrerequisite, lines);
   propJson('interactionCondition', node.interactionCondition, lines);
   prop('conditionElseNextId', node.conditionElseNextId, lines);
+  propJson('directCondition', node.directCondition, lines);
+  prop('directConditionNextId', node.directConditionNextId, lines);
+  propJson('stateWrites', node.stateWrites, lines);
+  prop('dynamicNextKey', node.dynamicNextKey, lines);
   prop('inputSubmitText', node.inputSubmitText, lines);
   if (Array.isArray(node.archiveUnlock)) {
     lines.push(`    archiveUnlock: ${JSON.stringify(node.archiveUnlock)},`);

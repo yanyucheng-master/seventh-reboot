@@ -16,17 +16,19 @@ export function determineEnding(stats: GameStats): EndingType {
     stats.trust >= TRUE_ENDING_MIN_TRUST &&
     stats.memory >= TRUE_ENDING_MIN_MEMORY &&
     stats.memoryAnchors.length >= TRUE_ENDING_MIN_ANCHORS &&
-    hasCoreAnchors;
+    hasCoreAnchors &&
+    stats.firstMessageCorrect;
 
   return qualifiesTrueEnding ? 'true' : 'normal';
 }
 
-export function resolveEndingStart(requestedNextId: string, stats: GameStats): string {
+export function resolveEndingStart(requestedNextId: string): string {
   if (requestedNextId === 'END-B-0001') return 'END-B-0001';
-  if (requestedNextId !== 'CH05B-0294') return requestedNextId;
+  return requestedNextId;
+}
 
+export function resolveFinalEndingNode(stats: GameStats): 'END-T-0001' | 'END-N-0001' | 'END-B-0001' {
   const ending = determineEnding(stats);
   if (ending === 'bad') return 'END-B-0001';
-  if (ending === 'true') return 'CH05B-0294';
-  return 'END-N-0001';
+  return ending === 'true' ? 'END-T-0001' : 'END-N-0001';
 }

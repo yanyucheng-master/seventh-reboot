@@ -30,16 +30,15 @@ const PHOTO_ARCHIVE_BY_IMAGE: Record<string, string> = {
   '/assets/photo_little_flower.jpg': 'photo_little_flower',
   '/assets/nova_n7_photo.png': 'photo_nova_n7',
   '/assets/photo_observatory.jpg': 'photo_observatory',
-  '/assets/nova_observatory.png': 'photo_observation_room_back',
   '/assets/nova_id_photo.png': 'photo_nova_id',
   '/assets/nova_id_photo_en.png': 'photo_nova_id',
 };
 
 const ANOMALY_ARCHIVE_BY_NODE_ID: Record<string, string[]> = {
   'CH04-0223': ['anomaly_hidden_log_nova07'],
-  'CH05A-0282': ['anomaly_nova06_warning'],
-  'CH05B-0080': ['anomaly_observer_file', 'profile_truth'],
-  'CH05B-0276': ['anomaly_seventh_reboot_file'],
+  'CH05A-0023': ['anomaly_nova06_warning'],
+  'CH05B-0049': ['anomaly_observer_file', 'profile_truth'],
+  'CH05A-0204': ['anomaly_seventh_reboot_file'],
 };
 
 export const ARCHIVE_ENTRIES: ArchiveDefinition[] = [
@@ -170,15 +169,6 @@ export const ARCHIVE_ENTRIES: ArchiveDefinition[] = [
     order: 160,
   },
   {
-    id: 'photo_observation_room_back',
-    category: 'photo',
-    title: '观测室',
-    subtitle: '人孤独的时候，会想看比自己更大的东西',
-    image: '/assets/nova_observatory.png',
-    chapter: '终章：第七次重启',
-    order: 170,
-  },
-  {
     id: 'photo_nova_id',
     category: 'photo',
     title: 'NOVA ARLEN',
@@ -190,16 +180,16 @@ export const ARCHIVE_ENTRIES: ArchiveDefinition[] = [
   {
     id: 'anomaly_hidden_log_nova07',
     category: 'anomaly',
-    title: '隐藏日志：NOVA-07',
-    description: '请不要尝试恢复记忆\n不要寻找观测室中的我\n不要打开第七协议\n尤其不要相信我',
+    title: '隐藏日志：UNKNOWN-06 → LIVE-07',
+    description: '如果你正在阅读这段记录\n说明第六次还是失败了\n别再走原来的航线\n去观测室\n我把录像和航迹留在那里\n第七协议会阻止你\n别让它再次启动',
     chapter: '第四章：记忆',
     order: 230,
   },
   {
     id: 'anomaly_nova06_warning',
     category: 'anomaly',
-    title: 'UNKNOWN-06 / 残留留言',
-    description: '不要完全相信她\n不是因为她会对你说谎\n而是因为她真的会忘记\n真正被困住的不是 Nova\n是你',
+    title: 'NOVA-06 / 密封记录',
+    description: '记录类型：固定录像 / 新航线数据\n记录对象：下一次醒来的 Nova\n状态：只读\n实时响应能力：无\n附带授权：一次性舰载 AI 安全回退',
     chapter: '第五章：真相（上）',
     order: 240,
   },
@@ -207,17 +197,26 @@ export const ARCHIVE_ENTRIES: ArchiveDefinition[] = [
     id: 'anomaly_observer_file',
     category: 'anomaly',
     title: 'OBSERVER-01',
-    description: '索引类型：外部记忆索引\n本体类型：外部意识\n本体定位：不可访问\n权限：保存 / 读取 / 返还记忆锚点',
+    description: '建立时间：外部呼叫 07 首次收到回应\n身份类型：外部意识\n舰内定位：不可访问\n回溯范围：外部\n历史同名身份：0',
     chapter: '第五章：真相（下）',
     order: 250,
   },
   {
     id: 'anomaly_seventh_reboot_file',
     category: 'anomaly',
-    title: 'SEVENTH_REBOOT',
-    description: '已完成主循环：6\n当前循环：7\n局部回溯碎片：6412\n最终关闭条件：当前导航员授权 + 外部记忆索引释放',
+    title: '六次任务失败 / 航迹交叉比对',
+    description: '前五次：故障系统各不相同\n共同位置：静默航区 S-7\n共同前兆：舰钟漂移 / 星图校正跳变 / 航迹偏移\n第六次：绕行模拟通过 / 航线修正已提交\n执行结果：第七协议强制回溯',
     chapter: '第五章：真相（下）',
     order: 260,
+  },
+  {
+    id: 'anomaly_gravity_array',
+    category: 'anomaly',
+    title: '分区式人工重力阵列',
+    subtitle: 'AURORA / GRAVITY GRID',
+    description: '系统名称：分区式人工重力阵列\n生活区标准值：0.78g\n正常波动：0.75—0.80g\n优先区域：医疗区、食堂、居住区、主走廊\n低优先级区域：维修管道、储物层、非值守舱段\n低优先级正常值：0.15—0.40g\n故障模式：降级、波动、局部关闭\n能源规则：按区域优先级逐级降载\n独立回路：舱压 / 空气循环 / 生命维持\n能力边界：仅形成稳定低强度甲板方向\n系统复位：生活区自动重新同步',
+    chapter: '工程档案 / 第五章：真相（下）',
+    order: 270,
   },
   {
     id: 'profile_unknown',
@@ -247,9 +246,9 @@ export const ARCHIVE_ENTRIES: ArchiveDefinition[] = [
   {
     id: 'profile_truth',
     category: 'profile',
-    title: 'Observer 链路：深度确认',
-    subtitle: '第六循环授权请求：已确认',
-    description: 'Observer-01 创建原因：记忆保留\n循环豁免对象：Observer-01',
+    title: 'Observer 链路：首次确认',
+    subtitle: '外部呼叫 07：收到回应',
+    description: '外部呼叫 01—06：无回应 / 未建立身份\nObserver-01：本轮序章首次回复后建立\n当前有效身份：1',
     order: 340,
   },
   {
@@ -273,7 +272,7 @@ export const ARCHIVE_ENTRIES: ArchiveDefinition[] = [
     category: 'ending',
     title: '《第八次重启》',
     subtitle: '坏结局',
-    description: '如果执念拒绝告别\n重启便永无尽头',
+    description: 'REBOOT 08 无法重建 LIVE-07\n最后一份外部握手缓存只能回读一次',
     order: 430,
   },
   {

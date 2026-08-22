@@ -11,7 +11,7 @@ const VERSION = 'V1.0';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const outPath = path.join(__dirname, '..', '第七次重启-剧情文本.txt');
 const epilogueOutPath = path.join(__dirname, '..', '第七次重启-可选后记.txt');
-const mainExportFilename = '第七次重启_V1.0_无后记主流程_规范化ID版.txt';
+const mainExportFilename = '第七次重启_V1.0_主流程_8月4日人工重力整合版.txt';
 const epilogueExportFilename = '第七次重启_V1.0_可选后记_普通与真结局.txt';
 const projectOutPath = path.join(__dirname, '..', '..', mainExportFilename);
 const projectEpilogueOutPath = path.join(__dirname, '..', '..', epilogueExportFilename);
@@ -82,7 +82,7 @@ function parsePipeContent(content: string): { title: string; body: string } {
 function formatMeta(node: StoryNode): string[] {
   const meta: string[] = [];
   if (node.type === 'internal-chapter-marker') {
-    meta.push('仅内部结构、存档、同步与测试使用', '正常游玩不显示');
+    meta.push('仅内部结构、稳定检查点与测试使用', '正常游玩不显示');
   }
   if (node.type === 'internal-ending-marker') {
     meta.push('正常游玩不显示章节扉页', '直接进入结局演出');
@@ -91,7 +91,7 @@ function formatMeta(node: StoryNode): string[] {
     meta.push('仅 Observer-01 显示', '无头像', '无昵称', '无气泡', '无时间戳', '无系统提示', '不入聊天历史', '不被 Nova 与第七协议察觉', '浮现后消散');
   }
   if (node.type === 'title-state') {
-    meta.push('持久化标题=第八次重启', '仅“八”使用暗红色', '可保留极淡灰色“七”残影', '禁止继续失败节点', '返回标题界面');
+    meta.push('持久化标题=第八次重启', '使用正式中英文第八次标题资产', '禁止文字重影与持续频闪', '仅保留标题原生飘散粒子', '禁止继续失败节点', '返回标题界面');
   }
   if (node.image) meta.push(`图片=${node.image}`);
   if (node.delay !== undefined) meta.push(`延迟=${node.delay}ms`);
@@ -127,6 +127,7 @@ function formatMeta(node: StoryNode): string[] {
     });
   }
   if (node.interactionKind) meta.push(`特殊互动=${node.interactionKind}`);
+  if (node.interactionStage) meta.push(`阶段=${node.interactionStage}`);
   if (node.interactionNextIds) {
     const routes = Object.entries(node.interactionNextIds)
       .map(([result, nextId]) => `${result}:${nextId}`)
@@ -141,6 +142,13 @@ function formatMeta(node: StoryNode): string[] {
     meta.push(`条件结果=${node.interactionCondition.kind}:${node.interactionCondition.routeKey}`);
   }
   if (node.conditionElseNextId) meta.push(`不满足则跳转=${node.conditionElseNextId}`);
+  if (node.directCondition && node.directConditionNextId) {
+    meta.push(`若 ${node.directCondition.key}=${String(node.directCondition.value)} 则直接跳转 ${node.directConditionNextId}`);
+  }
+  if (node.stateWrites) {
+    Object.entries(node.stateWrites).forEach(([key, value]) => meta.push(`${key}=${String(value)}`));
+  }
+  if (node.dynamicNextKey) meta.push(`动态跳转=${node.dynamicNextKey}`);
   return meta;
 }
 
@@ -240,6 +248,10 @@ function formatNode(node: StoryNode): string[] {
         ch.timedResponse ? `限时演出=${ch.timedResponse}` : '',
         ch.timedProof ? `限时证明=${ch.timedProof}` : '',
         ch.finalFarewellTone ? `告别语气=${ch.finalFarewellTone}` : '',
+        ch.relationshipStrainDelta ? `关系裂痕+${ch.relationshipStrainDelta}` : '',
+        ch.n7ProofSucceeded !== undefined ? `N7证明=${ch.n7ProofSucceeded}` : '',
+        ch.firstMessageCorrect !== undefined ? `首句回答正确=${ch.firstMessageCorrect}` : '',
+        ch.visibilityCondition ? `可见条件=${ch.visibilityCondition}` : '',
       ].filter(Boolean);
       const metaSuffix = choiceMeta.length ? `  meta: ${choiceMeta.join(' | ')}` : '';
       lines.push(`  [${label}] → ${ch.text}  →  ${ch.nextId}${metaSuffix}`);
@@ -264,6 +276,7 @@ bodyLines.push('返回主菜单');
 const interactionNodes = storyNodes.filter(
   node => node.type === 'interaction' && Boolean(node.interactionKind),
 );
+const interactionKindCount = new Set(interactionNodes.map(node => node.interactionKind)).size;
 const zhCopy = getSpecialInteractionCopy('zh-CN');
 
 function formatInteractionAppendix(): string[] {
@@ -271,9 +284,9 @@ function formatInteractionAppendix(): string[] {
     '',
     '---',
     '',
-    '# 附录：五项正式特殊互动（运行时 UI 文案）',
+    '# 附录：七类正式特殊互动（运行时 UI 文案）',
     '',
-    '说明：全篇共 5 项正式特殊互动、6 个运行时挂点。两次供能提交属于同一项互动的两个连续阶段。',
+    `说明：全篇共 ${interactionKindCount} 类正式特殊互动、${interactionNodes.length} 个运行时挂点。供能路由包含首次、最终与受损第七次三个状态挂点。`,
     '',
     '## 互动挂点一览',
     '',
@@ -297,14 +310,10 @@ function formatInteractionAppendix(): string[] {
   lines.push(`结果 fatal 或 timeout：${zhCopy.bulkhead.fatalTitle} / 进入第八次重启坏结局链`);
 
   lines.push('');
-  lines.push('## 2. 联合授权密钥验证（critical-log-password）');
-  lines.push(`标题：${zhCopy.password.title}`);
-  lines.push(`任务：${zhCopy.password.mission}`);
-  lines.push(`NOVA-07 权限槽：${zhCopy.password.submitted}`);
-  lines.push(`OBSERVER-01 权限槽：${zhCopy.password.waiting}`);
-  lines.push(`成功：${zhCopy.password.successDetail}`);
-  lines.push(`错误：${zhCopy.password.rejected}`);
-  lines.push('限制：无致死倒计时；错误只进入短重试；不调用或消耗 NOVA-06 权限。');
+  lines.push('## 2. 密封记录顺序校验（sealed-record-order）');
+  lines.push('任务：按“写入者 → 读取者”的顺序提交 NOVA-06 与 NOVA-07 两枚导航签名。');
+  lines.push('正确顺序：NOVA-06 → NOVA-07。');
+  lines.push('限制：无致死倒计时；顺序错误只返回记录提示；不消耗 NOVA-06 一次性回退授权。');
 
   lines.push('');
   lines.push('## 3. 一次性供能路由（power-routing）');
@@ -335,7 +344,17 @@ function formatInteractionAppendix(): string[] {
   });
 
   lines.push('');
-  lines.push('## 5. 临时封存锚点恢复（memory-restore）');
+  lines.push('## 5. 航线写入锁定（course-lock）');
+  lines.push('任务：依据第六次航线包避开 S-7 相位共振区，并完成最终航线写入。');
+  lines.push('安全规则：普通错误不提交并进入重试；只有主动确认穿越红色核心区或超时才进入致死分支。');
+
+  lines.push('');
+  lines.push('## 6. 第七协议物理隔离（protocol-cut）');
+  lines.push('任务：在新航线保持写入的同时，持续按住隔离控制，切断 PHASE-CORE BUS B。');
+  lines.push('安全规则：松手会中止本次切断但不会自动判死；倒计时耗尽才进入致死分支。');
+
+  lines.push('');
+  lines.push('## 7. 临时封存锚点恢复（memory-restore）');
   lines.push(`标题：${zhCopy.memory.restoreTitle}`);
   lines.push(`说明：${zhCopy.memory.restoreMission}`);
   lines.push(`错误组反馈：${zhCopy.memory.restoreMismatch}`);
@@ -346,31 +365,33 @@ function formatInteractionAppendix(): string[] {
   lines.push('');
   lines.push('## 运行时约束');
   lines.push('- 第一、第二、第四章不含正式特殊互动。');
-  lines.push('- 联合密钥不会修改 NOVA-06 一次性回退状态。');
-  lines.push('- 第一次供能失败时先落盘 nova06PowerOverrideUsed=true，再播放后果与回退剧情。');
-  lines.push('- 均压 fatal 与最终供能 fatal 通过各自死亡前导汇入 CH03-0157。');
+  lines.push('- 密封记录顺序校验不会修改 NOVA-06 一次性回退状态。');
+  lines.push('- 第一次供能失败时先落盘 nova06RollbackAuthorizationUsed=true，再播放后果与一次性回退剧情。');
+  lines.push('- 均压 fatal 与最终供能、航线锁定、协议隔离 fatal 均进入 REBOOT 08 坏结局链。');
   lines.push('- 记忆封存不修改 Trust、Memory、Attachment 或结局判定。');
+  lines.push('- 人工重力降级只表现能源重分配后果，不替代舱压、空气循环或生命维持判定。');
 
   lines.push('');
   return lines;
 }
 
 const output = [
-  `# 第七次重启 · 无后记主流程导出`,
+  `# 第七次重启 · V1.0 主流程 8月4日人工重力整合版`,
   `版本：${VERSION}`,
   `主流程节点数：${storyNodes.length}`,
-  `正式特殊互动：5`,
+  `正式特殊互动：${interactionKindCount} 类`,
   `特殊互动运行时挂点：${interactionNodes.length}`,
   `生成时间：${new Date().toISOString().replace(/\.\d{3}Z$/, '')}`,
   ``,
   `说明：本文档由运行时 story.ts 自动导出，仅包含正式主流程；可选后记由独立文件维护，不属于一周目自动播放链。`,
-  `真源说明：主流程依据“第七次重启_V1.0_无后记主流程_规范化ID版”，后记依据“第七次重启_V1.0_可选后记_普通与真结局”。`,
+  `真源说明：主流程以“第七次重启_V1.0_主流程_8月3日高潮重写终稿”为唯一剧情依据，并于 8 月 4 日正式整合 Aurora 分区式人工重力设定；后记仍由独立可选后记文件维护。`,
   `沉浸式界面说明：章节与结局入口仅保留为内部结构边界，正常游玩不显示章节扉页；正式结局标题使用独立演出。`,
-  `观察者残响说明：第二章离线后仅向 Observer-01 显示一次“还给对方一颗”，不写入聊天历史、已读记录或上一轮同步。`,
+  `观察者残响说明：第二章离线后仅向 Observer-01 显示一次“还给对方一颗”，不写入聊天历史或已读记录。`,
   `静态草稿说明：未发送草稿、加密草稿与牛奶糖异常草稿链已从运行时及档案中删除。`,
-  `特殊互动修订说明：全篇固定为观测室均压、联合密钥、一次性供能路由、记忆封存与终章记忆恢复五项；旧三层信号分离已移除。`,
+  `特殊互动修订说明：全篇固定为观测室均压、密封记录顺序校验、一次性供能路由、记忆封存、航线锁定、协议隔离与终章记忆恢复七类；旧三层信号分离与密码输入式联合密钥已移除。`,
+  `人工重力说明：Aurora 使用分区式人工重力阵列；生活区标称 0.78g、正常波动 0.75—0.80g，低优先级区域通常为 0.15—0.40g。高潮能源重分配后生活区降至 0.46g、维护层降至 0.18g、非必要舱段关闭。重力与舱压、空气循环、生命维持相互独立。`,
   `风险分支说明：第三章均压失败或超时、第五章供能最终失败或超时，以及拒绝关闭第七协议导致的回溯，均会进入“第八次重启”。`,
-  `状态说明：均压受伤、联合授权、一次性回退、供能尝试与失败原因、封存/恢复锚点及 REBOOT 08 均写入 V1.0 内部存档状态。`,
+  `状态说明：均压受伤、密封记录开放、一次性回退、供能尝试与失败原因、封存/恢复锚点、航线锁定、协议隔离、稳定检查点及 REBOOT 08 均写入 V1.0 内部存档状态。`,
   `分支格式：[选项字母] → 选项文本 → 下一节点ID`,
   ``,
   `---`,

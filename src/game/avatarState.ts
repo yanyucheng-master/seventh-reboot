@@ -133,9 +133,11 @@ export function resolveNovaAvatarOverlay(
   switch (transient.activeSpecialInteraction) {
     case 'bulkhead-isolation':
       return 'special_bulkhead';
-    case 'critical-log-password':
+    case 'sealed-record-order':
       return 'special_password';
     case 'power-routing':
+    case 'course-lock':
+    case 'protocol-cut':
       return 'special_power';
     case 'memory-seal':
     case 'memory-restore':
@@ -282,11 +284,14 @@ export function applyNovaAvatarNodeEffect(
   if (nodeId === 'CH03-0167' || nodeId === 'CH05A-0003') {
     if (state.novaConnectionState !== 'stable') state = patchState(state, { novaConnectionState: 'stable' });
   }
-  if (nodeId === 'FIN-0288') {
+  if (nodeId === 'CH05B-0105' || nodeId === 'FIN-0004') {
     if (state.novaConnectionState !== 'weak') state = patchState(state, { novaConnectionState: 'weak' });
   }
+  if (nodeId === 'CH05B-0107') {
+    if (state.novaConnectionState !== 'offline') state = patchState(state, { novaConnectionState: 'offline' });
+  }
 
-  if (nodeId === 'END-T-0003') {
+  if (nodeId === 'END-T-0006') {
     state = patchState(
       state,
       { novaConnectionState: 'archived', novaEndingAvatarMode: 'private_archive' },
@@ -294,7 +299,7 @@ export function applyNovaAvatarNodeEffect(
     );
   }
 
-  if (nodeId === 'END-N-0010') {
+  if (nodeId === 'END-N-0007') {
     state = patchState(
       state,
       { novaConnectionState: 'offline', novaEndingAvatarMode: 'private_archive' },
@@ -302,7 +307,7 @@ export function applyNovaAvatarNodeEffect(
     );
   }
 
-  if (nodeId === 'END-B-0038' && state.novaEndingAvatarMode !== 'official_identity_restored') {
+  if (nodeId === 'END-B-0009' && state.novaEndingAvatarMode !== 'official_identity_restored') {
     const animate = !state.novaAvatarEventReceipts.badEndingProfileClearAnimationSeen;
     state = patchState(
       state,
@@ -380,7 +385,7 @@ export function migrateNovaAvatarState(
   const flowerSeen = has('CH03-0006') || context.stats.memoryAnchors.includes('white_flower');
   const reachedFlowerSync = seenAtOrAfter('CH04-', 213) || seenAfterChapterFour;
   const flowerExpired = seenAtOrAfter('CH04-', 221) || seenAfterChapterFour;
-  const badIdentityRestored = seenAtOrAfter('END-B-', 38);
+  const badIdentityRestored = seenAtOrAfter('END-B-', 9);
 
   state.novaIdentityVerified = identityVerified;
   state.novaOfficialProfileEstablished = identityVerified;
@@ -408,11 +413,11 @@ export function migrateNovaAvatarState(
   const lastReconnectIndex = findLastMessageIndex(context.messages, new Set(['CH03-0167', 'CH05A-0003']));
   if (lastDisconnectIndex > lastReconnectIndex) state.novaConnectionState = 'offline';
 
-  if (has('END-T-0003') || has('END-T-0006')) {
+  if (seenAtOrAfter('END-T-', 6)) {
     state.novaEndingAvatarMode = 'private_archive';
     state.novaConnectionState = 'archived';
     state.novaAvatarEventReceipts.trueEndingArchiveNoticeShown = true;
-  } else if (has('END-N-0010') || has('END-N-0013')) {
+  } else if (seenAtOrAfter('END-N-', 7)) {
     state.novaEndingAvatarMode = 'private_archive';
     state.novaConnectionState = 'offline';
     state.novaAvatarEventReceipts.normalEndingArchiveNoticeShown = true;
@@ -473,7 +478,11 @@ export function createNovaAvatarStateForCheckpoint(nodeId: string): NovaAvatarSt
     state.novaEndingAvatarMode = 'private_archive';
     state.novaConnectionState = 'offline';
   }
-  if (nodeId.startsWith('END-B-') && Number(nodeId.slice(-4)) >= 38) {
+  if (nodeId.startsWith('END-T-')) {
+    state.novaEndingAvatarMode = 'private_archive';
+    state.novaConnectionState = 'archived';
+  }
+  if (nodeId.startsWith('END-B-') && Number(nodeId.slice(-4)) >= 9) {
     state.novaEndingAvatarMode = 'official_identity_restored';
     state.novaConnectionState = 'offline';
     state.n7AvatarActivated = false;

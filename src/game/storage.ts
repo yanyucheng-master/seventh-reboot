@@ -19,6 +19,11 @@ import {
   migrateLegacyChoiceId,
   migrateLegacyMainNodeId,
 } from './storyIds';
+import {
+  createLegacyMessageState,
+  normalizeLegacyMessageState,
+  type LegacyMessageState,
+} from './legacyMessages';
 import type {
   BulkheadFailureReason,
   BulkheadResult,
@@ -50,10 +55,12 @@ export const SAVE_KEY = 'seventh_reboot_save';
 export const PERSISTENT_PROGRESS_KEY = 'seventh_reboot_persistent_progress';
 /** 剧情分支拓扑版本；变更选项 nextId 后递增，使旧 localStorage 存档失效 */
 export const STORY_VERSION = 'V1.0';
-export const STORY_CONTENT_VERSION = 'v1.0-optional-epilogues-normalized-20260726';
-export const SAVE_STATE_VERSION = 4 as const;
+export const STORY_CONTENT_VERSION = 'v1.0-aug04-gravity-20260804';
+export const SAVE_STATE_VERSION = 5 as const;
 const MIGRATABLE_STORY_CONTENT_VERSIONS = new Set([
   STORY_CONTENT_VERSION,
+  'v1.0-aug03-climax-20260803',
+  'v1.0-optional-epilogues-normalized-20260726',
   'v1.0-immersive-echo-20260722',
 ]);
 export const defaultContactStage: ContactStage = 'unknown';
@@ -67,12 +74,23 @@ export const defaultStats: GameStats = {
   unlockedArchives: [],
   endingsUnlocked: [],
   commemorativeArchiveSaved: false,
+  relationshipStrain: 0,
+  firstMessageCorrect: false,
+  n7ProofSucceeded: false,
   bulkheadInjured: false,
   jointAuthorizationCompleted: false,
   criticalLogUnlocked: false,
   powerRoutingAttempt: 0,
-  nova06PowerOverrideUsed: false,
-  nova06PowerOverrideExpired: false,
+  nova06RollbackAuthorizationAvailable: false,
+  nova06RollbackAuthorizationUsed: false,
+  aiEmergencyRollbackExecuted: false,
+  nova06RecordingDamaged: false,
+  damagedSeventh: false,
+  binaryScarUI: false,
+  reboot08FallbackUsed: false,
+  courseLockCompleted: false,
+  protocolCutCompleted: false,
+  gravityArrayDegraded: false,
   temporaryAnchorRestored: false,
   pendingReboot08: false,
   fatalEndingTriggered: false,
@@ -105,6 +123,9 @@ const FINAL_FAREWELL_TONES = new Set<FinalFarewellTone>([
   'warm_acceptance',
   'painful_truth',
   'uncertain_but_honest',
+  'promise',
+  'relief',
+  'honest',
 ]);
 const TIMED_RESPONSES = new Set<TimedResponse>(['calm_nova', 'investigate_log']);
 const TIMED_PROOFS = new Set<TimedProof>(['n7_core_anchor']);
@@ -236,6 +257,10 @@ export function normalizeGameStats(value: unknown): GameStats {
   const bulkheadResult = normalizeBulkheadResult(stats.bulkheadResult);
   const earlyFailureCause = stats.earlyFailureCause === 'bulkhead_failure'
     || stats.earlyFailureCause === 'power_routing_failure'
+    || stats.earlyFailureCause === 'course_lock_failure'
+    || stats.earlyFailureCause === 'protocol_cut_failure'
+    || stats.earlyFailureCause === 'protocol_refusal'
+    || stats.earlyFailureCause === 'protocol_rollback'
     ? stats.earlyFailureCause
     : undefined;
   const reboot08TitleUnlocked = stats.reboot08TitleUnlocked === true
@@ -250,12 +275,25 @@ export function normalizeGameStats(value: unknown): GameStats {
     unlockedArchives: normalizeStringList(stats.unlockedArchives),
     endingsUnlocked,
     commemorativeArchiveSaved: stats.commemorativeArchiveSaved === true,
+    relationshipStrain: clampStat(typeof stats.relationshipStrain === 'number' ? stats.relationshipStrain : 0),
+    firstMessageCorrect: stats.firstMessageCorrect === true,
+    n7ProofSucceeded: stats.n7ProofSucceeded === true,
     bulkheadInjured: stats.bulkheadInjured === true || bulkheadResult === 'injured',
     jointAuthorizationCompleted,
     criticalLogUnlocked: jointAuthorizationCompleted,
     powerRoutingAttempt: normalizePowerRoutingAttempt(stats.powerRoutingAttempt),
-    nova06PowerOverrideUsed: stats.nova06PowerOverrideUsed === true,
-    nova06PowerOverrideExpired: stats.nova06PowerOverrideExpired === true,
+    nova06RollbackAuthorizationAvailable: stats.nova06RollbackAuthorizationAvailable === true,
+    nova06RollbackAuthorizationUsed: stats.nova06RollbackAuthorizationUsed === true
+      || stats.nova06PowerOverrideUsed === true,
+    aiEmergencyRollbackExecuted: stats.aiEmergencyRollbackExecuted === true
+      || stats.nova06PowerOverrideUsed === true,
+    nova06RecordingDamaged: stats.nova06RecordingDamaged === true,
+    damagedSeventh: stats.damagedSeventh === true,
+    binaryScarUI: stats.binaryScarUI === true,
+    reboot08FallbackUsed: stats.reboot08FallbackUsed === true,
+    courseLockCompleted: stats.courseLockCompleted === true,
+    protocolCutCompleted: stats.protocolCutCompleted === true,
+    gravityArrayDegraded: stats.gravityArrayDegraded === true,
     temporaryAnchorRestored: stats.temporaryAnchorRestored === true,
     pendingReboot08: stats.pendingReboot08 === true,
     fatalEndingTriggered: stats.fatalEndingTriggered === true || reboot08TitleUnlocked,
@@ -295,13 +333,17 @@ export function normalizeGameStats(value: unknown): GameStats {
   if (temporaryAnchorSealed) normalized.temporaryAnchorSealed = temporaryAnchorSealed;
   if (memoryRestoreResult) normalized.memoryRestoreResult = memoryRestoreResult;
   if (earlyFailureCause) normalized.earlyFailureCause = earlyFailureCause;
-  if (normalized.nova06PowerOverrideUsed) {
+  if (typeof stats.fatalSourceNodeId === 'string' && stats.fatalSourceNodeId) {
+    normalized.fatalSourceNodeId = migrateLegacyMainNodeId(stats.fatalSourceNodeId);
+  }
+  if (normalized.nova06RollbackAuthorizationUsed) {
     normalized.powerRoutingAttempt = Math.max(1, normalized.powerRoutingAttempt) as PowerRoutingAttempt;
-    normalized.nova06PowerOverrideExpired = true;
+    normalized.nova06RollbackAuthorizationAvailable = false;
+    normalized.aiEmergencyRollbackExecuted = true;
   }
   if (normalized.powerRoutingResult === 'first_success') {
     normalized.powerRoutingAttempt = 1;
-    normalized.nova06PowerOverrideExpired = true;
+    normalized.nova06RollbackAuthorizationAvailable = false;
   }
   if (normalized.powerRoutingResult === 'retry_success' || normalized.powerRoutingResult === 'fatal') {
     normalized.powerRoutingAttempt = 2;
@@ -325,7 +367,7 @@ function clampStat(value: number): number {
 }
 
 export type PersistentProgress = {
-  version: 4;
+  version: 5;
   unlockedArchives: string[];
   endingsUnlocked: EndingId[];
   commemorativeArchiveSaved: boolean;
@@ -336,11 +378,13 @@ export type PersistentProgress = {
   fatalRebootCount: number;
   fatalEndingTriggered: boolean;
   reboot08TitleUnlocked: boolean;
+  reboot08FallbackUsed: boolean;
+  legacyMessageState: LegacyMessageState;
   failedCycles: FailedCycleRecord[];
 };
 
 const EMPTY_PERSISTENT_PROGRESS: PersistentProgress = {
-  version: 4,
+  version: 5,
   unlockedArchives: [],
   endingsUnlocked: [],
   commemorativeArchiveSaved: false,
@@ -351,6 +395,8 @@ const EMPTY_PERSISTENT_PROGRESS: PersistentProgress = {
   fatalRebootCount: 0,
   fatalEndingTriggered: false,
   reboot08TitleUnlocked: false,
+  reboot08FallbackUsed: false,
+  legacyMessageState: createLegacyMessageState(),
   failedCycles: [],
 };
 
@@ -360,6 +406,7 @@ function clonePersistentProgress(progress: PersistentProgress): PersistentProgre
     unlockedArchives: [...progress.unlockedArchives],
     endingsUnlocked: [...progress.endingsUnlocked],
     readNodeIds: [...progress.readNodeIds],
+    legacyMessageState: normalizeLegacyMessageState(progress.legacyMessageState),
     failedCycles: progress.failedCycles.map(record => ({
       ...record,
       completedNodeIds: [...record.completedNodeIds],
@@ -367,6 +414,23 @@ function clonePersistentProgress(progress: PersistentProgress): PersistentProgre
       interactionResults: record.interactionResults.map(item => ({ ...item })),
       timedResults: record.timedResults.map(item => ({ ...item })),
       freeInputs: record.freeInputs.map(item => ({ ...item })),
+      lastStableCheckpoint: record.lastStableCheckpoint
+        ? {
+            ...record.lastStableCheckpoint,
+            stats: { ...record.lastStableCheckpoint.stats },
+            messages: record.lastStableCheckpoint.messages.map(message => ({ ...message })),
+            avatarState: { ...record.lastStableCheckpoint.avatarState },
+            deliveryRuntime: { ...record.lastStableCheckpoint.deliveryRuntime },
+            cycleState: {
+              ...record.lastStableCheckpoint.cycleState,
+              completedNodeIds: [...record.lastStableCheckpoint.cycleState.completedNodeIds],
+              choiceHistory: record.lastStableCheckpoint.cycleState.choiceHistory.map(item => ({ ...item })),
+              interactionResults: record.lastStableCheckpoint.cycleState.interactionResults.map(item => ({ ...item })),
+              timedResults: record.lastStableCheckpoint.cycleState.timedResults.map(item => ({ ...item })),
+              freeInputs: record.lastStableCheckpoint.cycleState.freeInputs.map(item => ({ ...item })),
+            },
+          }
+        : undefined,
     })),
   };
 }
@@ -377,7 +441,11 @@ function legacyProgressCameFromFatalCycle(): boolean {
     if (!rawSave) return false;
     const parsed = JSON.parse(rawSave) as { stats?: Record<string, unknown> };
     return parsed.stats?.earlyFailureCause === 'bulkhead_failure'
-      || parsed.stats?.earlyFailureCause === 'power_routing_failure';
+      || parsed.stats?.earlyFailureCause === 'power_routing_failure'
+      || parsed.stats?.earlyFailureCause === 'course_lock_failure'
+      || parsed.stats?.earlyFailureCause === 'protocol_cut_failure'
+      || parsed.stats?.earlyFailureCause === 'protocol_refusal'
+      || parsed.stats?.earlyFailureCause === 'protocol_rollback';
   } catch {
     return false;
   }
@@ -399,7 +467,7 @@ export function loadPersistentProgress(): PersistentProgress {
       ? Math.max(failedCycles.length, Math.floor(parsed.fatalRebootCount))
       : failedCycles.length;
     return {
-      version: 4,
+      version: 5,
       unlockedArchives: normalizeStringList(parsed.unlockedArchives),
       endingsUnlocked: normalizeEndings(parsed.endingsUnlocked),
       commemorativeArchiveSaved: parsed.commemorativeArchiveSaved === true,
@@ -414,6 +482,8 @@ export function loadPersistentProgress(): PersistentProgress {
       fatalRebootCount,
       fatalEndingTriggered: parsed.fatalEndingTriggered === true || failedCycles.length > 0,
       reboot08TitleUnlocked,
+      reboot08FallbackUsed: parsed.reboot08FallbackUsed === true,
+      legacyMessageState: normalizeLegacyMessageState(parsed.legacyMessageState),
       failedCycles,
     };
   } catch {
@@ -449,6 +519,7 @@ function mergeStatsWithPersistentProgress(stats: GameStats): GameStats {
     fatalEndingTriggered: progress.fatalEndingTriggered || stats.fatalEndingTriggered,
     fatalRebootCount: Math.max(progress.fatalRebootCount, stats.fatalRebootCount),
     reboot08TitleUnlocked: progress.reboot08TitleUnlocked || stats.reboot08TitleUnlocked,
+    reboot08FallbackUsed: progress.reboot08FallbackUsed || stats.reboot08FallbackUsed,
   };
 }
 
@@ -457,7 +528,7 @@ function persistProgressFromStats(stats: GameStats, cycleState?: CurrentCycleSta
   const merged = mergeStatsWithPersistentProgress(stats);
   savePersistentProgress({
     ...progress,
-    version: 4,
+    version: 5,
     unlockedArchives: merged.unlockedArchives,
     endingsUnlocked: merged.endingsUnlocked,
     commemorativeArchiveSaved: merged.commemorativeArchiveSaved,
@@ -468,7 +539,27 @@ function persistProgressFromStats(stats: GameStats, cycleState?: CurrentCycleSta
     fatalRebootCount: merged.fatalRebootCount,
     fatalEndingTriggered: merged.fatalEndingTriggered,
     reboot08TitleUnlocked: merged.reboot08TitleUnlocked,
+    reboot08FallbackUsed: merged.reboot08FallbackUsed,
   });
+}
+
+export function persistLegacyMessageState(state: LegacyMessageState): PersistentProgress {
+  const progress = loadPersistentProgress();
+  const next = {
+    ...progress,
+    version: 5 as const,
+    legacyMessageState: normalizeLegacyMessageState(state),
+  };
+  savePersistentProgress(next);
+  return clonePersistentProgress(next);
+}
+
+export function markReboot08FallbackUsed(): PersistentProgress {
+  const progress = loadPersistentProgress();
+  if (progress.reboot08FallbackUsed) return progress;
+  const next = { ...progress, version: 5 as const, reboot08FallbackUsed: true };
+  savePersistentProgress(next);
+  return clonePersistentProgress(next);
 }
 
 export function getLatestFailedCycle(
@@ -488,14 +579,22 @@ export function archiveFatalCycle(
   const cause = causeOverride ?? save.stats.earlyFailureCause;
   if (!cause) return loadPersistentProgress();
   const progress = loadPersistentProgress();
-  const failed = createFailedCycleRecord(save.cycleState, cause);
+  const baseFailed = createFailedCycleRecord(
+    save.cycleState,
+    cause,
+    save.stats.fatalSourceNodeId,
+  );
+  const sameCycleAlreadyArchived = progress.failedCycles.some(record => record.cycleId === baseFailed.cycleId);
+  const failed = sameCycleAlreadyArchived && (save.cycleState.damagedSeventh || save.stats.damagedSeventh)
+    ? { ...baseFailed, cycleId: `${baseFailed.cycleId}-damaged-${baseFailed.failedAt}` }
+    : baseFailed;
   const alreadyArchived = progress.failedCycles.some(record => record.cycleId === failed.cycleId);
   const failedCycles = alreadyArchived
     ? progress.failedCycles
     : [...progress.failedCycles, failed].slice(-8);
   const next: PersistentProgress = {
     ...progress,
-    version: 4,
+    version: 5,
     unlockedArchives: [...new Set([
       ...progress.unlockedArchives,
       ...save.stats.unlockedArchives,
@@ -512,6 +611,7 @@ export function archiveFatalCycle(
     fatalRebootCount: alreadyArchived ? progress.fatalRebootCount : progress.fatalRebootCount + 1,
     fatalEndingTriggered: true,
     reboot08TitleUnlocked: true,
+    reboot08FallbackUsed: progress.reboot08FallbackUsed || save.stats.reboot08FallbackUsed,
     failedCycles,
   };
   savePersistentProgress(next);
@@ -552,7 +652,7 @@ export function saveGame(data: SaveData) {
       saveStateVersion: SAVE_STATE_VERSION,
       avatarState: normalizeNovaAvatarState(data.avatarState),
       deliveryRuntime: normalizeChatDeliveryRuntime(data.deliveryRuntime),
-      deliveryStateVersion: 1,
+      deliveryStateVersion: 2,
       stats,
       cycleState,
     }));
@@ -583,14 +683,14 @@ function legacyInteractionRecords(stats: GameStats): CycleInteractionRecord[] {
   if (stats.jointAuthorizationCompleted) {
     records.push({
       nodeId: 'CH05A-0016',
-      kind: 'critical-log-password',
+      kind: 'sealed-record-order',
       routeKey: 'success',
     });
   }
   if (stats.powerRoutingAttempt >= 1) {
     const firstRoute = stats.powerRoutingResult === 'first_success' ? 'success' : 'fail';
     records.push({
-      nodeId: 'CH05B-0017',
+      nodeId: 'CH05B-0016',
       kind: 'power-routing',
       routeKey: firstRoute,
       attempt: 1,
@@ -599,7 +699,7 @@ function legacyInteractionRecords(stats: GameStats): CycleInteractionRecord[] {
   }
   if (stats.powerRoutingAttempt === 2 && stats.powerRoutingResult) {
     records.push({
-      nodeId: 'CH05B-0029',
+      nodeId: 'CH05B-0028',
       kind: 'power-routing',
       routeKey: stats.powerRoutingResult === 'retry_success' ? 'success' : 'fatal',
       attempt: 2,
@@ -608,7 +708,7 @@ function legacyInteractionRecords(stats: GameStats): CycleInteractionRecord[] {
   }
   if (stats.temporaryAnchorSealed) {
     records.push({
-      nodeId: 'CH05B-0193',
+      nodeId: 'CH05B-0069',
       kind: 'memory-seal',
       routeKey: stats.temporaryAnchorSealed,
       anchor: stats.temporaryAnchorSealed,
@@ -616,7 +716,7 @@ function legacyInteractionRecords(stats: GameStats): CycleInteractionRecord[] {
   }
   if (stats.memoryRestoreResult) {
     records.push({
-      nodeId: 'FIN-0014',
+      nodeId: 'FIN-0010',
       kind: 'memory-restore',
       routeKey: stats.memoryRestoreResult,
       ...(stats.memoryRestoreResult !== 'none' ? { anchor: stats.memoryRestoreResult } : {}),
@@ -698,6 +798,7 @@ export function migrateSaveData(value: unknown): SaveData | null {
   if (
     rawSaveStateVersion !== 2
     && rawSaveStateVersion !== 3
+    && rawSaveStateVersion !== 4
     && rawSaveStateVersion !== SAVE_STATE_VERSION
   ) return null;
   const rawMessages = Array.isArray(save.messages) ? save.messages : [];
@@ -810,7 +911,9 @@ export function migrateSaveData(value: unknown): SaveData | null {
     contactStage,
     stats,
   });
-  const cycleState = rawSaveStateVersion === 3 || rawSaveStateVersion === SAVE_STATE_VERSION
+  const cycleState = rawSaveStateVersion === 3
+    || rawSaveStateVersion === 4
+    || rawSaveStateVersion === SAVE_STATE_VERSION
     ? normalizeCurrentCycleState(save.cycleState, stats.reboot08TitleUnlocked ? 8 : 7, timestamp)
     : createLegacyCycleState(delivery.messages, stats, timestamp);
   if (
@@ -818,6 +921,8 @@ export function migrateSaveData(value: unknown): SaveData | null {
     && cycleState.currentRebootNumber < 8
     && !stats.pendingReboot08
     && !stats.earlyFailureCause
+    && !stats.damagedSeventh
+    && !cycleState.damagedSeventh
   ) {
     return null;
   }
@@ -835,7 +940,7 @@ export function migrateSaveData(value: unknown): SaveData | null {
     storyVersion: STORY_VERSION,
     storyContentVersion: STORY_CONTENT_VERSION,
     saveStateVersion: SAVE_STATE_VERSION,
-    deliveryStateVersion: 1,
+    deliveryStateVersion: 2,
   };
 
   const resolvedNodeId = resolveResumeNodeId(migrated);
@@ -854,7 +959,7 @@ export function loadGame(): SaveData | null {
     const fatalSequenceAlreadyReachedReboot = Boolean(
       data.stats.earlyFailureCause
       && (
-        /^END-B-(?:0038|0039|0040|0041)$/.test(data.pendingNodeId)
+        data.pendingNodeId === 'END-B-0010'
         || ((parsed.stats as Record<string, unknown> | undefined)?.reboot08Unlocked === true)
       )
     );
@@ -917,13 +1022,9 @@ export function getPendingNodeIdAfterNode(nodeId: string): string {
 
 /** 读档时解析应继续的节点，兼容旧版 currentNodeId 存档 */
 export function resolveResumeNodeId(save: SaveData): string {
-  const fatalResumeStart = save.stats.earlyFailureCause === 'power_routing_failure'
-    ? 'CH05B-0033'
-    : 'CH03-0152';
+  const fatalResumeStart = 'END-B-0001';
   const candidate = save.pendingNodeId || save.currentNodeId || 'PRO-0001';
-  const isFatalSequenceNode = /^CH03-(?:015[2-9]|016[01])$/.test(candidate)
-    || /^CH05B-003[3-8]$/.test(candidate)
-    || /^END-B-(?:0038|0039|0040|0041)$/.test(candidate);
+  const isFatalSequenceNode = /^END-B-(?:000[1-9]|0010)$/.test(candidate);
   if (save.stats.pendingReboot08 && !isFatalSequenceNode) return fatalResumeStart;
   if (save.pendingNodeId) return save.pendingNodeId;
 
@@ -967,7 +1068,7 @@ export function createSaveData(
     storyVersion: STORY_VERSION,
     storyContentVersion: STORY_CONTENT_VERSION,
     saveStateVersion: SAVE_STATE_VERSION,
-    deliveryStateVersion: 1,
+    deliveryStateVersion: 2,
     timestamp: Date.now(),
   };
 }
