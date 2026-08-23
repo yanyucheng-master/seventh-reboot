@@ -1,11 +1,14 @@
 import type { Locale } from '../../i18n';
+import { resolveTitleLinkMeta } from '../identity';
+import type { RebootNumber } from '../types';
 
 type GameTitleProps = {
   title: string;
   subtitle: string;
   phaseLabel: string;
   locale: Locale;
-  rebootNumber?: number;
+  rebootNumber?: RebootNumber;
+  observerEstablished: boolean;
 };
 
 export function GameTitle({
@@ -14,9 +17,11 @@ export function GameTitle({
   phaseLabel,
   locale,
   rebootNumber = 7,
+  observerEstablished,
 }: GameTitleProps) {
   const englishWordmark = locale === 'en-US';
   const officialReboot08 = rebootNumber >= 8;
+  const linkMeta = resolveTitleLinkMeta(rebootNumber, observerEstablished);
 
   return (
     <div className="menu-wordmark">
@@ -26,11 +31,11 @@ export function GameTitle({
         <span className="menu-wordmark-flare" />
       </div>
       <div className="menu-wordmark-meta" aria-hidden="true">
-        <span>NOVA-{String(rebootNumber).padStart(2, '0')}</span>
+        <span>{linkMeta.contactCode}</span>
         <i />
         <span>{phaseLabel}</span>
         <i />
-        <span>OBS-01</span>
+        <span>{linkMeta.observerCode}</span>
       </div>
       <h1
         className={`menu-title ${englishWordmark ? 'menu-title-en' : ''} ${officialReboot08 ? 'menu-title-official08' : ''}`}

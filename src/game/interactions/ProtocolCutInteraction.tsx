@@ -4,15 +4,17 @@ import type { CSSProperties } from 'react';
 import type { Locale } from '../../i18n';
 import type { SpecialInteractionCompletion } from '../types';
 import { InteractionTitle } from './InteractionTitle';
+import { INTERACTION_TIME_LIMIT_MS, remainingUntil } from '../timedRuntime';
 
 type Props = {
   locale: Locale;
   reducedMotion: boolean;
+  deadlineAt: number;
   onResultLocked: (result: SpecialInteractionCompletion) => void;
   onComplete: (result: SpecialInteractionCompletion) => void;
 };
 
-const WINDOW_MS = 28_000;
+const WINDOW_MS = INTERACTION_TIME_LIMIT_MS['protocol-cut'];
 const HOLD_MS = 1_150;
 
 const COPY = {
@@ -44,15 +46,14 @@ const COPY = {
   },
 } as const;
 
-export function ProtocolCutInteraction({ locale, reducedMotion, onResultLocked, onComplete }: Props) {
+export function ProtocolCutInteraction({ locale, reducedMotion, deadlineAt, onResultLocked, onComplete }: Props) {
   const copy = COPY[locale];
   const [routeHeld, setRouteHeld] = useState(false);
   const [busArmed, setBusArmed] = useState(false);
   const [holding, setHolding] = useState(false);
   const [holdProgress, setHoldProgress] = useState(0);
-  const [remainingMs, setRemainingMs] = useState(WINDOW_MS);
+  const [remainingMs, setRemainingMs] = useState(() => remainingUntil(deadlineAt));
   const [result, setResult] = useState<Extract<SpecialInteractionCompletion, { kind: 'protocol-cut' }> | null>(null);
-  const startedAt = useRef<number | null>(null);
   const holdStartedAt = useRef<number | null>(null);
   const finished = useRef(false);
   const holdFrame = useRef<number | null>(null);
@@ -67,15 +68,15 @@ export function ProtocolCutInteraction({ locale, reducedMotion, onResultLocked, 
 
   useEffect(() => {
     if (result) return undefined;
-    startedAt.current = performance.now();
-    const timer = window.setInterval(() => {
-      if (startedAt.current === null) return;
-      const next = Math.max(0, WINDOW_MS - (performance.now() - startedAt.current));
+    const tick = () => {
+      const next = remainingUntil(deadlineAt);
       setRemainingMs(next);
       if (next === 0) lockResult('fatal');
-    }, 100);
+    };
+    tick();
+    const timer = window.setInterval(tick, 100);
     return () => window.clearInterval(timer);
-  }, [lockResult, result]);
+  }, [deadlineAt, lockResult, result]);
 
   useEffect(() => () => {
     if (holdFrame.current !== null) window.cancelAnimationFrame(holdFrame.current);

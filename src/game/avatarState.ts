@@ -110,7 +110,6 @@ export function resolveNovaBaseAvatar(state: NovaAvatarStoryState): NovaBaseAvat
 }
 
 export type NovaAvatarTransientState = {
-  nova06AvatarInterferenceActive?: boolean;
   activeSpecialInteraction?: SpecialInteractionKind | null;
   communicationLinkState?: CommunicationLinkState;
 };
@@ -119,7 +118,6 @@ export function resolveNovaAvatarOverlay(
   state: NovaAvatarStoryState,
   transient: NovaAvatarTransientState = {},
 ): NovaAvatarOverlay {
-  if (transient.nova06AvatarInterferenceActive) return 'nova06_interference';
   if (state.novaConnectionState === 'archived') return 'archived';
   if (state.novaConnectionState === 'offline') return 'offline_residual';
   if (transient.communicationLinkState === 'interrupted') return 'offline_residual';
@@ -134,7 +132,7 @@ export function resolveNovaAvatarOverlay(
     case 'bulkhead-isolation':
       return 'special_bulkhead';
     case 'sealed-record-order':
-      return 'special_password';
+      return 'special_record_order';
     case 'power-routing':
     case 'course-lock':
     case 'protocol-cut':

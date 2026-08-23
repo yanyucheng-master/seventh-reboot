@@ -56,13 +56,14 @@ function freshStats(): GameStats {
   };
 }
 
-function makeFatalSave(): SaveData {
+function makeFatalSave(statsPatch: Partial<GameStats> = {}): SaveData {
   const stats: GameStats = {
     ...freshStats(),
     trust: 3,
     memory: 2,
     attachment: 2,
     nova06RollbackAuthorizationAvailable: true,
+    ...statsPatch,
   };
   const messages: DisplayMessage[] = [{
     id: 'fixture-message',
@@ -109,9 +110,9 @@ function makeFatalSave(): SaveData {
   );
 }
 
-function seedFatalArchive() {
+function seedFatalArchive(statsPatch: Partial<GameStats> = {}) {
   clearAllData();
-  const fatalSave = makeFatalSave();
+  const fatalSave = makeFatalSave(statsPatch);
   return { fatalSave, progress: archiveFatalCycle(fatalSave) };
 }
 
@@ -180,8 +181,22 @@ test('06 一次性回退恢复受损第七次且清除旧授权', () => {
   check(restored.nodeId === 'CH05B-0028' && restored.cycleState.currentRebootNumber === 7, 'fallback target mismatch');
   check(restored.stats.damagedSeventh && restored.stats.binaryScarUI, 'damaged presentation state is missing');
   check(!restored.stats.nova06RollbackAuthorizationAvailable, 'NOVA-06 rollback authorization survived fallback');
+  check(!restored.stats.nova06RollbackAuthorizationUsed && !restored.stats.aiEmergencyRollbackExecuted, 'unused rollback history changed during fallback');
   check(restored.stats.nova06RecordingDamaged && restored.stats.reboot08FallbackUsed, 'fallback cost was not applied');
   check(!restored.cycleState.lastStableCheckpoint, 'fallback remained recursively reusable');
+});
+
+test('06B 一次性回读保留已经发生的 AI 安全回退历史', () => {
+  const { progress } = seedFatalArchive({
+    nova06RollbackAuthorizationAvailable: false,
+    nova06RollbackAuthorizationUsed: true,
+    aiEmergencyRollbackExecuted: true,
+  });
+  const restored = restoreDamagedSeventhCheckpoint(progress.failedCycles.at(-1));
+  check(restored, 'used-authorization fallback fixture could not be restored');
+  check(restored.stats.nova06RollbackAuthorizationUsed, 'fallback erased authorization-used history');
+  check(restored.stats.aiEmergencyRollbackExecuted, 'fallback erased AI rollback history');
+  check(!restored.stats.nova06RollbackAuthorizationAvailable, 'fallback restored a consumed authorization');
 });
 
 test('07 回退消费标记全局持久化且受损存档仍可读取', () => {

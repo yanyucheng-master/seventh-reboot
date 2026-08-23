@@ -15,6 +15,7 @@ import {
   type PowerStage,
 } from './logic';
 import { InteractionTitle } from './InteractionTitle';
+import { remainingUntil } from '../timedRuntime';
 
 type PowerRoutingInteractionProps = {
   copy: SpecialInteractionCopy;
@@ -22,13 +23,14 @@ type PowerRoutingInteractionProps = {
   damaged?: boolean;
   lowGravity?: boolean;
   previousFailure?: PowerFailureReason;
+  deadlineAt: number;
+  onRestartDeadline: () => void;
   onResultLocked: (result: SpecialInteractionCompletion) => void;
   onComplete: (result: SpecialInteractionCompletion) => void;
 };
 
 type PowerRoutingCompletion = Extract<SpecialInteractionCompletion, { kind: 'power-routing' }>;
 
-const POWER_WINDOW_MS = 60_000;
 const INITIAL_ALLOCATION: PowerAllocation = {
   lifeSupport: 34,
   communications: 33,
@@ -48,19 +50,18 @@ export function PowerRoutingInteraction({
   damaged = false,
   lowGravity = false,
   previousFailure,
+  deadlineAt,
+  onRestartDeadline,
   onResultLocked,
   onComplete,
 }: PowerRoutingInteractionProps) {
   const [stages, setStages] = useState(createInitialStages);
   const stagesRef = useRef(stages);
-  const startedAtRef = useRef(0);
   const finishedRef = useRef(false);
-  const [remainingMs, setRemainingMs] = useState(POWER_WINDOW_MS);
+  const expiredDeadlineRef = useRef<number | null>(null);
+  const [remainingMs, setRemainingMs] = useState(() => remainingUntil(deadlineAt));
   const [result, setResult] = useState<PowerRoutingCompletion | null>(null);
-
-  useEffect(() => {
-    startedAtRef.current = performance.now();
-  }, []);
+  const [validationReason, setValidationReason] = useState<PowerFailureReason | null>(null);
 
   useEffect(() => {
     stagesRef.current = stages;
@@ -68,6 +69,10 @@ export function PowerRoutingInteraction({
 
   const lockResult = useCallback((failureReason?: PowerFailureReason) => {
     if (finishedRef.current) return;
+    if (attempt === 1 && failureReason && failureReason !== 'life_support_below_minimum') {
+      setValidationReason(failureReason);
+      return;
+    }
     finishedRef.current = true;
     const completion: PowerRoutingCompletion = failureReason
       ? {
@@ -83,13 +88,23 @@ export function PowerRoutingInteraction({
 
   useEffect(() => {
     if (result) return;
-    const timer = window.setInterval(() => {
-      const nextRemaining = Math.max(0, POWER_WINDOW_MS - (performance.now() - startedAtRef.current));
+    const tick = () => {
+      const nextRemaining = remainingUntil(deadlineAt);
       setRemainingMs(nextRemaining);
-      if (nextRemaining === 0) lockResult('timeout');
-    }, 150);
+      if (nextRemaining !== 0) return;
+      if (attempt === 1) {
+        if (expiredDeadlineRef.current === deadlineAt) return;
+        expiredDeadlineRef.current = deadlineAt;
+        setValidationReason('timeout');
+        onRestartDeadline();
+        return;
+      }
+      lockResult('timeout');
+    };
+    tick();
+    const timer = window.setInterval(tick, 150);
     return () => window.clearInterval(timer);
-  }, [lockResult, result]);
+  }, [attempt, deadlineAt, lockResult, onRestartDeadline, result]);
 
   if (result) {
     const succeeded = result.routeKey === 'success';
@@ -132,6 +147,7 @@ export function PowerRoutingInteraction({
   const remainingSeconds = Math.ceil(remainingMs / 1000);
 
   function updateAllocation(stage: PowerStage, channel: PowerChannel, value: number) {
+    setValidationReason(null);
     setStages(current => ({
       ...current,
       [stage]: rebalancePowerAllocation(current[stage], channel, value),
@@ -161,6 +177,14 @@ export function PowerRoutingInteraction({
         <span>{attempt === 1 ? copy.power.firstAttempt : copy.power.finalAttempt}</span>
         <strong>{copy.power.remaining} / {remainingSeconds.toString().padStart(2, '0')} s</strong>
       </div>
+
+      {validationReason && attempt === 1 && (
+        <div className="power-failure-readout" role="status" data-validation="preflight">
+          <span>{copy.power.preflightRejected}</span>
+          <strong>{copy.power.failureReasons[validationReason]}</strong>
+          <small>{copy.power.adjustAndResubmit}</small>
+        </div>
+      )}
 
       {attempt === 2 && (
         <div className="power-previous-failure" role="note">

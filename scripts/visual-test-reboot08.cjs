@@ -31,7 +31,7 @@ const failedCycle = {
 };
 
 const progress = {
-  version: 3,
+  version: 6,
   unlockedArchives: ['anchor_first_message', 'ending_bad'],
   endingsUnlocked: ['ending_bad'],
   commemorativeArchiveSaved: false,
@@ -130,24 +130,6 @@ let browser;
   }
   await desktop.getByRole('button', { name: '返回主菜单' }).click();
 
-  console.log('STEP reconnect');
-  await desktop.getByRole('button', { name: '重新建立连接' }).click();
-  await desktop.locator('.cycle-sync-offer').waitFor({ state: 'visible' });
-  await desktop.screenshot({ path: path.join(artifactDir, 'sync-offer-desktop.png'), fullPage: true });
-  await desktop.getByRole('button', { name: '同步已阅记录' }).click();
-  await desktop.locator('.cycle-sync-overlay').waitFor({ state: 'visible' });
-  await desktop.waitForTimeout(280);
-  await desktop.screenshot({ path: path.join(artifactDir, 'sync-active-desktop.png'), fullPage: true });
-  await desktop.getByRole('button', { name: '中断同步' }).click();
-  await desktop.getByRole('heading', { name: '中断后，你将重新介入当前通讯。' }).waitFor({ state: 'visible' });
-  await desktop.screenshot({ path: path.join(artifactDir, 'sync-interrupt-confirm-desktop.png'), fullPage: true });
-  await desktop.getByRole('button', { name: '确认中断' }).click();
-  await desktop.locator('.cycle-sync-overlay').waitFor({ state: 'hidden' });
-  const interruptedSave = await desktop.evaluate(() => JSON.parse(localStorage.getItem('seventh_reboot_save') || 'null'));
-  if (!interruptedSave?.cycleState?.syncInterrupted || interruptedSave.cycleState.syncActive) {
-    throw new Error(`Interrupted sync state was not persisted: ${JSON.stringify(interruptedSave?.cycleState)}`);
-  }
-
   const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 });
   mobile.setDefaultTimeout(12_000);
   mobile.on('console', message => {
@@ -165,25 +147,6 @@ let browser;
   console.log('STEP mobile seed');
   await seed(mobile);
   const mobileMenu = await verifyMenu(mobile, 'mobile');
-  await mobile.getByRole('button', { name: '重新建立连接' }).click();
-  await mobile.locator('.cycle-sync-offer').waitFor({ state: 'visible' });
-  const offerBox = await mobile.locator('.cycle-sync-offer').boundingBox();
-  if (!offerBox || offerBox.x < 0 || offerBox.x + offerBox.width > 390 || offerBox.y < 0 || offerBox.y + offerBox.height > 844) {
-    throw new Error(`Mobile sync offer is clipped: ${JSON.stringify(offerBox)}`);
-  }
-  await mobile.screenshot({ path: path.join(artifactDir, 'sync-offer-mobile.png'), fullPage: true });
-  await mobile.getByRole('button', { name: '同步已阅记录' }).click();
-  await mobile.locator('.cycle-sync-overlay').waitFor({ state: 'visible' });
-  await mobile.waitForTimeout(260);
-  const overlayBox = await mobile.locator('.cycle-sync-console').boundingBox();
-  if (!overlayBox || overlayBox.x < 0 || overlayBox.x + overlayBox.width > 390 || overlayBox.y < 0 || overlayBox.y + overlayBox.height > 844) {
-    throw new Error(`Mobile sync overlay is clipped: ${JSON.stringify(overlayBox)}`);
-  }
-  const rebootMarkBox = await mobile.locator('.cycle-sync-reboot-mark').boundingBox();
-  if (!rebootMarkBox || rebootMarkBox.x < 0 || rebootMarkBox.x + rebootMarkBox.width > 390 || rebootMarkBox.y < 0 || rebootMarkBox.y + rebootMarkBox.height > 844) {
-    throw new Error(`Mobile REBOOT 08 marker is clipped: ${JSON.stringify(rebootMarkBox)}`);
-  }
-  await mobile.screenshot({ path: path.join(artifactDir, 'sync-active-mobile.png'), fullPage: true });
 
   if (errors.length) {
     fs.writeFileSync(path.join(artifactDir, 'console-errors.txt'), errors.join('\n'));

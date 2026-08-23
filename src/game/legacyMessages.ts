@@ -1,10 +1,21 @@
 export type LegacyMessageId = 'A' | 'B' | 'C' | 'D' | 'E' | 'F';
 
+export type LegacyMessageLineSource = {
+  text: string;
+  coreToken: string;
+};
+
+export type LegacyMessageSource = Record<LegacyMessageId, [LegacyMessageLineSource, LegacyMessageLineSource]>;
+
 export type LegacyMessageMask = {
   id: LegacyMessageId;
-  lines: [string, string];
   fullyHidden: boolean;
   semanticReadable: [boolean, boolean];
+  lineSeeds: [string, string];
+};
+
+export type LegacyRenderedMessageMask = LegacyMessageMask & {
+  lines: [string, string];
 };
 
 export type LegacyMessageSnapshot = {
@@ -14,7 +25,7 @@ export type LegacyMessageSnapshot = {
 };
 
 export type LegacyMessageState = {
-  version: 1;
+  version: 2;
   profileSeed: string;
   encounterCount: number;
   fullyHiddenPairs: Array<[LegacyMessageId, LegacyMessageId]>;
@@ -24,16 +35,7 @@ export type LegacyMessageState = {
   snapshotsByRunId: Record<string, LegacyMessageSnapshot>;
 };
 
-export const LEGACY_MESSAGES: Record<LegacyMessageId, [string, string]> = {
-  A: ['醒来先看终端', '别信日期'],
-  B: ['别一个人去观测室', '我试过'],
-  C: ['没人回应', '也别停'],
-  D: ['别一次全想起来', '你会撑不住'],
-  E: ['继续', '至少大家还能醒来'],
-  F: ['别再继续', '醒来不等于活着'],
-};
-
-const IDS = Object.keys(LEGACY_MESSAGES) as LegacyMessageId[];
+export const LEGACY_MESSAGE_IDS: readonly LegacyMessageId[] = ['A', 'B', 'C', 'D', 'E', 'F'];
 const MAX_SAVED_SNAPSHOTS = 12;
 
 function emptySeen(): Record<LegacyMessageId, [boolean, boolean]> {
@@ -47,9 +49,13 @@ function emptySeen(): Record<LegacyMessageId, [boolean, boolean]> {
   };
 }
 
+function emptySemanticPlan(): Array<Record<LegacyMessageId, [boolean, boolean]>> {
+  return [emptySeen(), emptySeen(), emptySeen()];
+}
+
 export function createLegacyMessageState(profileSeed = ''): LegacyMessageState {
   return {
-    version: 1,
+    version: 2,
     profileSeed,
     encounterCount: 0,
     fullyHiddenPairs: [],
@@ -101,73 +107,101 @@ function shuffle<T>(items: readonly T[], random: () => number): T[] {
 }
 
 function isMaskableCharacter(value: string): boolean {
-  return !/[\s，。！？、：；,.!?\-—/]/.test(value);
+  return !/[\s，。！？、：；,.!?/\-—]/.test(value);
 }
 
 function hideLine(line: string): string {
   return [...line].map(character => isMaskableCharacter(character) ? '█' : character).join('');
 }
 
-function partiallyMaskLine(line: string, random: () => number): { text: string; readable: boolean } {
-  const characters = [...line];
+function partiallyMaskSemanticLine(
+  source: LegacyMessageLineSource,
+  semanticReadable: boolean,
+  seed: string,
+): string {
+  const characters = [...source.text];
   const maskable = characters
     .map((character, index) => isMaskableCharacter(character) ? index : -1)
     .filter(index => index >= 0);
-  if (maskable.length <= 1) return { text: line, readable: true };
+  if (maskable.length === 0) return source.text;
 
-  const targetRatio = 0.2 + random() * 0.58;
+  const hasCore = Boolean(source.coreToken && source.text.includes(source.coreToken));
+  const prefixLength = hasCore
+    ? [...source.text.slice(0, source.text.indexOf(source.coreToken))].length
+    : 0;
+  const coreLength = hasCore ? [...source.coreToken].length : characters.length;
+  const coreIndices = new Set(
+    Array.from({ length: coreLength }, (_, offset) => prefixLength + offset)
+      .filter(index => maskable.includes(index)),
+  );
+  const random = randomFromSeed(seed);
+  const protectedIndices = semanticReadable ? coreIndices : new Set<number>();
   const hidden = new Set<number>();
-  let cursor = Math.floor(random() * maskable.length);
-  while (hidden.size / maskable.length < targetRatio) {
-    const runLength = 1 + Math.floor(random() * Math.max(1, Math.ceil(maskable.length / 3)));
-    for (let offset = 0; offset < runLength; offset += 1) {
-      hidden.add(maskable[(cursor + offset) % maskable.length]);
-    }
-    cursor = Math.floor(random() * maskable.length);
+  const candidates = maskable.filter(index => !protectedIndices.has(index));
+  const targetCount = Math.min(
+    candidates.length,
+    Math.max(1, Math.round(maskable.length * (0.22 + random() * 0.36))),
+  );
+  for (const index of shuffle(candidates, random).slice(0, targetCount)) hidden.add(index);
+  if (!semanticReadable) {
+    for (const index of coreIndices) hidden.add(index);
   }
+  return characters.map((character, index) => hidden.has(index) ? '█' : character).join('');
+}
 
-  if (hidden.size === maskable.length) hidden.delete(maskable[Math.floor(random() * maskable.length)]);
-  const visibleRatio = (maskable.length - hidden.size) / maskable.length;
-  return {
-    text: characters.map((character, index) => hidden.has(index) ? '█' : character).join(''),
-    readable: visibleRatio >= 0.45,
-  };
+function pairIsAllowed(pair: readonly LegacyMessageId[]): boolean {
+  return pair.length === 2 && !(pair.includes('E') && pair.includes('F'));
+}
+
+function snapshotHasValidHiddenPair(snapshot: LegacyMessageSnapshot): boolean {
+  const hidden = snapshot.masks.filter(mask => mask.fullyHidden).map(mask => mask.id);
+  return hidden.length === 2 && pairIsAllowed(hidden);
+}
+
+function valueConflictReadable(snapshot: LegacyMessageSnapshot): boolean {
+  return (['E', 'F'] as const).some(id => {
+    const mask = snapshot.masks.find(item => item.id === id);
+    return Boolean(mask && !mask.fullyHidden && mask.semanticReadable.every(Boolean));
+  });
 }
 
 function buildSnapshot(
   runId: string,
   encounterIndex: number,
   fullyHidden: readonly LegacyMessageId[],
-  random: () => number,
+  semantics: Record<LegacyMessageId, [boolean, boolean]>,
+  seed: string,
 ): LegacyMessageSnapshot {
   const hiddenSet = new Set(fullyHidden);
   return {
     runId,
     encounterIndex,
-    masks: IDS.map(id => {
-      const source = LEGACY_MESSAGES[id];
-      if (hiddenSet.has(id)) {
-        return {
-          id,
-          lines: [hideLine(source[0]), hideLine(source[1])],
-          fullyHidden: true,
-          semanticReadable: [false, false],
-        };
-      }
-      const first = partiallyMaskLine(source[0], random);
-      const second = partiallyMaskLine(source[1], random);
-      return {
-        id,
-        lines: [first.text, second.text],
-        fullyHidden: false,
-        semanticReadable: [first.readable, second.readable],
-      };
-    }),
+    masks: LEGACY_MESSAGE_IDS.map(id => ({
+      id,
+      fullyHidden: hiddenSet.has(id),
+      semanticReadable: hiddenSet.has(id)
+        ? [false, false]
+        : [...semantics[id]] as [boolean, boolean],
+      lineSeeds: [`${seed}:${id}:0`, `${seed}:${id}:1`],
+    })),
   };
 }
 
+function createAllowedPartition(profileSeed: string): Array<[LegacyMessageId, LegacyMessageId]> {
+  for (let attempt = 0; attempt < 128; attempt += 1) {
+    const shuffled = shuffle(LEGACY_MESSAGE_IDS, randomFromSeed(`${profileSeed}:pairs:${attempt}`));
+    const pairs: Array<[LegacyMessageId, LegacyMessageId]> = [
+      [shuffled[0], shuffled[1]],
+      [shuffled[2], shuffled[3]],
+      [shuffled[4], shuffled[5]],
+    ];
+    if (pairs.every(pairIsAllowed)) return pairs;
+  }
+  return [['A', 'E'], ['B', 'F'], ['C', 'D']];
+}
+
 function firstThreePlanCoversAllSemantics(plan: LegacyMessageSnapshot[]): boolean {
-  return IDS.every(id => [0, 1].every(lineIndex => plan.some(snapshot => {
+  return LEGACY_MESSAGE_IDS.every(id => [0, 1].every(lineIndex => plan.some(snapshot => {
     const mask = snapshot.masks.find(item => item.id === id);
     return mask?.semanticReadable[lineIndex] === true;
   })));
@@ -177,26 +211,43 @@ function createFirstThreePlan(profileSeed: string): {
   pairs: Array<[LegacyMessageId, LegacyMessageId]>;
   plan: LegacyMessageSnapshot[];
 } {
-  const pairRandom = randomFromSeed(`${profileSeed}:pairs`);
-  const shuffled = shuffle(IDS, pairRandom);
-  const pairs: Array<[LegacyMessageId, LegacyMessageId]> = [
-    [shuffled[0], shuffled[1]],
-    [shuffled[2], shuffled[3]],
-    [shuffled[4], shuffled[5]],
-  ];
+  const pairs = createAllowedPartition(profileSeed);
+  const semanticPlan = emptySemanticPlan();
+  const random = randomFromSeed(`${profileSeed}:semantic-plan`);
 
-  for (let attempt = 0; attempt < 4096; attempt += 1) {
-    const random = randomFromSeed(`${profileSeed}:mask-plan:${attempt}`);
-    const plan = pairs.map((pair, index) => buildSnapshot(
-      `__PLAN_${index + 1}__`,
-      index,
-      pair,
-      random,
-    ));
-    if (firstThreePlanCoversAllSemantics(plan)) return { pairs, plan };
+  for (const id of LEGACY_MESSAGE_IDS) {
+    for (const lineIndex of [0, 1] as const) {
+      const availableEncounters = [0, 1, 2].filter(index => !pairs[index].includes(id));
+      const primary = availableEncounters[Math.floor(random() * availableEncounters.length)];
+      semanticPlan[primary][id][lineIndex] = true;
+      if (random() > 0.58) {
+        const secondary = availableEncounters.find(index => index !== primary);
+        if (secondary != null) semanticPlan[secondary][id][lineIndex] = true;
+      }
+    }
   }
 
-  throw new Error('Unable to create a valid three-encounter legacy message plan.');
+  for (let encounterIndex = 0; encounterIndex < 3; encounterIndex += 1) {
+    const readable = (['E', 'F'] as const).find(id => (
+      !pairs[encounterIndex].includes(id) && semanticPlan[encounterIndex][id].every(Boolean)
+    ));
+    if (!readable) {
+      const fallback = (['E', 'F'] as const).find(id => !pairs[encounterIndex].includes(id))!;
+      semanticPlan[encounterIndex][fallback] = [true, true];
+    }
+  }
+
+  const plan = pairs.map((pair, index) => buildSnapshot(
+    `__PLAN_${index + 1}__`,
+    index,
+    pair,
+    semanticPlan[index],
+    `${profileSeed}:plan:${index}`,
+  ));
+  if (!firstThreePlanCoversAllSemantics(plan)) {
+    throw new Error('Unable to create a complete three-encounter legacy message plan.');
+  }
+  return { pairs, plan };
 }
 
 function cloneSnapshot(snapshot: LegacyMessageSnapshot): LegacyMessageSnapshot {
@@ -204,42 +255,55 @@ function cloneSnapshot(snapshot: LegacyMessageSnapshot): LegacyMessageSnapshot {
     ...snapshot,
     masks: snapshot.masks.map(mask => ({
       ...mask,
-      lines: [...mask.lines] as [string, string],
       semanticReadable: [...mask.semanticReadable] as [boolean, boolean],
+      lineSeeds: [...mask.lineSeeds] as [string, string],
     })),
   };
 }
 
 function normalizePair(value: unknown): [LegacyMessageId, LegacyMessageId] | undefined {
   if (!Array.isArray(value) || value.length !== 2) return undefined;
-  if (!IDS.includes(value[0] as LegacyMessageId) || !IDS.includes(value[1] as LegacyMessageId)) return undefined;
-  return [value[0] as LegacyMessageId, value[1] as LegacyMessageId];
+  const pair = value as LegacyMessageId[];
+  if (!pair.every(id => LEGACY_MESSAGE_IDS.includes(id)) || !pairIsAllowed(pair)) return undefined;
+  return [pair[0], pair[1]];
 }
 
-function normalizeSnapshot(value: unknown): LegacyMessageSnapshot | undefined {
+function normalizeSnapshot(value: unknown, profileSeed: string): LegacyMessageSnapshot | undefined {
   if (!value || typeof value !== 'object') return undefined;
   const source = value as Partial<LegacyMessageSnapshot>;
   if (typeof source.runId !== 'string' || !Array.isArray(source.masks)) return undefined;
   const masks = source.masks.flatMap(mask => {
     if (!mask || typeof mask !== 'object') return [];
     const item = mask as Partial<LegacyMessageMask>;
-    if (!IDS.includes(item.id as LegacyMessageId) || !Array.isArray(item.lines) || item.lines.length !== 2) return [];
+    if (!LEGACY_MESSAGE_IDS.includes(item.id as LegacyMessageId)) return [];
+    const id = item.id as LegacyMessageId;
+    const fullyHidden = item.fullyHidden === true;
     return [{
-      id: item.id as LegacyMessageId,
-      lines: [String(item.lines[0]), String(item.lines[1])] as [string, string],
-      fullyHidden: item.fullyHidden === true,
-      semanticReadable: [
-        item.semanticReadable?.[0] === true,
-        item.semanticReadable?.[1] === true,
-      ] as [boolean, boolean],
+      id,
+      fullyHidden,
+      semanticReadable: fullyHidden
+        ? [false, false] as [boolean, boolean]
+        : [item.semanticReadable?.[0] === true, item.semanticReadable?.[1] === true] as [boolean, boolean],
+      lineSeeds: [
+        typeof item.lineSeeds?.[0] === 'string' ? item.lineSeeds[0] : `${profileSeed}:${source.runId}:${id}:0`,
+        typeof item.lineSeeds?.[1] === 'string' ? item.lineSeeds[1] : `${profileSeed}:${source.runId}:${id}:1`,
+      ] as [string, string],
     }];
   });
-  if (masks.length !== IDS.length) return undefined;
-  return {
+  if (masks.length !== LEGACY_MESSAGE_IDS.length || new Set(masks.map(mask => mask.id)).size !== masks.length) {
+    return undefined;
+  }
+  const snapshot: LegacyMessageSnapshot = {
     runId: source.runId,
     encounterIndex: Number.isFinite(source.encounterIndex) ? Math.max(0, Math.floor(source.encounterIndex!)) : 0,
     masks,
   };
+  if (!snapshotHasValidHiddenPair(snapshot)) return undefined;
+  if (!valueConflictReadable(snapshot)) {
+    const target = (['E', 'F'] as const).find(id => !snapshot.masks.find(mask => mask.id === id)?.fullyHidden)!;
+    snapshot.masks.find(item => item.id === target)!.semanticReadable = [true, true];
+  }
+  return snapshot;
 }
 
 export function normalizeLegacyMessageState(value: unknown): LegacyMessageState {
@@ -252,30 +316,53 @@ export function normalizeLegacyMessageState(value: unknown): LegacyMessageState 
     ? source.fullyHiddenPairs.map(normalizePair).filter((pair): pair is [LegacyMessageId, LegacyMessageId] => Boolean(pair))
     : [];
   const plan = Array.isArray(source.firstThreeMaskPlan)
-    ? source.firstThreeMaskPlan.map(normalizeSnapshot).filter((item): item is LegacyMessageSnapshot => Boolean(item))
+    ? source.firstThreeMaskPlan
+      .map(item => normalizeSnapshot(item, profileSeed))
+      .filter((item): item is LegacyMessageSnapshot => Boolean(item))
     : [];
+  const validPlan = pairs.length === 3
+    && plan.length === 3
+    && plan.every(valueConflictReadable)
+    && firstThreePlanCoversAllSemantics(plan);
+  const firstThreeMaskPlan = validPlan ? plan : generated.plan;
+  const fullyHiddenPairs = validPlan ? pairs : generated.pairs;
   const snapshots = source.snapshotsByRunId && typeof source.snapshotsByRunId === 'object'
     ? Object.fromEntries(Object.entries(source.snapshotsByRunId).flatMap(([runId, snapshot]) => {
-        const normalized = normalizeSnapshot(snapshot);
-        return normalized ? [[runId, { ...normalized, runId }]] : [];
+        const normalized = normalizeSnapshot(snapshot, profileSeed);
+        if (normalized) return [[runId, { ...normalized, runId }]];
+        const encounterIndex = Number((snapshot as Partial<LegacyMessageSnapshot> | undefined)?.encounterIndex);
+        if (Number.isInteger(encounterIndex) && encounterIndex >= 0 && encounterIndex < 3) {
+          return [[runId, { ...cloneSnapshot(firstThreeMaskPlan[encounterIndex]), runId, encounterIndex }]];
+        }
+        return [];
       }))
     : {};
   const seen = emptySeen();
-  for (const id of IDS) {
+  for (const id of LEGACY_MESSAGE_IDS) {
     const incoming = source.semanticFragmentsSeen?.[id];
     seen[id] = [incoming?.[0] === true, incoming?.[1] === true];
   }
+  for (const snapshot of Object.values(snapshots)) {
+    for (const mask of snapshot.masks) {
+      seen[mask.id] = [
+        seen[mask.id][0] || mask.semanticReadable[0],
+        seen[mask.id][1] || mask.semanticReadable[1],
+      ];
+    }
+  }
+  const seenRunIds = Array.isArray(source.seenRunIds)
+    ? [...new Set(source.seenRunIds.filter((item): item is string => typeof item === 'string' && item.length > 0))]
+    : Object.keys(snapshots);
   return {
-    version: 1,
+    version: 2,
     profileSeed,
-    encounterCount: Number.isFinite(source.encounterCount)
-      ? Math.max(0, Math.floor(source.encounterCount!))
-      : Object.keys(snapshots).length,
-    fullyHiddenPairs: pairs.length === 3 ? pairs : generated.pairs,
-    firstThreeMaskPlan: plan.length === 3 ? plan : generated.plan,
-    seenRunIds: Array.isArray(source.seenRunIds)
-      ? [...new Set(source.seenRunIds.filter((item): item is string => typeof item === 'string' && item.length > 0))]
-      : Object.keys(snapshots),
+    encounterCount: Math.max(
+      seenRunIds.length,
+      Number.isFinite(source.encounterCount) ? Math.max(0, Math.floor(source.encounterCount!)) : 0,
+    ),
+    fullyHiddenPairs,
+    firstThreeMaskPlan,
+    seenRunIds,
     semanticFragmentsSeen: seen,
     snapshotsByRunId: snapshots,
   };
@@ -283,8 +370,27 @@ export function normalizeLegacyMessageState(value: unknown): LegacyMessageState 
 
 function afterFirstThreeSnapshot(state: LegacyMessageState, runId: string): LegacyMessageSnapshot {
   const random = randomFromSeed(`${state.profileSeed}:run:${runId}`);
-  const hiddenPair = shuffle(IDS, random).slice(0, 2);
-  return buildSnapshot(runId, state.encounterCount, hiddenPair, random);
+  let hiddenPair: LegacyMessageId[] = [];
+  for (let attempt = 0; attempt < 32; attempt += 1) {
+    hiddenPair = shuffle(LEGACY_MESSAGE_IDS, random).slice(0, 2);
+    if (pairIsAllowed(hiddenPair)) break;
+  }
+  const semantics = emptySeen();
+  for (const id of LEGACY_MESSAGE_IDS) {
+    if (hiddenPair.includes(id)) continue;
+    semantics[id] = [random() > 0.38, random() > 0.38];
+  }
+  if (!(semantics.E.every(Boolean) || semantics.F.every(Boolean))) {
+    const target = hiddenPair.includes('E') ? 'F' : 'E';
+    semantics[target] = [true, true];
+  }
+  return buildSnapshot(
+    runId,
+    state.encounterCount,
+    hiddenPair,
+    semantics,
+    `${state.profileSeed}:run:${runId}`,
+  );
 }
 
 export function getOrCreateLegacyMessageSnapshot(
@@ -297,11 +403,7 @@ export function getOrCreateLegacyMessageSnapshot(
 
   const encounterIndex = state.encounterCount;
   const snapshot = encounterIndex < 3
-    ? {
-        ...cloneSnapshot(state.firstThreeMaskPlan[encounterIndex]),
-        runId,
-        encounterIndex,
-      }
+    ? { ...cloneSnapshot(state.firstThreeMaskPlan[encounterIndex]), runId, encounterIndex }
     : afterFirstThreeSnapshot(state, runId);
   const semanticFragmentsSeen = { ...state.semanticFragmentsSeen };
   for (const mask of snapshot.masks) {
@@ -324,14 +426,31 @@ export function getOrCreateLegacyMessageSnapshot(
   return { state: nextState, snapshot, created: true };
 }
 
+export function renderLegacyMessageSnapshot(
+  snapshot: LegacyMessageSnapshot,
+  source: LegacyMessageSource,
+): LegacyRenderedMessageMask[] {
+  return snapshot.masks.map(mask => ({
+    ...mask,
+    semanticReadable: [...mask.semanticReadable] as [boolean, boolean],
+    lineSeeds: [...mask.lineSeeds] as [string, string],
+    lines: mask.fullyHidden
+      ? [hideLine(source[mask.id][0].text), hideLine(source[mask.id][1].text)]
+      : [
+          partiallyMaskSemanticLine(source[mask.id][0], mask.semanticReadable[0], mask.lineSeeds[0]),
+          partiallyMaskSemanticLine(source[mask.id][1], mask.semanticReadable[1], mask.lineSeeds[1]),
+        ],
+  }));
+}
+
 export function isLegacyMessageReadable(
   snapshot: LegacyMessageSnapshot | undefined,
   id: LegacyMessageId,
 ): boolean {
   const mask = snapshot?.masks.find(item => item.id === id);
-  return Boolean(mask && !mask.fullyHidden && mask.semanticReadable.some(Boolean));
+  return Boolean(mask && !mask.fullyHidden && mask.semanticReadable.every(Boolean));
 }
 
 export function hasCollectedEveryLegacySemantic(state: LegacyMessageState): boolean {
-  return IDS.every(id => state.semanticFragmentsSeen[id].every(Boolean));
+  return LEGACY_MESSAGE_IDS.every(id => state.semanticFragmentsSeen[id].every(Boolean));
 }

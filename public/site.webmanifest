@@ -1,7 +1,7 @@
 {
   "name": "第七次重启",
   "short_name": "第七次重启",
-  "description": "Observer-01 通讯终端",
+  "description": "Aurora 异常通讯终端 / Anomalous Communication Terminal",
   "lang": "zh-CN",
   "start_url": "/",
   "scope": "/",

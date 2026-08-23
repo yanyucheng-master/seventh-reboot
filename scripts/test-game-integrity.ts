@@ -94,7 +94,19 @@ function canReach(from: string, target: string): boolean {
 assert.equal(storyNodeMap.size, storyNodes.length, 'Story node IDs must be unique');
 const archiveIds = new Set(ARCHIVE_ENTRIES.map(entry => entry.id));
 assert.equal(archiveIds.size, ARCHIVE_ENTRIES.length, 'Archive IDs must be unique');
-assert.equal(ARCHIVE_ENTRIES.length, 30, 'Archive total must include gravity engineering and optional future records');
+for (const archiveId of Object.values({
+  ...Object.fromEntries(ALL_ANCHORS.map(anchor => [anchor, `anchor_${anchor}`])),
+  gravity: 'anomaly_gravity_array',
+  normalEpilogue: 'epilogue_normal',
+  trueEpilogue: 'epilogue_true',
+})) {
+  assert.ok(archiveIds.has(archiveId), `Required archive is missing: ${archiveId}`);
+}
+assert.equal(
+  ARCHIVE_ENTRIES.some(entry => entry.image === '/assets/nova_observatory.png'),
+  false,
+  'The removed second observatory image must not return as an archive entry',
+);
 
 const choiceIds = new Set<string>();
 for (const node of storyNodes) {

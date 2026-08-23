@@ -102,12 +102,9 @@ for (const nodeId of ['CH01-0128', 'CH01-0137', 'CH04-0124', 'CH04-0153', 'CH04-
 }
 assert.equal(resolveNovaAvatarPresentation(missingFlower).base, 'n7_private');
 
-assert.equal(resolveNovaAvatarOverlay(stableLinkState, {
-  nova06AvatarInterferenceActive: true,
-  activeSpecialInteraction: 'power-routing',
-}), 'nova06_interference', 'NOVA-06 must outrank special-interaction overlays');
 assert.equal(resolveNovaAvatarOverlay(stableLinkState, { activeSpecialInteraction: 'power-routing' }), 'special_power');
 assert.equal(resolveNovaAvatarOverlay(stableLinkState, { activeSpecialInteraction: 'bulkhead-isolation' }), 'special_bulkhead');
+assert.equal(resolveNovaAvatarOverlay(stableLinkState, { activeSpecialInteraction: 'sealed-record-order' }), 'special_record_order');
 
 const legacyMessages = [
   {

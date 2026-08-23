@@ -71,7 +71,10 @@ function parseSourceFromMessageId(
   if (memoryMatch) {
     const anchor = memoryMatch[1] as MemoryAnchorId;
     if (MEMORY_ANCHOR_IDS.includes(anchor)) {
-      return { uiKind: 'memoryRecorded', memoryAnchor: anchor };
+      return {
+        uiKind: anchor === 'first_message' ? 'memoryRecordedPending' : 'memoryRecorded',
+        memoryAnchor: anchor,
+      };
     }
   }
 
@@ -146,9 +149,13 @@ function resolveUiContent(
       const label = memoryAnchor ? memoryAnchorLabels[memoryAnchor] : '';
       return t('game.memoryRecorded', { label });
     }
+    case 'memoryRecordedPending': {
+      const label = memoryAnchor ? memoryAnchorLabels[memoryAnchor] : '';
+      return t('game.memoryRecordedPending', { label });
+    }
     case 'avatarNotice':
       return uiKey ? t(uiKey) : '';
-    case 'cycleNotice':
+    case 'rebootFallbackNotice':
       return uiKey ? t(uiKey) : '';
     default:
       return '';
@@ -172,7 +179,7 @@ export function relocalizeDisplayMessages(
     let content = message.content;
     let image = message.image;
 
-    if (uiKind) {
+    if (uiKind && uiKind !== 'legacyMessage') {
       content = resolveUiContent(uiKind, memoryAnchor, uiKey, t, memoryAnchorLabels);
     } else if (message.speaker === 'player' && sourceNodeId != null && sourceChoiceIndex != null) {
       const choice = storyNodeMap.get(sourceNodeId)?.choices?.[sourceChoiceIndex];

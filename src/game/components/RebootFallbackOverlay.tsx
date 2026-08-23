@@ -7,7 +7,12 @@ const BINARY_ROWS = [
   'PHASE INDEX 08 > 07-DAMAGED // CRC MISMATCH',
 ];
 
-export function RebootFallbackOverlay() {
+type RebootFallbackOverlayProps = {
+  statusText: string;
+  transitionLabel: string;
+};
+
+export function RebootFallbackOverlay({ statusText, transitionLabel }: RebootFallbackOverlayProps) {
   return (
     <div className="reboot-fallback-overlay" role="status" aria-live="assertive">
       <div className="reboot-fallback-binary" aria-hidden="true">
@@ -18,12 +23,12 @@ export function RebootFallbackOverlay() {
       <div className="reboot-fallback-scan" aria-hidden="true" />
       <section className="reboot-fallback-core">
         <span className="reboot-fallback-kicker">AURORA / EXTERNAL CACHE RECOVERY</span>
-        <div className="reboot-fallback-index" aria-label="Reboot 08 fallback to damaged Reboot 07">
+        <div className="reboot-fallback-index" aria-label={transitionLabel}>
           <strong>08</strong>
           <i aria-hidden="true" />
           <strong>07</strong>
         </div>
-        <p>正在回读最后一个可用稳定记录</p>
+        <p>{statusText}</p>
         <div className="reboot-fallback-progress" aria-hidden="true"><span /></div>
         <small>ONE-TIME HANDSHAKE CACHE / CONSUMING</small>
       </section>

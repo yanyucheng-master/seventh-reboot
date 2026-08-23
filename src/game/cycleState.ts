@@ -15,6 +15,7 @@ import type {
   DisplayMessage,
   NovaAvatarStoryState,
   PowerFailureReason,
+  RebootNumber,
   SealableMemoryAnchor,
   StableCheckpointSnapshot,
   SpecialInteractionCompletion,
@@ -71,20 +72,28 @@ function cycleId(rebootNumber: number, timestamp = Date.now()): string {
   return `cycle-${String(rebootNumber).padStart(2, '0')}-${timestamp}`;
 }
 
+export function clampRebootNumber(value: unknown, fallback: RebootNumber = 7): RebootNumber {
+  const numeric = numberValue(value);
+  if (numeric == null) return fallback;
+  return numeric >= 8 ? 8 : 7;
+}
+
 export function createCurrentCycleState(
   currentRebootNumber = 7,
   previousCycle?: FailedCycleRecord,
   timestamp = Date.now(),
 ): CurrentCycleState {
+  const normalizedRebootNumber = clampRebootNumber(currentRebootNumber);
   return {
-    cycleStateVersion: 2,
-    cycleId: cycleId(currentRebootNumber, timestamp),
-    currentRebootNumber,
+    cycleStateVersion: 3,
+    cycleId: cycleId(normalizedRebootNumber, timestamp),
+    currentRebootNumber: normalizedRebootNumber,
     completedNodeIds: [],
     choiceHistory: [],
     interactionResults: [],
     timedResults: [],
     freeInputs: [],
+    timedDeadlines: {},
     syncAvailable: false,
     syncActive: false,
     syncInterrupted: false,
@@ -209,6 +218,15 @@ function normalizeFreeInputs(value: unknown): CycleFreeInputRecord[] {
   });
 }
 
+function normalizeTimedDeadlines(value: unknown): Record<string, number> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
+  return Object.fromEntries(Object.entries(value).flatMap(([nodeId, deadlineAt]) => {
+    const normalizedDeadline = numberValue(deadlineAt);
+    if (!nodeId || normalizedDeadline == null || normalizedDeadline <= 0) return [];
+    return [[migrateLegacyMainNodeId(nodeId), Math.floor(normalizedDeadline)]];
+  }));
+}
+
 export function normalizeCurrentCycleState(
   value: unknown,
   fallbackRebootNumber = 7,
@@ -217,9 +235,9 @@ export function normalizeCurrentCycleState(
   const source = value && typeof value === 'object'
     ? value as Partial<CurrentCycleState>
     : {};
-  const currentRebootNumber = Math.max(7, Math.floor(numberValue(source.currentRebootNumber) ?? fallbackRebootNumber));
+  const currentRebootNumber = clampRebootNumber(source.currentRebootNumber, clampRebootNumber(fallbackRebootNumber));
   return {
-    cycleStateVersion: 2,
+    cycleStateVersion: 3,
     cycleId: stringValue(source.cycleId) ?? cycleId(currentRebootNumber, timestamp),
     currentRebootNumber,
     completedNodeIds: uniqueStrings(source.completedNodeIds).map(migrateLegacyMainNodeId),
@@ -230,14 +248,13 @@ export function normalizeCurrentCycleState(
     interactionResults: normalizeInteractionResults(source.interactionResults),
     timedResults: normalizeTimedResults(source.timedResults),
     freeInputs: normalizeFreeInputs(source.freeInputs),
-    syncAvailable: source.syncAvailable === true,
-    syncActive: source.syncActive === true,
-    syncInterrupted: source.syncInterrupted === true,
-    syncBoundaryNodeId: stringValue(source.syncBoundaryNodeId)
-      ? migrateLegacyMainNodeId(stringValue(source.syncBoundaryNodeId)!)
-      : undefined,
-    syncCursor: Math.max(0, Math.floor(numberValue(source.syncCursor) ?? 0)),
-    currentCycleDeviationStarted: source.currentCycleDeviationStarted === true,
+    timedDeadlines: normalizeTimedDeadlines(source.timedDeadlines),
+    syncAvailable: false,
+    syncActive: false,
+    syncInterrupted: false,
+    syncBoundaryNodeId: undefined,
+    syncCursor: 0,
+    currentCycleDeviationStarted: false,
     observerCandyEchoPlayed: source.observerCandyEchoPlayed === true,
     previousCycleId: stringValue(source.previousCycleId),
     damagedSeventh: source.damagedSeventh === true,
@@ -296,6 +313,7 @@ export function recordCycleChoice(current: CurrentCycleState, record: CycleChoic
   return markCycleNodeCompleted({
     ...current,
     choiceHistory: replaceByNodeId(current.choiceHistory, record),
+    timedDeadlines: clearTimedDeadlineMap(current.timedDeadlines, record.nodeId),
   }, record.nodeId);
 }
 
@@ -306,6 +324,7 @@ export function recordCycleInteraction(
   return markCycleNodeCompleted({
     ...current,
     interactionResults: replaceByNodeId(current.interactionResults, record),
+    timedDeadlines: clearTimedDeadlineMap(current.timedDeadlines, record.nodeId),
   }, record.nodeId);
 }
 
@@ -313,6 +332,7 @@ export function recordCycleTimedResult(current: CurrentCycleState, record: Cycle
   return {
     ...current,
     timedResults: replaceByNodeId(current.timedResults, record),
+    timedDeadlines: clearTimedDeadlineMap(current.timedDeadlines, record.nodeId),
   };
 }
 
@@ -323,7 +343,59 @@ export function recordCycleFreeInput(
   return markCycleNodeCompleted({
     ...current,
     freeInputs: replaceByNodeId(current.freeInputs, record),
+    timedDeadlines: clearTimedDeadlineMap(current.timedDeadlines, record.nodeId),
   }, record.nodeId);
+}
+
+function clearTimedDeadlineMap(deadlines: Record<string, number>, nodeId: string): Record<string, number> {
+  if (!(nodeId in deadlines)) return deadlines;
+  const next = { ...deadlines };
+  delete next[nodeId];
+  return next;
+}
+
+export function ensureTimedDeadline(
+  current: CurrentCycleState,
+  nodeId: string,
+  durationMs: number,
+  now = Date.now(),
+): { state: CurrentCycleState; deadlineAt: number } {
+  const existing = current.timedDeadlines[nodeId];
+  if (Number.isFinite(existing) && existing > 0) return { state: current, deadlineAt: existing };
+  const deadlineAt = Math.floor(now + Math.max(0, durationMs));
+  return {
+    state: {
+      ...current,
+      timedDeadlines: { ...current.timedDeadlines, [nodeId]: deadlineAt },
+    },
+    deadlineAt,
+  };
+}
+
+export function restartTimedDeadline(
+  current: CurrentCycleState,
+  nodeId: string,
+  durationMs: number,
+  now = Date.now(),
+): { state: CurrentCycleState; deadlineAt: number } {
+  const deadlineAt = Math.floor(now + Math.max(0, durationMs));
+  return {
+    state: {
+      ...current,
+      timedDeadlines: { ...current.timedDeadlines, [nodeId]: deadlineAt },
+    },
+    deadlineAt,
+  };
+}
+
+export function clearTimedDeadline(current: CurrentCycleState, nodeId: string): CurrentCycleState {
+  const timedDeadlines = clearTimedDeadlineMap(current.timedDeadlines, nodeId);
+  return timedDeadlines === current.timedDeadlines ? current : { ...current, timedDeadlines };
+}
+
+export function getTimedRemainingMs(current: CurrentCycleState, nodeId: string, now = Date.now()): number | undefined {
+  const deadlineAt = current.timedDeadlines[nodeId];
+  return deadlineAt == null ? undefined : Math.max(0, deadlineAt - now);
 }
 
 export function createCycleInteractionRecord(
@@ -407,6 +479,7 @@ export function createFailedCycleRecord(
             interactionResults: cycle.lastStableCheckpoint.cycleState.interactionResults.map(record => ({ ...record })),
             timedResults: cycle.lastStableCheckpoint.cycleState.timedResults.map(record => ({ ...record })),
             freeInputs: cycle.lastStableCheckpoint.cycleState.freeInputs.map(record => ({ ...record })),
+            timedDeadlines: { ...cycle.lastStableCheckpoint.cycleState.timedDeadlines },
           },
         }
       : undefined,
@@ -434,6 +507,7 @@ function cloneCycleWithoutCheckpoint(
     interactionResults: snapshot.interactionResults.map(record => ({ ...record })),
     timedResults: snapshot.timedResults.map(record => ({ ...record })),
     freeInputs: snapshot.freeInputs.map(record => ({ ...record })),
+    timedDeadlines: { ...snapshot.timedDeadlines },
   };
 }
 
@@ -494,12 +568,12 @@ export function restoreDamagedSeventhCheckpoint(
     fatalEndingTriggered: true,
     nova06RecordingDamaged: true,
     nova06RollbackAuthorizationAvailable: false,
-    nova06RollbackAuthorizationUsed: false,
-    aiEmergencyRollbackExecuted: false,
+    nova06RollbackAuthorizationUsed: checkpointStats.nova06RollbackAuthorizationUsed,
+    aiEmergencyRollbackExecuted: checkpointStats.aiEmergencyRollbackExecuted,
   };
   const cycleState: CurrentCycleState = {
     ...checkpoint.cycleState,
-    cycleStateVersion: 2,
+    cycleStateVersion: 3,
     currentRebootNumber: 7,
     damagedSeventh: true,
     syncAvailable: false,
@@ -514,6 +588,7 @@ export function restoreDamagedSeventhCheckpoint(
     interactionResults: checkpoint.cycleState.interactionResults.map(item => ({ ...item })),
     timedResults: checkpoint.cycleState.timedResults.map(item => ({ ...item })),
     freeInputs: checkpoint.cycleState.freeInputs.map(item => ({ ...item })),
+    timedDeadlines: {},
   };
 
   return {

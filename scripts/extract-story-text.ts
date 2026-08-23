@@ -11,12 +11,6 @@ const VERSION = 'V1.0';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const outPath = path.join(__dirname, '..', '第七次重启-剧情文本.txt');
 const epilogueOutPath = path.join(__dirname, '..', '第七次重启-可选后记.txt');
-const mainExportFilename = '第七次重启_V1.0_主流程_8月4日人工重力整合版.txt';
-const epilogueExportFilename = '第七次重启_V1.0_可选后记_普通与真结局.txt';
-const projectOutPath = path.join(__dirname, '..', '..', mainExportFilename);
-const projectEpilogueOutPath = path.join(__dirname, '..', '..', epilogueExportFilename);
-const desktopOutPath = path.join(__dirname, '..', '..', '..', mainExportFilename);
-const desktopEpilogueOutPath = path.join(__dirname, '..', '..', '..', epilogueExportFilename);
 
 const speakerLabel: Record<string, string> = {
   nova: 'Nova',
@@ -376,7 +370,7 @@ function formatInteractionAppendix(): string[] {
 }
 
 const output = [
-  `# 第七次重启 · V1.0 主流程 8月4日人工重力整合版`,
+  `# 第七次重启 · V1.0 主流程运行时导出`,
   `版本：${VERSION}`,
   `主流程节点数：${storyNodes.length}`,
   `正式特殊互动：${interactionKindCount} 类`,
@@ -384,7 +378,7 @@ const output = [
   `生成时间：${new Date().toISOString().replace(/\.\d{3}Z$/, '')}`,
   ``,
   `说明：本文档由运行时 story.ts 自动导出，仅包含正式主流程；可选后记由独立文件维护，不属于一周目自动播放链。`,
-  `真源说明：主流程以“第七次重启_V1.0_主流程_8月3日高潮重写终稿”为唯一剧情依据，并于 8 月 4 日正式整合 Aurora 分区式人工重力设定；后记仍由独立可选后记文件维护。`,
+  `真源说明：中文剧情唯一维护源为 story-source/main.zh-CN.txt；本文档仅供阅读与审计，不得作为反向生成源。`,
   `沉浸式界面说明：章节与结局入口仅保留为内部结构边界，正常游玩不显示章节扉页；正式结局标题使用独立演出。`,
   `观察者残响说明：第二章离线后仅向 Observer-01 显示一次“还给对方一颗”，不写入聊天历史或已读记录。`,
   `静态草稿说明：未发送草稿、加密草稿与牛奶糖异常草稿链已从运行时及档案中删除。`,
@@ -430,10 +424,6 @@ const encodedOutput = encodeStorySource(output);
 const encodedEpilogueOutput = encodeStorySource(epilogueOutput);
 fs.writeFileSync(outPath, encodedOutput);
 fs.writeFileSync(epilogueOutPath, encodedEpilogueOutput);
-fs.writeFileSync(projectOutPath, encodedOutput);
-fs.writeFileSync(projectEpilogueOutPath, encodedEpilogueOutput);
-fs.writeFileSync(desktopOutPath, encodedOutput);
-fs.writeFileSync(desktopEpilogueOutPath, encodedEpilogueOutput);
 
 const lineCount = output.split('\n').length;
 const choiceCount = storyNodes.filter(n => n.choices?.length).length;
@@ -441,9 +431,5 @@ const branchCount = storyNodes.reduce((sum, n) => sum + (n.choices?.length ?? 0)
 
 console.log(`Wrote ${storyNodes.length} nodes (${lineCount} lines, ${choiceCount} choice nodes, ${branchCount} branches, ${interactionNodes.length} interactions)`);
 console.log(`- ${outPath}`);
-console.log(`- ${projectOutPath}`);
-console.log(`- ${desktopOutPath}`);
 console.log(`Wrote ${getEpilogueNodes('normal').length + getEpilogueNodes('true').length} optional epilogue nodes`);
 console.log(`- ${epilogueOutPath}`);
-console.log(`- ${projectEpilogueOutPath}`);
-console.log(`- ${desktopEpilogueOutPath}`);

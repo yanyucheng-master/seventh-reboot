@@ -47,8 +47,8 @@ export const ARCHIVE_ENTRIES: ArchiveDefinition[] = [
     category: 'anchor',
     title: '第一句通讯',
     quote: '真的有人收到了？',
-    description: 'Observer-01 保存的第一条有效回应记录。',
-    chapter: '序章：Observer-01 接入',
+    description: '外部索引保存的第一条有效通讯记录。',
+    chapter: '序章：首次接入',
     order: 10,
   },
   {

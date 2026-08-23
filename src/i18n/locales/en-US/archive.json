@@ -15,7 +15,7 @@
       "default": "[Encrypted record]"
     },
     "description": {
-      "photo": "Image residue has not yet entered the Observer-01 memory module",
+      "photo": "Image residue has not yet entered the external memory module",
       "ending": "Corresponding ending not yet observed",
       "default": "Not yet restored"
     }
@@ -24,8 +24,8 @@
     "anchor_first_message": {
       "title": "First Transmission",
       "quote": "Did someone really get this?",
-      "description": "The first valid response record preserved by Observer-01.",
-      "chapter": "Prologue: Observer-01 Recovery"
+      "description": "The first valid transmission preserved in the external index.",
+      "chapter": "Prologue: First Contact"
     },
     "anchor_n7": {
       "title": "N7",

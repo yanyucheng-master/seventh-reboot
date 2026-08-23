@@ -175,7 +175,13 @@ export function applySpecialInteractionCompletion(
           nova06RollbackAuthorizationAvailable: false,
         };
       }
-      if (completion.attempt === 1) {
+      if (
+        completion.attempt === 1
+        && completion.routeKey === 'fail'
+        && completion.failureReason === 'life_support_below_minimum'
+        && current.nova06RollbackAuthorizationAvailable
+        && !current.damagedSeventh
+      ) {
         return {
           ...current,
           powerRoutingAttempt: 1,
@@ -185,6 +191,7 @@ export function applySpecialInteractionCompletion(
           aiEmergencyRollbackExecuted: true,
         };
       }
+      if (completion.attempt === 1) return current;
       if (completion.routeKey === 'success') {
         return {
           ...current,

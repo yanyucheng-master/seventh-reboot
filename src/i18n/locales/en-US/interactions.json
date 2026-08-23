@@ -2,31 +2,31 @@
   "version": "V1.0-special-interactions",
   "nodes": {
     "CH03-0144": {
-      "content": "Observation isolation and manual equalization"
+      "content": "Observation Room Isolation and Manual Equalization"
     },
     "CH05A-0016": {
-      "content": "Joint authorization key"
+      "content": "Sealed Record Order Verification"
     },
     "CH05B-0016": {
-      "content": "OBSERVATION EMERGENCY POWER WINDOW||STAGE A / LOW-PRESSURE TRANSIT · Life support must remain high; communications must not drop\nSTAGE B / RESIDUAL-CORE READ · Scan must enter its working range; life support and communications must remain above safe lines\nBUS LIMIT · Each stage has a fixed power budget; current Nova cannot withdraw a confirmed submission\nHISTORICAL AUTHORITY · One NOVA-06 emergency intervention signature detected"
+      "content": "Maintenance-Layer Emergency Power / First Submission"
     },
     "CH05B-0028": {
-      "content": "Never mind. This time no one can undo it for us again."
+      "content": "Maintenance-Layer Emergency Power / Final Submission"
     },
     "CH05B-0032": {
-      "content": "She only undid our mistake once. You did everything after that."
+      "content": "Maintenance-Layer Emergency Power / Damaged Seventh"
     },
     "CH05B-0069": {
-      "content": "We have only known each other for seven days."
+      "content": "Temporary Memory Capacity Management"
     },
     "CH05B-0080": {
-      "content": "OBSERVER-01||Off-ship real time: Unaffected by local temporal reversion\nCommunication-linked memory: Access sealed when link closes\nMemory retention authority: Retained only by external index copy\nIdentity source: NOVA-06 navigation-continuity data request\nIndex type: External memory index\nHost type: Real external consciousness\nHost location: Inaccessible\nAdministrator privileges: None\nPermitted operations: Store / read / return memory anchors\nPurpose: Preserve an index capable of reawakening memory after link closure"
+      "content": "New Course Lock / Avoid S-7"
     },
     "CH05B-0102": {
-      "content": "woke up before you did."
+      "content": "Physical Isolation of the Seventh Protocol / Maintain New Course"
     },
     "FIN-0010": {
-      "content": "I finally remember some of it.\nNot everything.\nBut the most important pieces are here."
+      "content": "Restore the Previously Sealed Memory Anchor"
     }
   }
 }

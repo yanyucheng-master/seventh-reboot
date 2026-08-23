@@ -3,18 +3,19 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Locale } from '../../i18n';
 import type { SpecialInteractionCompletion } from '../types';
 import { InteractionTitle } from './InteractionTitle';
+import { remainingUntil } from '../timedRuntime';
 
 type WaypointId = 'N-17' | 'K-04' | 'V-22' | 'S-7';
 
 type Props = {
   locale: Locale;
   reducedMotion: boolean;
+  deadlineAt: number;
   onResultLocked: (result: SpecialInteractionCompletion) => void;
   onComplete: (result: SpecialInteractionCompletion) => void;
 };
 
 const SAFE_ORDER: WaypointId[] = ['N-17', 'K-04', 'V-22'];
-const WINDOW_MS = 35_000;
 const WAYPOINTS: Array<{ id: WaypointId; x: number; y: number; danger?: boolean }> = [
   { id: 'N-17', x: 18, y: 66 },
   { id: 'K-04', x: 43, y: 36 },
@@ -61,13 +62,12 @@ const COPY = {
   },
 } as const;
 
-export function CourseLockInteraction({ locale, reducedMotion, onResultLocked, onComplete }: Props) {
+export function CourseLockInteraction({ locale, reducedMotion, deadlineAt, onResultLocked, onComplete }: Props) {
   const copy = COPY[locale];
   const [selected, setSelected] = useState<WaypointId[]>([]);
-  const [remainingMs, setRemainingMs] = useState(WINDOW_MS);
+  const [remainingMs, setRemainingMs] = useState(() => remainingUntil(deadlineAt));
   const [dangerConfirm, setDangerConfirm] = useState(false);
   const [result, setResult] = useState<Extract<SpecialInteractionCompletion, { kind: 'course-lock' }> | null>(null);
-  const startedAt = useRef<number | null>(null);
   const finished = useRef(false);
 
   const lockResult = useCallback((routeKey: 'success' | 'retry' | 'fatal') => {
@@ -80,15 +80,15 @@ export function CourseLockInteraction({ locale, reducedMotion, onResultLocked, o
 
   useEffect(() => {
     if (result) return undefined;
-    startedAt.current = performance.now();
-    const timer = window.setInterval(() => {
-      if (startedAt.current === null) return;
-      const next = Math.max(0, WINDOW_MS - (performance.now() - startedAt.current));
+    const tick = () => {
+      const next = remainingUntil(deadlineAt);
       setRemainingMs(next);
       if (next === 0) lockResult('fatal');
-    }, 120);
+    };
+    tick();
+    const timer = window.setInterval(tick, 120);
     return () => window.clearInterval(timer);
-  }, [lockResult, result]);
+  }, [deadlineAt, lockResult, result]);
 
   function chooseWaypoint(id: WaypointId) {
     if (result) return;

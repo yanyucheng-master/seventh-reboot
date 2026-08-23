@@ -139,6 +139,26 @@ scenario('08 第一次错误供能由舰载 AI 消耗静态授权撤回', () => 
   assert.equal(stats.pendingReboot08, false);
 });
 
+scenario('08B 第一次非生命维持错误只拒绝提交且不消费授权', () => {
+  for (const failureReason of [
+    'communications_interrupted',
+    'core_scan_underpowered',
+    'return_core_cutoff',
+    'timeout',
+  ] as const) {
+    const stats = applySpecialInteractionCompletion(freshStats({
+      nova06RollbackAuthorizationAvailable: true,
+    }), {
+      kind: 'power-routing', routeKey: 'fail', attempt: 1, failureReason,
+    });
+    assert.equal(stats.nova06RollbackAuthorizationAvailable, true, `${failureReason} consumed authorization`);
+    assert.equal(stats.nova06RollbackAuthorizationUsed, false, `${failureReason} marked authorization used`);
+    assert.equal(stats.aiEmergencyRollbackExecuted, false, `${failureReason} executed AI rollback`);
+    assert.equal(stats.powerFirstFailureReason, undefined, `${failureReason} was committed as a route failure`);
+    assert.equal(stats.pendingReboot08, false, `${failureReason} became fatal`);
+  }
+});
+
 scenario('09 最终供能成功与失败严格分流', () => {
   const recovered = applySpecialInteractionCompletion(freshStats({ powerRoutingAttempt: 1 }), {
     kind: 'power-routing', routeKey: 'success', attempt: 2,
@@ -231,12 +251,12 @@ scenario('14 互动条件与直接状态条件读取当前循环字段', () => {
   }), true);
 });
 
-scenario('15 供能错误后的状态可以存档并恢复', () => {
+scenario('15 生命维持安全回退的历史可以存档并恢复', () => {
   const stats = applySpecialInteractionCompletion(freshStats({
     nova06RollbackAuthorizationAvailable: true,
     gravityArrayDegraded: true,
   }), {
-    kind: 'power-routing', routeKey: 'fail', attempt: 1, failureReason: 'core_scan_underpowered',
+    kind: 'power-routing', routeKey: 'fail', attempt: 1, failureReason: 'life_support_below_minimum',
   });
   const save = createSaveData(
     'CH05B-0020',
@@ -250,9 +270,21 @@ scenario('15 供能错误后的状态可以存档并恢复', () => {
   assert.ok(restored);
   assert.equal(restored.stats.nova06RollbackAuthorizationUsed, true);
   assert.equal(restored.stats.aiEmergencyRollbackExecuted, true);
-  assert.equal(restored.stats.powerFirstFailureReason, 'core_scan_underpowered');
+  assert.equal(restored.stats.powerFirstFailureReason, 'life_support_below_minimum');
   assert.equal(restored.stats.gravityArrayDegraded, true);
   assert.equal(resolveResumeNodeId(restored), 'CH05B-0020');
+});
+
+scenario('15B 受损第七次和最终提交错误都只能进入致死结果', () => {
+  for (const stats of [freshStats(), freshStats({ damagedSeventh: true })]) {
+    const fatal = applySpecialInteractionCompletion(stats, {
+      kind: 'power-routing', routeKey: 'fatal', attempt: 2, failureReason: 'timeout',
+    });
+    assert.equal(fatal.powerRoutingResult, 'fatal');
+    assert.equal(fatal.pendingReboot08, true);
+    assert.equal(fatal.nova06RollbackAuthorizationUsed, stats.nova06RollbackAuthorizationUsed);
+    assert.equal(fatal.aiEmergencyRollbackExecuted, stats.aiEmergencyRollbackExecuted);
+  }
 });
 
 scenario('16 旧供能字段只用于迁移且不会恢复旧接管概念', () => {
@@ -333,5 +365,5 @@ scenario('20 正式高潮互动节点与类型齐全', () => {
   }
 });
 
-console.log(`Special interaction scenarios passed: ${scenarios.length}/20`);
+console.log(`Special interaction scenarios passed: ${scenarios.length}/${scenarios.length}`);
 for (const name of scenarios) console.log(`  PASS ${name}`);

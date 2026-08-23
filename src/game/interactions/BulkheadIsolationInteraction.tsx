@@ -10,15 +10,17 @@ import {
   type BulkheadSealTarget,
 } from './logic';
 import { InteractionTitle } from './InteractionTitle';
+import { INTERACTION_TIME_LIMIT_MS, remainingUntil } from '../timedRuntime';
 
 type BulkheadIsolationInteractionProps = {
   copy: SpecialInteractionCopy;
   reducedMotion: boolean;
+  deadlineAt: number;
   onResultLocked: (result: SpecialInteractionCompletion) => void;
   onComplete: (result: SpecialInteractionCompletion) => void;
 };
 
-const BULKHEAD_WINDOW_MS = 30_000;
+const BULKHEAD_WINDOW_MS = INTERACTION_TIME_LIMIT_MS['bulkhead-isolation'];
 const PRESSURE_MIN = 70;
 const PRESSURE_MAX = 102;
 const PRESSURE_SAFE_MIN = 94;
@@ -42,14 +44,14 @@ function clampPressure(value: number): number {
 export function BulkheadIsolationInteraction({
   copy,
   reducedMotion,
+  deadlineAt,
   onResultLocked,
   onComplete,
 }: BulkheadIsolationInteractionProps) {
-  const startedAtRef = useRef(0);
   const pressureRef = useRef(84);
   const executionTimerRef = useRef<number | null>(null);
   const checkpointedRef = useRef(false);
-  const [remainingMs, setRemainingMs] = useState(BULKHEAD_WINDOW_MS);
+  const [remainingMs, setRemainingMs] = useState(() => remainingUntil(deadlineAt));
   const [sealTarget, setSealTarget] = useState<BulkheadSealTarget | null>(null);
   const [equalizeTarget, setEqualizeTarget] = useState<BulkheadEqualizeTarget | null>(null);
   const [activeStep, setActiveStep] = useState<BulkheadStep>('seal');
@@ -61,7 +63,6 @@ export function BulkheadIsolationInteraction({
   const [evaluation, setEvaluation] = useState<BulkheadEvaluation | null>(null);
 
   useEffect(() => {
-    startedAtRef.current = performance.now();
     return () => {
       if (executionTimerRef.current !== null) {
         window.clearTimeout(executionTimerRef.current);
@@ -77,9 +78,9 @@ export function BulkheadIsolationInteraction({
 
   useEffect(() => {
     if (evaluation || executionMode !== 'idle') return;
-    const timer = window.setInterval(() => {
-      const elapsedMs = performance.now() - startedAtRef.current;
-      const nextRemaining = Math.max(0, BULKHEAD_WINDOW_MS - elapsedMs);
+    const tick = () => {
+      const nextRemaining = remainingUntil(deadlineAt);
+      const elapsedMs = BULKHEAD_WINDOW_MS - nextRemaining;
       setRemainingMs(nextRemaining);
       if (nextRemaining === 0) {
         setEvaluation(evaluateBulkheadDecision({
@@ -90,9 +91,11 @@ export function BulkheadIsolationInteraction({
           timedOut: true,
         }));
       }
-    }, 100);
+    };
+    tick();
+    const timer = window.setInterval(tick, 100);
     return () => window.clearInterval(timer);
-  }, [equalizeTarget, evaluation, executionMode, sealTarget]);
+  }, [deadlineAt, equalizeTarget, evaluation, executionMode, sealTarget]);
 
   useEffect(() => {
     if (evaluation) return;
@@ -231,7 +234,7 @@ export function BulkheadIsolationInteraction({
       sealTarget,
       equalizeTarget: target,
       transitionPressure: pressureAtLock,
-      elapsedMs: performance.now() - startedAtRef.current,
+      elapsedMs: BULKHEAD_WINDOW_MS - remainingUntil(deadlineAt),
     });
     const completion = completionFromEvaluation(nextEvaluation);
     checkpointedRef.current = true;

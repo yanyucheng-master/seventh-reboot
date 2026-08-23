@@ -5,11 +5,9 @@ import { storyNodeMap } from '../src/game/story.ts';
 import { normalizeStorySourceText } from './story-source-format.ts';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const sourcePath = process.argv[2];
-if (!sourcePath) {
-  console.error('Usage: npx tsx scripts/import-exported-story.mjs <exported-story.txt>');
-  process.exit(1);
-}
+const sourcePath = process.argv[2]
+  ? path.resolve(process.argv[2])
+  : path.join(root, 'story-source', 'main.zh-CN.txt');
 
 const storyPath = path.join(root, 'src/game/story.ts');
 const source = normalizeStorySourceText(fs.readFileSync(sourcePath, 'utf8')).text;

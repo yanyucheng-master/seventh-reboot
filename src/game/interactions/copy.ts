@@ -73,20 +73,8 @@ export type SpecialInteractionCopy = {
     injuredDetail: string;
     failures: Record<BulkheadFailureReason, string>;
   };
-  password: {
-    kicker: string;
+  recordOrder: {
     title: string;
-    mission: string;
-    novaSlot: string;
-    observerSlot: string;
-    submitted: string;
-    waiting: string;
-    fieldLabel: string;
-    placeholder: string;
-    submit: string;
-    rejected: string;
-    accepted: string;
-    successDetail: string;
   };
   power: {
     kicker: string;
@@ -112,6 +100,8 @@ export type SpecialInteractionCopy = {
     acknowledgeFailure: string;
     previousFailure: string;
     rollbackConsumed: string;
+    preflightRejected: string;
+    adjustAndResubmit: string;
     failureReasons: Record<PowerFailureReason, string>;
   };
   memory: {
@@ -196,20 +186,8 @@ const zh: SpecialInteractionCopy = {
       seal_timeout: '密封完整度归零，异常舱室与过渡舱失去隔离。',
     },
   },
-  password: {
-    kicker: 'NOVA-07 + OBSERVER-01 / 联合授权',
-    title: '联合授权密钥',
-    mission: 'Nova 已提交本轮身份片段。请按“本次接入编号 / 外部索引编号”的顺序提交另一端片段。',
-    novaSlot: 'NOVA-07 权限槽',
-    observerSlot: 'OBSERVER-01 权限槽',
-    submitted: '07 / 已提交',
-    waiting: '等待外部片段',
-    fieldLabel: '联合密钥序列',
-    placeholder: '07-01',
-    submit: '提交外部授权',
-    rejected: '联合密钥未通过。请核对 07 与 01 的顺序。该错误不会影响其他权限。',
-    accepted: '双端身份已确认',
-    successDetail: 'NOVA-07 与 OBSERVER-01 已共同解除密封记录的只读限制。',
+  recordOrder: {
+    title: '密封记录顺序校验',
   },
   power: {
     kicker: 'AURORA / 一次性供能代理',
@@ -248,6 +226,8 @@ const zh: SpecialInteractionCopy = {
     acknowledgeFailure: '返回通讯链路',
     previousFailure: '上次提交留下的异常记录',
     rollbackConsumed: 'NOVA-06 紧急回退：已使用 / 不可恢复',
+    preflightRejected: '提交前校验未通过 / 未锁定路由',
+    adjustAndResubmit: '调整参数后重新提交。本次未调用独立导航授权。',
     failureReasons: {
       life_support_below_minimum: '生命维持支路跌破安全线',
       communications_interrupted: '通讯链路失去持续供能',
@@ -369,20 +349,8 @@ const en: SpecialInteractionCopy = {
       seal_timeout: 'Seal integrity reached zero and the anomalous chamber lost isolation.',
     },
   },
-  password: {
-    kicker: 'NOVA-07 + OBSERVER-01 / JOINT AUTHORIZATION',
-    title: 'Joint authorization key',
-    mission: 'Nova has submitted the current-cycle identity fragment. Submit the other endpoint in current-link / external-index order.',
-    novaSlot: 'NOVA-07 AUTH SLOT',
-    observerSlot: 'OBSERVER-01 AUTH SLOT',
-    submitted: '07 / SUBMITTED',
-    waiting: 'WAITING FOR EXTERNAL FRAGMENT',
-    fieldLabel: 'Joint key sequence',
-    placeholder: '07-01',
-    submit: 'Submit external authorization',
-    rejected: 'Joint key rejected. Recheck the order of 07 and 01. No other authority was affected.',
-    accepted: 'Both endpoint identities confirmed',
-    successDetail: 'NOVA-07 and OBSERVER-01 jointly removed the sealed record\'s read-only restriction.',
+  recordOrder: {
+    title: 'Sealed-record order check',
   },
   power: {
     kicker: 'AURORA / ONE-TIME POWER PROXY',
@@ -421,6 +389,8 @@ const en: SpecialInteractionCopy = {
     acknowledgeFailure: 'Return to transmission',
     previousFailure: 'Anomaly recorded from previous submission',
     rollbackConsumed: 'NOVA-06 emergency rollback: USED / UNRECOVERABLE',
+    preflightRejected: 'PRE-COMMIT VALIDATION FAILED / ROUTE NOT LOCKED',
+    adjustAndResubmit: 'Adjust the allocation and submit again. Independent navigation authority was not invoked.',
     failureReasons: {
       life_support_below_minimum: 'Life support fell below its safe line',
       communications_interrupted: 'Communications lost sustained power',

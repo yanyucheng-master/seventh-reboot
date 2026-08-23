@@ -31,6 +31,7 @@ import {
   createCycleInteractionRecord,
   createCurrentCycleState,
   createStableCheckpointSnapshot,
+  ensureTimedDeadline,
   getStoryNodeForReboot,
   markCycleNodeCompleted,
   recordCycleChoice,
@@ -38,8 +39,10 @@ import {
   recordCycleInteraction,
   recordCycleTimedResult,
   restoreDamagedSeventhCheckpoint,
+  restartTimedDeadline,
   shouldStopReadSkip,
 } from './cycleState';
+import { getTimedNodeDurationMs } from './timedRuntime';
 import type {
   ChatDeliveryRuntime,
   CommunicationLinkState,
@@ -59,6 +62,10 @@ import type {
 import {
   getOrCreateLegacyMessageSnapshot,
   isLegacyMessageReadable,
+  LEGACY_MESSAGE_IDS,
+  renderLegacyMessageSnapshot,
+  type LegacyMessageId,
+  type LegacyMessageSource,
   type LegacyMessageSnapshot,
 } from './legacyMessages';
 import { DeliveryController } from './delivery/controller';
@@ -98,6 +105,7 @@ import {
   clampStat,
 } from './state';
 import { SpecialInteractionOverlay } from './interactions/SpecialInteractionOverlay';
+import { isObserverIdentityEstablished } from './identity';
 import {
   applySpecialInteractionCompletion,
   isSealableMemoryAnchor,
@@ -107,8 +115,44 @@ import {
 
 type Translate = (key: string, params?: Record<string, string | number>) => string;
 
-// INTERNAL TEST ONLY: set to false or remove this block before public release.
-const INTERNAL_TEST_SKIP_ENABLED = true;
+function buildLegacyMessageSource(t: Translate): LegacyMessageSource {
+  return Object.fromEntries(LEGACY_MESSAGE_IDS.map(id => [id, [
+    {
+      text: t(`legacyMessages.messages.${id}.line1`),
+      coreToken: t(`legacyMessages.messages.${id}.core1`),
+    },
+    {
+      text: t(`legacyMessages.messages.${id}.line2`),
+      coreToken: t(`legacyMessages.messages.${id}.core2`),
+    },
+  ]])) as LegacyMessageSource;
+}
+
+function getLegacyMessageIdentity(message: DisplayMessage): {
+  id: LegacyMessageId;
+  runId: string;
+} | null {
+  const sourceMatch = message.sourceNodeId?.match(/^LEGACY-@6-([A-F])$/);
+  const id = message.legacyMessageId ?? sourceMatch?.[1] as LegacyMessageId | undefined;
+  if (!id || !LEGACY_MESSAGE_IDS.includes(id)) return null;
+  if (message.legacyMessageRunId) return { id, runId: message.legacyMessageRunId };
+  const prefix = 'legacy_message_';
+  const suffix = `_${id}`;
+  if (!message.id.startsWith(prefix) || !message.id.endsWith(suffix)) return null;
+  return { id, runId: message.id.slice(prefix.length, -suffix.length) };
+}
+
+function formatLegacyMessageCard(
+  id: LegacyMessageId,
+  fullyHidden: boolean,
+  lines: [string, string],
+  t: Translate,
+): string {
+  return `${t('legacyMessages.title', { id })}||${t('legacyMessages.writerLabel')}: ${t('legacyMessages.writer')}\n${t('legacyMessages.statusLabel')}: ${t(fullyHidden ? 'legacyMessages.unreadable' : 'legacyMessages.partial')}\n${lines[0]}\n${lines[1]}`;
+}
+
+// INTERNAL TEST ONLY: Vite strips this branch from production builds.
+const INTERNAL_TEST_SKIP_ENABLED = import.meta.env.DEV;
 // INTERNAL TEST ONLY: Vite development builds may open a node directly with ?testNode=<id>.
 const INTERNAL_TEST_NODE_ID = import.meta.env.DEV
   ? new URLSearchParams(window.location.search).get('testNode')
@@ -462,6 +506,7 @@ export default function GameApp() {
     }),
     [t],
   );
+  const legacyMessageSource = useMemo(() => buildLegacyMessageSource(t), [t]);
 
   const contactMetaByStage = useMemo<Record<ContactStage, { name: string; subtitle: string }>>(
     () => ({
@@ -492,7 +537,6 @@ export default function GameApp() {
   const waitResolverRef = useRef<((result: WaitResult) => void) | null>(null);
   const delayResolverRef = useRef<(() => void) | null>(null);
   const choiceTimeoutRef = useRef<number | null>(null);
-  const choiceDeadlineRef = useRef<{ nodeId: string; expiresAt: number } | null>(null);
   const activeChoiceRef = useRef<{ nodeId: string; settled: boolean } | null>(null);
   const signalGlitchTimeoutRef = useRef<number | null>(null);
   const signalGlitchPulseRef = useRef(0);
@@ -554,14 +598,37 @@ export default function GameApp() {
     document.title = t(persistentProgress.reboot08TitleUnlocked ? 'menu.title08' : 'menu.title');
   }, [persistentProgress.reboot08TitleUnlocked, t]);
 
+  const localizeMessages = useCallback(
+    (msgs: DisplayMessage[], progress = persistentProgressRef.current) => {
+      const localized = relocalizeDisplayMessages(msgs, storyNodeMap, t, memoryAnchorLabels);
+      return localized.map(message => {
+        const identity = getLegacyMessageIdentity(message);
+        if (!identity) return message;
+        const snapshot = progress.legacyMessageState.snapshotsByRunId[identity.runId];
+        const mask = snapshot
+          ? renderLegacyMessageSnapshot(snapshot, legacyMessageSource).find(item => item.id === identity.id)
+          : undefined;
+        if (!mask) return message;
+        return {
+          ...message,
+          uiKind: 'legacyMessage' as const,
+          legacyMessageId: identity.id,
+          legacyMessageRunId: identity.runId,
+          content: formatLegacyMessageCard(identity.id, mask.fullyHidden, mask.lines, t),
+        };
+      });
+    },
+    [legacyMessageSource, memoryAnchorLabels, storyNodeMap, t],
+  );
+
   const applyLocalizedMessages = useCallback(
     (msgs: DisplayMessage[]) => {
-      const localized = relocalizeDisplayMessages(msgs, storyNodeMap, t, memoryAnchorLabels);
+      const localized = localizeMessages(msgs);
       messagesRef.current = localized;
       setMessages(localized);
       return localized;
     },
-    [memoryAnchorLabels, storyNodeMap, t],
+    [localizeMessages],
   );
 
   useEffect(() => {
@@ -591,14 +658,12 @@ export default function GameApp() {
 
   const activateChoice = useCallback((nodeId: string) => {
     activeChoiceRef.current = { nodeId, settled: false };
-    if (choiceDeadlineRef.current?.nodeId !== nodeId) choiceDeadlineRef.current = null;
   }, []);
 
   const claimChoiceResult = useCallback((nodeId: string): boolean => {
     const active = activeChoiceRef.current;
     if (!active || active.nodeId !== nodeId || active.settled) return false;
     active.settled = true;
-    choiceDeadlineRef.current = null;
     return true;
   }, []);
 
@@ -619,7 +684,6 @@ export default function GameApp() {
       window.clearTimeout(choiceTimeoutRef.current);
       choiceTimeoutRef.current = null;
     }
-    choiceDeadlineRef.current = null;
     activeChoiceRef.current = null;
     if (signalGlitchTimeoutRef.current !== null) {
       window.clearTimeout(signalGlitchTimeoutRef.current);
@@ -764,6 +828,17 @@ export default function GameApp() {
     return next;
   }, []);
 
+  const ensureNodeDeadline = useCallback((node: StoryNode): number | undefined => {
+    const durationMs = getTimedNodeDurationMs(node);
+    if (!durationMs) return undefined;
+    const ensured = ensureTimedDeadline(cycleStateRef.current, node.id, durationMs);
+    if (ensured.state !== cycleStateRef.current) {
+      cycleStateRef.current = ensured.state;
+      setCycleState(ensured.state);
+    }
+    return ensured.deadlineAt;
+  }, []);
+
   const markCurrentCycleNode = useCallback((nodeId: string) => (
     updateCurrentCycle(current => markCycleNodeCompleted(current, nodeId))
   ), [updateCurrentCycle]);
@@ -899,8 +974,9 @@ export default function GameApp() {
     const now = Date.now();
     const sinceLast = now - lastSignalGlitchRef.current.at;
     const inCooldown = sinceLast < SIGNAL_GLITCH_COOLDOWN_MS;
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
     if (!cue.bypassCooldown && inCooldown && cue.level <= lastSignalGlitchRef.current.level) return;
-    const soft = !cue.bypassCooldown && inCooldown;
+    const soft = reducedMotion || (!cue.bypassCooldown && inCooldown);
     if (cue.affectsCooldown) {
       lastSignalGlitchRef.current = { at: now, level: cue.level };
     }
@@ -918,14 +994,14 @@ export default function GameApp() {
       pulse: signalGlitchPulseRef.current,
       soft,
     });
-    if (!soft && cue.haptic && 'vibrate' in navigator) {
+    if (!reducedMotion && !soft && cue.haptic && 'vibrate' in navigator) {
       navigator.vibrate(cue.level === 3 ? [18, 28, 24] : 18);
     }
 
     signalGlitchTimeoutRef.current = window.setTimeout(() => {
       signalGlitchTimeoutRef.current = null;
       setSignalGlitch(null);
-    }, cue.duration);
+    }, reducedMotion ? Math.min(cue.duration, 180) : cue.duration);
   }, []);
 
   const addMessage = useCallback((msg: DisplayMessage) => {
@@ -1005,13 +1081,19 @@ export default function GameApp() {
       statsRef.current = nextStats;
       setStats(nextStats);
 
+      const observerEstablished = isObserverIdentityEstablished(
+        deliveryRuntimeRef.current,
+        nextStats.reboot08TitleUnlocked,
+      );
+      const memoryUiKind = observerEstablished ? 'memoryRecorded' : 'memoryRecordedPending';
+
       const nextMessages = addMessage({
         id: `memory_anchor_${anchor}_${Date.now()}`,
         speaker: 'system',
         type: 'memory-anchor',
-        content: t('game.memoryRecorded', { label: memoryAnchorLabels[anchor] }),
+        content: t(`game.${memoryUiKind}`, { label: memoryAnchorLabels[anchor] }),
         isNew: true,
-        uiKind: 'memoryRecorded',
+        uiKind: memoryUiKind,
         memoryAnchor: anchor,
       });
       persistState(pendingNodeId, nextMessages);
@@ -1103,16 +1185,20 @@ export default function GameApp() {
     setPersistentProgress(progress);
 
     const existingIds = new Set(messagesRef.current.map(message => message.id));
-    const cards: DisplayMessage[] = result.snapshot.masks.flatMap(mask => {
+    const renderedMasks = renderLegacyMessageSnapshot(result.snapshot, legacyMessageSource);
+    const cards: DisplayMessage[] = renderedMasks.flatMap(mask => {
       const id = `legacy_message_${runId}_${mask.id}`;
       if (existingIds.has(id)) return [];
       return [{
         id,
         speaker: 'system' as const,
         type: 'file' as const,
-        content: `@6 / 留言 ${mask.id}||写入者：Nova Arlen\n记录状态：${mask.fullyHidden ? '无法读取' : '残缺可读'}\n${mask.lines[0]}\n${mask.lines[1]}`,
+        content: formatLegacyMessageCard(mask.id, mask.fullyHidden, mask.lines, t),
         isNew: true,
         sourceNodeId: `LEGACY-@6-${mask.id}`,
+        uiKind: 'legacyMessage' as const,
+        legacyMessageId: mask.id,
+        legacyMessageRunId: runId,
       }];
     });
     if (cards.length === 0) return messagesRef.current;
@@ -1120,7 +1206,7 @@ export default function GameApp() {
     messagesRef.current = nextMessages;
     setMessages(nextMessages);
     return nextMessages;
-  }, []);
+  }, [legacyMessageSource, t]);
 
   const restoreDamagedSeventh = useCallback((): string | null => {
     const progress = loadPersistentProgress();
@@ -1135,9 +1221,11 @@ export default function GameApp() {
         id: `reboot07_damaged_${Date.now()}`,
         speaker: 'system',
         type: 'status',
-        content: 'PREVIOUS LINK DETECTED\nREBOOT 07-DAMAGED / 外部握手缓存已耗尽',
+        content: t('rebootFallback.restoredNotice'),
         isNew: true,
         sourceNodeId: 'END-B-0022',
+        uiKind: 'rebootFallbackNotice',
+        uiKey: 'rebootFallback.restoredNotice',
       },
     ];
     const priorLegacySnapshot = consumedProgress.legacyMessageState.snapshotsByRunId[restored.cycleState.cycleId] ?? null;
@@ -1377,6 +1465,7 @@ export default function GameApp() {
       if (node.type === 'interaction' && node.interactionKind) {
         stopFastForwardAtInteraction();
         captureStableCheckpoint(node.id);
+        ensureNodeDeadline(node);
         setActiveInteraction(node);
         setIsTyping(false);
         persistState(nodeId, messagesRef.current);
@@ -1439,6 +1528,7 @@ export default function GameApp() {
 
       if (node.type === 'input') {
         stopFastForwardAtInteraction();
+        ensureNodeDeadline(node);
         setInputNode(createActiveInputNode(node, t));
         setPlayerInput('');
         setIsTyping(false);
@@ -1453,6 +1543,7 @@ export default function GameApp() {
         }
         stopFastForwardAtInteraction();
         captureStableCheckpoint(node.id);
+        ensureNodeDeadline(node);
         activateChoice(nodeId);
         setChoices(getVisibleChoices(node, statsRef.current, legacySnapshotRef.current));
         setChoiceNodeId(nodeId);
@@ -1574,7 +1665,7 @@ export default function GameApp() {
       }
       return true;
     },
-    [activateChoice, addMessage, archiveCurrentFatalCycle, captureStableCheckpoint, commitAvatarNodeEffect, goToMenu, markCommemorativeArchiveSaved, markCurrentCycleNode, persistState, restoreDamagedSeventh, revealLegacyMessages, saveMemoryAnchor, stopFastForwardAtInteraction, stopReadSkip, storyNodeMap, t, triggerSignalGlitch, unlockArchives, updateDeliveryRuntime, waitForPlayback, waitForSignal],
+    [activateChoice, addMessage, archiveCurrentFatalCycle, captureStableCheckpoint, commitAvatarNodeEffect, ensureNodeDeadline, goToMenu, markCommemorativeArchiveSaved, markCurrentCycleNode, persistState, restoreDamagedSeventh, revealLegacyMessages, saveMemoryAnchor, stopFastForwardAtInteraction, stopReadSkip, storyNodeMap, t, triggerSignalGlitch, unlockArchives, updateDeliveryRuntime, waitForPlayback, waitForSignal],
   );
 
   const processQueue = useCallback(async (runId: number) => {
@@ -1809,12 +1900,7 @@ export default function GameApp() {
           const previousCycle = progress.failedCycles.find(
             record => record.cycleId === save.cycleState.previousCycleId,
           ) ?? getLatestFailedCycle(progress) ?? null;
-          const localizedMessages = relocalizeDisplayMessages(
-            save.messages,
-            storyNodeMap,
-            t,
-            memoryAnchorLabels,
-          );
+          const localizedMessages = localizeMessages(save.messages, progress);
           messagesRef.current = localizedMessages;
           avatarStateRef.current = save.avatarState;
           statsRef.current = save.stats;
@@ -1894,7 +1980,7 @@ export default function GameApp() {
       setSaveTime(t('saveTime.justNow'));
       startSequence(startNodeId);
     },
-    [cancelActiveSequence, memoryAnchorLabels, scheduleSequence, startSequence, storyNodeMap, t],
+    [cancelActiveSequence, localizeMessages, scheduleSequence, startSequence, t],
   );
 
   const handleSpecialInteractionResultLocked = useCallback(
@@ -1950,6 +2036,20 @@ export default function GameApp() {
     goToMenu();
   }, [activeInteraction, goToMenu, persistState]);
 
+  const restartActiveInteractionDeadline = useCallback(() => {
+    if (!activeInteraction) return;
+    const durationMs = getTimedNodeDurationMs(activeInteraction);
+    if (!durationMs) return;
+    const restarted = restartTimedDeadline(
+      cycleStateRef.current,
+      activeInteraction.id,
+      durationMs,
+    );
+    cycleStateRef.current = restarted.state;
+    setCycleState(restarted.state);
+    persistState(activeInteraction.id, messagesRef.current);
+  }, [activeInteraction, persistState]);
+
   const applyChoiceEffects = useCallback((choice: Choice) => {
     const next = applyStoryChoiceEffects(statsRef.current, choice);
     statsRef.current = next;
@@ -1996,9 +2096,7 @@ export default function GameApp() {
       if (!fromNodeId) return;
       const committedAt = Date.now();
       const sourceNode = storyNodeMap.get(fromNodeId);
-      const deadline = choiceDeadlineRef.current?.nodeId === fromNodeId
-        ? choiceDeadlineRef.current.expiresAt
-        : undefined;
+      const deadline = cycleStateRef.current.timedDeadlines[fromNodeId];
       if (
         sourceNode?.choiceTimeoutMs
         && deadline != null
@@ -2132,12 +2230,9 @@ export default function GameApp() {
     if (!node?.choiceTimeoutMs || !node.timeoutNextId) return undefined;
 
     if (choiceTimeoutRef.current !== null) window.clearTimeout(choiceTimeoutRef.current);
-    const now = Date.now();
-    const deadline = choiceDeadlineRef.current?.nodeId === node.id
-      ? choiceDeadlineRef.current
-      : { nodeId: node.id, expiresAt: now + node.choiceTimeoutMs };
-    choiceDeadlineRef.current = deadline;
-    const remainingMs = Math.max(0, deadline.expiresAt - now);
+    const deadlineAt = cycleStateRef.current.timedDeadlines[node.id] ?? ensureNodeDeadline(node);
+    if (deadlineAt == null) return undefined;
+    const remainingMs = Math.max(0, deadlineAt - Date.now());
     choiceTimeoutRef.current = window.setTimeout(() => {
       choiceTimeoutRef.current = null;
       handleChoiceTimeout(node);
@@ -2149,7 +2244,7 @@ export default function GameApp() {
         choiceTimeoutRef.current = null;
       }
     };
-  }, [choiceNodeId, choices, handleChoiceTimeout, storyNodeMap]);
+  }, [choiceNodeId, choices, ensureNodeDeadline, handleChoiceTimeout, storyNodeMap, cycleState.timedDeadlines]);
 
   const handleInputTimeout = useCallback(
     (node: ActiveInputNode) => {
@@ -2174,10 +2269,14 @@ export default function GameApp() {
     if (choiceTimeoutRef.current !== null) {
       window.clearTimeout(choiceTimeoutRef.current);
     }
+    const storyNode = storyNodeMap.get(inputNode.id);
+    const deadlineAt = cycleStateRef.current.timedDeadlines[inputNode.id]
+      ?? (storyNode ? ensureNodeDeadline(storyNode) : undefined);
+    if (deadlineAt == null) return undefined;
     choiceTimeoutRef.current = window.setTimeout(() => {
       choiceTimeoutRef.current = null;
       handleInputTimeout(inputNode);
-    }, inputNode.timeoutMs);
+    }, Math.max(0, deadlineAt - Date.now()));
 
     return () => {
       if (choiceTimeoutRef.current !== null) {
@@ -2185,10 +2284,15 @@ export default function GameApp() {
         choiceTimeoutRef.current = null;
       }
     };
-  }, [handleInputTimeout, inputNode]);
+  }, [cycleState.timedDeadlines, ensureNodeDeadline, handleInputTimeout, inputNode, storyNodeMap]);
 
   const handlePlayerInput = useCallback(() => {
     if (!inputNode) return;
+    const deadlineAt = cycleStateRef.current.timedDeadlines[inputNode.id];
+    if (inputNode.timeoutNextId && deadlineAt != null && Date.now() > deadlineAt) {
+      handleInputTimeout(inputNode);
+      return;
+    }
     const trimmed = playerInput.trim();
     if (inputNode.inputMinLength && trimmed.length < inputNode.inputMinLength) return;
     const text = inputNode.inputMaxLength ? trimmed.slice(0, inputNode.inputMaxLength) : trimmed || '......';
@@ -2218,7 +2322,7 @@ export default function GameApp() {
     persistState(nextId, messagesRef.current);
     jumpToBottom(true);
     scheduleSequence(nextId, 400);
-  }, [inputNode, jumpToBottom, persistState, playerInput, scheduleSequence, updateCurrentCycle]);
+  }, [handleInputTimeout, inputNode, jumpToBottom, persistState, playerInput, scheduleSequence, updateCurrentCycle]);
 
   const lastMsg = messages[messages.length - 1];
   const isLastNovaTyping =
@@ -2226,6 +2330,11 @@ export default function GameApp() {
   const isInputReady = !inputNode?.inputMinLength || playerInput.trim().length >= inputNode.inputMinLength;
 
   const saveSnapshot = screen === 'menu' && hasSave ? loadGame() : null;
+  const isReboot08Menu = persistentProgress.reboot08TitleUnlocked;
+  const menuObserverEstablished = isObserverIdentityEstablished(
+    saveSnapshot?.deliveryRuntime,
+    isReboot08Menu,
+  );
   const saveProgress = saveSnapshot
     ? getSaveProgressLabel(saveSnapshot.pendingNodeId, saveSnapshot.messages, t)
     : t('progress.prologue');
@@ -2269,15 +2378,17 @@ export default function GameApp() {
   const isFinished = messages.some(message => message.type === 'end');
   const isSignalActive = isSyncing || isTyping || isTypewriterActive || Boolean(deliveryRuntime.activeMessageId);
   const isEmptyReboot08Link = cycleState.currentRebootNumber >= 8 && !cycleState.damagedSeventh;
+  const activeInteractionDeadline = activeInteraction
+    ? cycleState.timedDeadlines[activeInteraction.id]
+    : undefined;
   const shouldShowMediaSafeSpace = Boolean(choices && hasRecentMediaMessage(messages));
-  const isReboot08Menu = persistentProgress.reboot08TitleUnlocked;
   const hasPersistentArchive =
     persistentProgress.unlockedArchives.length > 0
     || persistentProgress.endingsUnlocked.length > 0
     || persistentProgress.normalEpilogueUnlocked
     || persistentProgress.trueEpilogueUnlocked
     || persistentProgress.failedCycles.length > 0;
-  const menuRebootNumber = isReboot08Menu ? 8 : 7;
+  const menuRebootNumber = isReboot08Menu ? 8 as const : 7 as const;
 
   if (screen === 'menu') {
     return (
@@ -2295,7 +2406,9 @@ export default function GameApp() {
             <span>{t('menu.terminal')}</span>
             <small>PHASE-LINK / {String(menuRebootNumber).padStart(2, '0')}</small>
           </div>
-          <span className="menu-topbar-code">OBSERVER-01 / LOCAL INDEX</span>
+          <span className="menu-topbar-code">
+            {menuObserverEstablished ? 'OBSERVER-01 / LOCAL INDEX' : 'UNREGISTERED / LOCAL INDEX'}
+          </span>
         </div>
         <main className="menu-stage relative z-10">
           <section className="menu-primary-zone animate-fade-in">
@@ -2305,6 +2418,7 @@ export default function GameApp() {
               phaseLabel={t('menu.phaseArchive')}
               locale={locale}
               rebootNumber={menuRebootNumber}
+              observerEstablished={menuObserverEstablished}
             />
             {!isReboot08Menu && <div className="menu-language-selector" role="group" aria-label={t('menu.language')}>
               {(['zh-CN', 'en-US'] as Locale[]).map(code => (
@@ -2407,12 +2521,13 @@ export default function GameApp() {
             backLabel={t('archiveOverlay.backToMenu')}
             failedCycles={persistentProgress.failedCycles}
             currentRebootNumber={menuRebootNumber}
+            observerEstablished={menuObserverEstablished}
           />
         )}
         {showMenuSettings && (
           <div className="menu-settings-overlay" role="dialog" aria-modal="true" aria-label={t('menu.settings')}>
             <section className="menu-settings-panel">
-              <span>OBSERVER-01 / LOCAL SETTINGS</span>
+              <span>{menuObserverEstablished ? 'OBSERVER-01' : 'UNREGISTERED'} / LOCAL SETTINGS</span>
               <h2>{t('menu.settings')}</h2>
               <label>{t('menu.language')}</label>
               <div className="menu-settings-languages" role="group" aria-label={t('menu.language')}>
@@ -2459,7 +2574,12 @@ export default function GameApp() {
       {!activeInteraction && <StarBackground />}
       {!activeInteraction && <div className="chat-atmosphere pointer-events-none" aria-hidden />}
       {stats.gravityArrayDegraded && !activeInteraction && <LowGravityLayer />}
-      {showRebootFallback && <RebootFallbackOverlay />}
+      {showRebootFallback && (
+        <RebootFallbackOverlay
+          statusText={t('rebootFallback.readingStableRecord')}
+          transitionLabel={t('rebootFallback.transitionLabel')}
+        />
+      )}
       {signalGlitch && (
         <div
           key={signalGlitch.pulse}
@@ -2499,6 +2619,10 @@ export default function GameApp() {
           onClose={() => setShowArchive(false)}
           failedCycles={persistentProgress.failedCycles}
           currentRebootNumber={cycleState.currentRebootNumber}
+          observerEstablished={isObserverIdentityEstablished(
+            deliveryRuntime,
+            cycleState.currentRebootNumber === 8,
+          )}
         />
       )}
       {activeInteraction && (
@@ -2508,10 +2632,12 @@ export default function GameApp() {
           sealedAnchor={stats.temporaryAnchorSealed}
           powerFirstFailureReason={stats.powerFirstFailureReason}
           lowGravity={stats.gravityArrayDegraded}
+          deadlineAt={activeInteractionDeadline}
           avatarPresentation={avatarPresentation}
           onResultLocked={handleSpecialInteractionResultLocked}
           onComplete={handleSpecialInteractionComplete}
           onSaveAndExit={saveInteractionAndExit}
+          onRestartDeadline={restartActiveInteractionDeadline}
         />
       )}
       {import.meta.env.DEV && !activeInteraction && (

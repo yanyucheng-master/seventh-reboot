@@ -15,7 +15,7 @@
     "build:interaction-locales": "npx tsx scripts/build-interaction-locales.mjs",
     "sync:story-locales": "npx tsx scripts/sync-current-zh-story.mjs && npx tsx scripts/sync-final-english-story.mjs",
     "normalize:story-source": "npx tsx scripts/normalize-story-source.ts",
-    "test": "npm run test:story-source-format && npm run test:story-audit && npm run validate:story && npm run test:interactions && npm run test:avatar && npm run test:delivery && npm run test:reboot-cycle && npm run test:immersive-story && npm run test:epilogues && npm run test:integrity",
+    "test": "npm run test:story-source-format && npm run test:story-audit && npm run validate:story && npm run test:interactions && npm run test:avatar && npm run test:delivery && npm run test:reboot-cycle && npm run test:immersive-story && npm run test:epilogues && npm run test:release-hardening && npm run test:integrity",
     "test:story-source-format": "npx tsx scripts/test-story-source-format.ts",
     "test:story-audit": "npx tsx scripts/audit-story-vs-source.mjs",
     "validate:story": "npx tsx scripts/validate-story-branches.mjs",
@@ -25,7 +25,8 @@
     "test:delivery": "npx tsx scripts/test-delivery-system.ts",
     "test:reboot-cycle": "npx tsx scripts/test-fatal-reboot-cycle.ts",
     "test:immersive-story": "npx tsx scripts/test-immersive-story.ts",
-    "test:epilogues": "npx tsx scripts/test-optional-epilogues.ts"
+    "test:epilogues": "npx tsx scripts/test-optional-epilogues.ts",
+    "test:release-hardening": "npx tsx scripts/test-release-hardening.ts"
   },
   "dependencies": {
     "lucide-react": "^1.24.0",
@@ -45,6 +46,7 @@
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.19",
     "tailwindcss-animate": "^1.0.7",
+    "tsx": "^4.23.12",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4"

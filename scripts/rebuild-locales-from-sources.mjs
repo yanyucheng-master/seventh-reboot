@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const zhScript = path.join(root, '..', '第七次重启_V1.0_主流程_8月4日人工重力整合版.txt');
+const zhScript = path.join(root, 'story-source', 'main.zh-CN.txt');
 const enScript = process.env.SEVENTH_REBOOT_EN_SOURCE;
 
 if (!enScript || !fs.existsSync(enScript)) {

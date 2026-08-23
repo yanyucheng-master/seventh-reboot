@@ -164,7 +164,7 @@ function compare(srcNodes, locale, label) {
   return { label, contentDiff, choiceDiff, missing, samples };
 }
 
-const zhScript = path.join(root, '..', '第七次重启_V1.0_主流程_8月4日人工重力整合版.txt');
+const zhScript = path.join(root, 'story-source', 'main.zh-CN.txt');
 const enScript = process.env.SEVENTH_REBOOT_EN_SOURCE;
 const zhLoc = JSON.parse(fs.readFileSync(path.join(root, 'src/i18n/locales/zh-CN/story.json'), 'utf8'));
 const enLoc = JSON.parse(fs.readFileSync(path.join(root, 'src/i18n/locales/en-US/story.json'), 'utf8'));

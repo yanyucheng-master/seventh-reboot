@@ -19,6 +19,7 @@ import type {
   FailedCycleRecord,
   GameStats,
   NovaAvatarPresentation,
+  RebootNumber,
 } from '../types';
 import { useI18n } from '../../i18n';
 import { NovaAvatar } from './NovaAvatar';
@@ -167,6 +168,7 @@ export function MemoryArchiveOverlay({
   backLabel,
   failedCycles = [],
   currentRebootNumber = 7,
+  observerEstablished,
 }: {
   stats: GameStats;
   contactStage: ContactStage;
@@ -174,7 +176,8 @@ export function MemoryArchiveOverlay({
   onClose: () => void;
   backLabel?: string;
   failedCycles?: FailedCycleRecord[];
-  currentRebootNumber?: number;
+  currentRebootNumber?: RebootNumber;
+  observerEstablished: boolean;
 }) {
   const { t, locale } = useI18n();
   const [activeTab, setActiveTab] = useState<ArchiveTabId>('anchor');
@@ -250,7 +253,7 @@ export function MemoryArchiveOverlay({
             <span>PHASE<br />VAULT</span>
           </div>
           <div className="archive-heading-block">
-            <p className="archive-kicker">Observer-01</p>
+            <p className="archive-kicker">{observerEstablished ? 'Observer-01' : 'External Index'}</p>
             <div className="archive-title-lockup">
               <h2 aria-label={t('archiveOverlay.title')}>
                 <span className="archive-title-fragment archive-title-fragment-a" aria-hidden="true">{t('archiveOverlay.title')}</span>

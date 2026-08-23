@@ -23,10 +23,12 @@ type SpecialInteractionOverlayProps = {
   sealedAnchor?: SealableMemoryAnchor;
   powerFirstFailureReason?: PowerFailureReason;
   lowGravity?: boolean;
+  deadlineAt?: number;
   avatarPresentation: NovaAvatarPresentation;
   onResultLocked: (result: SpecialInteractionCompletion) => void;
   onComplete: (result: SpecialInteractionCompletion) => void;
   onSaveAndExit: () => void;
+  onRestartDeadline: () => void;
 };
 
 const REDUCED_MOTION_KEY = 'seventh_reboot_interaction_reduced_motion';
@@ -58,10 +60,12 @@ export function SpecialInteractionOverlay({
   sealedAnchor,
   powerFirstFailureReason,
   lowGravity = false,
+  deadlineAt,
   avatarPresentation,
   onResultLocked,
   onComplete,
   onSaveAndExit,
+  onRestartDeadline,
 }: SpecialInteractionOverlayProps) {
   const copy = useMemo(() => getSpecialInteractionCopy(locale), [locale]);
   const [reducedMotion, setReducedMotion] = useState(() => FORCE_REDUCED_MOTION_FOR_TEST || readStoredBoolean(
@@ -85,7 +89,7 @@ export function SpecialInteractionOverlay({
   const title = node.interactionKind === 'bulkhead-isolation'
     ? copy.bulkhead.title
     : node.interactionKind === 'sealed-record-order'
-      ? copy.password.title
+      ? copy.recordOrder.title
       : node.interactionKind === 'power-routing'
         ? copy.power.title
         : node.interactionKind === 'course-lock'
@@ -138,6 +142,7 @@ export function SpecialInteractionOverlay({
           <BulkheadIsolationInteraction
             copy={copy}
             reducedMotion={reducedMotion}
+            deadlineAt={deadlineAt!}
             onResultLocked={onResultLocked}
             onComplete={onComplete}
           />
@@ -156,6 +161,8 @@ export function SpecialInteractionOverlay({
             damaged={node.interactionStage === 'damaged_seventh'}
             previousFailure={powerFirstFailureReason}
             lowGravity={lowGravity}
+            deadlineAt={deadlineAt!}
+            onRestartDeadline={onRestartDeadline}
             onResultLocked={onResultLocked}
             onComplete={onComplete}
           />
@@ -164,6 +171,7 @@ export function SpecialInteractionOverlay({
           <CourseLockInteraction
             locale={locale}
             reducedMotion={reducedMotion}
+            deadlineAt={deadlineAt!}
             onResultLocked={onResultLocked}
             onComplete={onComplete}
           />
@@ -172,6 +180,7 @@ export function SpecialInteractionOverlay({
           <ProtocolCutInteraction
             locale={locale}
             reducedMotion={reducedMotion}
+            deadlineAt={deadlineAt!}
             onResultLocked={onResultLocked}
             onComplete={onComplete}
           />

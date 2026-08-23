@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import re
-import shutil
 from datetime import datetime
 from pathlib import Path
 
@@ -13,11 +12,10 @@ from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
 
 
-ROOT = Path(__file__).resolve().parents[2]
-SOURCE = ROOT / "第七次重启_V1.0_主流程_8月4日人工重力整合版.txt"
+ROOT = Path(__file__).resolve().parents[1]
+SOURCE = ROOT / "story-source" / "main.zh-CN.txt"
 OUTPUT_NAME = "第七次重启_V1.0_主流程_8月4日人工重力整合版.docx"
 OUTPUT = ROOT / OUTPUT_NAME
-DESKTOP_OUTPUT = ROOT.parent / OUTPUT_NAME
 
 FONT_CJK = "Microsoft YaHei"
 FONT_MONO = "Consolas"
@@ -287,9 +285,7 @@ def main():
     add_cover(doc, header_lines, node_count)
     add_body(doc, body_lines)
     doc.save(OUTPUT)
-    shutil.copy2(OUTPUT, DESKTOP_OUTPUT)
     print(f"Wrote {OUTPUT}")
-    print(f"Wrote {DESKTOP_OUTPUT}")
 
 
 if __name__ == "__main__":

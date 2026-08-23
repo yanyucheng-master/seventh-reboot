@@ -15,7 +15,7 @@
       "default": "[加密记录]"
     },
     "description": {
-      "photo": "图像残片尚未进入 Observer-01 记忆模块",
+      "photo": "图像残片尚未进入外部记忆模块",
       "ending": "对应结局尚未观测",
       "default": "尚未恢复"
     }
@@ -24,8 +24,8 @@
     "anchor_first_message": {
       "title": "第一句通讯",
       "quote": "真的有人收到了？",
-      "description": "Observer-01 保存的第一条有效回应记录。",
-      "chapter": "序章：Observer-01 接入"
+      "description": "外部索引保存的第一条有效通讯记录。",
+      "chapter": "序章：首次接入"
     },
     "anchor_n7": {
       "title": "N7",

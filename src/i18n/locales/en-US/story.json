@@ -3415,34 +3415,34 @@
       "content": "She left a note beside the verification field."
     },
     "CH05A-0014": {
-      "content": "\"Current link number / external index number\""
+      "content": "\"Writer number / reader number\""
     },
     "CH05A-0015": {
-      "content": "Looks like this time, you have to enter it for both of us."
+      "content": "I am sending you the verification panel."
     },
     "CH05A-0016": {
-      "content": "Joint authorization key"
+      "content": "Sealed record order verification"
     },
     "CH05A-0017": {
-      "content": "JOINT KEY REJECTED"
+      "content": "ORDER VERIFICATION FAILED"
     },
     "CH05A-0018": {
-      "content": "It is not a riddle. Put 07 and 01 together in the order she left."
+      "content": "Put 06 and 07 together in the order she left."
     },
     "CH05A-0019": {
-      "content": "Both endpoint identities confirmed\nJoint key established\nNOVA-06 sealed record changed from read-only"
+      "content": "Writer and reader order confirmed\nSealed record verification passed\nNOVA-06 record read access granted"
     },
     "CH05A-0020": {
-      "content": "07 is the seventh link, and the version of me in this cycle."
+      "content": "06 is the version of her who left the record."
     },
     "CH05A-0021": {
-      "content": "01 is what the system has always called you: Observer-01."
+      "content": "07 is me, reading it now."
     },
     "CH05A-0022": {
-      "content": "This seal was meant for the two of us to open together from the very beginning."
+      "content": "She left the opening order for her next self."
     },
     "CH05A-0023": {
-      "content": "NOVA-06 SEALED RECORD / INDEX HEADER||AUTHORIZATION · Current Nova outer authorization + Observer-01 index key\nACCESS · Read-only records and one-time emergency power authorization only\nRESIDUAL · NOVA-06 is condition-triggered residue, not a live consciousness\nRESTRICTION · No Seventh Protocol or phase-core control granted"
+      "content": "NOVA-06 SEALED RECORD / INDEX HEADER||AUTHORIZATION · Current Nova navigation authority + NOVA-06 sealed verification\nACCESS · Read-only record / new course data / one-time shipboard AI safety rollback authorization\nCore access requirement: LEVEL 6"
     },
     "CH05A-0024": {
       "content": "Records"

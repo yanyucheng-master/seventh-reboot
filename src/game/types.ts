@@ -13,9 +13,8 @@ export type NovaAvatarOverlay =
   | 'signal_weak'
   | 'offline_residual'
   | 'archived'
-  | 'nova06_interference'
   | 'special_bulkhead'
-  | 'special_password'
+  | 'special_record_order'
   | 'special_power'
   | 'special_memory_seal';
 
@@ -231,16 +230,23 @@ export type CycleFreeInputRecord = {
   nextId: string;
 };
 
+export type RebootNumber = 7 | 8;
+
+/** Absolute Unix deadlines keyed by the story/interaction node id. */
+export type TimedDeadlineState = Record<string, number>;
+
 export type CurrentCycleState = {
-  cycleStateVersion: 2;
+  cycleStateVersion: 3;
   cycleId: string;
-  currentRebootNumber: number;
+  currentRebootNumber: RebootNumber;
   completedNodeIds: string[];
   maxCompletedNodeId?: string;
   choiceHistory: CycleChoiceRecord[];
   interactionResults: CycleInteractionRecord[];
   timedResults: CycleTimedResult[];
   freeInputs: CycleFreeInputRecord[];
+  timedDeadlines: TimedDeadlineState;
+  /** @deprecated Compatibility-only fields for the removed whole-cycle projection system. */
   syncAvailable: boolean;
   syncActive: boolean;
   syncInterrupted: boolean;
@@ -381,28 +387,18 @@ export type AvatarNoticeKey =
   | 'avatar.connection.unregistered'
   | 'avatar.badEnding.profileReset';
 
-export type CycleNoticeKey =
-  | 'cycle.reboot08Link'
-  | 'cycle.previousRecordDetected'
-  | 'cycle.previousRecordSource'
-  | 'cycle.previousRecordCycle'
-  | 'cycle.memoryProjection'
-  | 'cycle.projectionWarning'
-  | 'cycle.protocolTakeover'
-  | 'cycle.rollbackStarted'
-  | 'cycle.syncCompleted'
-  | 'cycle.syncInterrupted'
-  | 'cycle.deviationDetected'
-  | 'cycle.deviationConfirmed';
+export type RebootNoticeKey = 'rebootFallback.restoredNotice';
 
-export type RuntimeNoticeKey = AvatarNoticeKey | CycleNoticeKey;
+export type RuntimeNoticeKey = AvatarNoticeKey | RebootNoticeKey;
 
 export type DisplayMessageUiKind =
   | 'memoryRecorded'
+  | 'memoryRecordedPending'
   | 'syncNext'
   | 'choiceTimeout'
   | 'avatarNotice'
-  | 'cycleNotice';
+  | 'legacyMessage'
+  | 'rebootFallbackNotice';
 
 export type DisplayMessage = {
   id: string;
@@ -425,6 +421,9 @@ export type DisplayMessage = {
   memoryAnchor?: MemoryAnchorId;
   /** avatarNotice uses a stable i18n key so saved notices follow language changes. */
   uiKey?: RuntimeNoticeKey;
+  /** Structural @6 card identity; localized masked text is rendered at display time. */
+  legacyMessageId?: 'A' | 'B' | 'C' | 'D' | 'E' | 'F';
+  legacyMessageRunId?: string;
   /** Player-choice fact and delivery state. The branch is committed before transport begins. */
   choiceId?: string;
   committedAt?: number;
@@ -468,7 +467,7 @@ export interface SaveData {
   /** 内部剧情内容版本；玩家可见版本仍保持 V1.0 */
   storyContentVersion?: string;
   /** 内部存档结构版本；与玩家可见版本号无关。 */
-  saveStateVersion?: 5;
+  saveStateVersion?: 6;
   deliveryStateVersion?: 2;
   /** @deprecated 旧版存档字段，仅用于兼容 */
   currentNodeId?: string;

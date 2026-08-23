@@ -11,7 +11,10 @@ import {
 import {
   createLegacyMessageState,
   getOrCreateLegacyMessageSnapshot,
-  LEGACY_MESSAGES,
+  hasCollectedEveryLegacySemantic,
+  LEGACY_MESSAGE_IDS,
+  renderLegacyMessageSnapshot,
+  type LegacyMessageSource,
 } from '../src/game/legacyMessages';
 import { storyNodeMap, storyNodes, type StoryNode } from '../src/game/story';
 
@@ -25,6 +28,21 @@ function node(id: string): StoryNode {
   const value = storyNodeMap.get(id);
   check(value, `missing story node ${id}`);
   return value;
+}
+
+function legacyMessageSource(locale: 'zh-CN' | 'en-US'): LegacyMessageSource {
+  const ui = JSON.parse(fs.readFileSync(path.join(root, `src/i18n/locales/${locale}/ui.json`), 'utf8')) as {
+    legacyMessages: {
+      messages: Record<string, Record<'line1' | 'core1' | 'line2' | 'core2', string>>;
+    };
+  };
+  return Object.fromEntries(LEGACY_MESSAGE_IDS.map(id => {
+    const message = ui.legacyMessages.messages[id];
+    return [id, [
+      { text: message.line1, coreToken: message.core1 },
+      { text: message.line2, coreToken: message.core2 },
+    ]];
+  })) as LegacyMessageSource;
 }
 
 const tests: Array<[string, () => void]> = [];
@@ -169,23 +187,49 @@ test('16 工程档案完整记录分区重力能力边界', () => {
   }
 });
 
-test('17 @6 三轮遮蔽稳定、两份全黑且覆盖全部语义', () => {
+test('17 @6 三轮遮蔽稳定、双语同构且覆盖全部核心语义', () => {
+  const zhSource = legacyMessageSource('zh-CN');
+  const enSource = legacyMessageSource('en-US');
+  check(zhSource.C[0].text === '有人回应' && zhSource.C[1].text === '别急着断开', '@6 C copy is not final');
+  check(!/\p{Script=Han}/u.test(JSON.stringify(enSource)), 'English @6 source contains Han text');
+
   let state = createLegacyMessageState('immersive-story-fixed-seed');
   const snapshots = [];
   for (const runId of ['cycle-07-a', 'cycle-07-b', 'cycle-07-c']) {
+    const beforeCount = state.encounterCount;
     const result = getOrCreateLegacyMessageSnapshot(state, runId);
     state = result.state;
     snapshots.push(result.snapshot);
+    check(state.encounterCount === beforeCount + 1, `${runId} did not consume exactly one encounter`);
     check(result.snapshot.masks.filter(mask => mask.fullyHidden).length === 2, `${runId} does not hide exactly two files`);
+    const hidden = result.snapshot.masks.filter(mask => mask.fullyHidden).map(mask => mask.id);
+    check(!(hidden.includes('E') && hidden.includes('F')), `${runId} hides both sides of the core conflict`);
+    check((['E', 'F'] as const).some(id => {
+      const mask = result.snapshot.masks.find(item => item.id === id);
+      return Boolean(mask && !mask.fullyHidden && mask.semanticReadable.every(Boolean));
+    }), `${runId} exposes neither core viewpoint`);
+
     const repeat = getOrCreateLegacyMessageSnapshot(state, runId);
     check(repeat.created === false && JSON.stringify(repeat.snapshot) === JSON.stringify(result.snapshot), `${runId} rerolled on revisit`);
+    check(repeat.state.encounterCount === state.encounterCount, `${runId} increased encounter count on revisit`);
+
+    const zh = renderLegacyMessageSnapshot(result.snapshot, zhSource);
+    const en = renderLegacyMessageSnapshot(result.snapshot, enSource);
+    const zhAgain = renderLegacyMessageSnapshot(result.snapshot, zhSource);
+    check(JSON.stringify(zh) === JSON.stringify(zhAgain), `${runId} changed after zh-en-zh render`);
+    check(zh.every((mask, index) => (
+      mask.fullyHidden === en[index].fullyHidden
+      && JSON.stringify(mask.semanticReadable) === JSON.stringify(en[index].semanticReadable)
+    )), `${runId} changed semantic visibility across locale`);
+    check(!/\p{Script=Han}/u.test(en.flatMap(mask => mask.lines).join('\n')), `${runId} English render contains Han text`);
   }
-  for (const id of Object.keys(LEGACY_MESSAGES) as Array<keyof typeof LEGACY_MESSAGES>) {
+  for (const id of LEGACY_MESSAGE_IDS) {
     for (const line of [0, 1] as const) {
       check(snapshots.some(snapshot => snapshot.masks.find(mask => mask.id === id)?.semanticReadable[line]), `${id}.${line} never became readable`);
     }
   }
-  check(snapshots[2].masks.some(mask => mask.lines.some(line => line.includes('█'))), 'third encounter became fully decrypted');
+  check(hasCollectedEveryLegacySemantic(state), 'three encounters did not collect every semantic unit');
+  check(renderLegacyMessageSnapshot(snapshots[2], zhSource).some(mask => mask.lines.some(line => line.includes('█'))), 'third encounter became fully decrypted');
 });
 
 test('18 页面只连接稳定检查点回读，不连接旧整轮同步', () => {
@@ -208,6 +252,10 @@ test('19 英文拓扑覆盖 8 月 4 日新增节点且无中文兜底', () => {
       check(!/\p{Script=Han}/u.test(value), `English choice contains Han text: ${id}`);
     });
   }
+  check(en.nodes['CH05A-0018']?.content?.includes('06 and 07'), 'English sealed-record order drifted from the Chinese source');
+  check(!en.nodes['CH05A-0018']?.content?.includes('01'), 'English sealed-record order still exposes the retired Observer key');
+  check(en.nodes['CH05A-0020']?.content?.includes('06'), 'English writer identity is not NOVA-06');
+  check(en.nodes['CH05A-0021']?.content?.includes('07'), 'English reader identity is not current Nova 07');
 });
 
 test('20 玩家可见剧情与档案不含已废弃世界观', () => {

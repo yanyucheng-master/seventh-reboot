@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { loadPersistentProgress } from '../storage';
 
 const FULL_STARTUP_DURATION_MS = 1950;
 const REDUCED_STARTUP_DURATION_MS = 420;
@@ -13,6 +14,7 @@ function shouldShowStartupSequence(): boolean {
 
 export function NativeStartupSequence() {
   const [visible, setVisible] = useState(shouldShowStartupSequence);
+  const [rebootNumber] = useState(() => loadPersistentProgress().currentRebootNumber);
   const [reducedMotion] = useState(() => (
     typeof window !== 'undefined'
       && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true
@@ -45,7 +47,7 @@ export function NativeStartupSequence() {
     >
       <span className="native-startup-scan" />
       <div className="native-startup-core">
-        <span className="native-startup-phase">PHASE-LINK / 07</span>
+        <span className="native-startup-phase">PHASE-LINK / {String(rebootNumber).padStart(2, '0')}</span>
         <div className="native-startup-emblem">
           <img src="/icons/app-icon-512.png" alt="" draggable={false} />
           <span className="native-startup-emblem-ring" />
@@ -57,7 +59,7 @@ export function NativeStartupSequence() {
           <i className="native-startup-node native-startup-node-a" />
           <i className="native-startup-node native-startup-node-b" />
         </div>
-        <small className="native-startup-status">OBSERVER-01 · CHANNEL READY</small>
+        <small className="native-startup-status">EXTERNAL LINK · CHANNEL READY</small>
       </div>
     </div>
   );

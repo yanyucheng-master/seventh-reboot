@@ -8,6 +8,7 @@ import {
 import {
   createCurrentCycleState,
   createFailedCycleRecord,
+  clampRebootNumber,
   normalizeCurrentCycleState,
   normalizeFailedCycleRecord,
   recordCycleChoice,
@@ -45,6 +46,7 @@ import type {
   PowerFailureReason,
   PowerRoutingAttempt,
   PowerRoutingResult,
+  RebootNumber,
   SaveData,
   SealableMemoryAnchor,
   TimedProof,
@@ -56,7 +58,7 @@ export const PERSISTENT_PROGRESS_KEY = 'seventh_reboot_persistent_progress';
 /** 剧情分支拓扑版本；变更选项 nextId 后递增，使旧 localStorage 存档失效 */
 export const STORY_VERSION = 'V1.0';
 export const STORY_CONTENT_VERSION = 'v1.0-aug04-gravity-20260804';
-export const SAVE_STATE_VERSION = 5 as const;
+export const SAVE_STATE_VERSION = 6 as const;
 const MIGRATABLE_STORY_CONTENT_VERSIONS = new Set([
   STORY_CONTENT_VERSION,
   'v1.0-aug03-climax-20260803',
@@ -367,14 +369,14 @@ function clampStat(value: number): number {
 }
 
 export type PersistentProgress = {
-  version: 5;
+  version: 6;
   unlockedArchives: string[];
   endingsUnlocked: EndingId[];
   commemorativeArchiveSaved: boolean;
   normalEpilogueUnlocked: boolean;
   trueEpilogueUnlocked: boolean;
   readNodeIds: string[];
-  currentRebootNumber: number;
+  currentRebootNumber: RebootNumber;
   fatalRebootCount: number;
   fatalEndingTriggered: boolean;
   reboot08TitleUnlocked: boolean;
@@ -384,7 +386,7 @@ export type PersistentProgress = {
 };
 
 const EMPTY_PERSISTENT_PROGRESS: PersistentProgress = {
-  version: 5,
+  version: 6,
   unlockedArchives: [],
   endingsUnlocked: [],
   commemorativeArchiveSaved: false,
@@ -428,6 +430,7 @@ function clonePersistentProgress(progress: PersistentProgress): PersistentProgre
               interactionResults: record.lastStableCheckpoint.cycleState.interactionResults.map(item => ({ ...item })),
               timedResults: record.lastStableCheckpoint.cycleState.timedResults.map(item => ({ ...item })),
               freeInputs: record.lastStableCheckpoint.cycleState.freeInputs.map(item => ({ ...item })),
+              timedDeadlines: { ...record.lastStableCheckpoint.cycleState.timedDeadlines },
             },
           }
         : undefined,
@@ -467,7 +470,7 @@ export function loadPersistentProgress(): PersistentProgress {
       ? Math.max(failedCycles.length, Math.floor(parsed.fatalRebootCount))
       : failedCycles.length;
     return {
-      version: 5,
+      version: 6,
       unlockedArchives: normalizeStringList(parsed.unlockedArchives),
       endingsUnlocked: normalizeEndings(parsed.endingsUnlocked),
       commemorativeArchiveSaved: parsed.commemorativeArchiveSaved === true,
@@ -476,9 +479,7 @@ export function loadPersistentProgress(): PersistentProgress {
       trueEpilogueUnlocked: parsed.trueEpilogueUnlocked === true
         || normalizeEndings(parsed.endingsUnlocked).includes('ending_true'),
       readNodeIds: normalizeStringList(parsed.readNodeIds).map(migrateLegacyMainNodeId),
-      currentRebootNumber: reboot08TitleUnlocked
-        ? Math.max(8, typeof parsed.currentRebootNumber === 'number' ? Math.floor(parsed.currentRebootNumber) : 8)
-        : 7,
+      currentRebootNumber: reboot08TitleUnlocked ? 8 : 7,
       fatalRebootCount,
       fatalEndingTriggered: parsed.fatalEndingTriggered === true || failedCycles.length > 0,
       reboot08TitleUnlocked,
@@ -528,14 +529,16 @@ function persistProgressFromStats(stats: GameStats, cycleState?: CurrentCycleSta
   const merged = mergeStatsWithPersistentProgress(stats);
   savePersistentProgress({
     ...progress,
-    version: 5,
+    version: 6,
     unlockedArchives: merged.unlockedArchives,
     endingsUnlocked: merged.endingsUnlocked,
     commemorativeArchiveSaved: merged.commemorativeArchiveSaved,
     normalEpilogueUnlocked: merged.normalEpilogueUnlocked,
     trueEpilogueUnlocked: merged.trueEpilogueUnlocked,
     readNodeIds: [...new Set([...progress.readNodeIds, ...(cycleState?.completedNodeIds ?? [])])],
-    currentRebootNumber: Math.max(progress.currentRebootNumber, cycleState?.currentRebootNumber ?? 7),
+    currentRebootNumber: clampRebootNumber(
+      Math.max(progress.currentRebootNumber, cycleState?.currentRebootNumber ?? 7),
+    ),
     fatalRebootCount: merged.fatalRebootCount,
     fatalEndingTriggered: merged.fatalEndingTriggered,
     reboot08TitleUnlocked: merged.reboot08TitleUnlocked,
@@ -547,7 +550,7 @@ export function persistLegacyMessageState(state: LegacyMessageState): Persistent
   const progress = loadPersistentProgress();
   const next = {
     ...progress,
-    version: 5 as const,
+    version: 6 as const,
     legacyMessageState: normalizeLegacyMessageState(state),
   };
   savePersistentProgress(next);
@@ -557,7 +560,7 @@ export function persistLegacyMessageState(state: LegacyMessageState): Persistent
 export function markReboot08FallbackUsed(): PersistentProgress {
   const progress = loadPersistentProgress();
   if (progress.reboot08FallbackUsed) return progress;
-  const next = { ...progress, version: 5 as const, reboot08FallbackUsed: true };
+  const next = { ...progress, version: 6 as const, reboot08FallbackUsed: true };
   savePersistentProgress(next);
   return clonePersistentProgress(next);
 }
@@ -594,7 +597,7 @@ export function archiveFatalCycle(
     : [...progress.failedCycles, failed].slice(-8);
   const next: PersistentProgress = {
     ...progress,
-    version: 5,
+    version: 6,
     unlockedArchives: [...new Set([
       ...progress.unlockedArchives,
       ...save.stats.unlockedArchives,
@@ -799,6 +802,7 @@ export function migrateSaveData(value: unknown): SaveData | null {
     rawSaveStateVersion !== 2
     && rawSaveStateVersion !== 3
     && rawSaveStateVersion !== 4
+    && rawSaveStateVersion !== 5
     && rawSaveStateVersion !== SAVE_STATE_VERSION
   ) return null;
   const rawMessages = Array.isArray(save.messages) ? save.messages : [];
@@ -820,6 +824,7 @@ export function migrateSaveData(value: unknown): SaveData | null {
   const messages: DisplayMessage[] = rawMessages
     .filter(isDisplayMessageLike)
     .filter(message => message.type !== 'epilogue')
+    .filter(message => (message as unknown as { uiKind?: string }).uiKind !== 'cycleNotice')
     .filter(message => {
       if (messageIds.has(message.id)) return false;
       messageIds.add(message.id);
@@ -913,6 +918,7 @@ export function migrateSaveData(value: unknown): SaveData | null {
   });
   const cycleState = rawSaveStateVersion === 3
     || rawSaveStateVersion === 4
+    || rawSaveStateVersion === 5
     || rawSaveStateVersion === SAVE_STATE_VERSION
     ? normalizeCurrentCycleState(save.cycleState, stats.reboot08TitleUnlocked ? 8 : 7, timestamp)
     : createLegacyCycleState(delivery.messages, stats, timestamp);
